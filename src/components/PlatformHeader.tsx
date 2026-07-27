@@ -47,7 +47,7 @@ export default function PlatformHeader() {
       // Use Server Action with Redis Caching
       const data = await searchProfiles(searchQuery, user?.email);
 
-      if (data && data.length > 0) {
+      if (data && Array.isArray(data) && data.length > 0) {
         // Map data to match the UI format
         const formatted = data.map((profile: any) => ({
           id: profile.id,

@@ -3,7 +3,7 @@
 import { supabase } from '@/lib/supabase';
 import { redis } from '@/lib/redis';
 
-export async function searchProfiles(searchQuery: string, currentUserEmail?: string | null) {
+export async function searchProfiles(searchQuery: string, currentUserEmail?: string | null): Promise<any[]> {
   if (!searchQuery.trim()) {
     return [];
   }
