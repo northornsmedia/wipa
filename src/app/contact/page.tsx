@@ -1,12 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, Mail, MapPin, MessageSquare, Send } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Mail, MapPin, MessageSquare, Send } from 'lucide-react';
 import { useState } from 'react';
+import PublicHeader from '@/components/PublicHeader';
 
 export default function ContactPage() {
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -23,18 +22,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-[#fbe8d5] bg-grid-pattern font-sans overflow-x-hidden flex flex-col">
       
-      {/* Header */}
-      <header className="w-full max-w-7xl mx-auto px-6 py-8 flex items-center justify-between z-10">
-        <Link href="/" className="flex items-center">
-          <h1 className="text-3xl font-bold tracking-tighter text-[#131313]">WIPA</h1>
-        </Link>
-        <button 
-          onClick={() => router.back()}
-          className="flex items-center gap-2 px-4 py-2 bg-white border-[1.5px] border-black rounded-full shadow-[3px_3px_0px_0px_#131313] hover:translate-y-px hover:shadow-[1px_1px_0px_0px_#131313] transition-all font-semibold text-sm text-[#131313]"
-        >
-          <ArrowLeft className="w-4 h-4" strokeWidth={2.5} /> Back
-        </button>
-      </header>
+      <PublicHeader />
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-12 md:py-20 z-10 relative">
         
