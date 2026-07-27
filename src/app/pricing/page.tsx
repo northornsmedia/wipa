@@ -62,7 +62,7 @@ export default function PricingPage() {
             </Link>
           </div>
 
-          {/* STARTUPS PLAN */}
+          {/* IP PROFESSIONALS PLAN */}
           <div className="bg-[#ffc900] rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313] p-8 flex flex-col relative overflow-hidden transition-transform hover:-translate-y-2 md:-translate-y-4">
             <div className="absolute top-0 right-0 bg-[#131313] text-white text-xs font-black px-4 py-2 rounded-bl-xl border-b-4 border-l-4 border-[#131313]">
               MOST POPULAR
@@ -70,68 +70,68 @@ export default function PricingPage() {
             
             <div className="mb-8">
               <h2 className="text-2xl font-black text-[#131313] mb-2 flex items-center gap-2">
-                <Building2 className="text-[#131313]" size={28} /> Start-Ups
+                <Briefcase className="text-[#131313]" size={28} /> IP Professionals
               </h2>
               <div className="flex items-baseline gap-1">
-                <span className="text-5xl font-black text-[#131313]">£295</span>
+                <span className="text-5xl font-black text-[#131313]">£395</span>
                 <span className="text-lg font-bold text-[#131313]/80">/year</span>
               </div>
-              <p className="text-sm font-bold text-[#131313]/80 mt-4">For founders, innovators, and emerging IP businesses.</p>
+              <p className="text-sm font-bold text-[#131313]/80 mt-4">For IP lawyers, attorneys, and patent professionals.</p>
             </div>
             
             <div className="flex-1 space-y-4 mb-8">
               <div className="flex items-start gap-3">
                 <Check className="text-[#131313] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
-                <span className="font-bold text-[#131313]">Company Page Listing</span>
+                <span className="font-bold text-[#131313]">Verified Professional Badge</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="text-[#131313] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
-                <span className="font-bold text-[#131313]">Direct Messaging</span>
+                <span className="font-bold text-[#131313]">Global Directory Listing</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="text-[#131313] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
-                <span className="font-bold text-[#131313]">Access to Resource Library</span>
+                <span className="font-bold text-[#131313]">Unlimited Platform Access</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="text-[#131313] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
+                <span className="font-bold text-[#131313]">Advanced Analytics</span>
               </div>
             </div>
             
-            <Link href="/signup?tier=startup" className="w-full py-4 text-center rounded-xl font-black text-lg transition-colors border-4 border-[#131313] bg-[#131313] text-white hover:bg-black">
+            <Link href="/signup?tier=ip_professional" className="w-full py-4 text-center rounded-xl font-black text-lg transition-colors border-4 border-[#131313] bg-[#131313] text-white hover:bg-black">
               Purchase Now
             </Link>
           </div>
 
-          {/* IP PROFESSIONALS PLAN */}
+          {/* STARTUPS PLAN */}
           <div className="bg-white rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313] p-8 flex flex-col relative overflow-hidden transition-transform hover:-translate-y-2">
             <div className="mb-8">
               <h2 className="text-2xl font-black text-gray-900 mb-2 flex items-center gap-2">
-                <Briefcase className="text-[#00d26a]" size={28} /> IP Professionals
+                <Building2 className="text-[#ff5241]" size={28} /> Start-Ups
               </h2>
               <div className="flex items-baseline gap-1">
-                <span className="text-5xl font-black text-gray-900">£395</span>
+                <span className="text-5xl font-black text-gray-900">£295</span>
                 <span className="text-lg font-bold text-gray-500">/year</span>
               </div>
-              <p className="text-sm font-bold text-gray-500 mt-4">For IP lawyers, attorneys, and patent professionals.</p>
+              <p className="text-sm font-bold text-gray-500 mt-4">For founders, innovators, and emerging IP businesses.</p>
             </div>
             
             <div className="flex-1 space-y-4 mb-8">
               <div className="flex items-start gap-3">
                 <Check className="text-[#00d26a] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
-                <span className="font-bold text-gray-700">Verified Professional Badge</span>
+                <span className="font-bold text-gray-700">Company Page Listing</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="text-[#00d26a] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
-                <span className="font-bold text-gray-700">Global Directory Listing</span>
+                <span className="font-bold text-gray-700">Direct Messaging</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="text-[#00d26a] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
-                <span className="font-bold text-gray-700">Unlimited Platform Access</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="text-[#00d26a] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
-                <span className="font-bold text-gray-700">Advanced Analytics</span>
+                <span className="font-bold text-gray-700">Access to Resource Library</span>
               </div>
             </div>
             
-            <Link href="/signup?tier=ip_professional" className="w-full py-4 text-center rounded-xl font-black text-lg transition-colors border-4 border-[#131313] bg-white text-[#131313] hover:bg-gray-100">
+            <Link href="/signup?tier=startup" className="w-full py-4 text-center rounded-xl font-black text-lg transition-colors border-4 border-[#131313] bg-white text-[#131313] hover:bg-gray-100">
               Purchase Now
             </Link>
           </div>
