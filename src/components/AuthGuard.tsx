@@ -19,11 +19,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     
     const checkOnboarding = async () => {
       if (!user) {
-        setIsCheckingOnboarding(false);
         router.push('/');
-        return;
+        return; // don't set isCheckingOnboarding to false, let it redirect
       }
       
+      let shouldRedirect = false;
       try {
         const { supabase } = await import('@/lib/supabase');
         const { data, error } = await supabase
@@ -34,12 +34,16 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           
         if (!error && data) {
           if (!data.onboarding_completed && window.location.pathname !== '/onboarding') {
-            router.push('/onboarding');
+            shouldRedirect = true;
           }
         }
       } catch (err) {
         console.error("Failed to check onboarding status", err);
-      } finally {
+      }
+      
+      if (shouldRedirect) {
+        router.push('/onboarding');
+      } else {
         setIsCheckingOnboarding(false);
       }
     };
