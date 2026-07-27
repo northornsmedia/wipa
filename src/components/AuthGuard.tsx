@@ -18,21 +18,23 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     setMounted(true);
     
     const checkOnboarding = async () => {
-      if (!user) {
-        router.push('/');
-        return; // don't set isCheckingOnboarding to false, let it redirect
-      }
-      
       let shouldRedirect = false;
       try {
         const { supabase } = await import('@/lib/supabase');
         
         const { data: authData } = await supabase.auth.getUser();
         
+        if (!authData.user) {
+          router.push('/');
+          return; // don't set isCheckingOnboarding to false, let it redirect
+        }
+
+        const userId = authData.user.id;
+        
         const { data, error } = await supabase
           .from('profiles')
           .select('onboarding_completed, membership_tier')
-          .eq('id', user.id)
+          .eq('id', userId)
           .single();
           
         if (!error && data) {
@@ -40,7 +42,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           
           if (pendingTier && (data.membership_tier === 'free' || !data.membership_tier)) {
             // Redirect to Stripe checkout
-            window.location.href = `/api/checkout?tier=${pendingTier}&userId=${user.id}`;
+            window.location.href = `/api/checkout?tier=${pendingTier}&userId=${userId}`;
             return; // Don't set isCheckingOnboarding to false, let the redirect happen
           }
 
