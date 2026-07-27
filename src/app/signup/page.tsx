@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -12,7 +12,17 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPurchasing, setIsPurchasing] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('tier')) {
+        setIsPurchasing(true);
+      }
+    }
+  }, []);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,10 +74,10 @@ export default function SignupPage() {
         <div className="w-full max-w-md px-4 sm:px-8">
           <div className="text-center mb-8">
             <h2 className="font-serif text-4xl text-[#1a1a1a] mb-2 leading-tight">
-              Join WIPA
+              {isPurchasing ? "Complete Purchase" : "Join WIPA"}
             </h2>
             <p className="text-gray-500 font-medium">
-              Create an account to start networking.
+              {isPurchasing ? "To complete the purchase, please create a profile." : "Create an account to start networking."}
             </p>
           </div>
 
