@@ -11,7 +11,7 @@ export default function PublicFooter() {
       <div className="block md:hidden">
         <ThreeAnimation />
       </div>
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16 relative z-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-16 relative z-10">
         
         {/* Col 1 */}
         <div>
@@ -43,22 +43,26 @@ export default function PublicFooter() {
           </div>
         </div>
 
-        {/* Col 4 */}
-        <div className="flex flex-col gap-8 pt-1">
-          <div>
-            <p className="text-[#1a1a1a] text-lg font-bold mb-3">(316) 555-0116</p>
-            <p className="text-[#1a1a1a] text-lg font-bold">hello@wipa.global</p>
-          </div>
+        {/* Col 4 - Contact Us */}
+        <div className="flex flex-col gap-6 pt-1 lg:col-span-2">
+          <h3 className="text-[#1a1a1a] text-lg font-black uppercase tracking-wider mb-2">CONTACT US</h3>
           
-          <div className="flex items-center gap-3">
-            <a href="#" className="w-10 h-10 rounded-full bg-[#48d29b] border border-black flex items-center justify-center hover:opacity-90 transition-opacity">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-black fill-current"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-            </a>
-            <a href="#" className="w-10 h-10 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-black/5 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-black fill-current"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
-            </a>
-            <a href="#" className="w-10 h-10 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-black/5 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-black fill-current"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+          <div className="space-y-1">
+            <p className="font-bold text-[#1a1a1a] text-sm underline decoration-2 decoration-[#b892ff] underline-offset-4 mb-3">United Kingdom Office:</p>
+            <p className="text-gray-600 text-sm font-medium">60 Castle Street, Dover,</p>
+            <p className="text-gray-600 text-sm font-medium">CT16 1PJ, United Kingdom</p>
+            <p className="text-[#1a1a1a] text-sm font-bold mt-2">+ 44 (0)203-813-0457 <span className="text-gray-500 font-medium">(United Kingdom)</span></p>
+          </div>
+
+          <div className="space-y-1 mt-2">
+            <p className="font-bold text-[#1a1a1a] text-sm underline decoration-2 decoration-[#48d29b] underline-offset-4 mb-3">India Office:</p>
+            <p className="text-gray-600 text-sm font-medium leading-relaxed">E-606, Prahlad Nagar Trade Center(PNTC),<br/>Times Of India Press Rd, Satellite, Shyamal,<br/>Ahmedabad, Gujarat, India, 380015</p>
+            <p className="text-[#1a1a1a] text-sm font-bold mt-2">+ 91 90545 75950 <span className="text-gray-500 font-medium">(India)</span></p>
+          </div>
+
+          <div className="mt-2">
+            <a href="mailto:info@northonsprmarketing.com" className="inline-block bg-[#ffc900] text-[#131313] font-bold px-4 py-2 rounded-lg border-2 border-[#131313] shadow-[2px_2px_0px_0px_#131313] hover:translate-y-px hover:shadow-[1px_1px_0px_0px_#131313] transition-all text-sm">
+              info@northonsprmarketing.com
             </a>
           </div>
         </div>
