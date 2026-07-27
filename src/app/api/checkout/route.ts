@@ -21,6 +21,7 @@ export async function GET(request: Request) {
     const priceMap: Record<string, string> = {
       student: 'price_student_placeholder',
       professional: 'price_professional_placeholder',
+      ip_professional: 'price_professional_placeholder',
       startup: 'price_startup_placeholder',
       'start-ups': 'price_startup_placeholder',
     };
