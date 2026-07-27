@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Providers from "@/lib/query-provider";
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -34,6 +35,7 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "xsx8h9dbj1");
           `}
         </Script>
+        <Analytics />
       </body>
     </html>
   );
