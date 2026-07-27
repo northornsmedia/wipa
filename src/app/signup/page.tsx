@@ -13,13 +13,16 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [tier, setTier] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('tier')) {
+      const tierParam = params.get('tier');
+      if (tierParam) {
         setIsPurchasing(true);
+        setTier(tierParam);
       }
     }
   }, []);
@@ -35,6 +38,7 @@ export default function SignupPage() {
       options: {
         data: {
           full_name: name,
+          ...(tier ? { pending_tier: tier } : {})
         },
         emailRedirectTo: `${window.location.origin}/platform`,
       },
