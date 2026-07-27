@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { 
-  Search, UserPlus, MapPin, Briefcase, Mail, ArrowLeft
+  Search, UserPlus, MapPin, Briefcase, Mail, ArrowLeft, UsersRound
 } from 'lucide-react';
 import Link from 'next/link';
 
