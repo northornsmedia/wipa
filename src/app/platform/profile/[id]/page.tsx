@@ -27,7 +27,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     linkedin: '',
     website: '',
     practiceAreas: 'General Practice',
-    avatarUrl: ''
+    avatarUrl: '',
+    membershipTier: 'free'
   });
 
   useEffect(() => {
@@ -42,12 +43,13 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
         setProfileData({
           name: data.full_name || 'Anonymous User',
           role: 'WIPA Member',
-          location: 'Global',
-          bio: 'A member of the WIPA community.',
-          linkedin: '',
-          website: '',
-          practiceAreas: 'Intellectual Property',
-          avatarUrl: ''
+          location: data.country || 'Global',
+          bio: data.bio || 'A member of the WIPA community.',
+          linkedin: data.linkedin_url || '',
+          website: data.website_url || '',
+          practiceAreas: data.practice_area || 'Intellectual Property',
+          avatarUrl: data.avatar_url || '',
+          membershipTier: data.membership_tier || 'free'
         });
       }
       setIsLoading(false);
@@ -303,6 +305,47 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                       <span key={idx} className={`bg-[${color}] ${textColor} px-4 py-2.5 rounded-xl text-sm font-black border-2 border-[#131313] shadow-[2px_2px_0px_0px_#131313] hover:-translate-y-1 transition-transform cursor-default`} style={{backgroundColor: color}}>
                         {area.trim()}
                       </span>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-[2.5rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313]">
+                <h3 className="text-2xl font-black text-gray-900 mb-6 flex items-center justify-between">
+                  Memberships
+                </h3>
+                <div className="space-y-4">
+                  {[
+                    { id: 'ip_professional', title: 'IP Professionals', icon: '⚖️' },
+                    { id: 'startup', title: 'Start-Ups & Emerging', icon: '🏢' },
+                    { id: 'student', title: 'Students & Alumni', icon: '🎓' }
+                  ].map((tier) => {
+                    const isActive = profileData.membershipTier === tier.id;
+                    return (
+                      <div 
+                        key={tier.id} 
+                        className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${
+                          isActive 
+                            ? 'border-[#5a32fa] bg-[#5a32fa]/10' 
+                            : 'border-gray-100 bg-gray-50 opacity-60 grayscale'
+                        }`}
+                      >
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 ${
+                          isActive ? 'bg-[#5a32fa] text-white border-2 border-[#131313] shadow-[2px_2px_0px_0px_#131313]' : 'bg-gray-200'
+                        }`}>
+                          {tier.icon}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className={`font-black ${isActive ? 'text-gray-900' : 'text-gray-500'}`}>{tier.title}</h4>
+                          {isActive ? (
+                            <span className="text-xs font-bold text-[#00d26a] flex items-center gap-1">
+                              <BadgeCheck size={14} /> Active
+                            </span>
+                          ) : (
+                            <span className="text-xs font-bold text-gray-400">Inactive</span>
+                          )}
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
