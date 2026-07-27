@@ -48,7 +48,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-black text-[#131313] mb-1">Email Us</h3>
-                  <p className="text-gray-600 font-bold text-lg">hello@wipa.global</p>
+                  <p className="text-gray-600 font-bold text-lg">info@northonsprmarketing.com</p>
                 </div>
               </div>
 
@@ -57,18 +57,20 @@ export default function ContactPage() {
                   <MapPin className="w-6 h-6 text-[#131313]" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-[#131313] mb-1">HQ</h3>
-                  <p className="text-gray-600 font-bold text-lg">123 Innovation Drive<br/>San Francisco, CA 94105</p>
+                  <h3 className="text-2xl font-black text-[#131313] mb-1">UK Office</h3>
+                  <p className="text-gray-600 font-bold text-base leading-snug">60 Castle Street, Dover,<br/>CT16 1PJ, United Kingdom</p>
+                  <p className="text-[#131313] font-bold text-base mt-1">+44 (0)203-813-0457</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 bg-[#ffd05b] border-4 border-[#131313] rounded-2xl flex items-center justify-center flex-shrink-0 shadow-[4px_4px_0px_0px_#131313]">
-                  <MessageSquare className="w-6 h-6 text-[#131313]" />
+                  <MapPin className="w-6 h-6 text-[#131313]" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-black text-[#131313] mb-1">Support</h3>
-                  <p className="text-gray-600 font-bold text-lg">Available 24/7 on the Platform</p>
+                  <h3 className="text-2xl font-black text-[#131313] mb-1">India Office</h3>
+                  <p className="text-gray-600 font-bold text-base leading-snug max-w-[280px]">E-606, Prahlad Nagar Trade Center(PNTC), Times Of India Press Rd, Satellite, Shyamal, Ahmedabad, Gujarat, India, 380015</p>
+                  <p className="text-[#131313] font-bold text-base mt-1">+91 90545 75950</p>
                 </div>
               </div>
             </div>
