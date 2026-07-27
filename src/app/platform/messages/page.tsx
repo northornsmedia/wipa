@@ -175,23 +175,36 @@ function MessagesContent() {
         .select(`
           id,
           updated_at,
-          participant1:profiles!participant1_id(id, full_name),
-          participant2:profiles!participant2_id(id, full_name)
+          name,
+          is_group,
+          participants:conversation_participants (
+            user:profiles (
+              id,
+              full_name
+            )
+          )
         `)
-        .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
         .order('updated_at', { ascending: false });
 
       if (data) {
-        const formattedChats: Chat[] = data.map(conv => {
-          const p1: any = Array.isArray(conv.participant1) ? conv.participant1[0] : conv.participant1;
-          const p2: any = Array.isArray(conv.participant2) ? conv.participant2[0] : conv.participant2;
-          const isP1 = p1.id === user.id;
-          const otherP = isP1 ? p2 : p1;
+        const formattedChats: Chat[] = data.map((conv: any) => {
+          let chatName = conv.name;
+          let chatInitial = 'G';
+          
+          if (!conv.is_group) {
+            // Find the other participant in a DM
+            const otherParticipant = conv.participants?.find((p: any) => p.user?.id !== user.id)?.user;
+            chatName = otherParticipant?.full_name || 'Anonymous User';
+            chatInitial = chatName.charAt(0).toUpperCase();
+          } else if (chatName) {
+            chatInitial = chatName.charAt(0).toUpperCase();
+          }
+
           return {
             id: conv.id,
-            name: otherP.full_name || 'Anonymous User',
-            role: 'WIPA Member',
-            initial: otherP.full_name?.charAt(0) || 'U',
+            name: chatName || 'Group Chat',
+            role: conv.is_group ? `Group Chat • ${conv.participants?.length || 0} members` : 'WIPA Member',
+            initial: chatInitial,
             color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
             unread: 0,
             lastMessage: 'Open to view messages',
@@ -214,22 +227,46 @@ function MessagesContent() {
   useEffect(() => {
     if (targetUserId && user?.id) {
        const initChat = async () => {
-          const { data } = await supabase
-            .from('conversations')
-            .select('id')
-            .or(`and(participant1_id.eq.${user.id},participant2_id.eq.${targetUserId}),and(participant1_id.eq.${targetUserId},participant2_id.eq.${user.id})`)
-            .maybeSingle();
+          // Find an existing DM with this target user
+          const { data: myChats } = await supabase
+            .from('conversation_participants')
+            .select('conversation_id')
+            .eq('user_id', user.id);
             
-          if (data) {
-             setActiveChatId(data.id);
+          const myChatIds = myChats?.map(c => c.conversation_id) || [];
+          
+          let existingChatId = null;
+          
+          if (myChatIds.length > 0) {
+            const { data: sharedChats } = await supabase
+              .from('conversation_participants')
+              .select('conversation_id, conversations!inner(is_group)')
+              .eq('user_id', targetUserId)
+              .in('conversation_id', myChatIds)
+              .eq('conversations.is_group', false);
+              
+            if (sharedChats && sharedChats.length > 0) {
+              existingChatId = sharedChats[0].conversation_id;
+            }
+          }
+
+          if (existingChatId) {
+             setActiveChatId(existingChatId);
           } else {
+             // Create new DM
              const { data: newConv } = await supabase
                .from('conversations')
-               .insert({ participant1_id: user.id, participant2_id: targetUserId })
+               .insert({ is_group: false })
                .select()
                .single();
                
              if (newConv) {
+               // Insert participants
+               await supabase.from('conversation_participants').insert([
+                 { conversation_id: newConv.id, user_id: user.id, role: 'admin' },
+                 { conversation_id: newConv.id, user_id: targetUserId, role: 'admin' }
+               ]);
+               
                const { data: profile } = await supabase.from('profiles').select('*').eq('id', targetUserId).single();
                if (profile) {
                  const newChat: Chat = {
