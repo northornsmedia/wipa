@@ -58,7 +58,7 @@ export default function PricingPage() {
             </div>
             
             <Link href="/signup?tier=student" className="w-full py-4 text-center rounded-xl font-black text-lg transition-colors border-4 border-[#131313] bg-white text-[#131313] hover:bg-gray-100">
-              Sign Up Now
+              Purchase Now
             </Link>
           </div>
 
@@ -95,7 +95,7 @@ export default function PricingPage() {
             </div>
             
             <Link href="/signup?tier=startup" className="w-full py-4 text-center rounded-xl font-black text-lg transition-colors border-4 border-[#131313] bg-[#131313] text-white hover:bg-black">
-              Sign Up Now
+              Purchase Now
             </Link>
           </div>
 
@@ -132,7 +132,7 @@ export default function PricingPage() {
             </div>
             
             <Link href="/signup?tier=ip_professional" className="w-full py-4 text-center rounded-xl font-black text-lg transition-colors border-4 border-[#131313] bg-white text-[#131313] hover:bg-gray-100">
-              Sign Up Now
+              Purchase Now
             </Link>
           </div>
 
