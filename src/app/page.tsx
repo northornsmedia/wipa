@@ -126,11 +126,11 @@ export default function Home() {
 
         {/* Main Navigation */}
         <nav className="hidden md:flex items-center gap-8 font-medium text-[#131313]">
-          <a href="#" className="hover:text-[#f99d3e] transition-colors">Home</a>
-          <a href="#" className="hover:text-[#48d29b] transition-colors">About Us</a>
-          <a href="#" className="hover:text-[#b892ff] transition-colors">Resources</a>
-          <a href="#" className="hover:text-[#ff5241] transition-colors">Pricing</a>
-          <a href="#" className="hover:text-[#6eb4ff] transition-colors">Contact</a>
+          <Link href="/" className="hover:text-[#f99d3e] transition-colors">Home</Link>
+          <Link href="/about" className="hover:text-[#48d29b] transition-colors">About Us</Link>
+          <Link href="/resources" className="hover:text-[#b892ff] transition-colors">Resources</Link>
+          <Link href="/pricing" className="hover:text-[#ff5241] transition-colors">Pricing</Link>
+          <Link href="/contact" className="hover:text-[#6eb4ff] transition-colors">Contact</Link>
         </nav>
 
         {/* Auth Buttons */}
@@ -186,20 +186,20 @@ export default function Home() {
           >
             <nav className="flex flex-col gap-3 w-full max-w-sm mx-auto mt-2">
               {[
-                { name: 'Home', color: 'bg-[#f99d3e]' },
-                { name: 'About Us', color: 'bg-[#48d29b]' },
-                { name: 'Resources', color: 'bg-[#b892ff]' },
-                { name: 'Pricing', color: 'bg-[#ff5241]' },
-                { name: 'Contact', color: 'bg-[#6eb4ff]' }
+                { name: 'Home', href: '/', color: 'bg-[#f99d3e]' },
+                { name: 'About Us', href: '/about', color: 'bg-[#48d29b]' },
+                { name: 'Resources', href: '/resources', color: 'bg-[#b892ff]' },
+                { name: 'Pricing', href: '/pricing', color: 'bg-[#ff5241]' },
+                { name: 'Contact', href: '/contact', color: 'bg-[#6eb4ff]' }
               ].map((item) => (
-                <a 
+                <Link 
                   key={item.name}
                   onClick={toggleMenu} 
-                  href="#" 
+                  href={item.href} 
                   className={`w-full text-center py-2.5 rounded-lg font-bold text-lg uppercase tracking-tight text-[#131313] border-2 border-[#131313] shadow-[3px_3px_0px_0px_#131313] active:translate-y-1 active:translate-x-1 active:shadow-none transition-all ${item.color}`}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
               
               <div className="w-full h-1 bg-[#131313] my-3 rounded-full" />
