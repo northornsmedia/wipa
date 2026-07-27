@@ -9,19 +9,48 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user } = useAppStore();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
 
   // Initialize the idle timeout
   useIdleTimeout(15 * 60 * 1000); // 15 minutes
 
   useEffect(() => {
     setMounted(true);
-    if (!user) {
-      router.push('/');
+    
+    const checkOnboarding = async () => {
+      if (!user) {
+        setIsCheckingOnboarding(false);
+        router.push('/');
+        return;
+      }
+      
+      try {
+        const { supabase } = await import('@/lib/supabase');
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', user.id)
+          .single();
+          
+        if (!error && data) {
+          if (!data.onboarding_completed && window.location.pathname !== '/onboarding') {
+            router.push('/onboarding');
+          }
+        }
+      } catch (err) {
+        console.error("Failed to check onboarding status", err);
+      } finally {
+        setIsCheckingOnboarding(false);
+      }
+    };
+
+    if (user !== undefined) {
+      checkOnboarding();
     }
   }, [user, router]);
 
   // Prevent flash of protected content while checking or redirecting
-  if (!mounted || !user) {
+  if (!mounted || !user || isCheckingOnboarding) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#fbe8d5] bg-grid-pattern">
         <div className="animate-pulse flex flex-col items-center gap-4">
