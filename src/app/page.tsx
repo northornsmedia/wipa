@@ -20,22 +20,25 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
-    // Check active session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        supabase
-          .from("profiles")
-          .select("full_name")
-          .eq("id", session.user.id)
-          .single()
-          .then(({ data }) => {
-            setUser({
-              name: data?.full_name || session.user.email?.split("@")[0] || "User",
-              email: session.user.email!,
-              id: session.user.id,
-            });
-          });
+    // Verify active session securely with the server
+    supabase.auth.getUser().then(({ data: { user: authUser }, error }) => {
+      if (error || !authUser) {
+        setUser(null);
+        return;
       }
+      
+      supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", authUser.id)
+        .single()
+        .then(({ data }) => {
+          setUser({
+            name: data?.full_name || authUser.email?.split("@")[0] || "User",
+            email: authUser.email!,
+            id: authUser.id,
+          });
+        });
     });
   }, [setUser]);
 
