@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, BookOpen, PlayCircle, FileText, Download } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, PlayCircle, FileText, Download } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function ResourcesPage() {
