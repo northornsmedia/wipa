@@ -27,6 +27,34 @@ export default function ProfilePage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState(profileData);
 
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '' });
+  const [passwordStatus, setPasswordStatus] = useState({ type: '', message: '' });
+  
+  const handleUpdatePassword = async () => {
+    if (!passwordForm.currentPassword || !passwordForm.newPassword) {
+      setPasswordStatus({ type: 'error', message: 'Please fill out all fields.' });
+      return;
+    }
+    setPasswordStatus({ type: 'loading', message: 'Updating password...' });
+    // @ts-ignore
+    const { error } = await supabase.auth.updateUser({
+      password: passwordForm.newPassword,
+      currentPassword: passwordForm.currentPassword
+    });
+
+    if (error) {
+      setPasswordStatus({ type: 'error', message: error.message });
+    } else {
+      setPasswordStatus({ type: 'success', message: 'Password updated successfully!' });
+      setPasswordForm({ currentPassword: '', newPassword: '' });
+      setTimeout(() => {
+        setIsSettingsModalOpen(false);
+        setPasswordStatus({ type: '', message: '' });
+      }, 2000);
+    }
+  };
+
   const handleSaveProfile = () => {
     setProfileData(editForm);
     setIsEditModalOpen(false);
@@ -206,7 +234,10 @@ export default function ProfilePage() {
                 
                 {/* Actions */}
                 <div className="flex gap-4 w-full xl:w-auto">
-                  <button className="flex-1 xl:flex-none bg-white text-gray-900 p-4 rounded-2xl font-black border-4 border-[#131313] shadow-[4px_4px_0px_0px_#131313] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center">
+                  <button 
+                    onClick={() => setIsSettingsModalOpen(true)}
+                    className="flex-1 xl:flex-none bg-white text-gray-900 p-4 rounded-2xl font-black border-4 border-[#131313] shadow-[4px_4px_0px_0px_#131313] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center"
+                  >
                     <Settings size={24} />
                   </button>
                   <button 
@@ -442,6 +473,69 @@ export default function ProfilePage() {
               >
                 Save Changes
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Settings / Security Modal */}
+      {isSettingsModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#131313]/60 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313] flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b-4 border-[#131313]">
+              <h2 className="text-2xl font-black text-gray-900">Account Settings</h2>
+              <button 
+                onClick={() => setIsSettingsModalOpen(false)}
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 border-2 border-transparent hover:border-[#131313] hover:bg-gray-200 transition-all"
+              >
+                <X size={20} strokeWidth={3} />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div>
+                <h3 className="text-xl font-black text-gray-900 mb-4">Change Password</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Current Password</label>
+                    <input 
+                      type="password"
+                      value={passwordForm.currentPassword}
+                      onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                      placeholder="Enter current password"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">New Password</label>
+                    <input 
+                      type="password"
+                      value={passwordForm.newPassword}
+                      onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                      placeholder="Enter new password"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium"
+                    />
+                  </div>
+                  
+                  {passwordStatus.message && (
+                    <div className={`p-4 rounded-xl border-2 font-bold text-sm ${
+                      passwordStatus.type === 'error' ? 'bg-red-50 border-red-200 text-red-600' : 
+                      passwordStatus.type === 'success' ? 'bg-green-50 border-green-200 text-green-600' :
+                      'bg-blue-50 border-blue-200 text-blue-600'
+                    }`}>
+                      {passwordStatus.message}
+                    </div>
+                  )}
+                  
+                  <button 
+                    onClick={handleUpdatePassword}
+                    disabled={passwordStatus.type === 'loading'}
+                    className="w-full py-3 bg-[#131313] text-white rounded-xl font-black border-4 border-transparent hover:border-[#5a32fa] transition-all disabled:opacity-50"
+                  >
+                    {passwordStatus.type === 'loading' ? 'Updating...' : 'Update Password'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
