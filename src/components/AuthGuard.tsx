@@ -26,6 +26,9 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       let shouldRedirect = false;
       try {
         const { supabase } = await import('@/lib/supabase');
+        
+        const { data: authData } = await supabase.auth.getUser();
+        
         const { data, error } = await supabase
           .from('profiles')
           .select('onboarding_completed, membership_tier')
@@ -33,7 +36,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           .single();
           
         if (!error && data) {
-          const pendingTier = user.user_metadata?.pending_tier;
+          const pendingTier = authData?.user?.user_metadata?.pending_tier;
           
           if (pendingTier && (data.membership_tier === 'free' || !data.membership_tier)) {
             // Redirect to Stripe checkout
