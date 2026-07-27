@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Sparkles, Star, Users, Target, Shield, Heart } from 'lucide-react';
 import PublicHeader from '@/components/PublicHeader';
+import PublicFooter from '@/components/PublicFooter';
 
 export default function AboutPage() {
   return (
@@ -93,6 +94,7 @@ export default function AboutPage() {
         </section>
 
       </main>
+      <PublicFooter />
     </div>
   );
 }

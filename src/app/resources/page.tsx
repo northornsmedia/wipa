@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, BookOpen, PlayCircle, FileText, Download } from 'lucide-react';
 import PublicHeader from '@/components/PublicHeader';
+import PublicFooter from '@/components/PublicFooter';
 
 export default function ResourcesPage() {
   return (
@@ -98,6 +99,7 @@ export default function ResourcesPage() {
         </section>
 
       </main>
+      <PublicFooter />
     </div>
   );
 }

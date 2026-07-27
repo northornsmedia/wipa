@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Mail, MapPin, MessageSquare, Send } from 'lucide-react';
 import { useState } from 'react';
 import PublicHeader from '@/components/PublicHeader';
+import PublicFooter from '@/components/PublicFooter';
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -135,6 +136,7 @@ export default function ContactPage() {
         </div>
 
       </main>
+      <PublicFooter />
     </div>
   );
 }

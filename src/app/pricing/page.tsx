@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Check, GraduationCap, Building2, Briefcase } from 'lucide-react';
 import PublicHeader from '@/components/PublicHeader';
+import PublicFooter from '@/components/PublicFooter';
 
 export default function PricingPage() {
   return (
@@ -157,6 +158,7 @@ export default function PricingPage() {
         </div>
 
       </main>
+      <PublicFooter />
     </div>
   );
 }
