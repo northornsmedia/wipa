@@ -53,6 +53,22 @@ export default function LoginPage() {
         email: data.user.email!,
         id: data.user.id,
       });
+
+      // Record device session
+      try {
+        const { getDeviceId } = await import('@/lib/device');
+        const deviceId = getDeviceId();
+        await supabase
+          .from("user_sessions")
+          .upsert({ 
+            user_id: data.user.id, 
+            device_id: deviceId,
+            last_active_at: new Date().toISOString()
+          }, { onConflict: 'user_id, device_id' });
+      } catch (err) {
+        console.error("Failed to record device session", err);
+      }
+
       router.push("/");
     }
   };

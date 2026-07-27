@@ -3,16 +3,20 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
+import { useIdleTimeout } from '@/hooks/useIdleTimeout';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user } = useAppStore();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
+  // Initialize the idle timeout
+  useIdleTimeout(15 * 60 * 1000); // 15 minutes
+
   useEffect(() => {
     setMounted(true);
     if (!user) {
-      router.push('/login');
+      router.push('/');
     }
   }, [user, router]);
 

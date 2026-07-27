@@ -5,15 +5,22 @@ import { useAppStore } from '@/store/useAppStore';
 import { 
   Image as ImageIcon, Video, Calendar, Newspaper, ThumbsUp, MessageCircle, Share2, Send, Bookmark,
   BadgeCheck, LayoutGrid, User, Users, Mail, UserPlus, UsersRound, MessageSquare, FileText, Briefcase, GraduationCap,
-  MoreHorizontal, Eye, X, Sparkles
+  MoreHorizontal, Eye, X, Sparkles, LogOut
 , BookOpen, Home
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function PlatformPage() {
-  const { user, posts, likedPostIds, toggleLike } = useAppStore();
+  const { user, posts, likedPostIds, toggleLike, setUser } = useAppStore();
   const [postContent, setPostContent] = useState('');
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    router.push('/login');
+  };
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
   const [isEnhancing, setIsEnhancing] = useState(false);
@@ -181,6 +188,16 @@ export default function PlatformPage() {
                 <span className="bg-[#00d26a] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">NEW</span>
               </Link>
             </nav>
+          </div>
+          
+          {/* Logout Button */}
+          <div className="pt-4 border-t-2 border-gray-100 mt-2">
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-3 py-2 w-full text-[#ff4b4b] hover:bg-[#ff4b4b]/10 rounded-xl font-bold text-sm transition-colors"
+            >
+              <LogOut size={16} /> Log Out
+            </button>
           </div>
         </div>
       </div>

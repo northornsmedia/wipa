@@ -26,6 +26,7 @@ export default function SignupPage() {
         data: {
           full_name: name,
         },
+        emailRedirectTo: `${window.location.origin}/platform`,
       },
     });
 
