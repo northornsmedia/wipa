@@ -67,11 +67,8 @@ export default function OnboardingPage() {
   const [docFile, setDocFile] = useState<File | null>(null);
 
   useEffect(() => {
-    if (user?.user_metadata?.full_name) {
-      setFormData(prev => ({ ...prev, fullName: user.user_metadata.full_name }));
-    }
-    if (user?.user_metadata?.avatar_url) {
-      setAvatarPreview(user.user_metadata.avatar_url);
+    if (user?.name) {
+      setFormData(prev => ({ ...prev, fullName: user.name }));
     }
   }, [user]);
 
