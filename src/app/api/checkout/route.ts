@@ -19,11 +19,11 @@ export async function GET(request: Request) {
     // Map the tier string to a Stripe Price ID
     // TODO: These should be replaced with actual Stripe Price IDs
     const priceMap: Record<string, string> = {
-      student: 'price_student_placeholder',
-      professional: 'price_professional_placeholder',
-      ip_professional: 'price_professional_placeholder',
-      startup: 'price_startup_placeholder',
-      'start-ups': 'price_startup_placeholder',
+      student: 'price_1TxoecDqu26YmlnJtrhKDyCY',
+      professional: 'price_1Txof6Dqu26YmlnJDHgSlHxu',
+      ip_professional: 'price_1Txof6Dqu26YmlnJDHgSlHxu',
+      startup: 'price_1TxofRDqu26YmlnJnMDLJ4xu',
+      'start-ups': 'price_1TxofRDqu26YmlnJnMDLJ4xu',
     };
 
     const priceId = priceMap[tier.toLowerCase()];
