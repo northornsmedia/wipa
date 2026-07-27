@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
 // Initialize Stripe with the secret key from environment variables
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
   apiVersion: '2023-10-16' as any, // Using an older API version string or generic type fallback if needed.
 });
 
