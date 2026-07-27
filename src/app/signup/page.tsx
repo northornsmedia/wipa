@@ -52,7 +52,13 @@ export default function SignupPage() {
       }
       setLoading(false);
     } else {
-      router.push("/login?message=Check your email to confirm your account");
+      if (data.session) {
+        // Email confirmation is disabled, user is immediately logged in
+        router.push("/platform");
+      } else {
+        // Email confirmation is enabled, user needs to check email
+        router.push("/login?message=Check your email to confirm your account");
+      }
     }
   };
   return (
