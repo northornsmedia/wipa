@@ -81,9 +81,9 @@ export default function OnboardingPage() {
   };
 
   const uploadFile = async (file: File, bucket: string): Promise<string | null> => {
-    if (!user) return null;
+    if (!user || !user.id) return null;
     const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+    const fileName = `${user.id}/${Math.random()}.${fileExt}`;
     
     const { error: uploadError, data } = await supabase.storage
       .from(bucket)
