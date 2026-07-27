@@ -18,6 +18,8 @@ import { usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 
+import { searchProfiles } from '@/app/actions/profiles';
+
 const navItems = [
   { name: 'Home', icon: Home, path: '/platform' },
   { name: 'My Network', icon: Users, path: '/platform/network' },
@@ -42,18 +44,10 @@ export default function PlatformHeader() {
         return;
       }
 
-      let query = supabase
-        .from('profiles')
-        .select('*')
-        .ilike('full_name', `%${searchQuery}%`);
+      // Use Server Action with Redis Caching
+      const data = await searchProfiles(searchQuery, user?.email);
 
-      if (user?.email) {
-        query = query.neq('email', user.email);
-      }
-
-      const { data, error } = await query.limit(5);
-
-      if (!error && data) {
+      if (data && data.length > 0) {
         // Map data to match the UI format
         const formatted = data.map((profile: any) => ({
           id: profile.id,
@@ -63,12 +57,14 @@ export default function PlatformHeader() {
           initial: profile.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'
         }));
         setSearchResults(formatted);
+      } else {
+        setSearchResults([]);
       }
     };
 
     const delay = setTimeout(fetchUsers, 300);
     return () => clearTimeout(delay);
-  }, [searchQuery]);
+  }, [searchQuery, user?.email]);
 
   return (
     <>
