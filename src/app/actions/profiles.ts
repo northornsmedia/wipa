@@ -26,7 +26,7 @@ export async function searchProfiles(searchQuery: string, currentUserEmail?: str
       if (currentUserEmail && Array.isArray(parsed)) {
         return parsed.filter((p: any) => p.email !== currentUserEmail);
       }
-      return parsed;
+      return (Array.isArray(parsed) ? parsed : []) as any[];
     }
 
     console.log(`[Cache Miss] Supabase: ${cacheKey}`);
