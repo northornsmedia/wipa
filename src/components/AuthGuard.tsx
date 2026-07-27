@@ -41,9 +41,14 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           const pendingTier = authData?.user?.user_metadata?.pending_tier;
           
           if (pendingTier && (data.membership_tier === 'free' || !data.membership_tier)) {
-            // Redirect to Stripe checkout
-            window.location.href = `/api/checkout?tier=${pendingTier}&userId=${userId}`;
-            return; // Don't set isCheckingOnboarding to false, let the redirect happen
+            // Check if they just returned from Stripe checkout to prevent infinite loops
+            const isReturningFromStripe = window.location.search.includes('success=true') || window.location.search.includes('canceled=true');
+            
+            if (!isReturningFromStripe) {
+              // Redirect to Stripe checkout
+              window.location.href = `/api/checkout?tier=${pendingTier}&userId=${userId}`;
+              return; // Don't set isCheckingOnboarding to false, let the redirect happen
+            }
           }
 
           if (!data.onboarding_completed && window.location.pathname !== '/onboarding') {
