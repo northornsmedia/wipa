@@ -226,20 +226,7 @@ export default function NetworkPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex flex-col">
-      {/* Top Navigation Bar */}
-      <div className="bg-white border-b-4 border-[#131313] h-[72px] flex items-center px-6 sticky top-0 z-50">
-        <Link 
-          href="/platform" 
-          className="hidden md:flex items-center gap-2 text-gray-900 font-black hover:text-[#5a32fa] transition-colors"
-        >
-          <ArrowLeft size={20} strokeWidth={3} />
-          Back to Feed
-        </Link>
-        
-        <div className="mx-auto font-black text-xl text-gray-900 tracking-tight">
-          MY NETWORK
-        </div>
-      </div>
+
 
       {/* MAIN SCROLLABLE CONTENT */}
       <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
@@ -247,9 +234,9 @@ export default function NetworkPage() {
           
           <div className="flex-1">
           
-          <div className="hidden md:flex mb-8 border-b-4 border-[#131313] pb-6 items-center justify-between">
+          <div className="hidden md:flex mb-8 border-b border-gray-100 pb-6 items-center justify-between">
             <div>
-              <h1 className="text-3xl font-black text-gray-900 flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
                 <UsersRound size={32} className="text-[#5a32fa]" />
                 My Network
               </h1>
@@ -262,12 +249,12 @@ export default function NetworkPage() {
           {/* Pending Invitations */}
           {invitations.length > 0 && (
             <div className="mb-8">
-              <h2 className="text-xl font-black text-gray-900 mb-4">Pending Invitations ({invitations.length})</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Pending Invitations ({invitations.length})</h2>
               <div className="flex flex-col gap-4">
                 {invitations.map((invite) => (
-                  <div key={invite.id} className="bg-white border-4 border-[#131313] shadow-[4px_4px_0px_0px_#131313] p-4 rounded-2xl flex items-center justify-between">
+                  <div key={invite.id} className="bg-white border border-gray-100 shadow-sm p-4 rounded-2xl flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-[#b892ff] rounded-full border-2 border-[#131313] flex items-center justify-center font-bold text-xl text-white">
+                      <div className="w-12 h-12 bg-[#b892ff] rounded-full border border-gray-100 flex items-center justify-center font-bold text-xl text-white">
                         {invite.requester.full_name?.charAt(0) || 'U'}
                       </div>
                       <div>
@@ -280,7 +267,7 @@ export default function NetworkPage() {
                     <div className="flex items-center gap-3">
                       <button 
                         onClick={() => handleAccept(invite.id)}
-                        className="px-4 py-2 bg-[#00d26a] text-gray-900 font-bold border-2 border-[#131313] rounded-xl hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-[2px_2px_0px_0px_#131313] transition-all"
+                        className="px-4 py-2 bg-[#00d26a] text-gray-900 font-bold border border-gray-100 rounded-xl  shadow-sm transition-all"
                       >
                         Accept
                       </button>
@@ -302,19 +289,19 @@ export default function NetworkPage() {
             <div className="flex items-center gap-4">
               <button 
                 onClick={() => setActiveTab('Connections')}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Connections' ? 'bg-[#131313] text-white border-[#131313]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
+                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Connections' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
               >
                 Connections
               </button>
               <button 
                 onClick={() => setActiveTab('Following')}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Following' ? 'bg-[#131313] text-white border-[#131313]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
+                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Following' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
               >
                 Following
               </button>
               <button 
                 onClick={() => setActiveTab('Followers')}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Followers' ? 'bg-[#131313] text-white border-[#131313]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
+                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Followers' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
               >
                 Followers
               </button>
@@ -333,8 +320,8 @@ export default function NetworkPage() {
           </div>
 
           {/* Advanced Filters */}
-          <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-white rounded-[1.5rem] border-4 border-[#131313] shadow-[4px_4px_0px_0px_#131313]">
-            <h3 className="font-black text-sm text-gray-900 uppercase tracking-wider mr-2 flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-white rounded-[1.5rem] border border-gray-100 shadow-sm">
+            <h3 className="font-bold text-sm text-gray-900 uppercase tracking-wider mr-2 flex items-center gap-2">
               <Filter size={16} className="text-[#5a32fa]" /> Filters
             </h3>
             <select 
@@ -365,7 +352,7 @@ export default function NetworkPage() {
             {(selectedCountry || selectedPracticeArea || selectedIndustry || searchQuery) && (
               <button 
                 onClick={() => { setSelectedCountry(''); setSelectedPracticeArea(''); setSelectedIndustry(''); setSearchQuery(''); }}
-                className="ml-auto px-4 py-2.5 text-sm font-black text-[#ff4b4b] border-2 border-transparent hover:border-[#ff4b4b] rounded-xl transition-all"
+                className="ml-auto px-4 py-2.5 text-sm font-bold text-[#ff4b4b] border-2 border-transparent hover:border-[#ff4b4b] rounded-xl transition-all"
               >
                 Clear Filters
               </button>
@@ -384,9 +371,9 @@ export default function NetworkPage() {
               if (selectedIndustry && person.industrySector !== selectedIndustry) return false;
               return true;
             }).length === 0 ? (
-              <div className="sm:col-span-2 lg:col-span-3 bg-white rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313] p-16 text-center flex flex-col items-center">
+              <div className="sm:col-span-2 lg:col-span-3 bg-white rounded-[2rem] border border-gray-100 shadow-sm p-16 text-center flex flex-col items-center">
                 <UsersRound size={64} className="text-gray-300 mb-6" />
-                <h3 className="text-2xl font-black text-gray-900 mb-3">No {activeTab.toLowerCase()} found</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">No {activeTab.toLowerCase()} found</h3>
                 <p className="text-gray-500 font-medium text-lg">Try adjusting your search filters.</p>
               </div>
             ) : network.filter(person => {
@@ -399,15 +386,15 @@ export default function NetworkPage() {
               if (selectedIndustry && person.industrySector !== selectedIndustry) return false;
               return true; 
             }).map((person) => (
-              <div key={person.id} className="bg-white rounded-[1rem] md:rounded-[1.5rem] border-[1.5px] md:border-4 border-[#131313] shadow-[3px_3px_0px_0px_#131313] md:shadow-[6px_6px_0px_0px_#131313] overflow-hidden flex flex-row md:flex-col items-center p-3 md:p-6 text-left md:text-center transition-all hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#131313] md:hover:shadow-[8px_8px_0px_0px_#131313] gap-3 md:gap-0">
+              <div key={person.id} className="bg-white rounded-[1rem] md:rounded-[1.5rem] border-[1.5px] md:border border-gray-100 shadow-sm md:shadow-sm overflow-hidden flex flex-row md:flex-col items-center p-3 md:p-6 text-left md:text-center transition-all hover:-translate-y-1 hover:shadow-sm md:hover:shadow-sm gap-3 md:gap-0">
                 
-                <div className="w-12 h-12 md:w-20 md:h-20 rounded-full border-[1.5px] md:border-4 border-[#131313] flex items-center justify-center font-black text-lg md:text-3xl text-[#131313] md:mb-4 shrink-0" style={{ backgroundColor: person.avatarColor }}>
+                <div className="w-12 h-12 md:w-20 md:h-20 rounded-full border-[1.5px] md:border border-gray-100 flex items-center justify-center font-bold text-lg md:text-3xl text-[#131313] md:mb-4 shrink-0" style={{ backgroundColor: person.avatarColor }}>
                   {person.initial}
                 </div>
                 
                 <div className="flex-1 min-w-0">
                   <Link href={`/platform/user/${person.id}`}>
-                    <h3 className="text-[14px] md:text-lg font-black text-gray-900 mb-0.5 md:mb-1 leading-tight hover:text-[#5a32fa] transition-colors cursor-pointer truncate hover:underline decoration-2">
+                    <h3 className="text-[14px] md:text-lg font-bold text-gray-900 mb-0.5 md:mb-1 leading-tight hover:text-[#5a32fa] transition-colors cursor-pointer truncate hover:underline decoration-2">
                       {person.name}
                     </h3>
                   </Link>
@@ -420,7 +407,7 @@ export default function NetworkPage() {
 
                 <div className="flex md:w-full md:mt-auto gap-2 shrink-0">
                   <Link href={`/platform/messages?userId=${person.id}`} className="md:flex-1">
-                    <button className="w-full flex items-center justify-center gap-1.5 bg-[#5a32fa] text-white px-3 py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[11px] md:text-xs border-[1.5px] md:border-2 border-[#131313] shadow-[2px_2px_0px_0px_#131313] hover:-translate-y-px md:hover:-translate-y-0.5 md:hover:shadow-[4px_4px_0px_0px_#131313] transition-all">
+                    <button className="w-full flex items-center justify-center gap-1.5 bg-[#5a32fa] text-white px-3 py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[11px] md:text-xs border border-gray-100 shadow-sm hover:-translate-y-0.5 md:hover:shadow-sm transition-all">
                       <MessageCircle size={14} className="hidden md:block" />
                       Message
                     </button>
@@ -442,10 +429,10 @@ export default function NetworkPage() {
           <div className="w-full xl:w-[350px] shrink-0 flex flex-col gap-6">
             
             {/* Incoming Requests */}
-            <div className="bg-white p-6 rounded-[1.5rem] border-4 border-[#131313] shadow-[6px_6px_0px_0px_#131313] flex flex-col max-h-[500px]">
+            <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex flex-col max-h-[500px]">
               <div className="flex justify-between items-center mb-6 shrink-0">
-                <h3 className="font-black text-lg text-gray-900">Invitations</h3>
-                <span className="bg-[#5a32fa] text-white text-xs font-bold px-2 py-1 rounded-md border-2 border-[#131313]">7</span>
+                <h3 className="font-bold text-lg text-gray-900">Invitations</h3>
+                <span className="bg-[#5a32fa] text-white text-xs font-bold px-2 py-1 rounded-md border border-gray-100">7</span>
               </div>
               <div className="space-y-4 overflow-y-auto no-scrollbar pr-2 -mr-2">
                 {[
@@ -458,14 +445,14 @@ export default function NetworkPage() {
                   { id: 7, name: 'Bruce Banner', role: 'Research Scientist', icon: 'B', color: '#00d26a' },
                 ].map((inv) => (
                   <div key={inv.id} className="flex gap-4">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white border-4 border-[#131313] shrink-0 text-xl" style={{ backgroundColor: inv.color }}>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white border border-gray-100 shrink-0 text-xl" style={{ backgroundColor: inv.color }}>
                       {inv.icon}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-black text-gray-900">{inv.name}</p>
+                      <p className="text-sm font-bold text-gray-900">{inv.name}</p>
                       <p className="text-xs text-gray-500 font-medium mb-3">{inv.role}</p>
                       <div className="flex gap-2">
-                        <button className="flex-1 bg-[#131313] text-white text-xs font-bold py-2 rounded-xl border-2 border-[#131313] hover:bg-[#5a32fa] hover:border-[#5a32fa] transition-colors shadow-[2px_2px_0px_0px_#131313]">
+                        <button className="flex-1 bg-[#131313] text-white text-xs font-bold py-2 rounded-xl border border-gray-100 hover:bg-[#5a32fa] hover:border-[#5a32fa] transition-colors shadow-sm">
                           Accept
                         </button>
                         <button className="flex-1 bg-white text-gray-600 text-xs font-bold py-2 rounded-xl border-2 border-gray-200 hover:border-gray-900 transition-colors">
@@ -479,9 +466,9 @@ export default function NetworkPage() {
             </div>
 
             {/* Suggested Connections */}
-            <div className="bg-white p-6 rounded-[1.5rem] border-4 border-[#131313] shadow-[6px_6px_0px_0px_#131313]">
+            <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="font-black text-lg text-gray-900">Suggested for you</h3>
+                <h3 className="font-bold text-lg text-gray-900">Suggested for you</h3>
                 <button className="text-sm font-bold text-[#5a32fa] hover:underline">See all</button>
               </div>
               <div className="space-y-5">
@@ -490,11 +477,11 @@ export default function NetworkPage() {
                   { name: 'Ben Stokes', role: 'Counsel', icon: 'B', color: '#ffc900' },
                 ].map((person, i) => (
                   <div key={i} className="flex items-center gap-4 group">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-black text-xl border-4 border-[#131313]" style={{ backgroundColor: person.color }}>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border border-gray-100" style={{ backgroundColor: person.color }}>
                       {person.icon}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-black text-gray-900 group-hover:text-[#5a32fa] transition-colors cursor-pointer">{person.name}</p>
+                      <p className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors cursor-pointer">{person.name}</p>
                       <p className="text-xs text-gray-500 font-medium">{person.role}</p>
                     </div>
                     <button className="w-10 h-10 rounded-xl border-2 border-gray-200 flex items-center justify-center text-gray-600 hover:border-[#131313] hover:text-[#131313] hover:bg-gray-50 transition-colors shrink-0">

@@ -126,142 +126,15 @@ export default function EventsPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#f8f9fa]">
       
-      {/* FIXED LEFT SIDEBAR */}
-      <div className="hidden md:block fixed left-0 top-[72px] bottom-0 w-[260px] lg:w-[280px] z-40">
-        <div className="bg-white rounded-tr-[2rem] rounded-br-none rounded-l-none border-t-2 border-r-2 border-l-0 border-b-0 border-[#131313] shadow-[4px_0px_0px_0px_#131313] p-4 h-full flex flex-col">
-          {/* Profile Header */}
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-[#5a32fa] text-white flex items-center justify-center text-lg font-bold border-2 border-[#131313] flex-shrink-0">
-              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-            </div>
-            <div className="overflow-hidden">
-              <h2 className="font-bold text-[14px] text-gray-900 truncate flex items-center gap-1">
-                {user?.name || 'Loading...'}
-                <BadgeCheck size={14} className="text-[#5a32fa] flex-shrink-0" />
-              </h2>
-              <p className="text-[11px] text-gray-500 font-medium truncate">IP Counsel</p>
-              <p className="text-[11px] text-gray-500 font-medium truncate">WIPA Member</p>
-            </div>
-          </div>
-          <button onClick={() => router.push('/platform/profile')} className="block text-center w-full py-1.5 border-2 border-gray-200 rounded-xl text-xs font-bold text-gray-600 hover:border-[#5a32fa] hover:text-[#5a32fa] transition-all mb-4">
-            View Profile
-          </button>
-
-          {/* Navigation */}
-          <div className="flex-1 overflow-y-auto no-scrollbar pb-2">
-            <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-2 px-2">MAIN NAVIGATION</p>
-            <nav className="space-y-0.5">
-              <Link href="/platform" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <LayoutGrid size={16} /> Feed
-              </Link>
-              <Link href="/platform/liked-threads" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <ThumbsUp size={16} /> Liked Threads
-              </Link>
-              <Link href="/platform/network" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <UsersRound size={16} /> My Network
-              </Link>
-              <Link href="/platform/members" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <Users size={16} /> Members
-              </Link>
-              <Link href="/platform/messages" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <div className="flex items-center gap-3">
-                  <Mail size={16} /> Messages
-                </div>
-                <span className="bg-[#5a32fa] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">2</span>
-              </Link>
-              <Link href="/platform/groups" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <UsersRound size={16} /> Groups
-              </Link>
-              <Link href="/platform/forums" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <MessageSquare size={16} /> Discussion Forums
-              </Link>
-              <Link href="/platform/resources" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <BookOpen size={16} /> Resource Library
-              </Link>
-              <Link href="/platform/events" className="flex items-center gap-3 px-3 py-2 bg-[#5a32fa]/10 text-[#5a32fa] rounded-xl font-bold text-sm transition-colors">
-                <Calendar size={16} /> Events
-              </Link>
-              <Link href="/platform/memberships" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <FileText size={16} /> Memberships
-              </Link>
-              <Link href="/platform/jobs" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <Briefcase size={16} /> Jobs Board
-              </Link>
-              <Link href="/platform/mentorship" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <div className="flex items-center gap-3">
-                  <GraduationCap size={16} /> Mentorship
-                </div>
-                <span className="bg-[#00d26a] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">NEW</span>
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </div>
-
-      {/* FIXED RIGHT SIDEBAR */}
-      <div className="hidden lg:block fixed right-0 top-[72px] bottom-0 w-[260px] xl:w-[320px] z-40">
-        <div className="bg-[#f8f9fa] rounded-tl-[2rem] border-t-2 border-l-2 border-[#131313] shadow-[-4px_0px_0px_0px_#131313] p-5 h-full flex flex-col overflow-y-auto no-scrollbar gap-6">
-          
-          {/* Active Groups */}
-          <div className="bg-white p-4 rounded-[1.5rem] border-2 border-[#131313] shadow-[4px_4px_0px_0px_#131313]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-[15px] text-gray-900">Active Groups</h3>
-              <button className="text-xs font-bold text-[#5a32fa] hover:underline">See all</button>
-            </div>
-            <div className="space-y-4">
-              {[
-                { name: 'Trade Marks', members: '1,345', icon: '©️', color: '#b892ff' },
-                { name: 'Women in Leadership', members: '897', icon: '👩‍💼', color: '#ff90e8' },
-                { name: 'Artificial Intelligence', members: '1,105', icon: '🤖', color: '#5a32fa' },
-                { name: 'Patent Law', members: '1,245', icon: '📜', color: '#5a32fa' },
-                { name: 'Start-ups & Innovation', members: '764', icon: '🚀', color: '#ffc900' }
-              ].map((group, i) => (
-                <div key={i} className="flex items-center gap-3 cursor-pointer group">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg border-2 border-transparent group-hover:border-[#131313] transition-all" style={{ backgroundColor: `${group.color}20`, color: group.color }}>
-                    {group.icon}
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">{group.name}</p>
-                    <p className="text-[11px] text-gray-500 font-medium">{group.members} members</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Trending Discussions */}
-          <div className="bg-white p-4 rounded-[1.5rem] border-2 border-[#131313] shadow-[4px_4px_0px_0px_#131313]">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-[15px] text-gray-900">Trending Discussions</h3>
-              <button className="text-xs font-bold text-[#5a32fa] hover:underline">See all</button>
-            </div>
-            <div className="space-y-4">
-              {[
-                { title: 'How is AI changing patent landscapes globally?', comments: '128' },
-                { title: 'The future of trademark law in digital markets', comments: '96' },
-                { title: 'Building personal brand in IP profession', comments: '74' }
-              ].map((disc, i) => (
-                <div key={i} className="cursor-pointer group">
-                  <p className="text-[13px] font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors leading-tight mb-1">
-                    <span className="text-[#00d26a] mr-1">▶</span>{disc.title}
-                  </p>
-                  <p className="text-[11px] text-gray-500 font-medium">{disc.comments} comments</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* MAIN SCROLLABLE CONTENT */}
-      <div className="w-full md:pl-[260px] lg:pl-[280px] lg:pr-[260px] xl:pr-[320px] min-h-screen">
-        <div className="max-w-[900px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
+      <div className="w-full min-h-[calc(100vh-73px)]">
+        <div className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 pt-8">
           
-          <div className="mb-8 border-b-4 border-[#131313] pb-6 flex items-center justify-between">
+          <div className="mb-8 border-b border-gray-100 pb-6 flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-black text-gray-900 flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
                 <Calendar size={32} className="text-[#5a32fa]" />
                 Events
               </h1>
@@ -271,7 +144,7 @@ export default function EventsPage() {
             </div>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#5a32fa] text-white px-6 py-3 rounded-xl font-black text-sm border-2 border-[#131313] hover:shadow-[4px_4px_0px_0px_#131313] hover:-translate-y-1 transition-all"
+              className="bg-[#5a32fa] text-white px-6 py-3 rounded-xl font-bold text-sm border border-gray-100 hover:shadow-sm hover:-translate-y-0.5 transition-all"
             >
               + Create Event
             </button>
@@ -280,19 +153,19 @@ export default function EventsPage() {
           <div className="flex items-center gap-4 mb-8">
             <button 
               onClick={() => setActiveTab('Upcoming')}
-              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'Upcoming' ? 'bg-[#131313] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'Upcoming' ? 'bg-[#5a32fa] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
             >
               Upcoming
             </button>
             <button 
               onClick={() => setActiveTab('My Events')}
-              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'My Events' ? 'bg-[#131313] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'My Events' ? 'bg-[#5a32fa] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
             >
               My Events
             </button>
             <button 
               onClick={() => setActiveTab('Past')}
-              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'Past' ? 'bg-[#131313] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'Past' ? 'bg-[#5a32fa] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
             >
               Past
             </button>
@@ -304,9 +177,9 @@ export default function EventsPage() {
               if (activeTab === 'Past') return false; // In a real app, compare dates
               return true; // Upcoming
             }).length === 0 ? (
-              <div className="bg-white rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313] p-12 text-center flex flex-col items-center">
+              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center flex flex-col items-center">
                 <Calendar size={48} className="text-gray-300 mb-4" />
-                <h3 className="text-xl font-black text-gray-900 mb-2">No {activeTab.toLowerCase()} events found</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">No {activeTab.toLowerCase()} events found</h3>
                 <p className="text-gray-500 font-medium">Check back later or explore other tabs.</p>
               </div>
             ) : events.filter(event => {
@@ -317,12 +190,12 @@ export default function EventsPage() {
               <div 
                 key={event.id} 
                 onClick={() => router.push(`/platform/events/${event.id}`)}
-                className="cursor-pointer bg-white rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313] overflow-hidden flex flex-col md:flex-row group transition-all hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_0px_#131313]">
+                className="cursor-pointer bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col md:flex-row group transition-all hover:-translate-y-0.5 hover:shadow-sm">
                 
                 {/* Date Block */}
-                <div className="md:w-48 border-b-4 md:border-b-0 md:border-r-4 border-[#131313] flex flex-row md:flex-col items-center justify-center p-6 md:p-8" style={{ backgroundColor: event.color }}>
-                  <div className="text-[#131313] font-black text-2xl md:text-3xl tracking-widest uppercase">{event.month}</div>
-                  <div className="text-white text-5xl md:text-7xl font-black md:mt-2" style={{ textShadow: '3px 3px 0 #131313' }}>{event.day}</div>
+                <div className="md:w-48 border-b border-gray-100 md:border-b-0 md:border-r flex flex-row md:flex-col items-center justify-center p-6 md:p-8" style={{ backgroundColor: event.color }}>
+                  <div className="text-gray-900 font-bold text-2xl md:text-3xl tracking-widest uppercase">{event.month}</div>
+                  <div className="text-white text-5xl md:text-7xl font-bold md:mt-2" style={{ textShadow: "none" }}>{event.day}</div>
                 </div>
 
                 {/* Event Details */}
@@ -332,13 +205,13 @@ export default function EventsPage() {
                       {event.type}
                     </span>
                     {event.isRegistered && (
-                      <span className="bg-[#00d26a] text-white text-[11px] font-bold px-3 py-1 rounded-md uppercase tracking-wider border-2 border-[#131313]">
+                      <span className="bg-[#00d26a] text-white text-[11px] font-bold px-3 py-1 rounded-md uppercase tracking-wider border border-gray-100">
                         Attending
                       </span>
                     )}
                   </div>
                   
-                  <h3 className="text-2xl font-black text-gray-900 mb-2 leading-tight">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
                     {event.title}
                   </h3>
                   
@@ -372,10 +245,10 @@ export default function EventsPage() {
                         e.stopPropagation();
                         // handle registration toggle here
                       }}
-                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-black text-sm border-2 border-[#131313] transition-all ${
+                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm border border-gray-100 transition-all ${
                       event.isRegistered 
                         ? 'bg-white text-gray-400 border-gray-200 hover:bg-gray-50' 
-                        : 'bg-[#131313] text-white hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#5a32fa]'
+                        : 'bg-[#5a32fa] text-white hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#5a32fa]'
                     }`}>
                       {event.isRegistered ? 'Manage' : 'Register'}
                       {!event.isRegistered && <ArrowRight size={16} />}
@@ -392,7 +265,7 @@ export default function EventsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
           
-          <div className="bg-white rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313] p-6 md:p-8 w-full max-w-lg relative z-10 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto no-scrollbar">
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 md:p-8 w-full max-w-lg relative z-10 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto no-scrollbar">
             <button 
               onClick={() => setIsModalOpen(false)}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 p-2 rounded-full"
@@ -400,7 +273,7 @@ export default function EventsPage() {
               <X size={20} />
             </button>
             
-            <h2 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
               <Calendar size={28} className="text-[#5a32fa]" />
               Create Event
             </h2>
@@ -534,7 +407,7 @@ export default function EventsPage() {
               </div>
 
               <div className="pt-4">
-                <button type="submit" className="w-full bg-[#00d26a] text-[#131313] px-6 py-4 rounded-xl font-black text-lg border-4 border-[#131313] hover:shadow-[4px_4px_0px_0px_#131313] hover:-translate-y-1 transition-all active:translate-y-0 active:shadow-none">
+                <button type="submit" className="w-full bg-[#00d26a] text-gray-900 px-6 py-4 rounded-xl font-bold text-lg border border-gray-100 hover:shadow-sm hover:-translate-y-0.5 transition-all active:translate-y-0 active:shadow-none">
                   PUBLISH EVENT
                 </button>
               </div>

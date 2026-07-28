@@ -87,28 +87,13 @@ export default function GroupsPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex flex-col">
-      {/* Top Navigation Bar */}
-      <div className="bg-white border-b-4 border-[#131313] h-[72px] flex items-center px-6 sticky top-0 z-50">
-        <Link 
-          href="/platform" 
-          className="flex items-center gap-2 text-gray-900 font-black hover:text-[#5a32fa] transition-colors"
-        >
-          <ArrowLeft size={20} strokeWidth={3} />
-          Back to Feed
-        </Link>
-        
-        <div className="mx-auto font-black text-xl text-gray-900 tracking-tight">
-          COMMUNITY GROUPS
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
         
         {/* Header Section */}
-        <div className="mb-8 border-b-4 border-[#131313] pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="mb-8 border-b border-gray-100 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
               <Users size={32} className="text-[#5a32fa]" />
               Discover Groups
             </h1>
@@ -116,7 +101,7 @@ export default function GroupsPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 bg-[#131313] text-white px-6 py-3 rounded-xl border-4 border-[#131313] font-black hover:bg-[#5a32fa] hover:border-[#5a32fa] transition-colors shadow-[4px_4px_0px_0px_#131313] hover:translate-y-1 hover:shadow-none">
+            <button className="flex items-center gap-2 bg-[#5a32fa] text-white px-6 py-3 rounded-xl border border-[#5a32fa] font-bold hover:bg-[#4927cb] transition-colors shadow-sm hover:-translate-y-0.5">
               <Plus size={20} strokeWidth={3} />
               Create Group
             </button>
@@ -130,9 +115,9 @@ export default function GroupsPage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
-                className={`px-6 py-3 rounded-xl font-black border-4 transition-all ${
+                className={`px-6 py-3 rounded-xl font-bold border-4 transition-all ${
                   activeTab === tab
-                    ? 'bg-[#131313] text-white border-[#131313] shadow-[4px_4px_0px_0px_#131313]'
+                    ? 'bg-gray-900 text-white border-[#131313] shadow-sm'
                     : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'
                 }`}
               >
@@ -148,7 +133,7 @@ export default function GroupsPage() {
               placeholder="Search groups by topic or keywords..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border-4 border-[#131313] rounded-xl py-3 pl-12 pr-4 font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-[#5a32fa]/20 shadow-[4px_4px_0px_0px_#131313]"
+              className="w-full bg-white border border-gray-100 rounded-xl py-3 pl-12 pr-4 font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-[#5a32fa]/20 shadow-sm"
             />
           </div>
         </div>
@@ -158,23 +143,23 @@ export default function GroupsPage() {
           {filteredGroups.map(group => (
             <div 
               key={group.id} 
-              className="bg-white rounded-[2rem] border-4 border-[#131313] p-6 shadow-[8px_8px_0px_0px_#131313] flex flex-col hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_#131313] transition-all"
+              className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm flex flex-col hover:-translate-y-0.5 hover:shadow-sm transition-all"
             >
               <div className="flex justify-between items-start mb-4">
                 <div 
-                  className="w-16 h-16 rounded-[1rem] flex items-center justify-center font-black text-2xl text-white border-4 border-[#131313] shadow-[4px_4px_0px_0px_#131313]"
+                  className="w-16 h-16 rounded-xl flex items-center justify-center font-bold text-2xl text-white border border-gray-100 shadow-sm"
                   style={{ backgroundColor: group.color }}
                 >
                   {group.icon}
                 </div>
                 
-                <div className="flex items-center gap-1 bg-[#f8f9fa] px-3 py-1.5 rounded-lg border-2 border-gray-200 text-xs font-bold text-gray-600">
+                <div className="flex items-center gap-1 bg-[#f8f9fa] px-3 py-1.5 rounded-lg border border-gray-100 text-xs font-bold text-gray-600">
                   {group.type === 'Public' ? <Globe size={14} /> : <Lock size={14} />}
                   {group.type}
                 </div>
               </div>
 
-              <h3 className="text-xl font-black text-gray-900 mb-2 line-clamp-1">{group.name}</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">{group.name}</h3>
               <p className="text-sm text-gray-600 font-medium mb-6 flex-1">{group.description}</p>
               
               <div className="flex items-center justify-between mt-auto border-t-2 border-gray-100 pt-4">
@@ -185,10 +170,10 @@ export default function GroupsPage() {
                 
                 <button 
                   onClick={() => toggleJoin(group.id)}
-                  className={`px-6 py-2 rounded-xl border-2 font-bold text-sm transition-colors shadow-[2px_2px_0px_0px_#131313] ${
+                  className={`px-6 py-2 rounded-xl border-2 font-bold text-sm transition-colors shadow-sm ${
                     group.isJoined 
                       ? 'bg-white border-gray-300 text-gray-600 hover:border-gray-900' 
-                      : 'bg-[#131313] border-[#131313] text-white hover:bg-[#5a32fa] hover:border-[#5a32fa]'
+                      : 'bg-gray-900 border-[#131313] text-white hover:bg-[#5a32fa] hover:border-[#5a32fa]'
                   }`}
                 >
                   {group.isJoined ? 'Joined' : 'Join Group'}
@@ -198,9 +183,9 @@ export default function GroupsPage() {
           ))}
 
           {filteredGroups.length === 0 && (
-            <div className="col-span-full py-20 text-center bg-white rounded-[2rem] border-4 border-[#131313] border-dashed">
+            <div className="col-span-full py-20 text-center bg-white rounded-3xl border border-gray-100 border-dashed">
               <Hash size={48} className="mx-auto text-gray-300 mb-4" />
-              <h3 className="text-xl font-black text-gray-900 mb-2">No groups found</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No groups found</h3>
               <p className="text-gray-500 font-medium">Try adjusting your search filters to find what you're looking for.</p>
             </div>
           )}
