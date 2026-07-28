@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { 
   Search, UserPlus, MapPin, Briefcase, Mail, ArrowLeft, UsersRound
-} from 'lucide-react';
+, Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, LayoutGrid, ThumbsUp, MessageSquare, BookOpen, Calendar, FileText, GraduationCap, Users} from 'lucide-react';
 import Link from 'next/link';
 
 type Profile = {
@@ -31,11 +31,17 @@ export default function MembersDirectoryPage() {
         query = query.ilike('full_name', `%${searchQuery}%`);
       }
 
-      if (user?.email) {
-        query = query.neq('email', user.email);
+      // The profiles table doesn't have an email column, and user.id might not be a valid UUID.
+      // Filter by full_name to safely exclude the current user.
+      if (user?.name) {
+        query = query.neq('full_name', user.name);
       }
 
       const { data, error } = await query;
+      
+      if (error) {
+        console.error("Supabase Error fetching members:", error);
+      }
       
       if (!error && data) {
         setMembers(data);
@@ -45,7 +51,7 @@ export default function MembersDirectoryPage() {
 
     const delay = setTimeout(fetchMembers, 300);
     return () => clearTimeout(delay);
-  }, [searchQuery, user?.email]);
+  }, [searchQuery, user?.id]);
 
   const handleConnect = async (targetId: string) => {
     if (!user?.id) return;
@@ -63,35 +69,161 @@ export default function MembersDirectoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] flex flex-col">
-      {/* Header */}
-      <div className="bg-white border-b-4 border-[#131313] h-[72px] flex items-center px-6 sticky top-0 z-50 shrink-0">
-        <Link 
-          href="/platform" 
-          className="hidden md:flex items-center gap-2 text-gray-900 font-black hover:text-[#5a32fa] transition-colors"
-        >
-          <ArrowLeft size={20} strokeWidth={3} />
-          Back to Feed
-        </Link>
-        <div className="mx-auto font-black text-xl text-gray-900 tracking-tight">
-          MEMBERS DIRECTORY
-        </div>
-      </div>
+    <div className="w-full bg-[#f8f9fa] font-sans flex flex-col h-[calc(100vh-73px)] overflow-hidden">
+  <div className="w-full flex flex-col flex-1 overflow-hidden">
+    <div className="flex flex-1 overflow-hidden">
+{/* LEFT SIDEBAR */}
+          <aside className="w-[260px] hidden lg:flex flex-col border-r border-gray-100 overflow-y-auto no-scrollbar py-6 shrink-0 bg-white">
+            
+            <div className="px-4 mb-8">
+              <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-3 px-3 uppercase">MAIN NAVIGATION</p>
+              <nav className="space-y-1">
+                <Link href="/platform" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <LayoutGrid size={18} /> Feed
+                </Link>
+                <Link href="/platform/liked-threads" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <ThumbsUp size={18} /> Liked Threads
+                </Link>
+                <Link href="/platform/network" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <UsersRound size={18} /> My Network
+                </Link>
+                <Link href="/platform/members" className="flex items-center gap-3 px-3 py-2.5 bg-[#f0ebff] text-[#5a32fa] rounded-xl font-bold text-[13px] transition-colors">
+                  <Users size={18} /> Members
+                </Link>
+                <Link href="/platform/messages" className="flex items-center justify-between px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <div className="flex items-center gap-3">
+                    <Mail size={18} /> Messages
+                  </div>
+                  <span className="w-5 h-5 flex items-center justify-center bg-[#5a32fa] text-white text-[10px] font-bold rounded-full">2</span>
+                </Link>
+                <Link href="/platform/groups" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <UsersRound size={18} /> Groups
+                </Link>
+                <Link href="/platform/forums" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <MessageSquare size={18} /> Discussion Forums
+                </Link>
+                <Link href="/platform/resources" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <BookOpen size={18} /> Resource Library
+                </Link>
+                <Link href="/platform/events" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <Calendar size={18} /> Events
+                </Link>
+                <Link href="/platform/memberships" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <FileText size={18} /> Memberships
+                </Link>
+                <Link href="/platform/jobs" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <Briefcase size={18} /> Jobs Board
+                </Link>
+                <Link href="/platform/mentorship" className="flex items-center justify-between px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <div className="flex items-center gap-3">
+                    <GraduationCap size={18} /> Mentorship
+                  </div>
+                  <span className="px-2 py-0.5 bg-[#00d26a] text-white text-[10px] font-bold rounded-full">NEW</span>
+                </Link>
+              </nav>
+            </div>
 
-      <div className="max-w-6xl mx-auto w-full p-4 sm:p-6 lg:p-8">
-        {/* Search Bar */}
-        <div className="bg-white rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313] p-6 mb-8">
-          <div className="relative max-w-2xl mx-auto">
-            <input 
-              type="text" 
-              placeholder="Search members by name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium text-lg transition-colors bg-[#f8f9fa]"
-            />
-            <Search size={24} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <div className="px-4 mb-8">
+              <p className="text-[13px] font-bold text-[#131313] mb-4 px-3">All Channels</p>
+              <nav className="space-y-1">
+                <Link href="/platform/channels/general" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+                  <div className="flex items-center gap-2">
+                    <Hash size={16} className="text-gray-400" /> General
+                  </div>
+                </Link>
+                <Link href="/platform/channels/daily-highlights" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+                  <div className="flex items-center gap-2">
+                    <Hash size={16} className="text-gray-400" /> daily-highlights
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                  </div>
+                </Link>
+                <Link href="/platform/channels/time-tracking" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+                  <div className="flex items-center gap-2">
+                    <Hash size={16} className="text-gray-400" /> time-tracking
+                  </div>
+                  <BellOff size={14} className="text-gray-400" />
+                </Link>
+                <Link href="/platform/channels/productivity-systems" className="flex items-center justify-between px-3 py-2 text-gray-900 bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+                  <div className="flex items-center gap-2">
+                    <Hash size={16} className="text-gray-400" /> productivity-systems
+                  </div>
+                </Link>
+              </nav>
+            </div>
+
+            <div className="px-4 mb-8">
+              <p className="text-[13px] font-bold text-[#131313] mb-4 px-3">Links</p>
+              <nav className="space-y-1">
+                <Link href="/ios-app" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <div className="flex items-center gap-2">
+                     iOS App
+                  </div>
+                  <ArrowUpRight size={14} className="text-gray-400" />
+                </Link>
+                <Link href="/android-app" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <div className="flex items-center gap-2">
+                     Android App
+                  </div>
+                  <ArrowUpRight size={14} className="text-gray-400" />
+                </Link>
+              </nav>
+            </div>
+
+            <div className="px-7 mt-auto mb-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-gray-900">Complete Your Intro</h3>
+                <div className="w-4 h-4 rounded-full border-2 border-[#00d26a] border-t-transparent animate-spin-slow"></div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <Circle size={16} className="text-gray-300 mt-0.5 shrink-0" />
+                  <a href="#" className="text-sm text-gray-500 hover:text-gray-900 underline decoration-gray-300 underline-offset-4">Watch intro video</a>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 size={16} className="text-gray-900 mt-0.5 shrink-0" />
+                  <span className="text-sm text-gray-900 font-medium">React to a post</span>
+                </div>
+              </div>
+            </div>
+
+          </aside>
+
+        {/* MAIN CONTENT AREA */}
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 no-scrollbar">
+        <div className="max-w-6xl mx-auto space-y-6 pb-20">
+          {/* Hero Section */}
+          <div className="relative rounded-[2.5rem] bg-gradient-to-br from-[#f0ebff] via-[#f8f9fa] to-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden mb-8">
+            
+            {/* Abstract Background Shapes */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-72 h-72 rounded-full bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/10 blur-3xl mix-blend-multiply" />
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 rounded-full bg-gradient-to-tr from-[#00d26a]/10 to-[#ffc900]/10 blur-3xl mix-blend-multiply" />
+            
+            <div className="relative p-8 md:p-12 lg:p-16 flex flex-col items-center text-center">
+
+              
+              <h1 className="font-black text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#131313] via-[#5a32fa] to-[#ff90e8] tracking-tight mb-4 mt-8 md:mt-0">
+                Members Directory
+              </h1>
+              <p className="text-gray-500 font-medium text-lg max-w-lg mb-10">
+                Discover, connect, and collaborate with brilliant minds across the global platform.
+              </p>
+              
+              {/* Floating Search Bar */}
+              <div className="w-full max-w-2xl relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#5a32fa] via-[#ff90e8] to-[#00d26a] rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-500"></div>
+                <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl flex items-center overflow-hidden">
+                  <Search size={22} className="text-[#5a32fa] ml-6" />
+                  <input 
+                    type="text" 
+                    placeholder="Search for designers, engineers, founders..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-transparent pl-4 pr-6 py-5 focus:outline-none font-medium text-lg text-gray-900 placeholder-gray-400"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
         {/* Members Grid */}
         {loading ? (
@@ -101,15 +233,15 @@ export default function MembersDirectoryPage() {
         ) : members.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {members.map((member) => (
-              <div key={member.id} className="bg-white rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313] overflow-hidden flex flex-col transition-transform hover:-translate-y-1">
-                <div className="h-24 bg-[#5a32fa]/10 border-b-2 border-[#131313] relative">
-                  <div className="absolute -bottom-10 left-6 w-20 h-20 bg-white rounded-2xl border-4 border-[#131313] shadow-[4px_4px_0px_0px_#131313] flex items-center justify-center font-black text-2xl" style={{ color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)] }}>
+              <div key={member.id} className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col transition-transform hover:-translate-y-1">
+                <div className="h-24 bg-[#5a32fa]/10 border-b-2 border-gray-200 relative">
+                  <div className="absolute -bottom-10 left-6 w-20 h-20 bg-white rounded-2xl border border-gray-200 shadow-sm flex items-center justify-center font-bold text-2xl" style={{ color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)] }}>
                     {member.full_name ? member.full_name.charAt(0).toUpperCase() : 'U'}
                   </div>
                 </div>
                 
                 <div className="p-6 pt-12 flex-1 flex flex-col">
-                  <h3 className="font-black text-xl text-gray-900 mb-1 line-clamp-1">{member.full_name || 'Anonymous User'}</h3>
+                  <h3 className="font-bold text-xl text-gray-900 mb-1 line-clamp-1">{member.full_name || 'Anonymous User'}</h3>
                   <p className="text-[#5a32fa] font-bold text-sm mb-4 flex items-center gap-1">
                     <Briefcase size={14} /> {member.role || 'WIPA Member'}
                   </p>
@@ -122,13 +254,13 @@ export default function MembersDirectoryPage() {
                   <div className="mt-auto flex gap-3">
                     <button 
                       onClick={() => handleConnect(member.id)}
-                      className="flex-1 bg-[#131313] text-white font-bold py-3 px-4 rounded-xl border-2 border-[#131313] hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 bg-[#131313] text-white font-bold py-3 px-4 rounded-xl border border-gray-200 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
                     >
                       <UserPlus size={18} /> Connect
                     </button>
                     <Link 
                       href={`/platform/messages?userId=${member.id}`}
-                      className="w-12 flex items-center justify-center bg-[#fbe8d5] text-[#131313] font-bold rounded-xl border-2 border-[#131313] hover:bg-[#f6d5b3] transition-colors"
+                      className="w-12 flex items-center justify-center bg-[#fbe8d5] text-[#131313] font-bold rounded-xl border border-gray-200 hover:bg-[#f6d5b3] transition-colors"
                     >
                       <Mail size={18} />
                     </Link>
@@ -138,13 +270,102 @@ export default function MembersDirectoryPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-white rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313]">
+          <div className="text-center py-20 bg-white rounded-3xl border border-gray-200 shadow-sm">
             <UsersRound size={48} className="mx-auto text-gray-300 mb-4" />
-            <h3 className="text-2xl font-black text-gray-900 mb-2">No members found</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No members found</h3>
             <p className="text-gray-500 font-medium">Try adjusting your search query to find who you're looking for.</p>
           </div>
         )}
-      </div>
+        </div>
+      </main>
+
+{/* FIXED RIGHT SIDEBAR */}
+      <aside className="w-[300px] hidden xl:flex flex-col shrink-0 space-y-6 pt-6 overflow-y-auto no-scrollbar pb-10 pr-4 md:pr-8 lg:pr-12">
+        <div className="h-full flex flex-col gap-6">
+          
+          {/* Active Groups */}
+          <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-[15px] text-gray-900">Active Groups</h3>
+              <button className="text-xs font-bold text-[#5a32fa] hover:underline">See all</button>
+            </div>
+            <div className="space-y-4">
+              {[
+                { name: 'Trade Marks', members: '1,345', icon: '©️', color: '#b892ff' },
+                { name: 'Women in Leadership', members: '897', icon: '👩‍💼', color: '#ff90e8' },
+                { name: 'Artificial Intelligence', members: '1,105', icon: '🤖', color: '#5a32fa' },
+                { name: 'Patent Law', members: '1,245', icon: '📜', color: '#5a32fa' },
+                { name: 'Start-ups & Innovation', members: '764', icon: '🚀', color: '#ffc900' }
+              ].map((group, i) => (
+                <div key={i} className="flex items-center gap-3 cursor-pointer group">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg border-2 border-transparent group-hover:border-gray-200 transition-all" style={{ backgroundColor: `${group.color}20`, color: group.color }}>
+                    {group.icon}
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">{group.name}</p>
+                    <p className="text-[11px] text-gray-500 font-medium">{group.members} members</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Trending Discussions */}
+          <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-[15px] text-gray-900">Trending Discussions</h3>
+              <button className="text-xs font-bold text-[#5a32fa] hover:underline">See all</button>
+            </div>
+            <div className="space-y-4">
+              {[
+                { title: 'How is AI changing patent landscapes globally?', comments: '128' },
+                { title: 'The future of trademark law in digital markets', comments: '96' },
+                { title: 'Building personal brand in IP profession', comments: '74' }
+              ].map((disc, i) => (
+                <div key={i} className="cursor-pointer group">
+                  <p className="text-[13px] font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors leading-tight mb-1">
+                    <span className="text-[#00d26a] mr-1">▶</span>{disc.title}
+                  </p>
+                  <p className="text-[11px] text-gray-500 font-medium">{disc.comments} comments</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Upcoming Events */}
+          <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-[15px] text-gray-900">Upcoming Events</h3>
+              <button className="text-xs font-bold text-[#5a32fa] hover:underline">See all</button>
+            </div>
+            <div className="space-y-4">
+              {[
+                { month: 'JUL', day: '22', title: 'Women in AI & IP Leadership', loc: 'London, UK', time: '10:00 AM GMT' },
+                { month: 'AUG', day: '05', title: 'Global Trademark Trends 2025', loc: 'Online Webinar', time: '03:00 PM GMT' },
+                { month: 'AUG', day: '19', title: 'IP Strategy for Start-ups', loc: 'New York, USA', time: '11:00 AM EST' }
+              ].map((event, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="flex flex-col items-center justify-center border border-gray-200 rounded-xl overflow-hidden min-w-[45px]">
+                    <div className="bg-[#5a32fa] text-white text-[9px] font-bold w-full text-center py-0.5">{event.month}</div>
+                    <div className="bg-white text-gray-900 text-sm font-bold py-1">{event.day}</div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[12px] font-bold text-gray-900 leading-tight mb-0.5">{event.title}</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{event.loc}</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{event.time}</p>
+                  </div>
+                  <button className="bg-[#5a32fa] text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-[#4020ca] transition-colors">
+                    Register
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </aside>
     </div>
+  </div>
+</div>
   );
 }

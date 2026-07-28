@@ -125,28 +125,13 @@ export default function ForumsPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex flex-col">
-      {/* Top Navigation Bar */}
-      <div className="bg-white border-b-4 border-[#131313] h-[72px] flex items-center px-6 sticky top-0 z-50">
-        <Link 
-          href="/platform" 
-          className="hidden md:flex items-center gap-2 text-gray-900 font-black hover:text-[#5a32fa] transition-colors"
-        >
-          <ArrowLeft size={20} strokeWidth={3} />
-          Back to Feed
-        </Link>
-        
-        <div className="mx-auto font-black text-xl text-gray-900 tracking-tight">
-          DISCUSSION FORUMS
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
         
         {/* Header Section */}
-        <div className="mb-8 border-b-4 border-[#131313] pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="mb-8 border-b border-gray-100 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
               <MessageSquare size={32} className="text-[#5a32fa]" />
               Community Forums
             </h1>
@@ -154,7 +139,7 @@ export default function ForumsPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 bg-[#131313] text-white px-6 py-3 rounded-xl border-4 border-[#131313] font-black hover:bg-[#5a32fa] hover:border-[#5a32fa] transition-colors shadow-[4px_4px_0px_0px_#131313] hover:translate-y-1 hover:shadow-none">
+            <button className="flex items-center gap-2 bg-[#5a32fa] text-white px-6 py-3 rounded-xl border border-gray-200 font-bold hover:bg-[#5a32fa] hover:opacity-90 transition-colors shadow-sm hover:translate-y-1 hover:shadow-none">
               <Plus size={20} strokeWidth={3} />
               New Topic
             </button>
@@ -168,9 +153,9 @@ export default function ForumsPage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as 'Recent' | 'Hot' | 'Unanswered')}
-                className={`px-4 py-2 md:px-6 md:py-3 rounded-full md:rounded-xl font-bold md:font-black text-xs md:text-base border-2 md:border-4 transition-all flex items-center gap-1.5 md:gap-2 whitespace-nowrap shrink-0 ${
+                className={`px-4 py-2 md:px-6 md:py-3 rounded-full md:rounded-xl font-bold md:font-bold text-xs md:text-base border-2 md:border-4 transition-all flex items-center gap-1.5 md:gap-2 whitespace-nowrap shrink-0 ${
                   activeTab === tab
-                    ? 'bg-[#131313] text-white border-[#131313]'
+                    ? 'bg-[#5a32fa] text-white border-[#131313]'
                     : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'
                 }`}
               >
@@ -189,7 +174,7 @@ export default function ForumsPage() {
               placeholder="Search discussions..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border-4 border-[#131313] rounded-xl py-3 pl-12 pr-4 font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-[#5a32fa]/20 shadow-[4px_4px_0px_0px_#131313]"
+              className="w-full bg-white border border-gray-200 rounded-xl py-3 pl-12 pr-4 font-bold text-gray-800 focus:outline-none focus:ring-4 focus:ring-[#5a32fa]/20 shadow-sm"
             />
           </div>
         </div>
@@ -200,24 +185,24 @@ export default function ForumsPage() {
             <div 
               key={topic.id} 
               onClick={() => setSelectedTopicId(topic.id)}
-              className="bg-white rounded-[1.5rem] border-4 border-[#131313] p-6 shadow-[6px_6px_0px_0px_#131313] hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_#131313] transition-all flex flex-col md:flex-row gap-6 items-start md:items-center cursor-pointer"
+              className="bg-white rounded-2xl md:rounded-3xl border border-gray-200 p-6 shadow-md hover:-translate-y-1 hover:shadow-lg transition-all flex flex-col md:flex-row gap-6 items-start md:items-center cursor-pointer"
             >
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="bg-[#fbe8d5] text-[#131313] text-xs font-black px-3 py-1 rounded-lg border-2 border-[#131313]">
+                  <span className="bg-[#fbe8d5] text-[#131313] text-xs font-bold px-3 py-1 rounded-lg ">
                     {topic.category}
                   </span>
                   {topic.isHot && (
-                    <span className="bg-[#ff4b4b] text-white text-xs font-black px-3 py-1 rounded-lg border-2 border-[#131313] flex items-center gap-1">
+                    <span className="bg-[#ff4b4b] text-white text-xs font-bold px-3 py-1 rounded-lg  flex items-center gap-1">
                       <TrendingUp size={12} /> Hot
                     </span>
                   )}
                 </div>
-                <h3 className="text-xl font-black text-gray-900 mb-1 hover:text-[#5a32fa] transition-colors">{topic.title}</h3>
-                <p className="text-sm text-gray-500 font-medium">Started by <span className="font-bold text-gray-900">{topic.author}</span></p>
+                <h3 className="text-xl font-bold text-gray-800 mb-1 hover:text-[#5a32fa] transition-colors">{topic.title}</h3>
+                <p className="text-sm text-gray-500 font-medium">Started by <span className="font-bold text-gray-800">{topic.author}</span></p>
               </div>
 
-              <div className="flex items-center gap-6 text-sm font-bold text-gray-600 shrink-0 border-t-2 md:border-t-0 md:border-l-4 border-gray-100 md:border-[#131313] pt-4 md:pt-0 md:pl-6 w-full md:w-auto justify-between md:justify-end">
+              <div className="flex items-center gap-6 text-sm font-bold text-gray-600 shrink-0 border-t md:border-t-0 md:border-l border-gray-100 md:border-gray-100 pt-4 md:pt-0 md:pl-6 w-full md:w-auto justify-between md:justify-end">
                 <div className="flex items-center gap-2">
                   <MessageCircle size={18} className="text-[#5a32fa]" />
                   {topic.replies} <span className="hidden md:inline">replies</span>
@@ -234,9 +219,9 @@ export default function ForumsPage() {
           ))}
 
           {filteredTopics.length === 0 && (
-            <div className="py-20 text-center bg-white rounded-[2rem] border-4 border-[#131313] border-dashed">
+            <div className="py-20 text-center bg-white rounded-[2rem] border border-gray-200 border-dashed">
               <MessageSquare size={48} className="mx-auto text-gray-300 mb-4" />
-              <h3 className="text-xl font-black text-gray-900 mb-2">No discussions found</h3>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">No discussions found</h3>
               <p className="text-gray-500 font-medium">Try adjusting your filters or start a new topic.</p>
             </div>
           )}
@@ -246,33 +231,33 @@ export default function ForumsPage() {
 
       {/* Topic Discussion Modal */}
       {selectedTopic && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#131313]/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-2xl rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313] flex flex-col max-h-[85vh]">
-            <div className="flex justify-between items-start p-6 border-b-4 border-[#131313]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#5a32fa]/60 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-2xl rounded-[2rem] border border-gray-200 shadow-[8px_8px_0px_0px_#131313] flex flex-col max-h-[85vh]">
+            <div className="flex justify-between items-start p-6 border-b border-gray-100">
               <div>
-                <span className="bg-[#fbe8d5] text-[#131313] text-xs font-black px-3 py-1 rounded-lg border-2 border-[#131313] inline-block mb-2">
+                <span className="bg-[#fbe8d5] text-[#131313] text-xs font-bold px-3 py-1 rounded-lg  inline-block mb-2">
                   {selectedTopic.category}
                 </span>
-                <h2 className="text-2xl font-black text-gray-900 leading-tight pr-8">{selectedTopic.title}</h2>
-                <p className="text-sm text-gray-500 font-medium mt-2">Started by <span className="font-bold text-gray-900">{selectedTopic.author}</span></p>
+                <h2 className="text-2xl font-bold text-gray-800 leading-tight pr-8">{selectedTopic.title}</h2>
+                <p className="text-sm text-gray-500 font-medium mt-2">Started by <span className="font-bold text-gray-800">{selectedTopic.author}</span></p>
               </div>
               <button 
                 onClick={() => setSelectedTopicId(null)}
                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 border-2 border-transparent hover:border-[#131313] hover:bg-gray-200 transition-all shrink-0"
               >
-                <span className="font-black text-xl">X</span>
+                <span className="font-bold text-xl">X</span>
               </button>
             </div>
             
             <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50">
               {topicReplies.map(reply => (
                 <div key={reply.id} className="bg-white p-5 rounded-2xl border-2 border-gray-200 flex gap-4">
-                  <div className="w-10 h-10 rounded-full border-2 border-[#131313] flex items-center justify-center font-bold text-white text-sm shrink-0" style={{ backgroundColor: reply.color }}>
+                  <div className="w-10 h-10 rounded-full  flex items-center justify-center font-bold text-white text-sm shrink-0" style={{ backgroundColor: reply.color }}>
                     {reply.initial}
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-bold text-gray-900">{reply.author}</h4>
+                      <h4 className="font-bold text-gray-800">{reply.author}</h4>
                       <span className="text-xs font-medium text-gray-400">{reply.time}</span>
                     </div>
                     {reply.replyTo && (
@@ -301,7 +286,7 @@ export default function ForumsPage() {
               ))}
             </div>
 
-            <div className="p-6 border-t-4 border-[#131313] bg-white rounded-b-[2rem] flex flex-col gap-3">
+            <div className="p-6 border-t border-gray-100 bg-white rounded-b-[2rem] flex flex-col gap-3">
               {replyingTo && (
                 <div className="flex flex-col gap-1 text-xs font-bold text-[#5a32fa] bg-[#5a32fa]/10 px-4 py-2 rounded-xl w-full border-2 border-[#5a32fa]/20">
                   <div className="flex items-center justify-between">
@@ -316,15 +301,15 @@ export default function ForumsPage() {
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder="Type your reply here..." 
-                  className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors resize-none h-[52px]"
+                  className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-800 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors resize-none h-[52px]"
                 />
                 <button 
                   onClick={handleReplySubmit}
                   disabled={!replyText.trim()}
-                  className={`bg-[#5a32fa] text-white px-6 py-0 h-[52px] rounded-xl font-black text-sm border-2 border-[#131313] transition-all flex items-center gap-2 shrink-0 ${
+                  className={`bg-[#5a32fa] text-white px-6 py-0 h-[52px] rounded-xl font-bold text-sm  transition-all flex items-center gap-2 shrink-0 ${
                     !replyText.trim() 
                       ? 'opacity-50 cursor-not-allowed' 
-                      : 'hover:shadow-[4px_4px_0px_0px_#131313] hover:-translate-y-1'
+                      : 'hover:shadow-sm hover:-translate-y-1'
                   }`}
                 >
                   Send

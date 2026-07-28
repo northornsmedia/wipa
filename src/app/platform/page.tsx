@@ -24,8 +24,8 @@ export default function PlatformPage() {
   };
 
   return (
-    <div className="w-full bg-white font-sans flex flex-col min-h-[calc(100vh-73px)]">
-      <div className="w-full bg-white flex flex-col flex-1">
+    <div className="w-full bg-white font-sans flex flex-col h-[calc(100vh-73px)] overflow-hidden">
+      <div className="w-full bg-white flex flex-col flex-1 overflow-hidden">
         
 
 

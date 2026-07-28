@@ -8,7 +8,7 @@ export default function PlatformLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#fbe8d5] bg-grid-pattern font-sans">
+    <div className="min-h-screen bg-[#f8f9fa] font-sans">
       <AuthGuard>
         <PlatformHeader />
         <main className="w-full pb-20 md:pb-0">
