@@ -42,10 +42,34 @@ const MEMBERSHIP_TIERS = [
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { user } = useAppStore();
+  const { user, setUser } = useAppStore();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (user) {
+        setIsLoadingAuth(false);
+        return;
+      }
+      
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        setUser({
+          id: authUser.id,
+          email: authUser.email || '',
+          name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || ''
+        });
+      } else {
+        router.push('/');
+      }
+      setIsLoadingAuth(false);
+    };
+    
+    checkAuth();
+  }, [user, setUser, router]);
 
   // Step 1 State
   const [formData, setFormData] = useState({
@@ -177,7 +201,7 @@ export default function OnboardingPage() {
     }
   };
 
-  if (!user) {
+  if (!user || isLoadingAuth) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50">Loading...</div>;
   }
 
