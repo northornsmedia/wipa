@@ -2,8 +2,10 @@
 import { useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { 
-  BadgeCheck, LayoutGrid, User, Users, Mail, UserPlus, UsersRound, MessageSquare, FileText, Briefcase, GraduationCap,
-  MapPin, Link as LinkIcon, Calendar, Edit3, Settings, Camera, ThumbsUp, BookOpen, Star, ArrowRight, CheckCircle2
+  Search, Bell, LayoutGrid, BookOpen, Calendar, Users, Info, Settings, 
+  Hash, BellOff, ArrowUpRight, CheckCircle2, Circle, Image as ImageIcon, Video, Smile,
+  Bookmark, MoreVertical, Heart, MessageCircle, Gift, LogOut,
+  ThumbsUp, UsersRound, Mail, MessageSquare, FileText, Briefcase, GraduationCap, Home, Star, Edit3, Camera, UserPlus, Link as LinkIcon, BadgeCheck, MapPin, User, ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -20,99 +22,176 @@ export default function MentorshipPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
-      
-      {/* FIXED LEFT SIDEBAR */}
-      <div className="hidden md:block fixed left-0 top-[72px] bottom-0 w-[260px] lg:w-[280px] z-40">
-        <div className="bg-white rounded-tr-[2rem] rounded-br-none rounded-l-none border-t-2 border-r-2 border-l-0 border-b-0 border-[#131313] shadow-[4px_0px_0px_0px_#131313] p-4 h-full flex flex-col">
-          {/* Profile Header */}
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-[#5a32fa] text-white flex items-center justify-center text-lg font-bold border-2 border-[#131313] flex-shrink-0">
-              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+    <div className="w-full bg-white font-sans flex flex-col h-[calc(100vh-73px)] overflow-hidden">
+      <div className="w-full bg-white flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden">
+          {/* LEFT SIDEBAR */}
+          
+          <aside className="w-[260px] hidden lg:flex flex-col border-r border-gray-100 overflow-y-auto no-scrollbar py-6 shrink-0 bg-white">
+            
+            <div className="px-4 mb-8">
+              <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-3 px-3 uppercase">MAIN NAVIGATION</p>
+              <nav className="space-y-1">
+                <Link href="/platform" className="flex items-center gap-3 px-3 py-2.5 bg-[#f0ebff] text-[#5a32fa] rounded-xl font-bold text-[13px] transition-colors">
+                  <LayoutGrid size={18} /> Feed
+                </Link>
+                <Link href="/platform/liked-threads" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <ThumbsUp size={18} /> Liked Threads
+                </Link>
+                <Link href="/platform/network" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <UsersRound size={18} /> My Network
+                </Link>
+                <Link href="/platform/members" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <Users size={18} /> Members
+                </Link>
+                <Link href="/platform/messages" className="flex items-center justify-between px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <div className="flex items-center gap-3">
+                    <Mail size={18} /> Messages
+                  </div>
+                  <span className="w-5 h-5 flex items-center justify-center bg-[#5a32fa] text-white text-[10px] font-bold rounded-full">2</span>
+                </Link>
+                <Link href="/platform/groups" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <UsersRound size={18} /> Groups
+                </Link>
+                <Link href="/platform/forums" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <MessageSquare size={18} /> Discussion Forums
+                </Link>
+                <Link href="/platform/resources" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <BookOpen size={18} /> Resource Library
+                </Link>
+                <Link href="/platform/events" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <Calendar size={18} /> Events
+                </Link>
+                <Link href="/platform/memberships" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <FileText size={18} /> Memberships
+                </Link>
+                <Link href="/platform/jobs" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <Briefcase size={18} /> Jobs Board
+                </Link>
+                <Link href="/platform/mentorship" className="flex items-center justify-between px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <div className="flex items-center gap-3">
+                    <GraduationCap size={18} /> Mentorship
+                  </div>
+                  <span className="px-2 py-0.5 bg-[#00d26a] text-white text-[10px] font-bold rounded-full">NEW</span>
+                </Link>
+              </nav>
             </div>
-            <div className="overflow-hidden">
-              <h2 className="font-bold text-[14px] text-gray-900 truncate flex items-center gap-1">
-                {user?.name || 'Loading...'}
-                <BadgeCheck size={14} className="text-[#5a32fa] flex-shrink-0" />
-              </h2>
-              <p className="text-[11px] text-gray-500 font-medium truncate">IP Counsel</p>
-              <p className="text-[11px] text-gray-500 font-medium truncate">WIPA Member</p>
+
+            <div className="px-4 mb-8">
+              <p className="text-[13px] font-bold text-[#131313] mb-4 px-3">All Channels</p>
+              <nav className="space-y-1">
+                <Link href="/platform/channels/general" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+                  <div className="flex items-center gap-2">
+                    <Hash size={16} className="text-gray-400" /> General
+                  </div>
+                </Link>
+                <Link href="/platform/channels/daily-highlights" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+                  <div className="flex items-center gap-2">
+                    <Hash size={16} className="text-gray-400" /> daily-highlights
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                  </div>
+                </Link>
+                <Link href="/platform/channels/time-tracking" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+                  <div className="flex items-center gap-2">
+                    <Hash size={16} className="text-gray-400" /> time-tracking
+                  </div>
+                  <BellOff size={14} className="text-gray-400" />
+                </Link>
+                <Link href="/platform/channels/productivity-systems" className="flex items-center justify-between px-3 py-2 text-gray-900 bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+                  <div className="flex items-center gap-2">
+                    <Hash size={16} className="text-gray-400" /> productivity-systems
+                  </div>
+                </Link>
+              </nav>
             </div>
-          </div>
-          <button onClick={() => router.push('/platform/profile')} className="block text-center w-full py-1.5 border-2 border-gray-200 bg-white rounded-xl text-xs font-bold text-gray-600 hover:border-[#5a32fa] hover:text-[#5a32fa] transition-all mb-4">
-            View Profile
-          </button>
 
-          {/* Navigation */}
-          <div className="flex-1 overflow-y-auto no-scrollbar pb-2">
-            <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-2 px-2">MAIN NAVIGATION</p>
-            <nav className="space-y-0.5">
-              <Link href="/platform" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <LayoutGrid size={16} /> Feed
-              </Link>
-              <Link href="/platform/members" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <Users size={16} /> Members
-              </Link>
-              <Link href="/platform/messages" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <div className="flex items-center gap-3">
-                  <Mail size={16} /> Messages
-                </div>
-              </Link>
-              <Link href="/platform/groups" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <UsersRound size={16} /> Groups
-              </Link>
-              <Link href="/platform/mentorship" className="flex items-center justify-between px-3 py-2 bg-[#5a32fa]/10 text-[#5a32fa] rounded-xl font-medium text-sm transition-colors">
-                <div className="flex items-center gap-3">
-                  <GraduationCap size={16} /> Mentorship
-                </div>
-                <span className="bg-[#00d26a] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">NEW</span>
-              </Link>
-              <Link href="/platform/events" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <Calendar size={16} /> Events
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </div>
+            <div className="px-4 mb-8">
+              <p className="text-[13px] font-bold text-[#131313] mb-4 px-3">Links</p>
+              <nav className="space-y-1">
+                <Link href="/ios-app" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <div className="flex items-center gap-2">
+                     iOS App
+                  </div>
+                  <ArrowUpRight size={14} className="text-gray-400" />
+                </Link>
+                <Link href="/android-app" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+                  <div className="flex items-center gap-2">
+                     Android App
+                  </div>
+                  <ArrowUpRight size={14} className="text-gray-400" />
+                </Link>
+              </nav>
+            </div>
 
-      {/* MAIN CONTENT */}
-      <div className="md:ml-[260px] lg:ml-[280px] pt-6 pb-12 px-4 md:px-8 lg:px-12">
-        <div className="max-w-4xl space-y-8">
+            <div className="px-7 mt-auto mb-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-bold text-gray-900">Complete Your Intro</h3>
+                <div className="w-4 h-4 rounded-full border-2 border-[#00d26a] border-t-transparent animate-spin-slow"></div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <Circle size={16} className="text-gray-300 mt-0.5 shrink-0" />
+                  <a href="#" className="text-sm text-gray-500 hover:text-gray-900 underline decoration-gray-300 underline-offset-4">Watch intro video</a>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 size={16} className="text-gray-900 mt-0.5 shrink-0" />
+                  <span className="text-sm text-gray-900 font-medium">React to a post</span>
+                </div>
+              </div>
+            </div>
+
+          </aside>
+
+          {/* MAIN CONTENT AREA */}
+          
+          {/* MAIN CONTENT AREA */}
+          <main className="flex-1 bg-slate-50/50 overflow-y-auto p-4 sm:p-6 md:p-8 no-scrollbar">
+            <div className="max-w-4xl mx-auto pb-20">
+                <div className="max-w-4xl space-y-8">
           
           {/* Header */}
-          <div>
-            <h1 className="text-3xl md:text-4xl font-black text-gray-900 flex items-center gap-3 mb-2">
-              <GraduationCap size={40} className="text-[#5a32fa]" />
+          <div className="mb-10">
+            <h1 className="text-3xl md:text-4xl font-black flex items-center gap-4 text-gray-900 tracking-tight mb-3">
+              <div className="bg-[#5a32fa]/10 p-2.5 rounded-2xl flex items-center justify-center shrink-0">
+                <GraduationCap size={32} className="text-[#5a32fa]" />
+              </div>
               Mentorship Program
             </h1>
-            <p className="text-lg text-gray-600 font-medium max-w-2xl">
+            <p className="text-lg text-gray-500 font-medium max-w-2xl leading-relaxed">
               Connect with experienced IP professionals for guidance, career advice, and skill development. Or give back to the community by becoming a mentor yourself.
             </p>
           </div>
 
           {/* Active Mentorship */}
-          <div className="bg-white p-6 md:p-8 rounded-[2rem] border-4 border-[#131313] shadow-[8px_8px_0px_0px_#131313]">
-            <h2 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-2">
-              <Star className="text-[#ffc900]" fill="currentColor" /> My Active Mentorships
+          <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            {/* Subtle background glow effect */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#00d26a]/10 to-transparent rounded-full mix-blend-multiply blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+            
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3 relative z-10">
+              <Star className="text-[#ffc900]" fill="currentColor" size={24} /> My Active Mentorships
             </h2>
             
-            <div className="border-2 border-gray-200 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-6">
-              <div className="w-20 h-20 rounded-full bg-[#00d26a] border-4 border-[#131313] flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
+            <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-6 relative z-10 hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all duration-300">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#00d26a] to-[#00a854] flex items-center justify-center text-white text-3xl font-bold flex-shrink-0 shadow-sm shadow-[#00d26a]/20">
                 A
               </div>
               <div className="flex-1 text-center sm:text-left">
                 <h3 className="text-xl font-bold text-gray-900">Amanda Thorne</h3>
-                <p className="text-sm font-bold text-gray-500 mb-2">Partner at Thorne & Associates (Your Mentor)</p>
+                <p className="text-sm font-medium text-gray-500 mb-3">Partner at Thorne & Associates (Your Mentor)</p>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                  <span className="bg-[#b892ff]/20 text-[#5a32fa] px-3 py-1 rounded-lg text-xs font-bold">Next Session: Thursday 4PM</span>
-                  <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-bold">Goal: Partnership Track</span>
+                  <span className="bg-[#b892ff]/10 text-[#5a32fa] px-3 py-1.5 rounded-lg text-xs font-bold border border-[#b892ff]/20 flex items-center gap-1.5">
+                    <Calendar size={12} /> Next Session: Thursday 4PM
+                  </span>
+                  <span className="bg-white text-gray-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-200 shadow-sm flex items-center gap-1.5">
+                    <CheckCircle2 size={12} className="text-[#00d26a]" /> Goal: Partnership Track
+                  </span>
                 </div>
               </div>
-              <div className="flex flex-col gap-2 w-full sm:w-auto">
-                <button className="bg-[#131313] text-white px-6 py-2.5 rounded-xl font-bold border-2 border-[#131313] hover:bg-[#5a32fa] hover:border-[#5a32fa] transition-colors whitespace-nowrap">
-                  Message
+              <div className="flex flex-col gap-3 w-full sm:w-auto">
+                <button className="bg-[#5a32fa] text-white hover:opacity-90 px-8 py-3 rounded-xl font-bold shadow-sm shadow-[#5a32fa]/20 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2">
+                  <MessageSquare size={18} /> Message
                 </button>
-                <button className="bg-white text-gray-900 px-6 py-2.5 rounded-xl font-bold border-2 border-gray-200 hover:border-[#131313] transition-colors whitespace-nowrap">
+                <button className="bg-white text-gray-700 px-8 py-3 rounded-xl font-bold border border-gray-200 hover:border-[#131313] hover:text-[#131313] transition-all duration-300 whitespace-nowrap">
                   Schedule
                 </button>
               </div>
@@ -121,29 +200,35 @@ export default function MentorshipPage() {
 
           {/* Find a Mentor */}
           <div>
-            <h2 className="text-2xl font-black text-gray-900 mb-6">Find a Mentor</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 mt-8">Find a Mentor</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {potentialMentors.map((mentor, i) => (
-                <div key={i} className="bg-white rounded-2xl border-2 border-[#131313] overflow-hidden group hover:shadow-[4px_4px_0px_0px_#131313] transition-all hover:-translate-y-1 flex flex-col">
-                  <div className="h-16" style={{ backgroundColor: mentor.color }}></div>
-                  <div className="px-5 pb-5 pt-0 relative flex-1 flex flex-col">
-                    <div className="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center text-white text-2xl font-bold absolute -top-8 left-5 shadow-sm" style={{ backgroundColor: mentor.color }}>
+                <div key={i} className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden group hover:shadow-lg hover:shadow-gray-200/50 hover:border-gray-200 transition-all duration-300 hover:-translate-y-1 flex flex-col relative">
+                  <div className="h-24 w-full relative">
+                    <div className="absolute inset-0 opacity-90" style={{ backgroundImage: `linear-gradient(135deg, ${mentor.color}, ${mentor.color}dd)` }}></div>
+                  </div>
+                  <div className="px-6 pb-6 pt-0 relative flex-1 flex flex-col">
+                    <div className="w-16 h-16 rounded-2xl border-4 border-white flex items-center justify-center text-white text-2xl font-bold absolute -top-8 left-6 shadow-sm" style={{ backgroundColor: mentor.color }}>
                       {mentor.name.charAt(0)}
                     </div>
                     
-                    <div className="mt-10 mb-4 flex-1">
-                      <h3 className="font-bold text-lg text-gray-900 leading-tight">{mentor.name}</h3>
-                      <p className="text-xs font-bold text-gray-500 mb-1">{mentor.role}</p>
-                      <p className="text-xs font-medium text-gray-400">{mentor.company}</p>
+                    <div className="mt-12 mb-6 flex-1">
+                      <h3 className="font-bold text-xl text-gray-900 leading-tight mb-1">{mentor.name}</h3>
+                      <p className="text-[13px] font-medium text-gray-500 mb-2">{mentor.role}</p>
+                      <p className="text-xs font-bold text-gray-400 flex items-center gap-1.5">
+                         <Briefcase size={14} className="text-[#131313]" /> {mentor.company}
+                      </p>
                       
-                      <div className="mt-3 bg-gray-50 p-2 rounded-lg border border-gray-100">
-                        <p className="text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider">Expertise</p>
-                        <p className="text-xs font-bold text-gray-700">{mentor.focus}</p>
+                      <div className="mt-5 bg-gray-50/80 p-3 rounded-xl border border-gray-100 group-hover:bg-white group-hover:border-gray-200 transition-colors">
+                        <p className="text-[10px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider flex items-center gap-1">
+                           Expertise
+                        </p>
+                        <p className="text-xs font-bold text-gray-700 leading-relaxed">{mentor.focus}</p>
                       </div>
                     </div>
                     
-                    <button className="w-full bg-white text-gray-900 py-2 rounded-xl font-bold text-sm border-2 border-gray-200 group-hover:border-[#131313] transition-colors flex items-center justify-center gap-2">
-                      Request <ArrowRight size={16} />
+                    <button className="w-full bg-white text-gray-800 py-3 rounded-xl font-bold text-sm border-2 border-gray-100 group-hover:border-[#5a32fa] group-hover:text-[#5a32fa] transition-colors duration-300 flex items-center justify-center gap-2">
+                      Request Mentorship <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
                 </div>
@@ -151,6 +236,9 @@ export default function MentorshipPage() {
             </div>
           </div>
 
+        </div>
+        </div>
+          </main>
         </div>
       </div>
     </div>
