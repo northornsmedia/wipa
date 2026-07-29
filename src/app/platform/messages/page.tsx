@@ -41,7 +41,7 @@ function MessagesContent() {
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get('userId');
   const [conversations, setConversations] = useState<Chat[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string | number>(1);
+  const [activeChatId, setActiveChatId] = useState<string | number | null>(null);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -158,6 +158,11 @@ function MessagesContent() {
           };
         });
         setConversations(formattedChats);
+        
+        // Auto-select the first conversation if none is active
+        if (formattedChats.length > 0 && !activeChatIdRef.current) {
+          setActiveChatId(formattedChats[0].id);
+        }
       }
     };
     fetchConversations();
