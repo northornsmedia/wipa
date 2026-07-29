@@ -680,6 +680,12 @@ export default function ProfilePage() {
                   fgColor="#131313"
                   level="H"
                   includeMargin={false}
+                  imageSettings={{
+                    src: '/WIPALOGO.png',
+                    height: 48,
+                    width: 48,
+                    excavate: true,
+                  }}
                 />
               </div>
               
