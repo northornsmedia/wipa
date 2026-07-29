@@ -61,7 +61,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
         .from('profiles')
         .select('*')
         .eq('id', profileId)
-        .single();
+        .maybeSingle();
         
       if (!error && data) {
         setProfileData({
@@ -87,7 +87,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
         .from('connections')
         .select('*')
         .or(`and(requester_id.eq.${user.id},recipient_id.eq.${profileId}),and(requester_id.eq.${profileId},recipient_id.eq.${user.id})`)
-        .single();
+        .maybeSingle();
         
       if (data) {
         if (data.status === 'accepted') {

@@ -31,6 +31,7 @@ type Chat = {
   lastMessage: string;
   lastTime: string;
   messages: Message[];
+  participantId?: string;
 };
 
 const MOCK_CONVERSATIONS: Chat[] = [];
@@ -91,12 +92,14 @@ function MessagesContent() {
         const formattedChats: Chat[] = data.map((conv: any) => {
           let chatName = conv.name;
           let chatInitial = 'G';
-          
+          let participantId = undefined;
+            
           if (!conv.is_group) {
             // Find the other participant in a DM
             const otherParticipant = conv.participants?.find((p: any) => p.user?.id !== user.id)?.user;
             chatName = otherParticipant?.full_name || 'Anonymous User';
             chatInitial = chatName.charAt(0).toUpperCase();
+            participantId = otherParticipant?.id;
           } else if (chatName) {
             chatInitial = chatName.charAt(0).toUpperCase();
           }
@@ -110,7 +113,8 @@ function MessagesContent() {
             unread: 0,
             lastMessage: 'Open to view messages',
             lastTime: '',
-            messages: []
+            messages: [],
+            participantId
           };
         });
         setConversations(formattedChats);
@@ -176,7 +180,8 @@ function MessagesContent() {
                     unread: 0,
                     lastMessage: 'Start a conversation',
                     lastTime: '',
-                    messages: []
+                    messages: [],
+                    participantId: targetUserId
                  };
                  setConversations(prev => [newChat, ...prev]);
                  setActiveChatId(newConv.id);
@@ -504,9 +509,11 @@ function MessagesContent() {
                 </div>
                 
                 <div className="flex items-center gap-3 relative">
-                  <Link href={`/platform/profile/${activeChat.id}`} className="hidden sm:block px-4 py-2 border-2 border-gray-200 rounded-xl font-bold text-xs text-gray-600 hover:border-gray-200 hover:text-[#131313] transition-colors">
-                    View Profile
-                  </Link>
+                  {activeChat.participantId && (
+                    <Link href={`/platform/profile/${activeChat.participantId}`} className="hidden sm:block px-4 py-2 border-2 border-gray-200 rounded-xl font-bold text-xs text-gray-600 hover:border-gray-200 hover:text-[#131313] transition-colors">
+                      View Profile
+                    </Link>
+                  )}
                   <button 
                     onClick={() => setIsChatOptionsOpen(!isChatOptionsOpen)}
                     className="w-10 h-10 flex items-center justify-center border-2 border-gray-200 rounded-xl text-gray-600 hover:border-gray-200 hover:bg-gray-50 transition-colors"
