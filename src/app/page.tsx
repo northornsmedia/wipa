@@ -28,7 +28,7 @@ export default function Home() {
       
       supabase
         .from("profiles")
-        .select("full_name, avatar_url, cover_url")
+        .select("full_name, avatar_url, cover_url, member_id")
         .eq("id", authUser.id)
         .single()
         .then(({ data }) => {
@@ -38,6 +38,7 @@ export default function Home() {
             id: authUser.id,
             avatar_url: data?.avatar_url || undefined,
             cover_url: data?.cover_url || undefined,
+            member_id: data?.member_id || undefined,
           });
         });
     });

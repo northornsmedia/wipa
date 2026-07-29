@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { useAppStore } from '@/store/useAppStore';
 import { 
@@ -23,10 +23,45 @@ export default function ProfilePage() {
     linkedin: 'linkedin.com/in/janedoe',
     website: 'janedoe.com',
     practiceAreas: 'Patent Prosecution, Trademark Law, IP Litigation, Tech Licensing',
-    avatarUrl: user?.avatar_url || ''
+    avatarUrl: user?.avatar_url || '',
+    memberId: user?.member_id || ''
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState(profileData);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const fetchProfile = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+        
+      if (!error && data) {
+        const newProfile = {
+          ...profileData,
+          name: data.full_name || profileData.name,
+          location: data.country || profileData.location,
+          bio: data.bio || profileData.bio,
+          linkedin: data.linkedin_url || profileData.linkedin,
+          website: data.website_url || profileData.website,
+          practiceAreas: data.practice_area || profileData.practiceAreas,
+          avatarUrl: data.avatar_url || profileData.avatarUrl,
+          memberId: data.member_id || ''
+        };
+        setProfileData(newProfile);
+        setEditForm(newProfile);
+        
+        // Also update store silently to heal stale data
+        if (!user.member_id && data.member_id) {
+          setUser({ ...user, member_id: data.member_id });
+        }
+      }
+    };
+    fetchProfile();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '' });
@@ -199,10 +234,17 @@ export default function ProfilePage() {
               
               <div className="flex-1 pt-4 md:pt-6 flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 flex items-center gap-3 tracking-tight mb-2">
-                    {profileData.name}
-                    <BadgeCheck size={32} className="text-[#00d26a]" />
-                  </h1>
+                  <div className="flex items-center gap-4 mb-2 flex-wrap">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 flex items-center gap-3 tracking-tight">
+                      {profileData.name}
+                      <BadgeCheck size={32} className="text-[#00d26a]" />
+                    </h1>
+                    {profileData.memberId && (
+                      <span className="bg-[#5a32fa]/10 text-[#5a32fa] px-3 py-1 rounded-full text-sm font-bold border-2 border-[#5a32fa]/20 flex items-center gap-1">
+                        <Hash size={14} /> {profileData.memberId}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-lg md:text-xl font-bold text-[#5a32fa] mb-4">{profileData.role}</p>
                   
                   <div className="flex flex-wrap items-center gap-4 text-sm md:text-base font-bold text-gray-600">

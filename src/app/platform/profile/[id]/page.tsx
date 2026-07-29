@@ -51,7 +51,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     practiceAreas: 'General Practice',
     avatarUrl: '',
     membershipTier: 'free',
-    coverUrl: ''
+    coverUrl: '',
+    memberId: ''
   });
 
   useEffect(() => {
@@ -73,7 +74,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
           practiceAreas: data.practice_area || 'Intellectual Property',
           avatarUrl: data.avatar_url || '',
           membershipTier: data.membership_tier || 'free',
-          coverUrl: data.cover_url || ''
+          coverUrl: data.cover_url || '',
+          memberId: data.member_id || ''
         });
       }
       setIsLoading(false);
@@ -113,6 +115,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     if (!connError) {
       await supabase.from('notifications').insert({
         user_id: profileId,
+        actor_id: user.id,
         type: 'connection_request',
         content: `${user.name || 'Someone'} sent you a connection request!`,
         link: `/platform/profile/${user.id}`,
@@ -135,6 +138,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     if (!connError) {
       await supabase.from('notifications').insert({
         user_id: profileId,
+        actor_id: user.id,
         type: 'connection_accepted',
         content: `${user.name || 'Someone'} accepted your connection request!`,
         link: `/platform/profile/${user.id}`,
@@ -188,10 +192,17 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                 
                 <div className="flex-1 pt-4 md:pt-6 flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
                   <div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 flex items-center gap-3 tracking-tight mb-2">
-                      {profileData.name}
-                      <BadgeCheck size={32} className="text-[#00d26a]" />
-                    </h1>
+                    <div className="flex items-center gap-4 mb-2 flex-wrap">
+                      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 flex items-center gap-3 tracking-tight">
+                        {profileData.name}
+                        <BadgeCheck size={32} className="text-[#00d26a]" />
+                      </h1>
+                      {profileData.memberId && (
+                        <span className="bg-[#5a32fa]/10 text-[#5a32fa] px-3 py-1 rounded-full text-sm font-bold border-2 border-[#5a32fa]/20 flex items-center gap-1">
+                          <Hash size={14} /> {profileData.memberId}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-lg md:text-xl font-bold text-[#5a32fa] mb-4">{profileData.role}</p>
                     
                     <div className="flex flex-wrap items-center gap-4 text-sm md:text-base font-bold text-gray-600">

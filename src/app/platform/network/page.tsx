@@ -131,7 +131,7 @@ export default function NetworkPage() {
             status,
             requester:profiles!requester_id(id, full_name)
           `)
-          .eq('receiver_id', user.id)
+          .eq('recipient_id', user.id)
           .eq('status', 'pending');
           
         if (data) {
@@ -145,15 +145,15 @@ export default function NetworkPage() {
           .select(`
             id,
             requester:profiles!requester_id(id, full_name),
-            receiver:profiles!receiver_id(id, full_name)
+            recipient:profiles!recipient_id(id, full_name)
           `)
-          .or(`requester_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
           .eq('status', 'accepted');
 
         if (acceptedConnections) {
           const formattedNetwork = acceptedConnections.map(conn => {
             const req: any = Array.isArray(conn.requester) ? conn.requester[0] : conn.requester;
-            const rec: any = Array.isArray(conn.receiver) ? conn.receiver[0] : conn.receiver;
+            const rec: any = Array.isArray(conn.recipient) ? conn.recipient[0] : conn.recipient;
             const isRequester = req.id === user.id;
             const otherPerson = isRequester ? rec : req;
             

@@ -13,12 +13,12 @@ export default function NotificationsPage() {
   useEffect(() => {
     if (user?.id) {
       const fetchNotifications = async () => {
-        const { data } = await supabase
+        const { data } = await (supabase as any)
           .from('notifications')
           .select(`
             id,
             type,
-            read,
+            is_read,
             created_at,
             actor:profiles!actor_id(id, full_name)
           `)
@@ -85,60 +85,54 @@ export default function NotificationsPage() {
             </Link>
           ))}
 
-          {/* Mock Notification 1 */}
-          <div className="group p-4 sm:p-5 sm:px-8 border-b border-gray-100 bg-white hover:bg-gray-50/80 transition-all duration-300 cursor-pointer flex items-start gap-4 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] relative z-0 hover:z-10">
-            <div className="relative shrink-0">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#b892ff] to-[#5a32fa] text-white flex items-center justify-center font-bold text-lg shadow-sm transform group-hover:scale-105 transition-transform duration-300">
-                S
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-white bg-[#ff90e8] flex items-center justify-center shadow-sm">
-                <Eye size={12} className="text-white" />
-              </div>
-            </div>
-            <div className="flex-1 mt-1 transform group-hover:translate-x-1 transition-transform duration-300">
-              <p className="text-[14.5px] text-gray-700 leading-snug">
-                <span className="font-bold text-gray-900">Sarah Jenkins</span> viewed your profile.
-              </p>
-              <p className="text-[12px] text-gray-400 font-medium mt-1.5">2 hours ago</p>
-            </div>
-          </div>
+          {notifications.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">No notifications yet.</div>
+          ) : (
+            notifications.map((notif: any) => {
+              const actor = Array.isArray(notif.actor) ? notif.actor[0] : notif.actor;
+              const name = actor?.full_name || 'Someone';
+              const initial = name.charAt(0).toUpperCase();
+              
+              let Icon = Eye;
+              let iconBg = 'bg-[#ff90e8]';
+              let message = notif.content || 'interacted with your profile.';
+              
+              if (notif.type === 'connection_request') {
+                Icon = UserPlus;
+                iconBg = 'bg-[#00d26a]';
+                message = notif.content || 'sent you a connection request.';
+              } else if (notif.type === 'connection_accepted') {
+                Icon = CheckCheck;
+                iconBg = 'bg-[#5a32fa]';
+                message = notif.content || 'accepted your connection request.';
+              } else if (notif.type === 'comment') {
+                Icon = MessageCircle;
+                iconBg = 'bg-[#ffb000]';
+              }
 
-          {/* Mock Notification 2 */}
-          <div className="group p-4 sm:p-5 sm:px-8 border-b border-gray-100 bg-[#fcfaff] hover:bg-[#f6f2ff] transition-all duration-300 cursor-pointer flex items-start gap-4 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] relative z-0 hover:z-10">
-            <div className="relative shrink-0">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#00d26a] to-[#00b359] text-white flex items-center justify-center font-bold text-lg shadow-sm transform group-hover:scale-105 transition-transform duration-300">
-                W
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-white bg-[#131313] flex items-center justify-center shadow-sm">
-                <CalendarIcon size={12} className="text-white" />
-              </div>
-            </div>
-            <div className="flex-1 mt-1 transform group-hover:translate-x-1 transition-transform duration-300">
-              <p className="text-[14.5px] text-gray-700 leading-snug">
-                <span className="font-bold text-gray-900">WIPA Event:</span> Annual IP Conference is starting soon.
-              </p>
-              <p className="text-[12px] text-[#5a32fa] font-medium mt-1.5">5 hours ago</p>
-            </div>
-            <div className="w-2.5 h-2.5 bg-[#5a32fa] rounded-full mt-2.5 shrink-0 shadow-sm animate-pulse"></div>
-          </div>
-
-          {/* Mock Notification 3 */}
-          <div className="group p-4 sm:p-5 sm:px-8 bg-white hover:bg-gray-50/80 transition-all duration-300 cursor-pointer flex items-start gap-4 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] rounded-b-3xl relative z-0 hover:z-10">
-            <div className="relative shrink-0">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ffc900] to-[#ffb000] text-white flex items-center justify-center font-bold text-lg shadow-sm transform group-hover:scale-105 transition-transform duration-300">
-                M
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-white bg-[#00d26a] flex items-center justify-center shadow-sm">
-                <MessageCircle size={12} className="text-white" />
-              </div>
-            </div>
-            <div className="flex-1 mt-1 transform group-hover:translate-x-1 transition-transform duration-300">
-              <p className="text-[14.5px] text-gray-700 leading-snug">
-                <span className="font-bold text-gray-900">Marie Dubois</span> commented on your post.
-              </p>
-              <p className="text-[12px] text-gray-400 font-medium mt-1.5">1 day ago</p>
-            </div>
-          </div>
+              return (
+                <div key={notif.id} className={`group p-4 sm:p-5 sm:px-8 border-b border-gray-100 transition-all duration-300 cursor-pointer flex items-start gap-4 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] relative z-0 hover:z-10 ${notif.is_read ? 'bg-white hover:bg-gray-50/80' : 'bg-[#fcfaff] hover:bg-[#f6f2ff]'}`}>
+                  <div className="relative shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#b892ff] to-[#5a32fa] text-white flex items-center justify-center font-bold text-lg shadow-sm transform group-hover:scale-105 transition-transform duration-300">
+                      {initial}
+                    </div>
+                    <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-white ${iconBg} flex items-center justify-center shadow-sm`}>
+                      <Icon size={12} className="text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1 mt-1 transform group-hover:translate-x-1 transition-transform duration-300">
+                    <p className="text-[14.5px] text-gray-700 leading-snug">
+                      {message}
+                    </p>
+                    <p className={`text-[12px] font-medium mt-1.5 ${notif.is_read ? 'text-gray-400' : 'text-[#5a32fa]'}`}>
+                      {new Date(notif.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  {!notif.is_read && <div className="w-2.5 h-2.5 bg-[#5a32fa] rounded-full mt-2.5 shrink-0 shadow-sm animate-pulse"></div>}
+                </div>
+              );
+            })
+          )}
 
         </div>
       </div>
