@@ -99,13 +99,12 @@ export default function PlatformHeader() {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-2 md:hidden">
+            <div className="flex items-center gap-2">
               <Link href="/platform">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/WIPALOGO.png" alt="WIPA Logo" className="h-8 w-auto object-contain" />
               </Link>
             </div>
-            <div className="hidden md:block w-8" />
             
             <nav className="hidden md:flex items-center gap-10 bg-gray-50 rounded-full px-10 py-1 border border-gray-100 shadow-sm">
               {navItems.map((item) => {

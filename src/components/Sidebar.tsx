@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
@@ -18,7 +19,9 @@ import {
   BellOff,
   ArrowUpRight,
   Circle,
-  CheckCircle2
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -38,21 +41,26 @@ export default function Sidebar() {
     }`;
   };
 
-  return (
-    <aside className="w-[260px] hidden lg:flex flex-col border-r border-gray-100 overflow-y-auto no-scrollbar shrink-0 bg-white sticky top-0 h-screen">
-      
-      <div className="px-6 pt-6 pb-4">
-        <Link href="/platform">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/WIPALOGO.png" alt="WIPA Logo" className="h-8 w-auto object-contain" />
-        </Link>
-      </div>
-      
-      <div className="px-4 mb-6">
-        <div className="h-px bg-gray-100 w-full" />
-      </div>
+  const [isOpen, setIsOpen] = useState(true);
 
-      <div className="px-4 mb-8">
+  if (pathname.startsWith('/platform/messages')) {
+    return null;
+  }
+
+  return (
+    <aside className={`hidden lg:flex flex-col shrink-0 bg-white sticky top-[73px] h-[calc(100vh-73px)] transition-all duration-300 relative ${isOpen ? 'w-[260px] border-r border-gray-100' : 'w-0 border-r-0'}`}>
+      
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="absolute top-4 -right-3 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center cursor-pointer z-50 text-gray-400 hover:text-[#5a32fa] transition-all shadow-sm hover:border-[#5a32fa]"
+      >
+        {isOpen ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+      </button>
+
+      <div className="flex flex-col h-full w-full overflow-y-auto overflow-x-hidden no-scrollbar">
+        <div className="w-[260px] flex flex-col h-full shrink-0">
+
+      <div className="px-4 mb-8 pt-6">
         <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-3 px-3 uppercase">MAIN NAVIGATION</p>
         <nav className="space-y-1">
           <Link href="/platform" className={navLinkClass('/platform')}>
@@ -163,18 +171,20 @@ export default function Sidebar() {
         </div>
       </div>
       
-      <div className="px-4 py-4 border-t border-gray-100">
-        <div className="flex items-center gap-3">
-          {user?.avatar_url ? (
-            <img src={user.avatar_url} alt={user?.name || 'User'} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-[#131313] text-white flex items-center justify-center text-lg font-bold">
-              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-            </div>
-          )}
+        <div className="px-4 py-4 border-t border-gray-100">
+          <div className="flex items-center gap-3">
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt={user?.name || 'User'} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-[#131313] text-white flex items-center justify-center text-lg font-bold">
+                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+              </div>
+            )}
+          </div>
+        </div>
+
         </div>
       </div>
-
     </aside>
   );
 }
