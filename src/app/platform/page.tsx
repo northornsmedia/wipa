@@ -26,6 +26,11 @@ export default function PlatformPage() {
   const [publishSuccess, setPublishSuccess] = useState(false);
   const [feedPosts, setFeedPosts] = useState<any[]>([]);
   const [isLoadingFeed, setIsLoadingFeed] = useState(true);
+  const [dbLikedPostIds, setDbLikedPostIds] = useState<Set<string>>(new Set());
+  const [activeCommentPost, setActiveCommentPost] = useState<any | null>(null);
+  const [commentText, setCommentText] = useState('');
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [postComments, setPostComments] = useState<Record<string, any[]>>({});
   
   const fetchFeed = useCallback(async () => {
     setIsLoadingFeed(true);
@@ -42,8 +47,20 @@ export default function PlatformPage() {
     } else {
       setFeedPosts(data || []);
     }
+    
+    if (user) {
+      const { data: likesData } = await supabase
+        .from('feed_likes')
+        .select('post_id')
+        .eq('user_id', user.id);
+        
+      if (likesData) {
+        setDbLikedPostIds(new Set(likesData.map(l => l.post_id)));
+      }
+    }
+    
     setIsLoadingFeed(false);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchFeed();
@@ -83,6 +100,62 @@ export default function PlatformPage() {
     setPostContent('');
     setUploadError(null);
     fetchFeed();
+  };
+  
+  const handleLikePost = async (postId: string) => {
+    if (!user) return;
+    
+    const isLiked = dbLikedPostIds.has(postId);
+    const newLiked = new Set(dbLikedPostIds);
+    
+    if (isLiked) {
+      newLiked.delete(postId);
+      setFeedPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: Math.max(0, (p.likes_count || 0) - 1) } : p));
+    } else {
+      newLiked.add(postId);
+      setFeedPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p));
+    }
+    setDbLikedPostIds(newLiked);
+    
+    if (isLiked) {
+      await supabase.from('feed_likes').delete().match({ post_id: postId, user_id: user.id });
+    } else {
+      await supabase.from('feed_likes').insert({ post_id: postId, user_id: user.id });
+    }
+  };
+
+  const fetchComments = async (postId: string) => {
+    const { data } = await supabase
+      .from('feed_comments')
+      .select('*, author:profiles!feed_comments_author_id_fkey(full_name, avatar_url)')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true });
+    
+    if (data) {
+      setPostComments(prev => ({ ...prev, [postId]: data }));
+    }
+  };
+
+  const handleCommentSubmit = async (postId: string) => {
+    if (!commentText.trim() || !user) return;
+    setIsSubmittingComment(true);
+    
+    const { error } = await supabase.from('feed_comments').insert({
+      post_id: postId,
+      author_id: user.id,
+      content: commentText
+    });
+    
+    setIsSubmittingComment(false);
+    
+    if (error) {
+      console.error("Failed to post comment:", error);
+      return;
+    }
+    
+    setCommentText('');
+    fetchComments(postId); // Refresh comments to show the new one
+    fetchFeed(); // Update the comment count on the post
   };
   
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video' | 'doc') => {
@@ -481,7 +554,7 @@ export default function PlatformPage() {
                     <p className="text-gray-500 font-medium">No posts yet. Be the first to share something!</p>
                   </div>
                 ) : feedPosts.map((post) => {
-                  const isLiked = likedPostIds.includes(post.id); // Will update to real likes soon
+                  const isLiked = dbLikedPostIds.has(post.id);
                   const author = post.author || {};
                   const authorName = author.full_name || 'Anonymous User';
                   const initial = authorName.charAt(0).toUpperCase();
@@ -525,21 +598,25 @@ export default function PlatformPage() {
                       <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                         <div className="flex items-center gap-3 sm:gap-4 text-gray-400">
                           <button 
-                            onClick={() => toggleLike(post.id)} 
+                            onClick={() => handleLikePost(post.id)} 
                             className={`hover:text-red-500 transition-colors flex items-center gap-1.5 ${isLiked ? 'text-red-500' : ''}`}
                           >
                             <Heart size={20} className={isLiked ? "fill-current" : ""} />
                             <span className="text-xs font-bold">{post.likes_count || 0}</span>
                           </button>
-                          <button className="hover:text-gray-900 transition-colors flex items-center gap-1.5">
+                          <button 
+                            onClick={() => {
+                              setActiveCommentPost(post);
+                              fetchComments(post.id);
+                            }}
+                            className="hover:text-[#5a32fa] transition-colors flex items-center gap-1.5"
+                          >
                             <MessageCircle size={20} />
                             <span className="text-xs font-bold">{post.comments_count || 0}</span>
                           </button>
-                          <button className="hover:text-gray-900 transition-colors">
-                            <Gift size={20} />
-                          </button>
                         </div>
                       </div>
+                      
                     </div>
                   );
                 })}
@@ -549,6 +626,109 @@ export default function PlatformPage() {
           </main>
         </div>
       </div>
+      
+      {/* Comment Modal */}
+      {activeCommentPost && (
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[600px] overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 border-b border-gray-50 pt-6 shrink-0">
+              <h2 className="text-xl font-black text-gray-900 tracking-tight">Comments</h2>
+              <button 
+                onClick={() => {
+                  setActiveCommentPost(null);
+                  setCommentText('');
+                }}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors group/close"
+              >
+                <X size={20} className="text-gray-400 group-hover/close:text-gray-900 transition-colors" />
+              </button>
+            </div>
+            
+            {/* Original Post Context */}
+            <div className="p-5 border-b border-gray-50 bg-gray-50/50 shrink-0">
+              <div className="flex items-center gap-3 mb-3">
+                {activeCommentPost.author?.avatar_url ? (
+                  <img src={activeCommentPost.author.avatar_url} alt="Author" className="w-8 h-8 rounded-full object-cover shadow-sm" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                    {activeCommentPost.author?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
+                <div>
+                  <h3 className="font-bold text-[13px] text-gray-900 leading-none">{activeCommentPost.author?.full_name || 'Anonymous User'}</h3>
+                  <span className="text-[11px] text-gray-500 font-medium">{formatDistanceToNow(parseISO(activeCommentPost.created_at), { addSuffix: true })}</span>
+                </div>
+              </div>
+              <p className="text-[13px] text-gray-800 leading-relaxed font-medium whitespace-pre-wrap">
+                {activeCommentPost.content}
+              </p>
+            </div>
+
+            {/* Comments List Area */}
+            <div className="p-5 overflow-y-auto flex-1 space-y-4">
+              {!postComments[activeCommentPost.id] || postComments[activeCommentPost.id].length === 0 ? (
+                <div className="text-center py-10">
+                  <p className="text-gray-400 text-[13px] font-medium">No comments yet. Be the first to reply!</p>
+                </div>
+              ) : (
+                postComments[activeCommentPost.id].map(comment => {
+                  const commentAuthor = comment.author || {};
+                  const cName = commentAuthor.full_name || 'Anonymous User';
+                  const cInitial = cName.charAt(0).toUpperCase();
+                  const cTime = formatDistanceToNow(parseISO(comment.created_at), { addSuffix: true });
+                  
+                  return (
+                    <div key={comment.id} className="flex gap-3">
+                      {commentAuthor.avatar_url ? (
+                        <img src={commentAuthor.avatar_url} alt={cName} className="w-8 h-8 rounded-full object-cover shadow-sm mt-0.5" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-0.5">
+                          {cInitial}
+                        </div>
+                      )}
+                      <div className="flex-1 bg-gray-50 p-3 rounded-2xl rounded-tl-none border border-gray-100">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-bold text-[13px] text-gray-900 leading-none">{cName}</h4>
+                          <span className="text-[11px] text-gray-400 font-medium leading-none">{cTime}</span>
+                        </div>
+                        <p className="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            
+            {/* Add Comment Input Area (Footer) */}
+            <div className="p-5 border-t border-gray-50 bg-white shrink-0">
+              <div className="flex gap-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-0.5">
+                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+                <div className="flex-1 flex flex-col items-end gap-2">
+                  <textarea 
+                    className="w-full min-h-[80px] resize-none outline-none text-[13px] text-gray-900 placeholder-gray-400 bg-gray-50 p-3 rounded-xl border border-gray-100 focus:border-gray-200 focus:bg-white transition-colors"
+                    placeholder="Write a comment..."
+                    autoFocus
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                  ></textarea>
+                  <button 
+                    className="bg-gray-900 text-white px-5 py-2 rounded-xl text-[13px] font-bold hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm"
+                    disabled={!commentText.trim() || isSubmittingComment}
+                    onClick={() => handleCommentSubmit(activeCommentPost.id)}
+                  >
+                    {isSubmittingComment ? <Loader2 size={14} className="animate-spin" /> : null}
+                    Post Reply
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      )}
     </div>
   );
 }

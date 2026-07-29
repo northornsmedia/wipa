@@ -37,7 +37,35 @@ Today's development session was heavily focused on establishing the financial in
 
 ---
 
+Comprehensive Development Log - July 28, 2026
+
+Executive Summary
+Today's session focused heavily on building out the core social feed infrastructure and upgrading the UX of the "Create Post" interactions. We transitioned the feed from frontend mock data to a fully scalable, relational Postgres database backend. The work included designing UI/UX interactions, enforcing data validation rules, configuring Supabase relational tables and triggers, and linking live data streams into the React frontend.
+
+---
+
+1. Frontend UI & UX Enhancements (Create Post Modal)
+- Component Redesign: Re-engineered the "Create Post" composer layout to be perfectly centered, styled with premium modern aesthetics, and removed the outdated generic gradients.
+- Privacy State Management: Implemented an interactive privacy dropdown menu (Anyone vs. Followers only) to control post visibility settings.
+- Interactive File Uploads: Replaced placeholder icon buttons (Photo, Video, Attach) with fully functional hidden `<input type="file">` elements that capture user media selections.
+- Client-Side Validation: Added strict file-size constraints rejecting images and documents over 5MB, and videos over 15MB, alerting the user immediately via inline error states.
+- Asynchronous UI Feedback: Replaced native browser `alert()` popups with a modern, non-blocking `Loader2` submission state. Engineered a beautiful animated success screen displaying a green checkmark directly within the modal upon successful Supabase insertion.
+
+2. Database Architecture & Migrations (Supabase)
+- Feed Posts Table: Authored and executed an SQL migration to create the `feed_posts` table, linking strictly to the `profiles` table via foreign keys.
+- Relational Interaction Tables: Engineered a normalized schema by creating `feed_likes` and `feed_comments` tables to securely store and track M:M user interactions.
+- Postgres Triggers for Performance: Wrote PL/pgSQL database triggers (`handle_like_count` and `handle_comment_count`) that automatically increment and decrement counter columns on `feed_posts`. This prevents the need to run expensive `COUNT()` queries every time the feed loads.
+- Remote Execution: Successfully deployed these schema changes directly to the remote Supabase cloud instance using management integrations.
+
+3. Live Feed Data Integration (Next.js)
+- Relational Querying: Overhauled the frontend data fetching layer to query the live `feed_posts` table. Configured complex PostgREST joins to fetch the post content alongside the author's avatar, name, and signup date in a single request.
+- Ambiguity Resolution: Diagnosed and resolved a `PGRST201` error by explicitly mapping the exact foreign key constraint `profiles!feed_posts_author_id_fkey(...)`, allowing Supabase to differentiate between a post's "author" and the users who "liked" it.
+- Dynamic Time Formatting: Integrated the `date-fns` library to automatically parse UTC database timestamps into localized relative times (e.g., "5m ago") directly on the client.
+
+---
+
 Action Items & Next Steps
 1. Webhook E2E Verification: Confirm that the live Stripe webhook is successfully firing and altering the membership_tier column in the Supabase profiles table on production.
 2. Custom SMTP Integration (Optional): Integrate Resend or SendGrid into Supabase to permanently bypass the default email rate limits and restore secure Email Confirmations for new users.
 3. Post-Payment UI Polish: Enhance the /platform landing experience to display a welcoming success toast or modal when ?success=true is detected in the URL.
+4. Interactive Feed Actions: Wire up the "Like" and "Comment" UI buttons on the feed to insert rows into the newly created `feed_likes` and `feed_comments` tables.
