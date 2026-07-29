@@ -10,11 +10,13 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export async function generateMetadata({ params }: { params: { member_id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ member_id: string }> }): Promise<Metadata> {
+  const { member_id } = await params;
+  
   const { data: profile } = await supabase
     .from('profiles')
     .select('full_name, bio, avatar_url, practice_area')
-    .eq('member_id', params.member_id)
+    .eq('member_id', member_id)
     .single();
 
   if (!profile) return { title: 'WIPA Member Not Found' };
@@ -30,12 +32,14 @@ export async function generateMetadata({ params }: { params: { member_id: string
   };
 }
 
-export default async function PublicProfilePage({ params }: { params: { member_id: string } }) {
+export default async function PublicProfilePage({ params }: { params: Promise<{ member_id: string }> }) {
+  const { member_id } = await params;
+  
   // Fetch profile by member_id
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('member_id', params.member_id)
+    .eq('member_id', member_id)
     .single();
 
   if (!profile) {
