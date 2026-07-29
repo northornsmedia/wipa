@@ -126,20 +126,22 @@ function MessagesContent() {
           // Find an existing DM with this target user
           const { data: myChats } = await supabase
             .from('conversation_participants')
-            .select('conversation_id')
+            .select('conversation_id, conversations(is_group)')
             .eq('user_id', user.id);
             
-          const myChatIds = myChats?.map(c => c.conversation_id) || [];
+          // Filter to only get DM chat IDs
+          const myDMChatIds = myChats
+            ?.filter((c: any) => c.conversations?.is_group === false)
+            .map((c: any) => c.conversation_id) || [];
           
           let existingChatId = null;
           
-          if (myChatIds.length > 0) {
+          if (myDMChatIds.length > 0) {
             const { data: sharedChats } = await supabase
               .from('conversation_participants')
-              .select('conversation_id, conversations!inner(is_group)')
+              .select('conversation_id')
               .eq('user_id', targetUserId)
-              .in('conversation_id', myChatIds)
-              .eq('conversations.is_group', false);
+              .in('conversation_id', myDMChatIds);
               
             if (sharedChats && sharedChats.length > 0) {
               existingChatId = sharedChats[0].conversation_id;
