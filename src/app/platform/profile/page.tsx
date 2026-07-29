@@ -499,28 +499,28 @@ export default function ProfilePage() {
           <aside className="w-[300px] hidden xl:flex flex-col shrink-0 space-y-6 pt-6 sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto no-scrollbar pb-10">
             
             {/* SUPPORT & FEEDBACK WIDGET */}
-            <div className="bg-gradient-to-br from-[#131313] to-gray-800 rounded-3xl border border-gray-800 shadow-lg p-6 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#5a32fa] blur-[50px] opacity-20 -mr-10 -mt-10 rounded-full pointer-events-none"></div>
-              <h3 className="font-bold text-lg mb-2 relative z-10">We're here to help!</h3>
-              <p className="text-xs text-gray-300 mb-5 relative z-10">Got an idea? Need assistance? Let us know.</p>
+            <div className="bg-[#0a0a0a] rounded-3xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-6 pb-8 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-[#5a32fa] blur-[70px] opacity-20 -mr-10 -mt-10 rounded-full pointer-events-none"></div>
+              <h3 className="font-bold text-[19px] mb-2 relative z-10 tracking-tight">We're here to help!</h3>
+              <p className="text-[13px] text-gray-400 mb-6 relative z-10 font-medium">Got an idea? Need assistance? Let us know.</p>
               
               <div className="space-y-3 relative z-10">
                 <button 
                   onClick={() => setIsFeatureModalOpen(true)}
-                  className="w-full bg-[#5a32fa] hover:bg-[#4a24db] text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
+                  className="w-full bg-[#5a32fa] hover:bg-[#4a24db] text-white px-4 py-3.5 rounded-[14px] font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-[0_2px_10px_rgba(90,50,250,0.3)] hover:shadow-[0_4px_15px_rgba(90,50,250,0.4)] hover:-translate-y-0.5"
                 >
-                  <Lightbulb size={16} /> Request a Feature
+                  <Lightbulb size={18} /> Request a Feature
                 </button>
                 <button 
-                  className="w-full bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
+                  className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white px-4 py-3 rounded-[14px] font-bold text-sm flex items-center justify-center gap-2 transition-all"
                 >
-                  <HelpCircle size={16} /> Help Center
+                  <HelpCircle size={18} /> Help Center
                 </button>
                 <button 
                   onClick={() => setIsSupportModalOpen(true)}
-                  className="w-full bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
+                  className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-white px-4 py-3 rounded-[14px] font-bold text-sm flex items-center justify-center gap-2 transition-all"
                 >
-                  <Headphones size={16} /> Contact Support
+                  <Headphones size={18} /> Contact Support
                 </button>
               </div>
             </div>
