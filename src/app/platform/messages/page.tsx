@@ -262,7 +262,7 @@ function MessagesContent() {
 
   // Fetch messages for active chat and subscribe
   useEffect(() => {
-    if (typeof activeChatId !== 'string' || !user?.id) return;
+    if (!activeChatId || !user?.id) return;
     
     const fetchMessages = async () => {
       const { data } = await supabase
@@ -382,7 +382,7 @@ function MessagesContent() {
     setNewMessage("");
     appendMessage('text', msgText);
     
-    if (typeof activeChatId === 'string' && user?.id) {
+    if (activeChatId && user?.id) {
       await supabase.from('messages').insert({
         conversation_id: activeChatId,
         sender_id: user.id,
