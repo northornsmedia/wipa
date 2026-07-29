@@ -35,7 +35,7 @@ export default function ProfilePage() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
-  const [featureForm, setFeatureForm] = useState({ title: '', description: '', type: 'feature' });
+  const [featureForm, setFeatureForm] = useState({ title: '', customTitle: '', description: '', type: 'feature' });
   const [supportForm, setSupportForm] = useState({ subject: '', message: '' });
   const [editForm, setEditForm] = useState(profileData);
   const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
@@ -909,29 +909,62 @@ export default function ProfilePage() {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Feature Idea</label>
-                <input 
-                  type="text"
-                  value={featureForm.title}
-                  onChange={(e) => setFeatureForm({...featureForm, title: e.target.value})}
-                  placeholder="e.g. Add dark mode"
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#5a32fa] focus:outline-none font-medium"
-                />
+                <label className="block text-sm font-bold text-gray-700 mb-2">Select a Feature Idea</label>
+                <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto p-3 bg-gray-50 border-2 border-gray-100 rounded-xl custom-scrollbar">
+                  {[
+                    "Dark Mode", "Mobile App", "Direct Messaging", "Video Calls",
+                    "Mentorship Matching", "Job Board Alerts", "File Sharing", "Group Chats",
+                    "Calendar Integration", "Event Reminders", "Profile Badges", "Custom Themes",
+                    "Analytics Dashboard", "Export Profile as PDF", "Advanced Search", "AI Resume Builder",
+                    "Interview Prep Tools", "Salary Insights", "Local Chapters", "Anonymous Posting",
+                    "Thread Bookmarking", "Rich Text Editor", "Other"
+                  ].map((feat) => (
+                    <button
+                      key={feat}
+                      onClick={() => setFeatureForm({...featureForm, title: feat})}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all ${
+                        featureForm.title === feat 
+                          ? 'bg-[#5a32fa] text-white border-[#5a32fa] shadow-md' 
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-[#5a32fa]/40 hover:bg-white'
+                      }`}
+                    >
+                      {feat}
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              {featureForm.title === 'Other' && (
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Your Idea</label>
+                  <input 
+                    type="text"
+                    value={featureForm.customTitle}
+                    onChange={(e) => setFeatureForm({...featureForm, customTitle: e.target.value})}
+                    placeholder="e.g. Add voice memos"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#5a32fa] focus:outline-none font-medium"
+                  />
+                </div>
+              )}
+              
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Details (Optional)</label>
                 <textarea 
                   value={featureForm.description}
                   onChange={(e) => setFeatureForm({...featureForm, description: e.target.value})}
                   placeholder="Tell us how this would help you..."
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#5a32fa] focus:outline-none font-medium min-h-[100px]"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#5a32fa] focus:outline-none font-medium min-h-[90px]"
                 />
               </div>
               <button 
                 onClick={() => {
+                  if (!featureForm.title) {
+                    alert("Please select a feature idea first!");
+                    return;
+                  }
                   alert("Feature requested successfully!");
                   setIsFeatureModalOpen(false);
-                  setFeatureForm({ title: '', description: '', type: 'feature' });
+                  setFeatureForm({ title: '', customTitle: '', description: '', type: 'feature' });
                 }}
                 className="w-full bg-[#5a32fa] text-white font-bold py-3.5 rounded-xl hover:bg-[#4a24db] transition-colors mt-2 shadow-[4px_4px_0px_0px_#131313] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#131313]"
               >
