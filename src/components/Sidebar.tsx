@@ -111,24 +111,24 @@ export default function Sidebar() {
       <div className="px-4 mb-8">
         <p className="text-[13px] font-bold text-[#131313] mb-4 px-3">All Channels</p>
         <nav className="space-y-1">
-          <Link href="/platform/channels/general" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
             <div className="flex items-center gap-2">
               <Hash size={16} className="text-gray-400" /> General
             </div>
           </Link>
-          <Link href="/platform/channels/daily-highlights" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
             <div className="flex items-center gap-2">
               <Hash size={16} className="text-gray-400" /> daily-highlights
               <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
             </div>
           </Link>
-          <Link href="/platform/channels/time-tracking" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
             <div className="flex items-center gap-2">
               <Hash size={16} className="text-gray-400" /> time-tracking
             </div>
             <BellOff size={14} className="text-gray-400" />
           </Link>
-          <Link href="/platform/channels/productivity-systems" className="flex items-center justify-between px-3 py-2 text-gray-900 bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-900 bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
             <div className="flex items-center gap-2">
               <Hash size={16} className="text-gray-400" /> productivity-systems
             </div>
@@ -139,13 +139,13 @@ export default function Sidebar() {
       <div className="px-4 mb-8">
         <p className="text-[13px] font-bold text-[#131313] mb-4 px-3">Links</p>
         <nav className="space-y-1">
-          <Link href="/ios-app" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
             <div className="flex items-center gap-2">
                 iOS App
             </div>
             <ArrowUpRight size={14} className="text-gray-400" />
           </Link>
-          <Link href="/android-app" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
             <div className="flex items-center gap-2">
                 Android App
             </div>
