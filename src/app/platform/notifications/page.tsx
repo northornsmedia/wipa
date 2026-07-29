@@ -20,7 +20,7 @@ export default function NotificationsPage() {
             type,
             is_read,
             created_at,
-            actor:profiles!actor_id(id, full_name)
+            actor:profiles!actor_id(id, full_name, avatar_url)
           `)
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
@@ -90,8 +90,11 @@ export default function NotificationsPage() {
                 <Link href={`/platform/profile/${actor?.id}`} key={notif.id} className="block">
                   <div className={`group p-4 sm:p-5 sm:px-8 border-b border-gray-100 transition-all duration-300 cursor-pointer flex items-start gap-4 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] relative z-0 hover:z-10 ${notif.is_read ? 'bg-white hover:bg-gray-50/80' : 'bg-[#fcfaff] hover:bg-[#f6f2ff]'}`}>
                   <div className="relative shrink-0">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#b892ff] to-[#5a32fa] text-white flex items-center justify-center font-bold text-lg shadow-sm transform group-hover:scale-105 transition-transform duration-300">
-                      {initial}
+                    <div 
+                      className="w-12 h-12 rounded-full bg-gradient-to-br from-[#b892ff] to-[#5a32fa] text-white flex items-center justify-center font-bold text-lg shadow-sm transform group-hover:scale-105 transition-transform duration-300 relative overflow-hidden"
+                      style={actor?.avatar_url ? { backgroundImage: `url(${actor.avatar_url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+                    >
+                      {!actor?.avatar_url && initial}
                     </div>
                     <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-white ${iconBg} flex items-center justify-center shadow-sm`}>
                       <Icon size={12} className="text-white" />
