@@ -130,6 +130,42 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                 </div>
               )}
 
+              {(profile.role || profile.company || profile.experience_years || profile.education) && (
+                <div className="mb-8">
+                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Experience & Education</h3>
+                  <div className="bg-gray-50 border border-gray-100 rounded-[20px] p-6 space-y-4">
+                    {(profile.role || profile.company) && (
+                      <div>
+                        <h4 className="text-lg font-bold text-gray-900">{profile.role || 'Professional Role'}</h4>
+                        <p className="font-bold text-[#5a32fa]">{profile.company || 'Company Name'}</p>
+                        {profile.experience_years ? (
+                          <p className="text-sm font-bold text-gray-500 mt-1">{profile.experience_years} Years Experience</p>
+                        ) : null}
+                      </div>
+                    )}
+                    {profile.education && (
+                      <div className="pt-4 border-t border-gray-200/60">
+                        <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Education</h4>
+                        <p className="font-bold text-gray-900">{profile.education}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {profile.skills && (
+                <div className="mb-8">
+                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Skills</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.skills.split(',').map((skill: string, idx: number) => (
+                      <span key={idx} className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-bold">
+                        {skill.trim()}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Social Links */}
               {(profile.linkedin_url || profile.website_url) && (
                 <div>

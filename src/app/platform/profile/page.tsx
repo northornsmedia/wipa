@@ -19,11 +19,15 @@ export default function ProfilePage() {
   const [profileData, setProfileData] = useState({
     name: user?.name || 'Jane Doe',
     role: 'IP Counsel | Patent Specialist | WIPA Member',
+    company: 'TechLaw Partners LLP',
+    experienceYears: 5,
+    education: 'Harvard Law School',
     location: 'London, United Kingdom',
     bio: 'Experienced IP Counsel with a focus on patent strategy and technology licensing. Passionate about protecting innovation in the fast-paced tech sector. Active member of WIPA since 2024.',
     linkedin: 'linkedin.com/in/janedoe',
     website: 'janedoe.com',
     practiceAreas: 'Patent Prosecution, Trademark Law, IP Litigation, Tech Licensing',
+    skills: 'Patent Prosecution, Trademark Law',
     avatarUrl: user?.avatar_url || '',
     memberId: user?.member_id || ''
   });
@@ -45,11 +49,16 @@ export default function ProfilePage() {
         const newProfile = {
           ...profileData,
           name: data.full_name || profileData.name,
+          role: data.role || profileData.role,
+          company: data.company || profileData.company,
+          experienceYears: data.experience_years || profileData.experienceYears,
+          education: data.education || profileData.education,
           location: data.country || profileData.location,
           bio: data.bio || profileData.bio,
           linkedin: data.linkedin_url || profileData.linkedin,
           website: data.website_url || profileData.website,
           practiceAreas: data.practice_area || profileData.practiceAreas,
+          skills: data.skills || profileData.skills,
           avatarUrl: data.avatar_url || profileData.avatarUrl,
           memberId: data.member_id || ''
         };
@@ -142,6 +151,16 @@ export default function ProfilePage() {
       await supabase.from('profiles').update({
         full_name: editForm.name,
         avatar_url: finalAvatarUrl,
+        role: editForm.role,
+        company: editForm.company,
+        experience_years: editForm.experienceYears,
+        education: editForm.education,
+        bio: editForm.bio,
+        country: editForm.location,
+        linkedin_url: editForm.linkedin,
+        website_url: editForm.website,
+        practice_area: editForm.practiceAreas,
+        skills: editForm.skills
       }).eq('id', user.id);
 
       setProfileData({ ...editForm, avatarUrl: finalAvatarUrl });
@@ -355,32 +374,22 @@ export default function ProfilePage() {
                     <span className="text-xl leading-none">+</span> Add New
                   </button>
                 </h3>
-                
                 <div className="space-y-10 relative before:absolute before:inset-0 before:ml-[28px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-1 before:bg-gray-200">
                   <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                     <div className="flex items-center justify-center w-14 h-14 rounded-full border border-gray-200 bg-indigo-50 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10 text-2xl">
                       ⚖️
                     </div>
                     <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl border border-gray-200 bg-white shadow-sm hover:-translate-y-1 transition-transform">
-                      <h4 className="text-xl font-bold text-gray-900">Senior IP Counsel</h4>
-                      <p className="text-base font-bold text-[#5a32fa] mb-2">TechLaw Partners LLP</p>
-                      <p className="text-sm font-bold text-gray-500 mb-4 bg-gray-100 inline-block px-3 py-1 rounded-lg">Jan 2021 - Present</p>
+                      <h4 className="text-xl font-bold text-gray-900">{profileData.role || 'Professional Role'}</h4>
+                      <p className="text-base font-bold text-[#5a32fa] mb-2">{profileData.company || 'Company Name'}</p>
+                      {profileData.experienceYears ? (
+                        <p className="text-sm font-bold text-gray-500 mb-4 bg-gray-100 inline-block px-3 py-1 rounded-lg">{profileData.experienceYears} Years Experience</p>
+                      ) : null}
+                      {profileData.education && (
+                        <p className="text-sm font-bold text-gray-500 mb-4 bg-gray-100 inline-block px-3 py-1 rounded-lg ml-2">{profileData.education}</p>
+                      )}
                       <p className="text-base text-gray-700 font-medium leading-relaxed">
-                        Leading the technology patent division, advising Fortune 500 companies on software patentability, and navigating complex cross-border trademark disputes.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                    <div className="flex items-center justify-center w-14 h-14 rounded-full border border-gray-200 bg-[#ff4b4b] text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10 text-2xl">
-                      🏢
-                    </div>
-                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl border border-gray-200 bg-white shadow-sm hover:-translate-y-1 transition-transform">
-                      <h4 className="text-xl font-bold text-gray-900">Associate Attorney</h4>
-                      <p className="text-base font-bold text-[#5a32fa] mb-2">Global IP Solutions</p>
-                      <p className="text-sm font-bold text-gray-500 mb-4 bg-gray-100 inline-block px-3 py-1 rounded-lg">Jun 2017 - Dec 2020</p>
-                      <p className="text-base text-gray-700 font-medium leading-relaxed">
-                        Drafted and prosecuted over 100 patent applications across mechanical and software domains. Conducted extensive FTO analyses.
+                        {profileData.bio}
                       </p>
                     </div>
                   </div>
@@ -407,7 +416,7 @@ export default function ProfilePage() {
               <div className="bg-white p-8 rounded-3xl border border-gray-200 shadow-md">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">Top Skills</h3>
                 <div className="flex flex-wrap gap-3">
-                  {profileData.practiceAreas.split(',').map((area, idx) => {
+                  {(profileData.skills || profileData.practiceAreas).split(',').map((area, idx) => {
                     const colors = ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'];
                     const color = colors[idx % colors.length];
                     const textColor = color === '#5a32fa' ? 'text-white' : 'text-gray-900';
@@ -533,6 +542,55 @@ export default function ProfilePage() {
                   </button>
                   <input type="file" ref={avatarInputRef} onChange={handleAvatarUpload} accept="image/*" className="hidden" />
                 </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Company</label>
+                  <input 
+                    type="text"
+                    value={editForm.company}
+                    onChange={(e) => setEditForm({...editForm, company: e.target.value})}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium"
+                    placeholder="e.g. TechLaw Partners LLP"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Years of Experience</label>
+                  <input 
+                    type="number"
+                    value={editForm.experienceYears}
+                    onChange={(e) => setEditForm({...editForm, experienceYears: parseInt(e.target.value) || 0})}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Education</label>
+                <input 
+                  type="text"
+                  value={editForm.education}
+                  onChange={(e) => setEditForm({...editForm, education: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium"
+                  placeholder="e.g. Harvard Law School"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Skills (comma separated)</label>
+                <input 
+                  type="text"
+                  value={editForm.skills}
+                  onChange={(e) => setEditForm({...editForm, skills: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium"
+                  placeholder="e.g. Patent Prosecution, Trademark Law"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Bio</label>
+                <textarea 
+                  value={editForm.bio}
+                  onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium min-h-[100px]"
+                />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
