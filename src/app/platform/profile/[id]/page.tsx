@@ -263,9 +263,12 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                       <Share2 size={24} />
                     </button>
                     {connectionStatus === 'accepted' && (
-                      <button className="flex-1 xl:flex-none bg-indigo-50 text-indigo-600 p-4 rounded-2xl font-bold border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center">
+                      <Link 
+                        href={`/platform/messages?userId=${profileId}`}
+                        className="flex-1 xl:flex-none bg-indigo-50 text-indigo-600 p-4 rounded-2xl font-bold border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center"
+                      >
                         <Send size={24} />
-                      </button>
+                      </Link>
                     )}
                     {profileId !== user?.id && connectionStatus === 'pending_received' ? (
                       <>
