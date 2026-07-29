@@ -60,30 +60,6 @@ export default function NotificationsPage() {
         <div className="flex flex-col">
           
           {/* Dynamic Notifications */}
-          {notifications.map((notif) => (
-            <Link href={`/platform/user/${notif.actor?.id}`} key={notif.id}>
-              <div className={`group p-4 sm:p-5 sm:px-8 border-b border-gray-100 transition-all duration-300 cursor-pointer flex items-start gap-4 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] relative z-0 hover:z-10 ${notif.read ? 'bg-white hover:bg-gray-50/80' : 'bg-[#fcfaff] hover:bg-[#f6f2ff]'}`}>
-                <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-full bg-[#00d26a] text-white flex items-center justify-center font-bold text-lg shadow-sm transform group-hover:scale-105 transition-transform duration-300">
-                    {notif.actor?.full_name?.charAt(0) || 'U'}
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-white bg-[#5a32fa] flex items-center justify-center shadow-sm">
-                    <UserPlus size={12} className="text-white" />
-                  </div>
-                </div>
-                <div className="flex-1 mt-1 transform group-hover:translate-x-1 transition-transform duration-300">
-                  <p className="text-[14.5px] text-gray-700 leading-snug">
-                    <span className="font-bold text-gray-900">{notif.actor?.full_name || 'Anonymous User'}</span>
-                    {notif.type === 'connection_accepted' && ' accepted your connection request.'}
-                  </p>
-                  <p className="text-[12px] text-gray-400 font-medium mt-1.5">Recently</p>
-                </div>
-                {!notif.read && (
-                  <div className="w-2.5 h-2.5 bg-[#5a32fa] rounded-full mt-2.5 shrink-0 shadow-sm animate-pulse"></div>
-                )}
-              </div>
-            </Link>
-          ))}
 
           {notifications.length === 0 ? (
             <div className="p-8 text-center text-gray-500">No notifications yet.</div>
