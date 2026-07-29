@@ -38,10 +38,8 @@ export default function ProfilePage() {
       return;
     }
     setPasswordStatus({ type: 'loading', message: 'Updating password...' });
-    // @ts-ignore
     const { error } = await supabase.auth.updateUser({
-      password: passwordForm.newPassword,
-      currentPassword: passwordForm.currentPassword
+      password: passwordForm.newPassword
     });
 
     if (error) {
