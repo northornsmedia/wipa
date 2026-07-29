@@ -258,7 +258,7 @@ export default function NetworkPage() {
                         {invite.requester.full_name?.charAt(0) || 'U'}
                       </div>
                       <div>
-                        <Link href={`/platform/user/${invite.requester.id}`} className="font-bold text-lg hover:underline decoration-2">
+                        <Link href={`/platform/profile/${invite.requester.id}`} className="font-bold text-lg hover:underline decoration-2">
                           {invite.requester.full_name || 'Anonymous User'}
                         </Link>
                         <p className="text-sm text-gray-500 font-medium">Sent you a connection request</p>
@@ -393,7 +393,7 @@ export default function NetworkPage() {
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <Link href={`/platform/user/${person.id}`}>
+                  <Link href={`/platform/profile/${person.id}`}>
                     <h3 className="text-[14px] md:text-lg font-bold text-gray-900 mb-0.5 md:mb-1 leading-tight hover:text-[#5a32fa] transition-colors cursor-pointer truncate hover:underline decoration-2">
                       {person.name}
                     </h3>

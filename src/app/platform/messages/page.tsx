@@ -606,7 +606,7 @@ function MessagesContent() {
                 </div>
                 
                 <div className="flex items-center gap-3 relative">
-                  <Link href={`/platform/user/${activeChat.id}`} className="hidden sm:block px-4 py-2 border-2 border-gray-200 rounded-xl font-bold text-xs text-gray-600 hover:border-gray-200 hover:text-[#131313] transition-colors">
+                  <Link href={`/platform/profile/${activeChat.id}`} className="hidden sm:block px-4 py-2 border-2 border-gray-200 rounded-xl font-bold text-xs text-gray-600 hover:border-gray-200 hover:text-[#131313] transition-colors">
                     View Profile
                   </Link>
                   <button 
