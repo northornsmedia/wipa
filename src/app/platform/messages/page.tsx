@@ -72,6 +72,19 @@ function MessagesContent() {
   useEffect(() => {
     if (!user?.id) return;
     const fetchConversations = async () => {
+      // Fetch unread messages
+      const { data: unreadData } = await supabase
+        .from('messages')
+        .select('conversation_id')
+        .eq('is_read', false)
+        .neq('sender_id', user.id);
+
+      const unreadMap: Record<string, number> = {};
+      if (unreadData) {
+        unreadData.forEach((m: any) => {
+          unreadMap[m.conversation_id] = (unreadMap[m.conversation_id] || 0) + 1;
+        });
+      }
       const { data } = await supabase
         .from('conversations')
         .select(`
@@ -131,7 +144,7 @@ function MessagesContent() {
             role: conv.is_group ? `Group Chat • ${conv.participants?.length || 0} members` : 'WIPA Member',
             initial: chatInitial,
             color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
-            unread: 0,
+            unread: unreadMap[conv.id] || 0,
             lastMessage: lastMessageText,
             lastTime: lastTimeText,
             messages: [],
@@ -142,7 +155,40 @@ function MessagesContent() {
       }
     };
     fetchConversations();
-  }, [user?.id]);
+    
+    // Global listener for new messages to update the inbox sidebar in real-time
+    const globalChannel = supabase.channel(`global-messages-${user.id}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+        const m = payload.new as any;
+        
+        setConversations(prev => {
+          const chatIndex = prev.findIndex(c => c.id === m.conversation_id);
+          if (chatIndex > -1) {
+            const chat = prev[chatIndex];
+            const isMe = m.sender_id === user.id;
+            const updatedChat = {
+              ...chat,
+              lastMessage: m.content || (m.media_url ? "Sent an attachment" : ""),
+              lastTime: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              unread: (!isMe && activeChatId !== m.conversation_id) ? chat.unread + 1 : chat.unread
+            };
+            
+            // Move to top
+            const newPrev = [...prev];
+            newPrev.splice(chatIndex, 1);
+            return [updatedChat, ...newPrev];
+          } else {
+            // If it's a completely new chat we haven't loaded, we can just refetch all to be safe
+            fetchConversations();
+            return prev;
+          }
+        });
+      })
+      .subscribe();
+      
+    return () => { supabase.removeChannel(globalChannel); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, activeChatId]); // re-bind when activeChatId changes so the global listener knows whether to increment unread
 
   // Load target user chat if accessed via ?userId=
   useEffect(() => {
@@ -233,25 +279,37 @@ function MessagesContent() {
           time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           type: 'text' as any
         }));
-        setConversations(prev => prev.map(chat => chat.id === activeChatId ? { ...chat, messages: msgs } : chat));
+        
+        setConversations(prev => prev.map(chat => chat.id === activeChatId ? { ...chat, messages: msgs, unread: 0 } : chat));
+        
+        // Mark all as read
+        supabase.from('messages')
+          .update({ is_read: true })
+          .eq('conversation_id', activeChatId)
+          .eq('is_read', false)
+          .neq('sender_id', user.id)
+          .then();
       }
     };
     fetchMessages();
     
     const channel = supabase.channel(`messages:${activeChatId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${activeChatId}` }, payload => {
-         const m = payload.new;
-         if (m.sender_id === user.id) return; // ignore our own messages
-         const msg = {
-            id: m.id,
-            text: m.content,
-            sender: 'them',
-            time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            type: 'text' as any
-         };
-         setConversations(prev => prev.map(chat => chat.id === activeChatId ? { ...chat, messages: [...chat.messages, msg] } : chat));
-      }).subscribe();
-      
+          const m = payload.new;
+          if (m.sender_id === user.id) return; // ignore our own messages
+          const msg = {
+             id: m.id,
+             text: m.content,
+             sender: 'them',
+             time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+             type: 'text' as any
+          };
+          setConversations(prev => prev.map(chat => chat.id === activeChatId ? { ...chat, messages: [...chat.messages, msg] } : chat));
+          
+          // Mark as read immediately since we are viewing the chat
+          supabase.from('messages').update({ is_read: true }).eq('id', m.id).then();
+       }).subscribe();
+       
     return () => { supabase.removeChannel(channel); };
   }, [activeChatId, user?.id]);
 
@@ -303,6 +361,17 @@ function MessagesContent() {
       }
       return chat;
     }));
+    
+    // Also move this chat to the top
+    setConversations(prev => {
+      const chatIndex = prev.findIndex(c => c.id === activeChatId);
+      if (chatIndex > -1) {
+        const newPrev = [...prev];
+        const [chat] = newPrev.splice(chatIndex, 1);
+        return [chat, ...newPrev];
+      }
+      return prev;
+    });
   };
 
   const handleSendMessage = async (e?: React.FormEvent) => {
@@ -489,9 +558,16 @@ function MessagesContent() {
                       {chat.lastTime}
                     </span>
                   </div>
-                  <p className={`text-xs truncate ${chat.unread > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-500'}`}>
-                    {chat.lastMessage}
-                  </p>
+                  <div className="flex justify-between items-center">
+                    <p className={`text-xs truncate pr-2 ${chat.unread > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-500'}`}>
+                      {chat.lastMessage}
+                    </p>
+                    {chat.unread > 0 && (
+                      <span className="bg-[#00d26a] text-[#131313] text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center flex items-center justify-center shrink-0">
+                        {chat.unread}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
