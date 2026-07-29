@@ -97,11 +97,32 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
         }
       }
     };
-    
     fetchProfile();
     fetchConnectionStatus();
+    
+    // Listen for realtime updates to connection status (e.g. they accept the request while we are looking at their profile)
+    const channel = supabase.channel(`connection-${user?.id}-${profileId}`)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'connections',
+      }, (payload) => {
+        const row = payload.new as any;
+        if (
+          (row.requester_id === user?.id && row.recipient_id === profileId) ||
+          (row.requester_id === profileId && row.recipient_id === user?.id)
+        ) {
+          if (row.status === 'accepted') {
+            setConnectionStatus('accepted');
+          }
+        }
+      })
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [profileId, user?.id]);
-
   const handleConnect = async () => {
     if (!user || !user.id || profileId === user.id) return;
     setIsConnecting(true);
