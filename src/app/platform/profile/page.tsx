@@ -6,7 +6,7 @@ import {
   BadgeCheck, LayoutGrid, User, Users, Mail, UserPlus, UsersRound, MessageSquare, FileText, Briefcase, GraduationCap,
   MapPin, Link as LinkIcon, Calendar, Edit3, Settings, Camera, ThumbsUp
 , BookOpen, X, Share2, Download, Copy
-, Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, Loader2} from 'lucide-react';
+, Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, Loader2, Star, Folder, Lightbulb, HelpCircle, Headphones, Award} from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -395,6 +395,64 @@ export default function ProfilePage() {
                   </div>
                 </div>
               </div>
+
+              {/* MOCK: Certifications & Awards */}
+              <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-200 shadow-md mt-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center justify-between">
+                  Certifications & Awards
+                  <button className="text-gray-900 bg-gray-100 hover:bg-green-50 border-2 border-transparent hover:border-gray-200 p-2 rounded-xl transition-all font-bold text-sm flex items-center gap-2 hover:shadow-sm">
+                    <span className="text-lg leading-none">+</span> Add
+                  </button>
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex gap-4 p-5 rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all group">
+                    <div className="w-12 h-12 rounded-xl bg-[#5a32fa]/10 flex items-center justify-center shrink-0">
+                      <BadgeCheck size={24} className="text-[#5a32fa]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">Certified Information Privacy Professional (CIPP/E)</h4>
+                      <p className="text-sm font-medium text-gray-500">IAPP - International Association of Privacy Professionals</p>
+                      <p className="text-xs text-gray-400 mt-1">Issued Jan 2025</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 p-5 rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all group">
+                    <div className="w-12 h-12 rounded-xl bg-[#00d26a]/10 flex items-center justify-center shrink-0">
+                      <Star size={24} className="text-[#00d26a]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 group-hover:text-[#00d26a] transition-colors">Top 40 Under 40 - Tech Lawyers</h4>
+                      <p className="text-sm font-medium text-gray-500">Legal Innovation Weekly</p>
+                      <p className="text-xs text-gray-400 mt-1">Issued Nov 2024</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* MOCK: Featured Projects */}
+              <div className="bg-white p-8 md:p-10 rounded-3xl border border-gray-200 shadow-md mt-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center justify-between">
+                  Featured Projects
+                  <button className="text-gray-900 bg-gray-100 hover:bg-green-50 border-2 border-transparent hover:border-gray-200 p-2 rounded-xl transition-all font-bold text-sm flex items-center gap-2 hover:shadow-sm">
+                    <span className="text-lg leading-none">+</span> Add
+                  </button>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-5 rounded-2xl border border-gray-200 hover:border-[#5a32fa] hover:shadow-md transition-all cursor-pointer bg-white group">
+                    <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center mb-4 group-hover:bg-[#5a32fa]/10 transition-colors">
+                      <Folder size={20} className="text-gray-600 group-hover:text-[#5a32fa]" />
+                    </div>
+                    <h4 className="font-bold text-gray-900 mb-2 group-hover:text-[#5a32fa] transition-colors">AI Copyright Framework</h4>
+                    <p className="text-sm text-gray-600 line-clamp-2">Led a cross-functional team to develop internal guidelines for generative AI tools usage and IP liability.</p>
+                  </div>
+                  <div className="p-5 rounded-2xl border border-gray-200 hover:border-[#5a32fa] hover:shadow-md transition-all cursor-pointer bg-white group">
+                    <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center mb-4 group-hover:bg-[#5a32fa]/10 transition-colors">
+                      <Folder size={20} className="text-gray-600 group-hover:text-[#5a32fa]" />
+                    </div>
+                    <h4 className="font-bold text-gray-900 mb-2 group-hover:text-[#5a32fa] transition-colors">Open Source Policy</h4>
+                    <p className="text-sm text-gray-600 line-clamp-2">Drafted and implemented the company-wide open source contribution and consumption policy.</p>
+                  </div>
+                </div>
+              </div>
             </div>
             
             {/* Right Column (Highlights & Skills) */}
@@ -435,6 +493,33 @@ export default function ProfilePage() {
 
           {/* RIGHT SIDEBAR */}
           <aside className="w-[300px] hidden xl:flex flex-col shrink-0 space-y-6 pt-6 sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto no-scrollbar pb-10">
+            
+            {/* SUPPORT & FEEDBACK WIDGET */}
+            <div className="bg-gradient-to-br from-[#131313] to-gray-800 rounded-3xl border border-gray-800 shadow-lg p-6 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#5a32fa] blur-[50px] opacity-20 -mr-10 -mt-10 rounded-full pointer-events-none"></div>
+              <h3 className="font-bold text-lg mb-2 relative z-10">We're here to help!</h3>
+              <p className="text-xs text-gray-300 mb-5 relative z-10">Got an idea? Need assistance? Let us know.</p>
+              
+              <div className="space-y-3 relative z-10">
+                <button 
+                  onClick={() => alert("Feature Request Modal would open here!")}
+                  className="w-full bg-[#5a32fa] hover:bg-[#4a24db] text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
+                >
+                  <Lightbulb size={16} /> Request a Feature
+                </button>
+                <button 
+                  className="w-full bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
+                >
+                  <HelpCircle size={16} /> Help Center
+                </button>
+                <button 
+                  className="w-full bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
+                >
+                  <Headphones size={16} /> Contact Support
+                </button>
+              </div>
+            </div>
+
             <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
               <h3 className="font-bold text-gray-900 mb-4 text-sm">People Also Viewed</h3>
               <div className="space-y-4">
