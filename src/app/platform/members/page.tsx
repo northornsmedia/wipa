@@ -22,6 +22,8 @@ export default function MembersDirectoryPage() {
   const [members, setMembers] = useState<Profile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [connectionStatuses, setConnectionStatuses] = useState<Record<string, 'pending' | 'accepted' | 'none'>>({});
+  const [isConnecting, setIsConnecting] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -32,7 +34,6 @@ export default function MembersDirectoryPage() {
         query = query.ilike('full_name', `%${searchQuery}%`);
       }
 
-      // The profiles table doesn't have an email column, and user.id might not be a valid UUID.
       // Filter by full_name to safely exclude the current user.
       if (user?.name) {
         query = query.neq('full_name', user.name);
@@ -46,6 +47,25 @@ export default function MembersDirectoryPage() {
       
       if (!error && data) {
         setMembers(data);
+        
+        // Also fetch connections involving this user
+        if (user?.id && data.length > 0) {
+          const { data: connections } = await supabase
+            .from('connections')
+            .select('*')
+            .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`);
+            
+          if (connections) {
+            const statuses: Record<string, 'pending' | 'accepted' | 'none'> = {};
+            
+            connections.forEach(conn => {
+              const otherId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
+              statuses[otherId] = conn.status;
+            });
+            
+            setConnectionStatuses(statuses);
+          }
+        }
       }
       setLoading(false);
     };
@@ -54,18 +74,66 @@ export default function MembersDirectoryPage() {
     return () => clearTimeout(delay);
   }, [searchQuery, user?.id]);
 
-  const handleConnect = async (targetId: string) => {
+  // Listen for realtime updates to connection statuses globally
+  useEffect(() => {
     if (!user?.id) return;
+    
+    const channel = supabase.channel(`members-connections-${user.id}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'connections',
+      }, (payload) => {
+        if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+          const row = payload.new as any;
+          if (row.requester_id === user.id || row.recipient_id === user.id) {
+            const otherId = row.requester_id === user.id ? row.recipient_id : row.requester_id;
+            setConnectionStatuses(prev => ({ ...prev, [otherId]: row.status }));
+          }
+        } else if (payload.eventType === 'DELETE') {
+          const row = payload.old as any;
+          if (row.requester_id === user.id || row.recipient_id === user.id) {
+            const otherId = row.requester_id === user.id ? row.recipient_id : row.requester_id;
+            setConnectionStatuses(prev => {
+              const next = { ...prev };
+              delete next[otherId];
+              return next;
+            });
+          }
+        }
+      })
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
+
+  const handleConnect = async (targetId: string) => {
+    if (!user?.id || isConnecting[targetId]) return;
+    setIsConnecting(prev => ({ ...prev, [targetId]: true }));
     try {
-      await supabase.from('connections').insert({
+      const { error: connError } = await supabase.from('connections').insert({
         requester_id: user.id,
         recipient_id: targetId,
         status: 'pending'
       });
-      alert('Connection request sent!');
+      
+      if (!connError) {
+        await supabase.from('notifications').insert({
+          user_id: targetId,
+          actor_id: user.id,
+          type: 'connection_request',
+          content: `${user.name || 'Someone'} sent you a connection request!`,
+          link: `/platform/profile/${user.id}`,
+          is_read: false
+        });
+        setConnectionStatuses(prev => ({ ...prev, [targetId]: 'pending' }));
+      }
     } catch (err) {
       console.error(err);
-      alert('Failed to send connection request.');
+    } finally {
+      setIsConnecting(prev => ({ ...prev, [targetId]: false }));
     }
   };
 
@@ -152,18 +220,38 @@ export default function MembersDirectoryPage() {
                   </div>
                   
                   <div className="mt-auto flex gap-3">
-                    <button 
-                      onClick={() => handleConnect(member.id)}
-                      className="flex-1 bg-[#131313] text-white font-bold py-3 px-4 rounded-xl border border-gray-200 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
-                    >
-                      <UserPlus size={18} /> Connect
-                    </button>
-                    <Link 
-                      href={`/platform/messages?userId=${member.id}`}
-                      className="w-12 flex items-center justify-center bg-[#fbe8d5] text-[#131313] font-bold rounded-xl border border-gray-200 hover:bg-[#f6d5b3] transition-colors"
-                    >
-                      <Mail size={18} />
-                    </Link>
+                    {connectionStatuses[member.id] === 'accepted' ? (
+                      <Link 
+                        href={`/platform/messages?userId=${member.id}`}
+                        className="flex-1 bg-[#5a32fa] text-white font-bold py-3 px-4 rounded-xl border border-gray-200 hover:bg-[#4a26d2] transition-colors flex items-center justify-center gap-2"
+                      >
+                        <MessageSquare size={18} /> Message
+                      </Link>
+                    ) : connectionStatuses[member.id] === 'pending' ? (
+                      <button 
+                        disabled
+                        className="flex-1 bg-gray-100 text-gray-500 font-bold py-3 px-4 rounded-xl border border-gray-200 flex items-center justify-center gap-2 cursor-not-allowed"
+                      >
+                        <CheckCircle2 size={18} /> Request Sent
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => handleConnect(member.id)}
+                        disabled={isConnecting[member.id]}
+                        className="flex-1 bg-[#131313] text-white font-bold py-3 px-4 rounded-xl border border-gray-200 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <UserPlus size={18} /> {isConnecting[member.id] ? 'Connecting...' : 'Connect'}
+                      </button>
+                    )}
+                    
+                    {connectionStatuses[member.id] !== 'accepted' && (
+                      <Link 
+                        href={`/platform/messages?userId=${member.id}`}
+                        className="w-12 flex items-center justify-center bg-[#fbe8d5] text-[#131313] font-bold rounded-xl border border-gray-200 hover:bg-[#f6d5b3] transition-colors shrink-0"
+                      >
+                        <Mail size={18} />
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>
