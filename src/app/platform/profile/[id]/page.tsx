@@ -39,7 +39,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   
   const [isLoading, setIsLoading] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [connectionSent, setConnectionSent] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending_sent' | 'pending_received' | 'accepted'>('none');
 
   const [profileData, setProfileData] = useState({
     name: 'Loading...',
@@ -78,26 +78,72 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
       }
       setIsLoading(false);
     };
+
+    const fetchConnectionStatus = async () => {
+      if (!user?.id || profileId === user?.id) return;
+      const { data, error } = await supabase
+        .from('connections')
+        .select('*')
+        .or(`and(requester_id.eq.${user.id},recipient_id.eq.${profileId}),and(requester_id.eq.${profileId},recipient_id.eq.${user.id})`)
+        .single();
+        
+      if (data) {
+        if (data.status === 'accepted') {
+          setConnectionStatus('accepted');
+        } else if (data.status === 'pending') {
+          setConnectionStatus(data.requester_id === user.id ? 'pending_sent' : 'pending_received');
+        }
+      }
+    };
     
     fetchProfile();
-  }, [profileId]);
+    fetchConnectionStatus();
+  }, [profileId, user?.id]);
 
   const handleConnect = async () => {
     if (!user || !user.id || profileId === user.id) return;
     setIsConnecting(true);
     
-    const { error } = await supabase.from('notifications').insert({
-      user_id: profileId,
-      type: 'connection_request',
-      content: `${user.name || 'Someone'} sent you a connection request!`,
-      link: `/platform/profile/${user.id}`,
-      is_read: false
+    const { error: connError } = await supabase.from('connections').insert({
+      requester_id: user.id,
+      recipient_id: profileId,
+      status: 'pending'
     });
+
+    if (!connError) {
+      await supabase.from('notifications').insert({
+        user_id: profileId,
+        type: 'connection_request',
+        content: `${user.name || 'Someone'} sent you a connection request!`,
+        link: `/platform/profile/${user.id}`,
+        is_read: false
+      });
+      setConnectionStatus('pending_sent');
+    }
     
     setIsConnecting(false);
-    if (!error) {
-      setConnectionSent(true);
+  };
+
+  const handleAccept = async () => {
+    if (!user || !user.id || profileId === user.id) return;
+    setIsConnecting(true);
+    
+    const { error: connError } = await supabase.from('connections')
+      .update({ status: 'accepted' })
+      .match({ requester_id: profileId, recipient_id: user.id });
+
+    if (!connError) {
+      await supabase.from('notifications').insert({
+        user_id: profileId,
+        type: 'connection_accepted',
+        content: `${user.name || 'Someone'} accepted your connection request!`,
+        link: `/platform/profile/${user.id}`,
+        is_read: false
+      });
+      setConnectionStatus('accepted');
     }
+    
+    setIsConnecting(false);
   };
 
   if (isLoading) {
@@ -169,22 +215,36 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                     <button className="flex-1 xl:flex-none bg-white text-gray-900 p-4 rounded-2xl font-bold border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center">
                       <Share2 size={24} />
                     </button>
-                    <button className="flex-1 xl:flex-none bg-indigo-50 text-indigo-600 p-4 rounded-2xl font-bold border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center">
-                      <Send size={24} />
-                    </button>
-                    <button 
-                      onClick={handleConnect}
-                      disabled={isConnecting || connectionSent || profileId === user?.id}
-                      className={`flex-1 xl:flex-none px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center gap-3 ${connectionSent ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : profileId === user?.id ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'bg-[#00d26a] text-white'}`}
-                    >
-                      {isConnecting ? (
-                        <span className="animate-pulse">Sending...</span>
-                      ) : connectionSent ? (
-                        <>Request Sent!</>
-                      ) : (
-                        <><UserPlus size={24} /> Connect</>
-                      )}
-                    </button>
+                    {connectionStatus === 'accepted' && (
+                      <button className="flex-1 xl:flex-none bg-indigo-50 text-indigo-600 p-4 rounded-2xl font-bold border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center">
+                        <Send size={24} />
+                      </button>
+                    )}
+                    {profileId !== user?.id && connectionStatus === 'pending_received' ? (
+                      <button 
+                        onClick={handleAccept}
+                        disabled={isConnecting}
+                        className="flex-1 xl:flex-none px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center gap-3 bg-[#00d26a] text-white"
+                      >
+                        {isConnecting ? <span className="animate-pulse">Accepting...</span> : <><CheckCircle2 size={24} /> Accept Request</>}
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={handleConnect}
+                        disabled={isConnecting || connectionStatus !== 'none' || profileId === user?.id}
+                        className={`flex-1 xl:flex-none px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center gap-3 ${connectionStatus !== 'none' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : profileId === user?.id ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'bg-[#00d26a] text-white'}`}
+                      >
+                        {isConnecting ? (
+                          <span className="animate-pulse">Processing...</span>
+                        ) : connectionStatus === 'pending_sent' ? (
+                          <>Request Sent</>
+                        ) : connectionStatus === 'accepted' ? (
+                          <><CheckCircle2 size={24} /> Connected</>
+                        ) : (
+                          <><UserPlus size={24} /> Connect</>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -30,10 +30,11 @@ export default function PlatformHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAppStore();
+  
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
   const [dbResults, setDbResults] = useState<any[]>([]);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -59,6 +60,38 @@ export default function PlatformHeader() {
     const delay = setTimeout(fetchDbResults, 300);
     return () => clearTimeout(delay);
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    
+    const fetchNotifications = async () => {
+      const { count } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('is_read', false);
+        
+      setUnreadNotificationsCount(count || 0);
+    };
+    
+    fetchNotifications();
+    
+    const subscription = supabase
+      .channel('notifications_header')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'notifications', 
+        filter: `user_id=eq.${user.id}` 
+      }, () => {
+        fetchNotifications();
+      })
+      .subscribe();
+      
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, [user?.id]);
   const handleCloseSearch = () => {
     setIsSearchOpen(false);
     setSearchQuery('');
@@ -133,7 +166,11 @@ export default function PlatformHeader() {
               </button>
               <Link href="/platform/notifications" className="relative cursor-pointer hover:text-gray-900 transition-colors">
                 <Bell size={20} />
-                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 border-2 border-white rounded-full flex items-center justify-center text-[8px] text-white font-bold">3</span>
+                {unreadNotificationsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-[3px] bg-red-500 border-2 border-white rounded-full flex items-center justify-center text-[8px] text-white font-bold">
+                    {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                  </span>
+                )}
               </Link>
               <Link href="/platform/profile" className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
                 {user?.avatar_url ? (

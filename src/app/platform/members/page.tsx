@@ -12,6 +12,7 @@ type Profile = {
   id: string;
   full_name: string;
   avatar_url: string;
+  cover_url?: string;
   role?: string;
   location?: string;
 };
@@ -120,14 +121,27 @@ export default function MembersDirectoryPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {members.map((member) => (
               <div key={member.id} className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col transition-transform hover:-translate-y-1">
-                <div className="h-24 bg-[#5a32fa]/10 border-b-2 border-gray-200 relative">
-                  <div className="absolute -bottom-10 left-6 w-20 h-20 bg-white rounded-2xl border border-gray-200 shadow-sm flex items-center justify-center font-bold text-2xl" style={{ color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)] }}>
-                    {member.full_name ? member.full_name.charAt(0).toUpperCase() : 'U'}
-                  </div>
+                <div 
+                  className="h-24 bg-[#5a32fa]/10 border-b-2 border-gray-200 relative bg-cover bg-center"
+                  style={{ backgroundImage: member.cover_url ? `url(${member.cover_url})` : undefined }}
+                >
+                  <Link href={`/platform/profile/${member.id}`}>
+                    <div 
+                      className="absolute -bottom-10 left-6 w-20 h-20 bg-white rounded-2xl border border-gray-200 shadow-sm flex items-center justify-center font-bold text-2xl overflow-hidden bg-cover bg-center cursor-pointer transition-transform hover:scale-105" 
+                      style={{ 
+                        color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
+                        backgroundImage: member.avatar_url ? `url(${member.avatar_url})` : undefined 
+                      }}
+                    >
+                      {!member.avatar_url && (member.full_name ? member.full_name.charAt(0).toUpperCase() : 'U')}
+                    </div>
+                  </Link>
                 </div>
                 
                 <div className="p-6 pt-12 flex-1 flex flex-col">
-                  <h3 className="font-bold text-xl text-gray-900 mb-1 line-clamp-1">{member.full_name || 'Anonymous User'}</h3>
+                  <Link href={`/platform/profile/${member.id}`}>
+                    <h3 className="font-bold text-xl text-gray-900 mb-1 line-clamp-1 hover:text-[#5a32fa] transition-colors cursor-pointer">{member.full_name || 'Anonymous User'}</h3>
+                  </Link>
                   <p className="text-[#5a32fa] font-bold text-sm mb-4 flex items-center gap-1">
                     <Briefcase size={14} /> {member.role || 'WIPA Member'}
                   </p>
