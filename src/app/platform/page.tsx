@@ -7,7 +7,7 @@ import {
   Search, Bell, LayoutGrid, BookOpen, Calendar, Users, Info, Settings, 
   Hash, BellOff, ArrowUpRight, CheckCircle2, Circle, Image as ImageIcon, Video, Smile,
   Bookmark, MoreVertical, Heart, MessageCircle, Gift, LogOut, Pencil, Copy, MessageSquareOff, Trash2, Globe, Lock, Shield,
-  FileText, Loader2, PlayCircle, Plus, Send, X, Mail
+  FileText, Loader2, PlayCircle, Plus, Send, X, Mail, ThumbsUp, UsersRound, MessageSquare, Briefcase, GraduationCap, Home, Star
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
