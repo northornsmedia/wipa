@@ -499,7 +499,7 @@ export default function ProfilePage() {
           <aside className="w-[300px] hidden xl:flex flex-col shrink-0 space-y-6 pt-6 sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto no-scrollbar pb-10">
             
             {/* SUPPORT & FEEDBACK WIDGET */}
-            <div className="bg-[#0a0a0a] rounded-3xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-6 pb-8 text-white relative overflow-hidden">
+            <div className="shrink-0 bg-[#0a0a0a] rounded-3xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-6 pb-8 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-40 h-40 bg-[#5a32fa] blur-[70px] opacity-20 -mr-10 -mt-10 rounded-full pointer-events-none"></div>
               <h3 className="font-bold text-[19px] mb-2 relative z-10 tracking-tight">We're here to help!</h3>
               <p className="text-[13px] text-gray-400 mb-6 relative z-10 font-medium">Got an idea? Need assistance? Let us know.</p>
@@ -525,7 +525,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
+            <div className="shrink-0 bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
               <h3 className="font-bold text-gray-900 mb-4 text-sm">People Also Viewed</h3>
               <div className="space-y-4">
                 {[
