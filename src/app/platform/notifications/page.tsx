@@ -32,6 +32,22 @@ export default function NotificationsPage() {
       fetchNotifications();
     }
   }, [user?.id]);
+  const handleMarkAllRead = async () => {
+    if (!user?.id) return;
+    
+    // Update DB
+    await supabase
+      .from('notifications')
+      .update({ is_read: true })
+      .eq('user_id', user.id)
+      .eq('is_read', false);
+      
+    // Update local state
+    setNotifications(notifications.map(n => ({ ...n, is_read: true })));
+  };
+
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+
   return (
     <div className="w-full bg-[#f8f9fa] min-h-[calc(100vh-73px)] p-4 pb-24 md:p-6 lg:p-8 font-sans relative overflow-hidden">
       
@@ -47,12 +63,18 @@ export default function NotificationsPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#f8f5ff] to-white opacity-50"></div>
           <div className="relative z-10 flex items-center gap-3">
             <h1 className="text-xl font-bold text-gray-900">Notifications</h1>
-            <span className="bg-[#5a32fa] text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-              3 New
-            </span>
+            {unreadCount > 0 && (
+              <span className="bg-[#5a32fa] text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                {unreadCount} New
+              </span>
+            )}
           </div>
-          <button className="relative z-10 flex items-center gap-1.5 text-[13px] font-bold text-gray-500 hover:text-[#5a32fa] transition-colors group">
-            <CheckCheck size={16} className="group-hover:scale-110 transition-transform" />
+          <button 
+            onClick={handleMarkAllRead}
+            disabled={unreadCount === 0}
+            className={`relative z-10 flex items-center gap-1.5 text-[13px] font-bold transition-colors group ${unreadCount > 0 ? 'text-gray-500 hover:text-[#5a32fa]' : 'text-gray-300 cursor-not-allowed'}`}
+          >
+            <CheckCheck size={16} className={unreadCount > 0 ? "group-hover:scale-110 transition-transform" : ""} />
             <span className="hidden sm:inline">Mark all read</span>
           </button>
         </div>
