@@ -6,8 +6,9 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
+import { useAppStore } from '@/store/useAppStore';
+import { searchProfiles } from '@/app/actions/profiles';
 
 const navItems = [
   { name: 'Home', icon: Home, path: '/platform' },
@@ -41,27 +42,23 @@ export default function PlatformHeader() {
     }
 
     const fetchDbResults = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .ilike('full_name', `%${searchQuery}%`)
-        .limit(5);
-
-      if (!error && data) {
-        setDbResults(data.map(profile => ({
+      try {
+        const data = await searchProfiles(searchQuery);
+        setDbResults(data.map((profile: any) => ({
           type: 'Person',
           title: profile.full_name,
           subtitle: profile.role || 'WIPA Member',
           icon: UsersRound,
-          path: `/platform/profile/${profile.id}` // Link directly to their profile
+          path: `/platform/profile/${profile.id}`
         })));
+      } catch (err) {
+        console.error("Search error:", err);
       }
     };
 
     const delay = setTimeout(fetchDbResults, 300);
     return () => clearTimeout(delay);
   }, [searchQuery]);
-
   const handleCloseSearch = () => {
     setIsSearchOpen(false);
     setSearchQuery('');
