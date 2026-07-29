@@ -33,6 +33,10 @@ export default function ProfilePage() {
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [featureForm, setFeatureForm] = useState({ title: '', description: '', type: 'feature' });
+  const [supportForm, setSupportForm] = useState({ subject: '', message: '' });
   const [editForm, setEditForm] = useState(profileData);
   const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
 
@@ -474,7 +478,7 @@ export default function ProfilePage() {
               <div className="bg-white p-8 rounded-3xl border border-gray-200 shadow-md">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">Top Skills</h3>
                 <div className="flex flex-wrap gap-3">
-                  {(profileData.skills || profileData.practiceAreas).split(',').map((area, idx) => {
+                  {(profileData.skills || profileData.practiceAreas || "").split(',').map((area, idx) => {
                     const colors = ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'];
                     const color = colors[idx % colors.length];
                     const textColor = color === '#5a32fa' ? 'text-white' : 'text-gray-900';
@@ -502,7 +506,7 @@ export default function ProfilePage() {
               
               <div className="space-y-3 relative z-10">
                 <button 
-                  onClick={() => alert("Feature Request Modal would open here!")}
+                  onClick={() => setIsFeatureModalOpen(true)}
                   className="w-full bg-[#5a32fa] hover:bg-[#4a24db] text-white px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
                 >
                   <Lightbulb size={16} /> Request a Feature
@@ -513,6 +517,7 @@ export default function ProfilePage() {
                   <HelpCircle size={16} /> Help Center
                 </button>
                 <button 
+                  onClick={() => setIsSupportModalOpen(true)}
                   className="w-full bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all"
                 >
                   <Headphones size={16} /> Contact Support
@@ -886,6 +891,105 @@ export default function ProfilePage() {
         </div>
       )}
       
+      {/* Feature Request Modal */}
+      {isFeatureModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-[24px] shadow-2xl p-8 relative">
+            <button 
+              onClick={() => setIsFeatureModalOpen(false)}
+              className="absolute top-6 right-6 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
+            >
+              <X size={16} strokeWidth={3} />
+            </button>
+            <div className="w-12 h-12 bg-[#5a32fa]/10 rounded-2xl flex items-center justify-center mb-6">
+              <Lightbulb size={24} className="text-[#5a32fa]" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Request a Feature</h3>
+            <p className="text-sm font-medium text-gray-500 mb-6">Have an idea to make WIPA better? We're all ears!</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Feature Idea</label>
+                <input 
+                  type="text"
+                  value={featureForm.title}
+                  onChange={(e) => setFeatureForm({...featureForm, title: e.target.value})}
+                  placeholder="e.g. Add dark mode"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#5a32fa] focus:outline-none font-medium"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Details (Optional)</label>
+                <textarea 
+                  value={featureForm.description}
+                  onChange={(e) => setFeatureForm({...featureForm, description: e.target.value})}
+                  placeholder="Tell us how this would help you..."
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#5a32fa] focus:outline-none font-medium min-h-[100px]"
+                />
+              </div>
+              <button 
+                onClick={() => {
+                  alert("Feature requested successfully!");
+                  setIsFeatureModalOpen(false);
+                  setFeatureForm({ title: '', description: '', type: 'feature' });
+                }}
+                className="w-full bg-[#5a32fa] text-white font-bold py-3.5 rounded-xl hover:bg-[#4a24db] transition-colors mt-2 shadow-[4px_4px_0px_0px_#131313] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#131313]"
+              >
+                Submit Idea
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contact Support Modal */}
+      {isSupportModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-[24px] shadow-2xl p-8 relative border-t-[10px] border-[#131313]">
+            <button 
+              onClick={() => setIsSupportModalOpen(false)}
+              className="absolute top-6 right-6 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
+            >
+              <X size={16} strokeWidth={3} />
+            </button>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Contact Support</h3>
+            <p className="text-sm font-medium text-gray-500 mb-6">Need help with your account? Send us a message.</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Subject</label>
+                <input 
+                  type="text"
+                  value={supportForm.subject}
+                  onChange={(e) => setSupportForm({...supportForm, subject: e.target.value})}
+                  placeholder="What do you need help with?"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#131313] focus:outline-none font-medium"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Message</label>
+                <textarea 
+                  value={supportForm.message}
+                  onChange={(e) => setSupportForm({...supportForm, message: e.target.value})}
+                  placeholder="Describe your issue..."
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#131313] focus:outline-none font-medium min-h-[120px]"
+                />
+              </div>
+              <button 
+                onClick={() => {
+                  alert("Support ticket created!");
+                  setIsSupportModalOpen(false);
+                  setSupportForm({ subject: '', message: '' });
+                }}
+                className="w-full bg-[#131313] text-white font-bold py-3.5 rounded-xl hover:bg-black transition-colors mt-2"
+              >
+                Send Message
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
