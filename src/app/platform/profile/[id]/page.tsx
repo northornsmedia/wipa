@@ -18,6 +18,9 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   const router = useRouter();
   
   const [isLoading, setIsLoading] = useState(true);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionSent, setConnectionSent] = useState(false);
+
 
   const [profileData, setProfileData] = useState({
     name: 'Loading...',
@@ -57,6 +60,24 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     
     fetchProfile();
   }, [profileId]);
+
+  const handleConnect = async () => {
+    if (!user || !user.id || profileId === user.id) return;
+    setIsConnecting(true);
+    
+    const { error } = await supabase.from('notifications').insert({
+      user_id: profileId,
+      type: 'connection_request',
+      content: `${user.name || 'Someone'} sent you a connection request!`,
+      link: `/platform/profile/${user.id}`,
+      is_read: false
+    });
+    
+    setIsConnecting(false);
+    if (!error) {
+      setConnectionSent(true);
+    }
+  };
 
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-[#f4f4f4]"><p className="font-bold text-gray-500">Loading Profile...</p></div>;
@@ -198,9 +219,17 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                     <Send size={24} />
                   </button>
                   <button 
-                    className="flex-1 xl:flex-none bg-[#00d26a] text-gray-900 px-8 py-4 rounded-2xl font-black text-lg border-4 border-[#131313] shadow-[4px_4px_0px_0px_#131313] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
+                    onClick={handleConnect}
+                    disabled={isConnecting || connectionSent || profileId === user?.id}
+                    className={`flex-1 xl:flex-none px-8 py-4 rounded-2xl font-black text-lg border-4 border-[#131313] shadow-[4px_4px_0px_0px_#131313] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3 ${connectionSent ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : profileId === user?.id ? 'opacity-50 cursor-not-allowed bg-gray-200' : 'bg-[#00d26a] text-gray-900'}`}
                   >
-                    <UserPlus size={24} /> Connect
+                    {isConnecting ? (
+                      <span className="animate-pulse">Sending...</span>
+                    ) : connectionSent ? (
+                      <>Request Sent!</>
+                    ) : (
+                      <><UserPlus size={24} /> Connect</>
+                    )}
                   </button>
                 </div>
               </div>
