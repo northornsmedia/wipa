@@ -84,8 +84,14 @@ function MessagesContent() {
               id,
               full_name
             )
+          ),
+          messages (
+            content,
+            created_at
           )
         `)
+        .order('created_at', { foreignTable: 'messages', ascending: false })
+        .limit(1, { foreignTable: 'messages' })
         .order('updated_at', { ascending: false });
 
       if (data) {
@@ -104,6 +110,21 @@ function MessagesContent() {
             chatInitial = chatName.charAt(0).toUpperCase();
           }
 
+          let lastMessageText = 'Start a conversation';
+          let lastTimeText = '';
+          
+          if (conv.messages && conv.messages.length > 0) {
+            lastMessageText = conv.messages[0].content;
+            lastTimeText = new Date(conv.messages[0].created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const now = new Date();
+            const msgDate = new Date(conv.messages[0].created_at);
+            if (now.toDateString() !== msgDate.toDateString()) {
+              // If it's not today, show date like "Mon" or "Jul 26"
+              lastTimeText = msgDate.toLocaleDateString([], { weekday: 'short' });
+            }
+          }
+
           return {
             id: conv.id,
             name: chatName || 'Group Chat',
@@ -111,8 +132,8 @@ function MessagesContent() {
             initial: chatInitial,
             color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
             unread: 0,
-            lastMessage: 'Open to view messages',
-            lastTime: '',
+            lastMessage: lastMessageText,
+            lastTime: lastTimeText,
             messages: [],
             participantId
           };
