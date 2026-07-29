@@ -369,9 +369,13 @@ export default function PlatformPage() {
                 
                 {/* Input Area */}
                 <div className="flex gap-4 p-5 pb-4 border-b border-gray-50 pt-6">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-sm shrink-0 mt-1 shadow-sm shadow-[#ff90e8]/30">
-                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
+                  {user?.avatar_url ? (
+                    <img src={user.avatar_url} alt={user?.name || 'User'} className="w-10 h-10 rounded-full object-cover shrink-0 mt-1 shadow-sm" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-sm shrink-0 mt-1 shadow-sm shadow-[#ff90e8]/30">
+                      {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                    </div>
+                  )}
                   <div className="flex-1 bg-gray-50 hover:bg-gray-100 transition-colors rounded-2xl p-4 min-h-[80px] border border-gray-100 group-hover:border-gray-200">
                     <span className="text-gray-500 font-medium text-[15px]">What's on your mind?</span>
                   </div>
@@ -434,9 +438,13 @@ export default function PlatformPage() {
                         </div>
                     
                     <div className="p-5 flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-md shadow-[#ff90e8]/30">
-                        {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                      </div>
+                      {user?.avatar_url ? (
+                        <img src={user.avatar_url} alt={user?.name || 'User'} className="w-12 h-12 rounded-2xl object-cover shadow-md shadow-gray-200" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-md shadow-[#ff90e8]/30">
+                          {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                        </div>
+                      )}
                       <div>
                         <p className="font-bold text-[15px] text-gray-900 leading-tight">{user?.name || 'User'}</p>
                         <div className="relative">
@@ -703,9 +711,13 @@ export default function PlatformPage() {
             {/* Add Comment Input Area (Footer) */}
             <div className="p-5 border-t border-gray-50 bg-white shrink-0">
               <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-0.5">
-                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                </div>
+                {user?.avatar_url ? (
+                  <img src={user.avatar_url} alt={user?.name || 'User'} className="w-8 h-8 rounded-full object-cover shadow-sm mt-0.5" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-0.5">
+                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
                 <div className="flex-1 flex flex-col items-end gap-2">
                   <textarea 
                     className="w-full min-h-[80px] resize-none outline-none text-[13px] text-gray-900 placeholder-gray-400 bg-gray-50 p-3 rounded-xl border border-gray-100 focus:border-gray-200 focus:bg-white transition-colors"

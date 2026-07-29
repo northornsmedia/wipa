@@ -139,9 +139,13 @@ export default function PlatformHeader() {
                 <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 border-2 border-white rounded-full flex items-center justify-center text-[8px] text-white font-bold">3</span>
               </Link>
               <Link href="/platform/profile" className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
-                <div className="w-8 h-8 rounded-full bg-[#b892ff] text-white flex items-center justify-center font-bold text-sm">
-                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                </div>
+                {user?.avatar_url ? (
+                  <img src={user.avatar_url} alt={user?.name || 'User'} className="w-8 h-8 rounded-full object-cover" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-[#b892ff] text-white flex items-center justify-center font-bold text-sm">
+                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
               </Link>
             </div>
           </>

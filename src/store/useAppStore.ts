@@ -129,8 +129,8 @@ const DUMMY_POSTS: Post[] = [
 interface AppState {
   isMenuOpen: boolean;
   toggleMenu: () => void;
-  user: { name: string; email: string; id?: string } | null;
-  setUser: (user: { name: string; email: string; id?: string } | null) => void;
+  user: { name: string; email: string; id?: string; avatar_url?: string; cover_url?: string } | null;
+  setUser: (user: { name: string; email: string; id?: string; avatar_url?: string; cover_url?: string } | null) => void;
   posts: Post[];
   likedPostIds: number[];
   toggleLike: (postId: number) => void;

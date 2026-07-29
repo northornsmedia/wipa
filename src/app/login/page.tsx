@@ -44,7 +44,7 @@ export default function LoginPage() {
       // Fetch profile data
       const { data: profile } = await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, avatar_url, cover_url")
         .eq("id", data.user.id)
         .single();
         
@@ -52,6 +52,8 @@ export default function LoginPage() {
         name: profile?.full_name || data.user.email?.split("@")[0] || "User",
         email: data.user.email!,
         id: data.user.id,
+        avatar_url: profile?.avatar_url || undefined,
+        cover_url: profile?.cover_url || undefined,
       });
 
       // Record device session

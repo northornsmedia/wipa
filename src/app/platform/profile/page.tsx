@@ -6,12 +6,13 @@ import {
   BadgeCheck, LayoutGrid, User, Users, Mail, UserPlus, UsersRound, MessageSquare, FileText, Briefcase, GraduationCap,
   MapPin, Link as LinkIcon, Calendar, Edit3, Settings, Camera, ThumbsUp
 , BookOpen, X
-, Hash, BellOff, ArrowUpRight, Circle, CheckCircle2} from 'lucide-react';
+, Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, Loader2} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function ProfilePage() {
-  const { user } = useAppStore();
+  const { user, setUser } = useAppStore();
   const router = useRouter();
 
   const [profileData, setProfileData] = useState({
@@ -22,7 +23,7 @@ export default function ProfilePage() {
     linkedin: 'linkedin.com/in/janedoe',
     website: 'janedoe.com',
     practiceAreas: 'Patent Prosecution, Trademark Law, IP Litigation, Tech Licensing',
-    avatarUrl: ''
+    avatarUrl: user?.avatar_url || ''
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState(profileData);
@@ -55,18 +56,77 @@ export default function ProfilePage() {
     }
   };
 
-  const handleSaveProfile = () => {
-    setProfileData(editForm);
-    setIsEditModalOpen(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveProfile = async () => {
+    if (!user?.id) return;
+    setIsSaving(true);
+    let finalAvatarUrl = editForm.avatarUrl;
+
+    try {
+      if (avatarFile) {
+        const fileExt = avatarFile.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, avatarFile, { upsert: true });
+          
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+        finalAvatarUrl = data.publicUrl;
+      }
+
+      await supabase.from('profiles').update({
+        full_name: editForm.name,
+        avatar_url: finalAvatarUrl,
+      }).eq('id', user.id);
+
+      setProfileData({ ...editForm, avatarUrl: finalAvatarUrl });
+      setUser({ ...user, name: editForm.name, avatar_url: finalAvatarUrl });
+      
+    } catch (err) {
+      console.error('Error saving profile:', err);
+    } finally {
+      setIsSaving(false);
+      setIsEditModalOpen(false);
+      setAvatarFile(null);
+    }
   };
 
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
-  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setCoverImage(URL.createObjectURL(file));
+    if (file && user?.id) {
+      setIsUploadingCover(true);
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}-cover.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, file, { upsert: true });
+          
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+        
+        await supabase.from('profiles').update({
+          cover_url: data.publicUrl
+        }).eq('id', user.id);
+
+        setUser({ ...user, cover_url: data.publicUrl });
+        setCoverImage(data.publicUrl);
+      } catch (err) {
+        console.error("Error uploading cover:", err);
+      } finally {
+        setIsUploadingCover(false);
+      }
     }
   };
 
@@ -74,6 +134,7 @@ export default function ProfilePage() {
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setAvatarFile(file);
       const url = URL.createObjectURL(file);
       setEditForm({...editForm, avatarUrl: url});
     }
@@ -208,16 +269,16 @@ export default function ProfilePage() {
             <div 
               className="h-40 md:h-56 relative border-b-4 border-gray-200 bg-indigo-50 overflow-hidden"
               style={{ 
-                backgroundImage: coverImage ? `url(${coverImage})` : undefined,
+                backgroundImage: (user?.cover_url || coverImage) ? `url(${user?.cover_url || coverImage})` : undefined,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
               }}
             >
-              {!coverImage && (
+              {!(user?.cover_url || coverImage) && (
                 <div className="absolute inset-0 opacity-30 bg-[radial-gradient(#131313_3px,transparent_3px)] [background-size:24px_24px]"></div>
               )}
               {/* Floating decorative elements */}
-              {!coverImage && (
+              {!(user?.cover_url || coverImage) && (
                 <>
                    <div className="absolute top-10 left-10 w-20 h-20 bg-pink-50 border border-gray-200 rounded-full mix-blend-multiply opacity-50 animate-pulse"></div>
                    <div className="absolute bottom-20 right-20 w-32 h-32 bg-green-50 border border-gray-200 rotate-12 mix-blend-multiply opacity-50"></div>
@@ -226,9 +287,11 @@ export default function ProfilePage() {
               
               <button 
                 onClick={() => coverInputRef.current?.click()}
-                className="absolute bottom-6 right-6 bg-white px-6 py-3 rounded-2xl border border-gray-200 font-bold text-sm flex items-center gap-2 hover:bg-[#5a32fa] hover:text-white transition-all shadow-sm hover:-translate-y-1"
+                disabled={isUploadingCover}
+                className="absolute bottom-6 right-6 bg-white px-6 py-3 rounded-2xl border border-gray-200 font-bold text-sm flex items-center gap-2 hover:bg-[#5a32fa] hover:text-white transition-all shadow-sm hover:-translate-y-1 disabled:opacity-50"
               >
-                <Camera size={20} /> Edit Cover
+                {isUploadingCover ? <Loader2 size={20} className="animate-spin" /> : <Camera size={20} />} 
+                {isUploadingCover ? 'Uploading...' : 'Edit Cover'}
               </button>
               
               <input 
@@ -565,8 +628,10 @@ export default function ProfilePage() {
               </button>
               <button 
                 onClick={handleSaveProfile}
-                className="flex-1 py-3 bg-green-50 text-gray-900 rounded-xl font-bold border border-gray-200 hover:bg-[#00e373] transition-colors shadow-sm active:translate-y-1 active:shadow-none"
+                disabled={isSaving}
+                className="flex-1 py-3 bg-green-50 text-gray-900 rounded-xl font-bold border border-gray-200 hover:bg-[#00e373] transition-colors shadow-sm active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 disabled:opacity-50"
               >
+                {isSaving ? <Loader2 size={20} className="animate-spin" /> : null}
                 Save Changes
               </button>
             </div>
