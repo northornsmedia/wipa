@@ -613,16 +613,20 @@ export default function PlatformPage() {
                     <div key={post.id} className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          {author.avatar_url ? (
-                            <img src={author.avatar_url} alt={authorName} className="w-10 h-10 rounded-full object-cover shadow-sm" />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
-                              {initial}
-                            </div>
-                          )}
+                          <Link href={`/platform/profile/${post.author_id}`} className="shrink-0 hover:opacity-80 transition-opacity block">
+                            {author.avatar_url ? (
+                              <img src={author.avatar_url} alt={authorName} className="w-10 h-10 rounded-full object-cover shadow-sm" />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+                                {initial}
+                              </div>
+                            )}
+                          </Link>
                           <div className="flex flex-col">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-[14px] text-gray-900 leading-none">{authorName}</h3>
+                              <Link href={`/platform/profile/${post.author_id}`} className="hover:underline hover:text-[#5a32fa] transition-colors">
+                                <h3 className="font-bold text-[14px] text-gray-900 leading-none">{authorName}</h3>
+                              </Link>
                               <span className="text-gray-300 text-xs">•</span>
                               <span className="text-xs text-gray-500 font-medium leading-none">{timeAgo}</span>
                             </div>
