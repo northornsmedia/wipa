@@ -150,6 +150,21 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     setIsConnecting(false);
   };
 
+  const handleReject = async () => {
+    if (!user || !user.id || profileId === user.id) return;
+    setIsConnecting(true);
+    
+    const { error: connError } = await supabase.from('connections')
+      .delete()
+      .match({ requester_id: profileId, recipient_id: user.id, status: 'pending' });
+
+    if (!connError) {
+      setConnectionStatus('none');
+    }
+    
+    setIsConnecting(false);
+  };
+
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa]"><p className="font-bold text-gray-500">Loading Profile...</p></div>;
   }
@@ -232,13 +247,22 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                       </button>
                     )}
                     {profileId !== user?.id && connectionStatus === 'pending_received' ? (
-                      <button 
-                        onClick={handleAccept}
-                        disabled={isConnecting}
-                        className="flex-1 xl:flex-none px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center gap-3 bg-[#00d26a] text-white"
-                      >
-                        {isConnecting ? <span className="animate-pulse">Accepting...</span> : <><CheckCircle2 size={24} /> Accept Request</>}
-                      </button>
+                      <>
+                        <button 
+                          onClick={handleAccept}
+                          disabled={isConnecting}
+                          className="flex-1 xl:flex-none px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center gap-3 bg-[#00d26a] text-white"
+                        >
+                          {isConnecting ? <span className="animate-pulse">Accepting...</span> : <><CheckCircle2 size={24} /> Accept Request</>}
+                        </button>
+                        <button 
+                          onClick={handleReject}
+                          disabled={isConnecting}
+                          className="flex-1 xl:flex-none px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 bg-white text-gray-700 shadow-sm hover:bg-gray-50 hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
+                        >
+                          Ignore
+                        </button>
+                      </>
                     ) : (
                       <button 
                         onClick={handleConnect}
