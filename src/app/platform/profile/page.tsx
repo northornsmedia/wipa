@@ -204,7 +204,7 @@ export default function ProfilePage() {
     <div className="min-h-screen">
       
       {/* MAIN PROFILE CONTENT */}
-      <div className="w-full flex gap-6 lg:gap-8 items-start pl-0 pr-4 md:pr-8 lg:pr-12 bg-[#f8f9fa] min-h-[calc(100vh-73px)]">
+      <div className="w-full flex gap-6 lg:gap-8 items-start px-4 md:px-8 lg:px-12 bg-[#f8f9fa] min-h-[calc(100vh-73px)]">
 
         <div className="flex-1 space-y-8 min-w-0 pt-6 pb-24">
           
