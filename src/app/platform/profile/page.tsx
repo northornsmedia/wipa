@@ -663,32 +663,32 @@ export default function ProfilePage() {
       {/* Share Profile Modal */}
       {isShareModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-[2rem] w-full max-w-sm overflow-hidden flex flex-col relative shadow-[0_0_40px_rgba(90,50,250,0.2)] animate-in fade-in zoom-in duration-300">
-            {/* Cool Top Gradient Header */}
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-[#5a32fa] via-[#8c65ff] to-[#ff4b4b] opacity-10"></div>
+          <div className="bg-gradient-to-br from-white via-white to-[#f0ebff] rounded-[2rem] w-full max-w-sm overflow-hidden flex flex-col relative shadow-[0_0_50px_rgba(90,50,250,0.25)] animate-in fade-in zoom-in duration-300 border border-white/50">
             
-            <div className="p-6 relative flex justify-between items-center">
+            <div className="p-6 pb-2 relative flex justify-between items-center z-10">
               <div>
                 <h2 className="text-2xl font-black text-gray-900 tracking-tight">Share Profile</h2>
                 <p className="text-sm font-bold text-[#5a32fa]">Digital Business Card</p>
               </div>
-              <button onClick={() => setIsShareModalOpen(false)} className="bg-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-200 transition-colors p-2.5 rounded-full shadow-sm">
+              <button onClick={() => setIsShareModalOpen(false)} className="bg-white/80 backdrop-blur-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors p-2.5 rounded-full shadow-sm border border-gray-100">
                 <X size={20} />
               </button>
             </div>
             
-            <div className="px-8 pb-8 pt-2 flex flex-col items-center relative">
-              <p className="text-[15px] text-gray-600 font-medium text-center mb-6 max-w-[250px]">
-                Have someone scan this code with their camera to instantly view your profile.
+            <div className="px-8 pb-8 pt-4 flex flex-col items-center relative z-10">
+              <p className="text-[14px] text-gray-600 font-medium text-center mb-8 max-w-[250px] leading-relaxed">
+                Have someone scan this code with their camera to instantly connect.
               </p>
               
-              {/* QR Code Container with Glow */}
-              <div className="relative mb-8 group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#5a32fa] to-[#ff4b4b] rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                <div className="bg-white p-5 rounded-[1.8rem] shadow-sm relative ring-1 ring-gray-100" id="qr-code-container">
+              {/* QR Code Container with Advanced Glow */}
+              <div className="relative mb-10 group">
+                {/* Animated Gradient Glow */}
+                <div className="absolute -inset-3 bg-gradient-to-r from-[#5a32fa] via-[#8c65ff] to-[#ff4b4b] rounded-[2.5rem] blur-xl opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-300 animate-pulse"></div>
+                
+                <div className="bg-white p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative ring-1 ring-gray-100/50 transform group-hover:-translate-y-1 transition-all duration-300" id="qr-code-container">
                   <QRCodeSVG 
                     value={`${window.location.origin}/u/${profileData.memberId}`} 
-                    size={220}
+                    size={200}
                     bgColor="#ffffff"
                     fgColor="#131313"
                     level="H"
@@ -726,27 +726,27 @@ export default function ProfilePage() {
                   };
                   img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
                 }}
-                className="w-full flex items-center justify-center gap-2 bg-[#131313] text-white font-bold py-3.5 px-6 rounded-2xl hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.3)] transition-all mb-6"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#131313] to-[#2a2a2a] text-white font-bold py-3.5 px-6 rounded-2xl hover:shadow-[0_8px_25px_-6px_rgba(0,0,0,0.5)] hover:-translate-y-0.5 transition-all mb-6 border border-gray-800"
               >
                 <Download size={20} /> Download QR (HD)
               </button>
 
               <div className="w-full">
-                <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 p-1.5 rounded-2xl">
+                <div className="flex items-center gap-2 bg-white border border-gray-200/80 p-1.5 rounded-2xl shadow-sm">
                   <input 
                     type="text" 
                     readOnly 
                     value={`${window.location.origin}/u/${profileData.memberId}`}
-                    className="flex-1 bg-transparent border-none focus:outline-none text-gray-600 text-[13px] px-3 font-semibold truncate"
+                    className="flex-1 bg-transparent border-none focus:outline-none text-gray-500 text-[13px] px-3 font-semibold truncate"
                   />
                   <button 
                     onClick={() => {
                       navigator.clipboard.writeText(`${window.location.origin}/u/${profileData.memberId}`);
                       alert('Link copied!');
                     }}
-                    className="bg-white border border-gray-200 p-2.5 rounded-xl text-gray-700 hover:bg-[#5a32fa] hover:text-white hover:border-[#5a32fa] transition-all shadow-sm flex items-center gap-2 font-bold text-sm"
+                    className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 p-2.5 rounded-xl text-gray-700 hover:from-[#5a32fa] hover:to-[#8c65ff] hover:text-white hover:border-[#5a32fa] transition-all shadow-sm flex items-center gap-2 font-bold text-sm group"
                   >
-                    <Copy size={16} /> Copy
+                    <Copy size={16} className="group-hover:scale-110 transition-transform" /> Copy
                   </button>
                 </div>
               </div>
