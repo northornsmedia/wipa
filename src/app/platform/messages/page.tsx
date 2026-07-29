@@ -33,112 +33,13 @@ type Chat = {
   messages: Message[];
 };
 
-const MOCK_CONVERSATIONS: Chat[] = [
-  {
-    id: 1,
-    name: "Sarah Jenkins",
-    role: "Senior Patent Counsel",
-    initial: "S",
-    color: "#5a32fa",
-    unread: 2,
-    lastMessage: "Have you seen the new USPTO guidelines on AI-generated inventions?",
-    lastTime: "10:42 AM",
-    messages: [
-      { id: 1, text: "Hi! Are you going to the WIPA networking event next week?", sender: "them", time: "10:30 AM" },
-      { id: 2, text: "Yes, definitely! Looking forward to it.", sender: "me", time: "10:35 AM" },
-      { id: 3, text: "Have you seen the new USPTO guidelines on AI-generated inventions?", sender: "them", time: "10:42 AM" },
-      { id: 4, text: "It's quite a shift from their previous stance.", sender: "them", time: "10:42 AM" },
-    ]
-  },
-  {
-    id: 2,
-    name: "David Chen",
-    role: "Partner at IP Law Group",
-    initial: "D",
-    color: "#ff90e8",
-    unread: 0,
-    lastMessage: "Sounds good, let's connect on Tuesday.",
-    lastTime: "Yesterday",
-    messages: [
-      { id: 1, text: "Hello! I saw your post on trademark enforcement.", sender: "them", time: "Yesterday, 2:15 PM" },
-      { id: 2, text: "Would love to discuss your approach to cross-border disputes.", sender: "them", time: "Yesterday, 2:16 PM" },
-      { id: 3, text: "Hi David, thanks! I'd be happy to chat.", sender: "me", time: "Yesterday, 3:00 PM" },
-      { id: 4, text: "Sounds good, let's connect on Tuesday.", sender: "them", time: "Yesterday, 3:30 PM" },
-    ]
-  },
-  {
-    id: 3,
-    name: "Elena Rodriguez",
-    role: "Trademark Examiner",
-    initial: "E",
-    color: "#00d26a",
-    unread: 0,
-    lastMessage: "Thank you for the insights!",
-    lastTime: "Monday",
-    messages: [
-      { id: 1, text: "Thank you for the insights!", sender: "them", time: "Monday, 9:00 AM" }
-    ]
-  },
-  {
-    id: 4,
-    name: "Michael Chang",
-    role: "IP Litigation Associate",
-    initial: "M",
-    color: "#ffc900",
-    unread: 0,
-    lastMessage: "Can you send over the docket number?",
-    lastTime: "Last week",
-    messages: [
-    ]
-  },
-  {
-    id: 5,
-    name: "Trade Marks & Brand Protection",
-    role: "Group Chat • 1,240 members",
-    initial: "TM",
-    color: "#5a32fa",
-    unread: 5,
-    lastMessage: "Has anyone reviewed the new filing procedures?",
-    lastTime: "11:30 AM",
-    messages: [
-      { id: 1, text: "Welcome to the Trade Marks & Brand Protection group!", sender: "System", time: "Monday" },
-      { id: 2, text: "Has anyone reviewed the new filing procedures for EUIPO?", sender: "Alex", time: "11:30 AM" }
-    ]
-  },
-  {
-    id: 6,
-    name: "Women in IP Leadership",
-    role: "Group Chat • 3,200 members",
-    initial: "W",
-    color: "#ff90e8",
-    unread: 0,
-    lastMessage: "Looking forward to our next virtual meetup!",
-    lastTime: "Yesterday",
-    messages: [
-      { id: 1, text: "The panel discussion on Friday was fantastic.", sender: "Sarah", time: "Yesterday, 4:00 PM" },
-      { id: 2, text: "Looking forward to our next virtual meetup!", sender: "them", time: "Yesterday, 4:15 PM" }
-    ]
-  },
-  {
-    id: 7,
-    name: "Life Sciences & Biotech IP",
-    role: "Group Chat • 415 members",
-    initial: "🧬",
-    color: "#b892ff",
-    unread: 0,
-    lastMessage: "New paper out on CRISPR patents.",
-    lastTime: "Tuesday",
-    messages: [
-      { id: 1, text: "New paper out on CRISPR patents. I'll share the link in the resources tab.", sender: "them", time: "Tuesday, 9:00 AM" }
-    ]
-  }
-];
+const MOCK_CONVERSATIONS: Chat[] = [];
 
 function MessagesContent() {
   const { user } = useAppStore();
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get('userId');
-  const [conversations, setConversations] = useState<Chat[]>(MOCK_CONVERSATIONS);
+  const [conversations, setConversations] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | number>(1);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [newMessage, setNewMessage] = useState("");
@@ -212,12 +113,7 @@ function MessagesContent() {
             messages: []
           };
         });
-        setConversations(prev => {
-          // ensure no duplicates
-          const mockIds = MOCK_CONVERSATIONS.map(m => m.id);
-          const filteredPrev = prev.filter(c => mockIds.includes(c.id as number));
-          return [...formattedChats, ...filteredPrev];
-        });
+        setConversations(formattedChats);
       }
     };
     fetchConversations();
