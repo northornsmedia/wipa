@@ -67,6 +67,12 @@ function MessagesContent() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<BlobPart[]>([]);
 
+  // Use a ref to access the latest activeChatId inside the global listener without re-binding the effect
+  const activeChatIdRef = useRef<string | number | null>(null);
+  useEffect(() => {
+    activeChatIdRef.current = activeChatId;
+  }, [activeChatId]);
+
   
   // Load real conversations
   useEffect(() => {
@@ -170,7 +176,7 @@ function MessagesContent() {
               ...chat,
               lastMessage: m.content || (m.media_url ? "Sent an attachment" : ""),
               lastTime: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              unread: (!isMe && activeChatId !== m.conversation_id) ? chat.unread + 1 : chat.unread
+              unread: (!isMe && activeChatIdRef.current !== m.conversation_id) ? chat.unread + 1 : chat.unread
             };
             
             // Move to top
@@ -188,7 +194,7 @@ function MessagesContent() {
       
     return () => { supabase.removeChannel(globalChannel); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, activeChatId]); // re-bind when activeChatId changes so the global listener knows whether to increment unread
+  }, [user?.id]); // do not depend on activeChatId here!
 
   // Load target user chat if accessed via ?userId=
   useEffect(() => {
@@ -279,6 +285,8 @@ function MessagesContent() {
           time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           type: 'text' as any
         }));
+        
+        console.log("Fetched messages for chat:", activeChatId, msgs);
         
         setConversations(prev => prev.map(chat => chat.id === activeChatId ? { ...chat, messages: msgs, unread: 0 } : chat));
         
