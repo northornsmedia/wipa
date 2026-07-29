@@ -36,7 +36,7 @@ export default function ProfilePage() {
   const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [featureForm, setFeatureForm] = useState({ title: '', customTitle: '', description: '', type: 'feature' });
-  const [supportForm, setSupportForm] = useState({ subject: '', message: '' });
+  const [supportForm, setSupportForm] = useState({ subject: '', customSubject: '', message: '' });
   const [editForm, setEditForm] = useState(profileData);
   const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
 
@@ -990,29 +990,60 @@ export default function ProfilePage() {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Subject</label>
-                <input 
-                  type="text"
-                  value={supportForm.subject}
-                  onChange={(e) => setSupportForm({...supportForm, subject: e.target.value})}
-                  placeholder="What do you need help with?"
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#131313] focus:outline-none font-medium"
-                />
+                <label className="block text-sm font-bold text-gray-700 mb-2">Select an Issue</label>
+                <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto p-3 bg-gray-50 border-2 border-gray-100 rounded-xl custom-scrollbar">
+                  {[
+                    "Login Issues", "Password Reset", "Billing Question", "Upgrade Membership",
+                    "Cancel Membership", "Bug Report", "App Crashing", "Profile Update Fails",
+                    "Messaging Not Working", "Notification Problems", "Spam/Harassment Report",
+                    "Data Privacy Request", "Other"
+                  ].map((issue) => (
+                    <button
+                      key={issue}
+                      onClick={() => setSupportForm({...supportForm, subject: issue})}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-bold border transition-all ${
+                        supportForm.subject === issue 
+                          ? 'bg-[#131313] text-white border-[#131313] shadow-md' 
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-black/40 hover:bg-white'
+                      }`}
+                    >
+                      {issue}
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              {supportForm.subject === 'Other' && (
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Issue Topic</label>
+                  <input 
+                    type="text"
+                    value={supportForm.customSubject}
+                    onChange={(e) => setSupportForm({...supportForm, customSubject: e.target.value})}
+                    placeholder="e.g. Cannot upload avatar"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#131313] focus:outline-none font-medium"
+                  />
+                </div>
+              )}
+              
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Message</label>
                 <textarea 
                   value={supportForm.message}
                   onChange={(e) => setSupportForm({...supportForm, message: e.target.value})}
-                  placeholder="Describe your issue..."
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#131313] focus:outline-none font-medium min-h-[120px]"
+                  placeholder="Describe your issue in detail..."
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#131313] focus:outline-none font-medium min-h-[100px]"
                 />
               </div>
               <button 
                 onClick={() => {
+                  if (!supportForm.subject) {
+                    alert("Please select an issue topic!");
+                    return;
+                  }
                   alert("Support ticket created!");
                   setIsSupportModalOpen(false);
-                  setSupportForm({ subject: '', message: '' });
+                  setSupportForm({ subject: '', customSubject: '', message: '' });
                 }}
                 className="w-full bg-[#131313] text-white font-bold py-3.5 rounded-xl hover:bg-black transition-colors mt-2"
               >
