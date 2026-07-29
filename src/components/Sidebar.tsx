@@ -146,7 +146,10 @@ export default function Sidebar() {
             <div className="flex items-center gap-3">
               <GraduationCap size={18} /> Mentorship
             </div>
-            <span className="px-2 py-0.5 bg-[#00d26a] text-white text-[10px] font-bold rounded-full">NEW</span>
+            <span className="relative flex items-center justify-center">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00d26a] opacity-40"></span>
+              <span className="relative px-2 py-0.5 bg-[#00d26a] text-white text-[10px] font-bold rounded-full shadow-sm">NEW</span>
+            </span>
           </Link>
         </nav>
       </div>
