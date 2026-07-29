@@ -292,24 +292,24 @@ export default function ProfilePage() {
                 </div>
                 
                 {/* Actions */}
-                <div className="flex gap-4 w-full xl:w-auto">
+                <div className="flex gap-3 w-full xl:w-auto mt-4 xl:mt-0">
                   <button 
                     onClick={() => setIsSettingsModalOpen(true)}
-                    className="flex-1 xl:flex-none bg-white text-gray-900 p-4 rounded-2xl font-bold border border-gray-200 shadow-sm hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center"
+                    className="flex-none bg-white text-gray-900 p-2.5 rounded-xl font-bold border border-gray-200 shadow-sm hover:bg-gray-50 transition-all flex items-center justify-center"
                   >
-                    <Settings size={24} />
+                    <Settings size={20} />
                   </button>
                   <button 
                     onClick={() => { setEditForm(profileData); setIsEditModalOpen(true); }} 
-                    className="flex-1 xl:flex-none bg-green-50 text-gray-900 px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 shadow-sm hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
+                    className="flex-1 xl:flex-none bg-white text-gray-900 px-5 py-2.5 rounded-xl font-bold text-[15px] border border-gray-200 shadow-sm hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
                   >
-                    <Edit3 size={24} /> Edit Profile
+                    <Edit3 size={18} /> Edit Profile
                   </button>
                   <button 
                     onClick={() => setIsShareModalOpen(true)}
-                    className="flex-1 xl:flex-none bg-[#5a32fa] text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all flex items-center justify-center gap-3"
+                    className="flex-1 xl:flex-none bg-[#5a32fa] text-white px-5 py-2.5 rounded-xl font-bold text-[15px] shadow-sm hover:bg-[#4a24db] transition-all flex items-center justify-center gap-2"
                   >
-                    <Share2 size={24} /> Share Profile
+                    <Share2 size={18} /> Share Profile
                   </button>
                 </div>
               </div>
