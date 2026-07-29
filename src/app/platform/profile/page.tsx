@@ -5,8 +5,9 @@ import { useAppStore } from '@/store/useAppStore';
 import { 
   BadgeCheck, LayoutGrid, User, Users, Mail, UserPlus, UsersRound, MessageSquare, FileText, Briefcase, GraduationCap,
   MapPin, Link as LinkIcon, Calendar, Edit3, Settings, Camera, ThumbsUp
-, BookOpen, X
+, BookOpen, X, Share2, Download, Copy
 , Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, Loader2} from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -27,6 +28,7 @@ export default function ProfilePage() {
     memberId: user?.member_id || ''
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [editForm, setEditForm] = useState(profileData);
   const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
 
@@ -302,6 +304,12 @@ export default function ProfilePage() {
                     className="flex-1 xl:flex-none bg-green-50 text-gray-900 px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 shadow-sm hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-3"
                   >
                     <Edit3 size={24} /> Edit Profile
+                  </button>
+                  <button 
+                    onClick={() => setIsShareModalOpen(true)}
+                    className="flex-1 xl:flex-none bg-[#5a32fa] text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all flex items-center justify-center gap-3"
+                  >
+                    <Share2 size={24} /> Share Profile
                   </button>
                 </div>
               </div>
@@ -651,6 +659,83 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      {/* Share Profile Modal */}
+      {isShareModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <h2 className="text-2xl font-bold text-gray-900">Share Profile</h2>
+              <button onClick={() => setIsShareModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-full">
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="p-8 flex flex-col items-center">
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6" id="qr-code-container">
+                <QRCodeSVG 
+                  value={`${window.location.origin}/u/${profileData.memberId}`} 
+                  size={200}
+                  bgColor="#ffffff"
+                  fgColor="#131313"
+                  level="H"
+                  includeMargin={false}
+                />
+              </div>
+              
+              <button 
+                onClick={() => {
+                  const svg = document.querySelector('#qr-code-container svg');
+                  if (!svg) return;
+                  const svgData = new XMLSerializer().serializeToString(svg);
+                  const canvas = document.createElement('canvas');
+                  const ctx = canvas.getContext('2d');
+                  const img = new Image();
+                  img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    if(ctx) {
+                      ctx.fillStyle = 'white';
+                      ctx.fillRect(0, 0, canvas.width, canvas.height);
+                      ctx.drawImage(img, 0, 0);
+                      const a = document.createElement('a');
+                      a.download = `${profileData.name.replace(/\s+/g, '_')}_QR.png`;
+                      a.href = canvas.toDataURL('image/png');
+                      a.click();
+                    }
+                  };
+                  img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+                }}
+                className="w-full flex items-center justify-center gap-2 bg-[#5a32fa] text-white font-bold py-3 px-6 rounded-xl hover:-translate-y-0.5 hover:shadow-lg transition-all mb-8"
+              >
+                <Download size={20} /> Download QR Code (HD)
+              </button>
+
+              <div className="w-full">
+                <p className="text-sm font-bold text-gray-700 mb-2">Public Link</p>
+                <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 p-2 rounded-xl">
+                  <input 
+                    type="text" 
+                    readOnly 
+                    value={`${window.location.origin}/u/${profileData.memberId}`}
+                    className="flex-1 bg-transparent border-none focus:outline-none text-gray-600 text-sm px-2 font-medium"
+                  />
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${window.location.origin}/u/${profileData.memberId}`);
+                      alert('Link copied!');
+                    }}
+                    className="bg-white border border-gray-200 p-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+                  >
+                    <Copy size={18} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </div>
   );
 }
