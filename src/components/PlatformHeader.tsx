@@ -61,6 +61,8 @@ export default function PlatformHeader() {
     return () => clearTimeout(delay);
   }, [searchQuery]);
 
+  const [toastNotification, setToastNotification] = useState<{message: string, visible: boolean} | null>(null);
+
   useEffect(() => {
     if (!user?.id) return;
     
@@ -83,8 +85,31 @@ export default function PlatformHeader() {
         schema: 'public', 
         table: 'notifications', 
         filter: `user_id=eq.${user.id}` 
-      }, () => {
+      }, async (payload) => {
         fetchNotifications();
+        
+        if (payload.eventType === 'INSERT') {
+          const newNotif = payload.new as any;
+          if (newNotif.actor_id) {
+            const { data } = await supabase
+              .from('profiles')
+              .select('full_name')
+              .eq('id', newNotif.actor_id)
+              .single();
+              
+            if (data) {
+              const name = data.full_name || 'Someone';
+              let message = `${name} interacted with your profile.`;
+              if (newNotif.type === 'connection_request') message = `${name} sent you a connection request.`;
+              if (newNotif.type === 'connection_accepted') message = `${name} accepted your connection request.`;
+              
+              setToastNotification({ message, visible: true });
+              setTimeout(() => {
+                setToastNotification(prev => prev ? { ...prev, visible: false } : null);
+              }, 4000);
+            }
+          }
+        }
       })
       .subscribe();
       
