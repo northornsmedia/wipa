@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
+import { supabase } from '@/lib/supabase';
 import { 
   LayoutGrid, 
   Heart, 
@@ -42,6 +43,44 @@ export default function Sidebar() {
   };
 
   const [isOpen, setIsOpen] = useState(true);
+  const [unreadChatsCount, setUnreadChatsCount] = useState(0);
+
+  // Fetch initial unread count and listen for changes
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchUnreadCount = async () => {
+      const { data: unreadData } = await supabase
+        .from('messages')
+        .select('conversation_id')
+        .eq('is_read', false)
+        .neq('sender_id', user.id);
+
+      if (unreadData) {
+        const uniqueConversations = new Set(unreadData.map((m: any) => m.conversation_id));
+        setUnreadChatsCount(uniqueConversations.size);
+      }
+    };
+
+    fetchUnreadCount();
+
+    const channel = supabase.channel(`sidebar-messages-${user.id}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+        const m = payload.new as any;
+        if (m.sender_id !== user.id) {
+          fetchUnreadCount();
+        }
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages' }, (payload) => {
+        const m = payload.new as any;
+        if (m.sender_id !== user.id && m.is_read) {
+          fetchUnreadCount();
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id]);
 
   if (pathname.startsWith('/platform/messages')) {
     return null;
@@ -79,7 +118,11 @@ export default function Sidebar() {
             <div className="flex items-center gap-3">
               <Mail size={18} /> Messages
             </div>
-            <span className="w-5 h-5 flex items-center justify-center bg-[#5a32fa] text-white text-[10px] font-bold rounded-full">2</span>
+            {unreadChatsCount > 0 && (
+              <span className="w-5 h-5 flex items-center justify-center bg-[#5a32fa] text-white text-[10px] font-bold rounded-full">
+                {unreadChatsCount}
+              </span>
+            )}
           </Link>
           <Link href="/platform/groups" className={navLinkClass('/platform/groups')}>
             <Users size={18} /> Groups
