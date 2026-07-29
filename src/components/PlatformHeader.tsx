@@ -276,6 +276,25 @@ export default function PlatformHeader() {
           </div>
         </>
       )}
+
+      {/* Toast Notification */}
+      <div 
+        className={`fixed bottom-6 right-6 max-w-sm w-full bg-[#131313] text-white rounded-2xl p-4 flex items-start gap-3 shadow-2xl z-[100] transition-all duration-300 transform ${toastNotification?.visible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'}`}
+      >
+        <div className="w-10 h-10 rounded-full bg-[#5a32fa] shrink-0 flex items-center justify-center">
+          <Bell size={20} className="text-white" />
+        </div>
+        <div className="flex-1 mt-0.5">
+          <p className="font-bold text-white text-[15px] mb-0.5">New Notification</p>
+          <p className="text-gray-300 text-sm leading-snug">{toastNotification?.message}</p>
+        </div>
+        <button 
+          onClick={() => setToastNotification(prev => prev ? { ...prev, visible: false } : null)}
+          className="text-gray-400 hover:text-white transition-colors"
+        >
+          <X size={20} />
+        </button>
+      </div>
     </>
   );
 }
