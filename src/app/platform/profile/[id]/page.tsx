@@ -107,55 +107,6 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   return (
     <div className="min-h-screen">
       <div className="w-full flex gap-6 lg:gap-8 items-start pl-0 pr-4 md:pr-8 lg:pr-12 bg-[#f8f9fa] min-h-[calc(100vh-73px)]">
-          {/* LEFT SIDEBAR (Copied from authenticated profile page) */}
-          <aside className="w-[260px] hidden lg:flex flex-col border-r border-gray-100 overflow-y-auto no-scrollbar py-6 shrink-0 bg-white sticky top-[73px] h-[calc(100vh-73px)]">
-            <div className="px-4 mb-8">
-              <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-3 px-3 uppercase">MAIN NAVIGATION</p>
-              <nav className="space-y-1">
-                <Link href="/platform" className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 text-gray-600 rounded-xl font-medium text-[13px] transition-colors">
-                  <LayoutGrid size={18} /> Feed
-                </Link>
-                <Link href="/platform/liked-threads" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <ThumbsUp size={18} /> Liked Threads
-                </Link>
-                <Link href="/platform/network" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <UsersRound size={18} /> My Network
-                </Link>
-                <Link href="/platform/members" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <Users size={18} /> Members
-                </Link>
-                <Link href="/platform/messages" className="flex items-center justify-between px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <div className="flex items-center gap-3">
-                    <Mail size={18} /> Messages
-                  </div>
-                </Link>
-                <Link href="/platform/groups" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <UsersRound size={18} /> Groups
-                </Link>
-                <Link href="/platform/forums" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <MessageSquare size={18} /> Discussion Forums
-                </Link>
-                <Link href="/platform/resources" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <BookOpen size={18} /> Resource Library
-                </Link>
-                <Link href="/platform/events" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <Calendar size={18} /> Events
-                </Link>
-                <Link href="/platform/memberships" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <FileText size={18} /> Memberships
-                </Link>
-                <Link href="/platform/jobs" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <Briefcase size={18} /> Jobs Board
-                </Link>
-                <Link href="/platform/mentorship" className="flex items-center justify-between px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <div className="flex items-center gap-3">
-                    <GraduationCap size={18} /> Mentorship
-                  </div>
-                  <span className="px-2 py-0.5 bg-[#00d26a] text-white text-[10px] font-bold rounded-full">NEW</span>
-                </Link>
-              </nav>
-            </div>
-          </aside>
 
           <div className="flex-1 space-y-8 min-w-0 pt-6 pb-24">
             

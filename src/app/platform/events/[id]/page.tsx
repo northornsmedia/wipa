@@ -75,53 +75,8 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
-      {/* FIXED LEFT SIDEBAR */}
-      <div className="hidden md:block fixed left-0 top-[72px] bottom-0 w-[260px] lg:w-[280px] z-40">
-        <div className="bg-white rounded-tr-[2rem] rounded-br-none rounded-l-none border-t-2 border-r-2 border-l-0 border-b-0 border-[#131313] shadow-[4px_0px_0px_0px_#131313] p-4 h-full flex flex-col">
-          {/* Profile Header */}
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-[#5a32fa] text-white flex items-center justify-center text-lg font-bold border-2 border-[#131313] flex-shrink-0">
-              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-            </div>
-            <div className="overflow-hidden">
-              <h2 className="font-bold text-[14px] text-gray-900 truncate flex items-center gap-1">
-                {user?.name || 'Loading...'}
-                <BadgeCheck size={14} className="text-[#5a32fa] flex-shrink-0" />
-              </h2>
-              <p className="text-[11px] text-gray-500 font-medium truncate">IP Counsel</p>
-              <p className="text-[11px] text-gray-500 font-medium truncate">WIPA Member</p>
-            </div>
-          </div>
-          <button onClick={() => router.push('/platform/profile')} className="block text-center w-full py-1.5 border-2 border-gray-200 bg-white rounded-xl text-xs font-bold text-gray-600 hover:border-[#5a32fa] hover:text-[#5a32fa] transition-all mb-4">
-            View Profile
-          </button>
-
-          {/* Navigation */}
-          <div className="flex-1 overflow-y-auto no-scrollbar pb-2">
-            <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-2 px-2">MAIN NAVIGATION</p>
-            <nav className="space-y-0.5">
-              <Link href="/platform" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <LayoutGrid size={16} /> Feed
-              </Link>
-              <Link href="/platform/members" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <Users size={16} /> Members
-              </Link>
-              <Link href="/platform/events" className="flex items-center gap-3 px-3 py-2 bg-[#5a32fa]/10 text-[#5a32fa] rounded-xl font-bold text-sm transition-colors">
-                <Calendar size={16} /> Events
-              </Link>
-              <Link href="/platform/mentorship" className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium text-sm transition-colors">
-                <div className="flex items-center gap-3">
-                  <GraduationCap size={16} /> Mentorship
-                </div>
-                <span className="bg-[#00d26a] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md">NEW</span>
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </div>
-
       {/* MAIN CONTENT */}
-      <div className="w-full md:pl-[260px] lg:pl-[280px] min-h-screen">
+      <div className="w-full min-h-screen">
         <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pt-8">
           
           <button 
