@@ -28,6 +28,7 @@ export default function ProfilePage() {
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState(profileData);
+  const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
 
   useEffect(() => {
     if (!user?.id) return;
@@ -59,7 +60,31 @@ export default function ProfilePage() {
         }
       }
     };
+    
+    const fetchStats = async () => {
+      if (!user?.id) return;
+      // Fetch connections count
+      const { count: connectionsCount } = await supabase
+        .from('connections')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'accepted')
+        .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`);
+        
+      // Fetch posts count
+      const { count: postsCount } = await supabase
+        .from('feed_posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('author_id', user.id);
+
+      setStats({
+        connections: connectionsCount || 0,
+        followers: connectionsCount || 0, // Using connections count for followers as a proxy for now
+        posts: postsCount || 0
+      });
+    };
+    
     fetchProfile();
+    fetchStats();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
@@ -286,15 +311,15 @@ export default function ProfilePage() {
           {/* Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="bg-pink-50 p-8 rounded-2xl border border-gray-200 shadow-md hover:-translate-y-2 transition-transform cursor-pointer">
-              <h3 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-2">542</h3>
+              <h3 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-2">{stats.connections}</h3>
               <p className="text-lg lg:text-xl font-bold text-gray-900/80">Connections</p>
             </div>
             <div className="bg-[#5a32fa] p-8 rounded-2xl border border-gray-200 shadow-md hover:-translate-y-2 transition-transform cursor-pointer">
-              <h3 className="text-5xl lg:text-6xl font-bold text-white mb-2">1.2k</h3>
+              <h3 className="text-5xl lg:text-6xl font-bold text-white mb-2">{stats.followers}</h3>
               <p className="text-lg lg:text-xl font-bold text-white/80">Followers</p>
             </div>
             <div className="bg-yellow-50 p-8 rounded-2xl border border-gray-200 shadow-md hover:-translate-y-2 transition-transform cursor-pointer">
-              <h3 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-2">45</h3>
+              <h3 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-2">{stats.posts}</h3>
               <p className="text-lg lg:text-xl font-bold text-gray-900/80">Posts</p>
             </div>
           </div>
