@@ -40,6 +40,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   const [isLoading, setIsLoading] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending_sent' | 'pending_received' | 'accepted'>('none');
+  const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
 
   const [profileData, setProfileData] = useState({
     name: 'Loading...',
@@ -97,8 +98,30 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
         }
       }
     };
+    const fetchStats = async () => {
+      // Fetch connections count
+      const { count: connectionsCount } = await supabase
+        .from('connections')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'accepted')
+        .or(`requester_id.eq.${profileId},recipient_id.eq.${profileId}`);
+        
+      // Fetch posts count
+      const { count: postsCount } = await supabase
+        .from('feed_posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('author_id', profileId);
+
+      setStats({
+        connections: connectionsCount || 0,
+        followers: connectionsCount || 0, // Using connections count for followers as a proxy for now
+        posts: postsCount || 0
+      });
+    };
+    
     fetchProfile();
     fetchConnectionStatus();
+    fetchStats();
     
     // Listen for realtime updates to connection status (e.g. they accept the request while we are looking at their profile)
     const channel = supabase.channel(`connection-${user?.id}-${profileId}`)
@@ -311,15 +334,15 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="bg-pink-50 p-8 rounded-2xl border border-gray-200 shadow-md hover:-translate-y-2 transition-transform cursor-pointer">
-                <h3 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-2">542</h3>
+                <h3 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-2">{stats.connections}</h3>
                 <p className="text-lg lg:text-xl font-bold text-gray-900/80">Connections</p>
               </div>
               <div className="bg-[#5a32fa] p-8 rounded-2xl border border-gray-200 shadow-md hover:-translate-y-2 transition-transform cursor-pointer">
-                <h3 className="text-5xl lg:text-6xl font-bold text-white mb-2">1.2k</h3>
+                <h3 className="text-5xl lg:text-6xl font-bold text-white mb-2">{stats.followers}</h3>
                 <p className="text-lg lg:text-xl font-bold text-white/80">Followers</p>
               </div>
               <div className="bg-yellow-50 p-8 rounded-2xl border border-gray-200 shadow-md hover:-translate-y-2 transition-transform cursor-pointer">
-                <h3 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-2">45</h3>
+                <h3 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-2">{stats.posts}</h3>
                 <p className="text-lg lg:text-xl font-bold text-gray-900/80">Posts</p>
               </div>
             </div>
