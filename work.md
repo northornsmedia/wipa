@@ -75,23 +75,33 @@ Action Items & Next Steps
 Comprehensive Development Log - July 29, 2026
 
 Executive Summary
-Today's session focused on significantly upgrading the user profile aesthetics and adding new functional layers to the UI, particularly the interactive Support and Feature Request systems. We executed structural database migrations for professional data, enriched the profile UI, and resolved complex flexbox layout bugs.
+Today was a monumental, multi-hour development marathon. We fundamentally transformed WIPA from a static UI shell into a fully interconnected, real-time social platform. The work spanned across five major architectural pillars: a real-time direct messaging system, an interactive notifications engine, robust professional profile enhancements, a complete UI layout overhaul, and significant bug squashing for production readiness.
 
 ---
 
-1. UI/UX Refinements
-- Visual Overhauls: Replaced the outdated Sign-in button with a modern "Login" label and fixed layout spacing across the left sidebar and the profile feed.
-- Profile Sharing System: Introduced a dynamic "Share Profile" button in the Profile header. Built a highly polished interactive modal that dynamically renders an embedded QR code (containing the user's `/u/...` public profile link) overlaying the main WIPA logo. Added a "Download QR (HD)" action and a one-click clipboard copy feature for the profile URL.
-- Micro-Interactions: Animated the "NEW" badge on the Mentorship sidebar link with a custom CSS pulse/ping effect to draw user attention organically.
+1. Direct Messaging System & Real-time Chat
+- Real-time Infrastructure: Ripped out mock data and built a fully functional Direct Messaging (DM) system. Wired the "Message" button on user profiles directly into the messaging engine to seamlessly initiate or resume chats.
+- Real-time Badging & State: Engineered a global real-time listener to instantly update unread message badges in the main sidebar and the conversations list. Added an `is_read` column to messages and wrote the necessary Supabase UPDATE policies to allow users to mark messages as read.
+- Bug Fixes & Security: Resolved a critical RLS (Row Level Security) infinite recursion bug on the messages table. Fixed 403 Forbidden errors when creating new conversations and eradicated a duplicate DM creation bug. Handled race conditions where global listeners were wiping loaded messages, and fixed strict type checks (invalid UUIDs) for `activeChatId`.
 
-2. Database Schema Updates & Profile Enrichment
-- Database Migrations: Migrated the `profiles` table to include `company`, `role`, `experience_years`, `education`, and `skills` columns. Re-architected the `database.types.ts` to align with the new schema.
-- Data Integration: Updated the React profile page state to pipe these new variables down to the "Edit Profile" forms and dynamically render them in the "Experience" and "Top Skills" sections.
-- UI Content Density: Created highly polished mock UI sections for "Certifications & Awards" and "Featured Projects" to densely populate the user's portfolio interface.
+2. Real-time Notifications & Connection Engine
+- Connection Workflows: Implemented the full logic for sending, accepting, and ignoring connection requests. The connection status now auto-updates and persists in real-time across both individual Profile pages and the global Members Directory.
+- Interactive Notification Center: Built a fully functional notification dropdown. Implemented "Mark all as read" and individual "Delete notification" features. 
+- UI Polish: Engineered real-time toast notifications for incoming connections (and fixed a bug where the toast UI wasn't rendering). Ensured avatars and names render perfectly inside notification cards, fixing earlier schema issues related to `member_id`.
 
-3. Interactive Support Hub & State Management
-- Support Widget Integration: Integrated a premium, dark-themed "Support & Feedback" widget into the right-hand sidebar.
-- Layout Bug Resolution: Resolved a critical CSS flexbox shrinking bug where the sidebar's constrained viewport height (`calc(100vh - 73px)`) caused the widget to squish vertically and clip overflowing content. Added `shrink-0` to force rigid height constraints on the sidebar children.
-- Feature & Support Modals: Built two fully functional modal systems (Feature Request & Contact Support) tied directly into the widget.
-- Dynamic Tag Inputs: Engineered dynamic tag-based input arrays: the user can click from a preset grid of 22 feature requests or 13 common support topics.
-- Conditional Rendering: Built robust conditional UI flows showing a custom free-text input field strictly when the user selects the "Other" option.
+3. Profile Expansion & Digital Business Cards
+- Dynamic Data: Replaced static mock stats (connections, followers, posts) with live database queries on both personal and public profile pages. 
+- Digital Business Cards: Engineered a public profile "digital business card" feature driven by unique `member_id` routing. Added a stunning "Share Profile" modal featuring a downloadable, HD QR code with the WIPA logo seamlessly embedded in the center.
+- Portfolio Enrichment: Ran database migrations to add `company`, `role`, `experience_years`, `education`, and `skills` columns. Wired these directly into the "Edit Profile" forms, and built premium mock UI sections for "Certifications & Awards" and "Featured Projects" to make profiles feel dense and professional.
+- Media Uploads & Routing: Implemented cover photo uploads, resolving storage bucket RLS issues. Fixed `updateUser` type errors in settings, and updated public profile UIs to perfectly match the platform's clean aesthetic.
+
+4. Platform UI/UX & Layout Overhaul
+- Structural Redesign: Upgraded the core layout to feature a full-width header and a modern, collapsible sidebar. Wired up the Upstash search component directly into the new PlatformHeader.
+- Interactive Modals: Refactored the feed's comment UI from an inline form into a sleek modal, wiring up interactive likes and comments. Replaced ugly native browser `confirm()` dialogs with custom inline modals.
+- Premium Support Hub: Built an interactive, dark-themed "Support & Feedback" widget in the right sidebar. Resolved a complex CSS flexbox shrinking bug (`shrink-0`) that was clipping the UI. Engineered dynamic tag-based input arrays for Feature Requests (22 tags) and Support Tickets (13 tags) with conditional free-text inputs for "Other".
+- Micro-interactions: Made feed author avatars and names clickable, linking directly to their profiles. Animated the "NEW" badge on the Mentorship sidebar link with a custom CSS ping effect.
+
+5. Production Bug Fixes & Tech Debt
+- Next.js 15 Routing: Resolved critical 404 errors by properly `await`ing Next.js 15 dynamic route params (e.g., `params.id`).
+- Build Errors: Fixed a `lucide-react` LinkedIn icon build error by replacing it with an inline SVG. Fixed missing `Briefcase` and `Mail` imports that were breaking builds.
+- Cleanup: Eradicated 404 console errors by disabling non-existent routes and fixed a 406 Not Acceptable error caused by missing profile connections.
