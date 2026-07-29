@@ -33,6 +33,7 @@ export default function PlatformPage() {
   const [postComments, setPostComments] = useState<Record<string, any[]>>({});
   const [activeMenuPostId, setActiveMenuPostId] = useState<string | null>(null);
   const [editingPost, setEditingPost] = useState<any | null>(null);
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const [isUpdatingPost, setIsUpdatingPost] = useState(false);
   
@@ -166,11 +167,16 @@ export default function PlatformPage() {
     fetchFeed(); // Update the comment count on the post
   };
 
-  const handleDeletePost = async (postId: string) => {
-    if (!confirm('Are you sure you want to delete this post? Once deleted, it cannot be recovered.')) return;
+  const handleDeletePost = (postId: string) => {
     setActiveMenuPostId(null);
-    const { error } = await supabase.from('feed_posts').delete().eq('id', postId);
+    setPostToDelete(postId);
+  };
+
+  const confirmDeletePost = async () => {
+    if (!postToDelete) return;
+    const { error } = await supabase.from('feed_posts').delete().eq('id', postToDelete);
     if (!error) fetchFeed();
+    setPostToDelete(null);
   };
 
   const handleToggleComments = async (postId: string, currentStatus: boolean) => {
@@ -837,6 +843,34 @@ export default function PlatformPage() {
               </div>
             </div>
             
+          </div>
+        </div>
+      )}
+      {/* Delete Confirmation Modal */}
+      {postToDelete && (
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[400px] overflow-hidden flex flex-col p-6 animate-in zoom-in-95 duration-200 text-center">
+            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trash2 size={28} />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Delete Post?</h2>
+            <p className="text-[14px] text-gray-500 mb-8 leading-relaxed px-2">
+              Are you sure you want to delete this post? Once deleted, it cannot be recovered.
+            </p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setPostToDelete(null)}
+                className="flex-1 bg-gray-100 text-gray-700 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDeletePost}
+                className="flex-1 bg-red-500 text-white py-3.5 rounded-xl font-bold hover:bg-red-600 transition-colors shadow-sm shadow-red-200"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
