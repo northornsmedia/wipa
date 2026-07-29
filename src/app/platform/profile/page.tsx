@@ -7,7 +7,7 @@ import {
   MapPin, Link as LinkIcon, Calendar, Edit3, Settings, Camera, ThumbsUp
 , BookOpen, X, Share2, Download, Copy
 , Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, Loader2} from 'lucide-react';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -685,46 +685,34 @@ export default function ProfilePage() {
                 {/* Animated Gradient Glow */}
                 <div className="absolute -inset-3 bg-gradient-to-r from-[#5a32fa] via-[#8c65ff] to-[#ff4b4b] rounded-[2.5rem] blur-xl opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-300 animate-pulse"></div>
                 
-                <div className="bg-white p-6 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative ring-1 ring-gray-100/50 transform group-hover:-translate-y-1 transition-all duration-300" id="qr-code-container">
-                  <QRCodeSVG 
+                <div className="bg-white p-4 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative ring-1 ring-gray-100/50 transform group-hover:-translate-y-1 transition-all duration-300">
+                  <QRCodeCanvas 
+                    id="qr-code-canvas"
                     value={`${window.location.origin}/u/${profileData.memberId}`} 
-                    size={200}
+                    size={240}
                     bgColor="#ffffff"
                     fgColor="#131313"
                     level="H"
-                    includeMargin={false}
+                    includeMargin={true}
                     imageSettings={{
                       src: '/WIPALOGO.png',
-                      height: 52,
-                      width: 52,
+                      height: 60,
+                      width: 60,
                       excavate: true,
                     }}
+                    style={{ borderRadius: '1rem' }}
                   />
                 </div>
               </div>
               
               <button 
                 onClick={() => {
-                  const svg = document.querySelector('#qr-code-container svg');
-                  if (!svg) return;
-                  const svgData = new XMLSerializer().serializeToString(svg);
-                  const canvas = document.createElement('canvas');
-                  const ctx = canvas.getContext('2d');
-                  const img = new Image();
-                  img.onload = () => {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    if(ctx) {
-                      ctx.fillStyle = 'white';
-                      ctx.fillRect(0, 0, canvas.width, canvas.height);
-                      ctx.drawImage(img, 0, 0);
-                      const a = document.createElement('a');
-                      a.download = `${profileData.name.replace(/\s+/g, '_')}_QR.png`;
-                      a.href = canvas.toDataURL('image/png');
-                      a.click();
-                    }
-                  };
-                  img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+                  const canvas = document.getElementById('qr-code-canvas') as HTMLCanvasElement;
+                  if (!canvas) return;
+                  const a = document.createElement('a');
+                  a.download = `${profileData.name.replace(/\s+/g, '_')}_QR.png`;
+                  a.href = canvas.toDataURL('image/png', 1.0);
+                  a.click();
                 }}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#131313] to-[#2a2a2a] text-white font-bold py-3.5 px-6 rounded-2xl hover:shadow-[0_8px_25px_-6px_rgba(0,0,0,0.5)] hover:-translate-y-0.5 transition-all mb-6 border border-gray-800"
               >
