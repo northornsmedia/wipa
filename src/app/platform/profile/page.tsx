@@ -662,31 +662,45 @@ export default function ProfilePage() {
 
       {/* Share Profile Modal */}
       {isShareModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h2 className="text-2xl font-bold text-gray-900">Share Profile</h2>
-              <button onClick={() => setIsShareModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-full">
-                <X size={24} />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-[2rem] w-full max-w-sm overflow-hidden flex flex-col relative shadow-[0_0_40px_rgba(90,50,250,0.2)] animate-in fade-in zoom-in duration-300">
+            {/* Cool Top Gradient Header */}
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-[#5a32fa] via-[#8c65ff] to-[#ff4b4b] opacity-10"></div>
+            
+            <div className="p-6 relative flex justify-between items-center">
+              <div>
+                <h2 className="text-2xl font-black text-gray-900 tracking-tight">Share Profile</h2>
+                <p className="text-sm font-bold text-[#5a32fa]">Digital Business Card</p>
+              </div>
+              <button onClick={() => setIsShareModalOpen(false)} className="bg-gray-100 text-gray-500 hover:text-gray-900 hover:bg-gray-200 transition-colors p-2.5 rounded-full shadow-sm">
+                <X size={20} />
               </button>
             </div>
             
-            <div className="p-8 flex flex-col items-center">
-              <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6" id="qr-code-container">
-                <QRCodeSVG 
-                  value={`${window.location.origin}/u/${profileData.memberId}`} 
-                  size={200}
-                  bgColor="#ffffff"
-                  fgColor="#131313"
-                  level="H"
-                  includeMargin={false}
-                  imageSettings={{
-                    src: '/WIPALOGO.png',
-                    height: 48,
-                    width: 48,
-                    excavate: true,
-                  }}
-                />
+            <div className="px-8 pb-8 pt-2 flex flex-col items-center relative">
+              <p className="text-[15px] text-gray-600 font-medium text-center mb-6 max-w-[250px]">
+                Have someone scan this code with their camera to instantly view your profile.
+              </p>
+              
+              {/* QR Code Container with Glow */}
+              <div className="relative mb-8 group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-[#5a32fa] to-[#ff4b4b] rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                <div className="bg-white p-5 rounded-[1.8rem] shadow-sm relative ring-1 ring-gray-100" id="qr-code-container">
+                  <QRCodeSVG 
+                    value={`${window.location.origin}/u/${profileData.memberId}`} 
+                    size={220}
+                    bgColor="#ffffff"
+                    fgColor="#131313"
+                    level="H"
+                    includeMargin={false}
+                    imageSettings={{
+                      src: '/WIPALOGO.png',
+                      height: 52,
+                      width: 52,
+                      excavate: true,
+                    }}
+                  />
+                </div>
               </div>
               
               <button 
@@ -712,28 +726,27 @@ export default function ProfilePage() {
                   };
                   img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
                 }}
-                className="w-full flex items-center justify-center gap-2 bg-[#5a32fa] text-white font-bold py-3 px-6 rounded-xl hover:-translate-y-0.5 hover:shadow-lg transition-all mb-8"
+                className="w-full flex items-center justify-center gap-2 bg-[#131313] text-white font-bold py-3.5 px-6 rounded-2xl hover:bg-gray-800 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.3)] transition-all mb-6"
               >
-                <Download size={20} /> Download QR Code (HD)
+                <Download size={20} /> Download QR (HD)
               </button>
 
               <div className="w-full">
-                <p className="text-sm font-bold text-gray-700 mb-2">Public Link</p>
-                <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 p-2 rounded-xl">
+                <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 p-1.5 rounded-2xl">
                   <input 
                     type="text" 
                     readOnly 
                     value={`${window.location.origin}/u/${profileData.memberId}`}
-                    className="flex-1 bg-transparent border-none focus:outline-none text-gray-600 text-sm px-2 font-medium"
+                    className="flex-1 bg-transparent border-none focus:outline-none text-gray-600 text-[13px] px-3 font-semibold truncate"
                   />
                   <button 
                     onClick={() => {
                       navigator.clipboard.writeText(`${window.location.origin}/u/${profileData.memberId}`);
                       alert('Link copied!');
                     }}
-                    className="bg-white border border-gray-200 p-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+                    className="bg-white border border-gray-200 p-2.5 rounded-xl text-gray-700 hover:bg-[#5a32fa] hover:text-white hover:border-[#5a32fa] transition-all shadow-sm flex items-center gap-2 font-bold text-sm"
                   >
-                    <Copy size={18} />
+                    <Copy size={16} /> Copy
                   </button>
                 </div>
               </div>
