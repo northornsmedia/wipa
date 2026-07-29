@@ -6,8 +6,8 @@ import { useAppStore } from '@/store/useAppStore';
 import { 
   Search, Bell, LayoutGrid, BookOpen, Calendar, Users, Info, Settings, 
   Hash, BellOff, ArrowUpRight, CheckCircle2, Circle, Image as ImageIcon, Video, Smile,
-  Bookmark, MoreVertical, Heart, MessageCircle, Gift, LogOut,
-  ThumbsUp, UsersRound, Mail, MessageSquare, FileText, Briefcase, GraduationCap, Home, Star, X, Loader2
+  Bookmark, MoreVertical, Heart, MessageCircle, Gift, LogOut, Pencil, Copy, MessageSquareOff, Trash2, Globe, Lock, Shield,
+  FileText, Loader2, PlayCircle, Plus, Send, X, Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -31,6 +31,10 @@ export default function PlatformPage() {
   const [commentText, setCommentText] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [postComments, setPostComments] = useState<Record<string, any[]>>({});
+  const [activeMenuPostId, setActiveMenuPostId] = useState<string | null>(null);
+  const [editingPost, setEditingPost] = useState<any | null>(null);
+  const [editContent, setEditContent] = useState('');
+  const [isUpdatingPost, setIsUpdatingPost] = useState(false);
   
   const fetchFeed = useCallback(async () => {
     setIsLoadingFeed(true);
@@ -138,6 +142,10 @@ export default function PlatformPage() {
 
   const handleCommentSubmit = async (postId: string) => {
     if (!commentText.trim() || !user) return;
+    
+    // Check if comments are disabled
+    const targetPost = feedPosts.find(p => p.id === postId);
+    if (targetPost?.comments_disabled) return;
     setIsSubmittingComment(true);
     
     const { error } = await supabase.from('feed_comments').insert({
@@ -156,6 +164,36 @@ export default function PlatformPage() {
     setCommentText('');
     fetchComments(postId); // Refresh comments to show the new one
     fetchFeed(); // Update the comment count on the post
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm('Are you sure you want to delete this post? Once deleted, it cannot be recovered.')) return;
+    setActiveMenuPostId(null);
+    const { error } = await supabase.from('feed_posts').delete().eq('id', postId);
+    if (!error) fetchFeed();
+  };
+
+  const handleToggleComments = async (postId: string, currentStatus: boolean) => {
+    setActiveMenuPostId(null);
+    const { error } = await supabase.from('feed_posts').update({ comments_disabled: !currentStatus }).eq('id', postId);
+    if (!error) fetchFeed();
+  };
+
+  const handleCopyLink = (postId: string) => {
+    setActiveMenuPostId(null);
+    navigator.clipboard.writeText(`${window.location.origin}/platform/post/${postId}`);
+    alert('Link copied to clipboard!');
+  };
+
+  const submitEditPost = async () => {
+    if (!editingPost || !editContent.trim()) return;
+    setIsUpdatingPost(true);
+    const { error } = await supabase.from('feed_posts').update({ content: editContent }).eq('id', editingPost.id);
+    setIsUpdatingPost(false);
+    if (!error) {
+      setEditingPost(null);
+      fetchFeed();
+    }
   };
   
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video' | 'doc') => {
@@ -189,8 +227,6 @@ export default function PlatformPage() {
     <div className="w-full bg-white font-sans flex flex-col h-[calc(100vh-73px)] overflow-hidden">
       <div className="w-full bg-white flex flex-col flex-1 overflow-hidden">
         
-
-
         {/* MAIN LAYOUT */}
         <div className="flex flex-1 overflow-hidden">
           
@@ -204,10 +240,10 @@ export default function PlatformPage() {
                   <LayoutGrid size={18} /> Feed
                 </Link>
                 <Link href="/platform/liked-threads" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <ThumbsUp size={18} /> Liked Threads
+                  <Heart size={18} /> Liked Threads
                 </Link>
                 <Link href="/platform/network" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <UsersRound size={18} /> My Network
+                  <Users size={18} /> My Network
                 </Link>
                 <Link href="/platform/members" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
                   <Users size={18} /> Members
@@ -219,10 +255,10 @@ export default function PlatformPage() {
                   <span className="w-5 h-5 flex items-center justify-center bg-[#5a32fa] text-white text-[10px] font-bold rounded-full">2</span>
                 </Link>
                 <Link href="/platform/groups" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <UsersRound size={18} /> Groups
+                  <Users size={18} /> Groups
                 </Link>
                 <Link href="/platform/forums" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
-                  <MessageSquare size={18} /> Discussion Forums
+                  <MessageCircle size={18} /> Discussion Forums
                 </Link>
                 <Link href="/platform/resources" className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
                   <BookOpen size={18} /> Resource Library
@@ -317,7 +353,6 @@ export default function PlatformPage() {
               {/* HERO BANNER */}
               <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
                 <div className="absolute inset-0 w-full h-full overflow-hidden opacity-40 pointer-events-none">
-                   {/* Abstract shapes matching the screenshot style */}
                    <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[150%] bg-[#ffcc00] rounded-full mix-blend-multiply filter blur-3xl opacity-30 transform -rotate-45"></div>
                    <div className="absolute top-[-30%] right-[20%] w-[40%] h-[120%] bg-[#ff4b4b] rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform rotate-12"></div>
                    <div className="absolute bottom-[-10%] left-[10%] w-[60%] h-[80%] bg-[#5a32fa] rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
@@ -364,10 +399,8 @@ export default function PlatformPage() {
                 className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 flex flex-col overflow-hidden cursor-pointer hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-gray-200 transition-all duration-300 relative group"
                 onClick={() => setIsCreatePostModalOpen(true)}
               >
-                {/* Accent Top Border */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#131313] via-[#5a32fa] to-[#ff90e8] opacity-80 group-hover:opacity-100 transition-opacity"></div>
                 
-                {/* Input Area */}
                 <div className="flex gap-4 p-5 pb-4 border-b border-gray-50 pt-6">
                   {user?.avatar_url ? (
                     <img src={user.avatar_url} alt={user?.name || 'User'} className="w-10 h-10 rounded-full object-cover shrink-0 mt-1 shadow-sm" />
@@ -381,7 +414,6 @@ export default function PlatformPage() {
                   </div>
                 </div>
                 
-                {/* Options Area */}
                 <div className="flex items-center justify-between gap-1 sm:gap-2 px-4 py-2 bg-gray-50/30">
                   <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 text-gray-600 hover:text-gray-900 rounded-xl transition-colors font-medium text-[13px]">
                     <ImageIcon size={18} className="text-[#00d26a]" />
@@ -482,7 +514,7 @@ export default function PlatformPage() {
                                 }}
                               >
                                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-                                  <UsersRound size={14} className="text-gray-600" />
+                                  <Users size={14} className="text-gray-600" />
                                 </div>
                                 <div>
                                   <p className="text-sm font-bold text-gray-900">Followers only</p>
@@ -593,15 +625,80 @@ export default function PlatformPage() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-400">
+                        <div className="flex items-center gap-2 text-gray-400 relative">
                           <button className="p-1.5 hover:bg-gray-50 hover:text-gray-600 rounded-lg transition-colors"><Bookmark size={18} /></button>
-                          <button className="p-1.5 hover:bg-gray-50 hover:text-gray-600 rounded-lg transition-colors"><MoreVertical size={18} /></button>
+                          <button 
+                            onClick={() => setActiveMenuPostId(activeMenuPostId === post.id ? null : post.id)}
+                            className="p-1.5 hover:bg-gray-50 hover:text-gray-600 rounded-lg transition-colors"
+                          >
+                            <MoreVertical size={18} />
+                          </button>
+                          
+                          {activeMenuPostId === post.id && (
+                            <>
+                              <div className="fixed inset-0 z-40" onClick={() => setActiveMenuPostId(null)}></div>
+                              <div className="absolute right-0 top-10 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden py-1">
+                                {user?.id === post.author_id && (
+                                  <button 
+                                    onClick={() => {
+                                      setEditingPost(post);
+                                      setEditContent(post.content);
+                                      setActiveMenuPostId(null);
+                                    }}
+                                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                                  >
+                                    <Pencil size={16} /> Edit Post
+                                  </button>
+                                )}
+                                <button 
+                                  onClick={() => handleCopyLink(post.id)}
+                                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                                >
+                                  <Copy size={16} /> Copy Link
+                                </button>
+                                {user?.id === post.author_id && (
+                                  <>
+                                    <div className="h-px bg-gray-100 my-1"></div>
+                                    <button 
+                                      onClick={() => handleToggleComments(post.id, !!post.comments_disabled)}
+                                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                                    >
+                                      <MessageSquareOff size={16} /> {post.comments_disabled ? 'Turn On Comments' : 'Turn Off Comments'}
+                                    </button>
+                                    <div className="h-px bg-gray-100 my-1"></div>
+                                    <button 
+                                      onClick={() => handleDeletePost(post.id)}
+                                      className="w-full text-left px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"
+                                    >
+                                      <Trash2 size={16} /> Delete Post
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                       
-                      <p className="text-[14px] text-gray-800 leading-relaxed mb-6 font-medium whitespace-pre-wrap">
-                        {post.content}
-                      </p>
+                      {editingPost?.id === post.id ? (
+                        <div className="space-y-3">
+                          <textarea 
+                            className="w-full p-3 border border-gray-200 rounded-xl text-sm"
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                          />
+                          <div className="flex gap-2">
+                            <button onClick={() => setEditingPost(null)} className="px-4 py-2 text-xs font-bold text-gray-600 bg-gray-100 rounded-lg">Cancel</button>
+                            <button onClick={submitEditPost} disabled={isUpdatingPost} className="px-4 py-2 text-xs font-bold text-white bg-[#5a32fa] rounded-lg">
+                              {isUpdatingPost ? 'Saving...' : 'Save Changes'}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-[14px] text-gray-800 leading-relaxed mb-6 font-medium whitespace-pre-wrap">
+                          {post.content}
+                        </p>
+                      )}
 
                       <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                         <div className="flex items-center gap-3 sm:gap-4 text-gray-400">
@@ -614,13 +711,14 @@ export default function PlatformPage() {
                           </button>
                           <button 
                             onClick={() => {
+                              if (post.comments_disabled) return;
                               setActiveCommentPost(post);
                               fetchComments(post.id);
                             }}
-                            className="hover:text-[#5a32fa] transition-colors flex items-center gap-1.5"
+                            className={`transition-colors flex items-center gap-1.5 ${post.comments_disabled ? 'text-gray-300 cursor-not-allowed' : 'hover:text-[#5a32fa]'}`}
                           >
                             <MessageCircle size={20} />
-                            <span className="text-xs font-bold">{post.comments_count || 0}</span>
+                            <span className="text-xs font-bold">{post.comments_disabled ? 'Disabled' : (post.comments_count || 0)}</span>
                           </button>
                         </div>
                       </div>
@@ -720,15 +818,16 @@ export default function PlatformPage() {
                 )}
                 <div className="flex-1 flex flex-col items-end gap-2">
                   <textarea 
-                    className="w-full min-h-[80px] resize-none outline-none text-[13px] text-gray-900 placeholder-gray-400 bg-gray-50 p-3 rounded-xl border border-gray-100 focus:border-gray-200 focus:bg-white transition-colors"
-                    placeholder="Write a comment..."
+                    className="w-full min-h-[80px] resize-none outline-none text-[13px] text-gray-900 placeholder-gray-400 bg-gray-50 p-3 rounded-xl border border-gray-100 focus:border-gray-200 focus:bg-white transition-colors disabled:opacity-50"
+                    placeholder={activeCommentPost.comments_disabled ? "Comments are turned off" : "Write a comment..."}
                     autoFocus
+                    disabled={activeCommentPost.comments_disabled}
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                   ></textarea>
                   <button 
                     className="bg-gray-900 text-white px-5 py-2 rounded-xl text-[13px] font-bold hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm"
-                    disabled={!commentText.trim() || isSubmittingComment}
+                    disabled={!commentText.trim() || isSubmittingComment || activeCommentPost.comments_disabled}
                     onClick={() => handleCommentSubmit(activeCommentPost.id)}
                   >
                     {isSubmittingComment ? <Loader2 size={14} className="animate-spin" /> : null}
