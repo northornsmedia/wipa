@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { MapPin, Briefcase, Building2, Globe, Linkedin, ShieldCheck, Mail } from 'lucide-react';
+import { MapPin, Briefcase, Building2, Globe, ShieldCheck, Mail } from 'lucide-react';
 import { Metadata } from 'next';
 
 // Server-side Supabase client for data fetching (read-only, public anon key)
@@ -138,7 +138,7 @@ export default async function PublicProfilePage({ params }: { params: { member_i
                         rel="noreferrer"
                         className="flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-gray-300 hover:bg-gray-100 transition-colors"
                       >
-                        <Linkedin size={16} className="text-[#0a66c2]" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#0a66c2]"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
                         LinkedIn
                       </a>
                     )}
