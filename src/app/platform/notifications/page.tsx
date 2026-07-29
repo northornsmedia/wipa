@@ -99,7 +99,7 @@ export default function NotificationsPage() {
                   </div>
                   <div className="flex-1 mt-1 transform group-hover:translate-x-1 transition-transform duration-300">
                     <p className="text-[14.5px] text-gray-700 leading-snug">
-                      {message}
+                      <span className="font-bold text-gray-900">{name}</span> {message}
                     </p>
                     <p className={`text-[12px] font-medium mt-1.5 ${notif.is_read ? 'text-gray-400' : 'text-[#5a32fa]'}`}>
                       {new Date(notif.created_at).toLocaleDateString()}
