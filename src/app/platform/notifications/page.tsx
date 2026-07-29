@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { CheckCheck, Eye, Calendar as CalendarIcon, MessageCircle, UserPlus } from 'lucide-react';
+import { CheckCheck, Eye, Calendar as CalendarIcon, MessageCircle, UserPlus, Trash2 } from 'lucide-react';
 
 export default function NotificationsPage() {
   const { user } = useAppStore();
@@ -32,6 +32,7 @@ export default function NotificationsPage() {
       fetchNotifications();
     }
   }, [user?.id]);
+  
   const handleMarkAllRead = async () => {
     if (!user?.id) return;
     
@@ -44,6 +45,18 @@ export default function NotificationsPage() {
       
     // Update local state
     setNotifications(notifications.map(n => ({ ...n, is_read: true })));
+  };
+
+  const handleDeleteNotification = async (e: React.MouseEvent, id: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    
+    await supabase
+      .from('notifications')
+      .delete()
+      .eq('id', id);
   };
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
@@ -130,7 +143,17 @@ export default function NotificationsPage() {
                       {new Date(notif.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  {!notif.is_read && <div className="w-2.5 h-2.5 bg-[#5a32fa] rounded-full mt-2.5 shrink-0 shadow-sm animate-pulse"></div>}
+                  
+                  <div className="flex items-center gap-3">
+                    {!notif.is_read && <div className="w-2.5 h-2.5 bg-[#5a32fa] rounded-full shrink-0 shadow-sm animate-pulse"></div>}
+                    <button 
+                      onClick={(e) => handleDeleteNotification(e, notif.id)}
+                      className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1.5 rounded-lg hover:bg-red-50 shrink-0"
+                      title="Delete notification"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                   </div>
                 </Link>
               );
