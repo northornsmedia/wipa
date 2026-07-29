@@ -282,7 +282,18 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                   </div>
                   
                   <div className="flex gap-4 w-full xl:w-auto">
-                    <button className="flex-1 xl:flex-none bg-white text-gray-900 p-4 rounded-2xl font-bold border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center">
+                    <button 
+                      onClick={() => {
+                        if (profileData.memberId) {
+                          navigator.clipboard.writeText(`${window.location.origin}/u/${profileData.memberId}`);
+                          alert("Public profile link copied to clipboard!");
+                        } else {
+                          alert("Member ID not found.");
+                        }
+                      }}
+                      title="Share Public Profile"
+                      className="flex-1 xl:flex-none bg-white text-gray-900 p-4 rounded-2xl font-bold border border-gray-200 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center"
+                    >
                       <Share2 size={24} />
                     </button>
                     {connectionStatus === 'accepted' && (
