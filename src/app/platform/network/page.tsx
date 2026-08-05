@@ -465,6 +465,18 @@ export default function NetworkPage() {
               </div>
             </div>
 
+            {/* Advertisement Space */}
+            <div className="w-full rounded-[1.5rem] overflow-hidden shadow-sm border border-gray-100 bg-white relative h-64 group shrink-0 hidden xl:block">
+              <img src="/AD4.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 pointer-events-none">
+                <div className="pointer-events-auto">
+                  <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white text-gray-900 font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 transition-colors shadow-sm">
+                    Know More
+                  </a>
+                </div>
+              </div>
+            </div>
+
             {/* Suggested Connections */}
             <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm">
               <div className="flex justify-between items-center mb-6">

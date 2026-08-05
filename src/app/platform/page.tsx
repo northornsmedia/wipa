@@ -237,8 +237,11 @@ export default function PlatformPage() {
         <div className="flex flex-1 overflow-hidden">
           
           {/* MAIN CONTENT AREA */}
-          <main className="flex-1 bg-slate-50/50 overflow-y-auto p-4 sm:p-6 md:p-8 no-scrollbar">
-            <div className="max-w-4xl mx-auto space-y-6 pb-20">
+          <main className="flex-1 bg-slate-50/50 overflow-y-auto p-4 sm:p-6 md:p-8 no-scrollbar flex gap-6 xl:gap-8">
+            
+            {/* LEFT COLUMN */}
+            <div className="flex-1 flex justify-center pb-20">
+              <div className="w-full max-w-4xl space-y-6">
               
               {/* HERO BANNER */}
               <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
@@ -248,12 +251,56 @@ export default function PlatformPage() {
                    <div className="absolute bottom-[-10%] left-[10%] w-[60%] h-[80%] bg-[#5a32fa] rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
                 </div>
                 
-                <div className="relative z-10 lg:w-2/3">
-                  <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight mb-4">Hello{user?.name ? ` ${user.name}` : ''},<br/>Welcome to WIPA</h1>
-                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">Building the Future of Innovation Together</h2>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-8 sm:w-5/6">
-                    Connect with innovators, IP professionals, founders, researchers, and investors to share knowledge, collaborate, and turn ideas into impact.
-                  </p>
+                <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start gap-6">
+                  <div className="lg:w-[60%]">
+                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight mb-4">Hello{user?.name ? ` ${user.name}` : ''},<br/>Welcome to WIPA</h1>
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">Building the Future of Innovation Together</h2>
+                    <p className="text-gray-500 text-sm leading-relaxed mb-8 sm:w-5/6">
+                      Connect with innovators, IP professionals, founders, researchers, and investors to share knowledge, collaborate, and turn ideas into impact.
+                    </p>
+                  </div>
+                  
+                  {/* Advertisement Box container */}
+                  <div className="w-full lg:w-[35%] shrink-0 hidden sm:flex flex-col items-end">
+                    
+                    <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white relative h-36 group">
+                      
+                      <style>{`
+                      @keyframes ad-fade {
+                        0% { opacity: 1; }
+                        40% { opacity: 1; }
+                        50% { opacity: 0; }
+                        90% { opacity: 0; }
+                        100% { opacity: 1; }
+                      }
+                      .ad-container {
+                        position: absolute;
+                        inset: 0;
+                        width: 100%;
+                        height: 100%;
+                        animation: ad-fade 10s infinite;
+                      }
+                      .group:hover .ad-container {
+                        animation-play-state: paused;
+                      }
+                      .ad-img-1 { animation-delay: 0s; }
+                      .ad-img-2 { animation-delay: -5s; }
+                    `}</style>
+                    
+                    <div className="ad-container ad-img-1">
+                      <img src="/AD1.png" alt="Ad 1" className="w-full h-full object-cover" />
+                    </div>
+                    
+                    <div className="ad-container ad-img-2">
+                      <img src="/AD2.png" alt="Ad 2" className="w-full h-full object-cover" />
+                    </div>
+                  </div>
+                  <div className="w-full text-center mt-2">
+                    <span className="inline-block text-slate-800 text-[10px] font-black uppercase tracking-[0.2em] drop-shadow-sm">
+                      Most searched in last 7 days !
+                    </span>
+                  </div>
+                </div>
                 </div>
                 
                 {/* Tabs & Search */}
@@ -444,6 +491,15 @@ export default function PlatformPage() {
                       </div>
                     </div>
                     
+                    <div className="px-5 pb-5">
+                      <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3 border border-gray-100">
+                        <div className="w-1 h-8 bg-black rounded-full shrink-0"></div>
+                        <p className="text-[12px] text-gray-600 font-medium leading-snug">
+                          <strong className="text-gray-900">Do you know?</strong> Ennoble IP is ranked #3 for patents and IP.
+                        </p>
+                      </div>
+                    </div>
+                    
                     {uploadError && (
                       <div className="px-5 pb-3">
                         <p className="text-red-500 text-[13px] font-bold bg-red-50 border border-red-100 p-2.5 rounded-xl">{uploadError}</p>
@@ -622,7 +678,105 @@ export default function PlatformPage() {
                 })}
               </div>
 
+              </div>
             </div>
+
+            {/* RIGHT SIDEBAR */}
+            <aside className="hidden xl:flex flex-col w-[320px] shrink-0 space-y-6 pb-20">
+                
+                {/* Profile Completion / Welcome */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                  <h3 className="font-bold text-gray-900 mb-2">Enhance your feed</h3>
+                  <p className="text-sm text-gray-500 mb-4 leading-relaxed">Follow more people and join groups to see more relevant content.</p>
+                  <div className="space-y-3">
+                    <button className="w-full py-2 bg-[#5a32fa]/10 text-[#5a32fa] font-bold rounded-xl text-sm hover:bg-[#5a32fa]/20 transition-colors">
+                      Discover Connections
+                    </button>
+                    <button className="w-full py-2 bg-gray-50 text-gray-700 font-bold rounded-xl text-sm hover:bg-gray-100 transition-colors">
+                      Browse Groups
+                    </button>
+                  </div>
+                </div>
+
+                {/* Advertisement Space */}
+                <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white relative h-64 group shrink-0">
+                  
+                  <img src="/AD3.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 pointer-events-none">
+                    <div className="pointer-events-auto">
+                      <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white text-gray-900 font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 transition-colors shadow-sm">
+                        Know More
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Trending Topics */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                  <h3 className="font-bold text-gray-900 mb-4">Trending Topics</h3>
+                  <div className="space-y-4">
+                    <div className="group cursor-pointer">
+                      <p className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">#AIinIP</p>
+                      <p className="text-xs text-gray-500 mt-0.5">1,245 discussions</p>
+                    </div>
+                    <div className="group cursor-pointer">
+                      <p className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">#PatentLaw</p>
+                      <p className="text-xs text-gray-500 mt-0.5">856 discussions</p>
+                    </div>
+                    <div className="group cursor-pointer">
+                      <p className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">#WomenInTech</p>
+                      <p className="text-xs text-gray-500 mt-0.5">643 discussions</p>
+                    </div>
+                    <div className="group cursor-pointer">
+                      <p className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">#TrademarkUpdates</p>
+                      <p className="text-xs text-gray-500 mt-0.5">421 discussions</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Upcoming Events */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                  <h3 className="font-bold text-gray-900 mb-4">Upcoming Events</h3>
+                  <div className="space-y-4">
+                    <div className="flex gap-3 items-start group cursor-pointer">
+                      <div className="bg-[#ff90e8]/10 text-[#ff90e8] rounded-lg p-2 text-center min-w-[48px] shrink-0">
+                        <p className="text-[10px] font-bold uppercase">Aug</p>
+                        <p className="text-lg font-black leading-none">12</p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors line-clamp-2">Global IP Conference 2026</h4>
+                        <p className="text-xs text-gray-500 mt-1">Virtual • 10:00 AM EST</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 items-start group cursor-pointer">
+                      <div className="bg-[#00d26a]/10 text-[#00d26a] rounded-lg p-2 text-center min-w-[48px] shrink-0">
+                        <p className="text-[10px] font-bold uppercase">Aug</p>
+                        <p className="text-lg font-black leading-none">18</p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors line-clamp-2">Networking Mixer: Tech Law</h4>
+                        <p className="text-xs text-gray-500 mt-1">New York, NY • 6:00 PM</p>
+                      </div>
+                    </div>
+                    <button className="w-full py-2 mt-2 text-[#5a32fa] font-bold text-sm hover:underline transition-all">
+                      View all events
+                    </button>
+                  </div>
+                </div>
+
+                {/* Helpful Links / Footer-ish */}
+                <div className="px-2 pb-6">
+                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-500 font-medium">
+                    <a href="#" className="hover:text-gray-900">About</a>
+                    <a href="#" className="hover:text-gray-900">Help Center</a>
+                    <a href="#" className="hover:text-gray-900">Privacy & Terms</a>
+                    <a href="#" className="hover:text-gray-900">Advertising</a>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-4">© 2026 WIPA. All rights reserved.</p>
+                </div>
+
+              </aside>
+
           </main>
         </div>
       </div>

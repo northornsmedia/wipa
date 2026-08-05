@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, MessageSquare, Search, Plus, Filter, MessageCircle, Clock, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
@@ -187,41 +187,55 @@ export default function ForumsPage() {
 
         {/* Forums List */}
         <div className="flex flex-col gap-4">
-          {filteredTopics.map(topic => (
-            <div 
-              key={topic.id} 
-              onClick={() => setSelectedTopicId(topic.id)}
-              className="bg-white rounded-2xl md:rounded-3xl border border-gray-200 p-6 shadow-md hover:-translate-y-1 hover:shadow-lg transition-all flex flex-col md:flex-row gap-6 items-start md:items-center cursor-pointer"
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="bg-[#fbe8d5] text-[#131313] text-xs font-bold px-3 py-1 rounded-lg ">
-                    {topic.category}
-                  </span>
-                  {topic.isHot && (
-                    <span className="bg-[#ff4b4b] text-white text-xs font-bold px-3 py-1 rounded-lg  flex items-center gap-1">
-                      <TrendingUp size={12} /> Hot
+          {filteredTopics.map((topic, index) => (
+            <React.Fragment key={topic.id}>
+              <div 
+                onClick={() => setSelectedTopicId(topic.id)}
+                className="bg-white rounded-2xl md:rounded-3xl border border-gray-200 p-6 shadow-md hover:-translate-y-1 hover:shadow-lg transition-all flex flex-col md:flex-row gap-6 items-start md:items-center cursor-pointer"
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="bg-[#fbe8d5] text-[#131313] text-xs font-bold px-3 py-1 rounded-lg ">
+                      {topic.category}
                     </span>
-                  )}
+                    {topic.isHot && (
+                      <span className="bg-[#ff4b4b] text-white text-xs font-bold px-3 py-1 rounded-lg  flex items-center gap-1">
+                        <TrendingUp size={12} /> Hot
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-1 hover:text-[#5a32fa] transition-colors">{topic.title}</h3>
+                  <p className="text-sm text-gray-500 font-medium">Started by <span className="font-bold text-gray-800">{topic.author}</span></p>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-1 hover:text-[#5a32fa] transition-colors">{topic.title}</h3>
-                <p className="text-sm text-gray-500 font-medium">Started by <span className="font-bold text-gray-800">{topic.author}</span></p>
+
+                <div className="flex items-center gap-6 text-sm font-bold text-gray-600 shrink-0 border-t md:border-t-0 md:border-l border-gray-100 md:border-gray-100 pt-4 md:pt-0 md:pl-6 w-full md:w-auto justify-between md:justify-end">
+                  <div className="flex items-center gap-2">
+                    <MessageCircle size={18} className="text-[#5a32fa]" />
+                    {topic.replies} <span className="hidden md:inline">replies</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">{topic.views} views</span>
+                  </div>
+                  <div className="flex flex-col items-end text-xs">
+                    <span className="text-gray-400">Last activity</span>
+                    <span className="text-[#131313]">{topic.lastActivity}</span>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex items-center gap-6 text-sm font-bold text-gray-600 shrink-0 border-t md:border-t-0 md:border-l border-gray-100 md:border-gray-100 pt-4 md:pt-0 md:pl-6 w-full md:w-auto justify-between md:justify-end">
-                <div className="flex items-center gap-2">
-                  <MessageCircle size={18} className="text-[#5a32fa]" />
-                  {topic.replies} <span className="hidden md:inline">replies</span>
+              {(index + 1) % 3 === 0 && (
+                <div className="w-full bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-md border border-gray-200 relative h-32 md:h-40 group shrink-0 mt-2 mb-2">
+                  <img src="/AD5.jpg" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 pointer-events-none">
+                    <div className="pointer-events-auto">
+                      <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white text-gray-900 font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 transition-colors shadow-sm">
+                        Know More
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400">{topic.views} views</span>
-                </div>
-                <div className="flex flex-col items-end text-xs">
-                  <span className="text-gray-400">Last activity</span>
-                  <span className="text-[#131313]">{topic.lastActivity}</span>
-                </div>
-              </div>
-            </div>
+              )}
+            </React.Fragment>
           ))}
 
           {filteredTopics.length === 0 && (

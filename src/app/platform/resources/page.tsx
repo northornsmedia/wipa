@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus } from 'lucide-react';
 import Link from 'next/link';
 
-const MOCK_RESOURCES = [
+const BASE_MOCK_RESOURCES = [
   {
     id: 1,
     title: "Global Trademark Registration Guide 2026",
@@ -65,6 +65,15 @@ const MOCK_RESOURCES = [
     description: "Statistical analysis of patent and trademark litigation outcomes in major jurisdictions.",
     isSaved: false
   }
+];
+
+const MOCK_RESOURCES = [
+  ...BASE_MOCK_RESOURCES,
+  ...Array.from({ length: 24 }).map((_, i) => ({
+    ...BASE_MOCK_RESOURCES[i % 5],
+    id: i + 6,
+    title: `${BASE_MOCK_RESOURCES[i % 5].title} (Vol. ${Math.floor(i / 5) + 2})`
+  }))
 ];
 
 export default function ResourcesPage() {
@@ -154,13 +163,13 @@ export default function ResourcesPage() {
 
         {/* Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredResources.map(resource => {
+          {filteredResources.map((resource, index) => {
             const Icon = resource.icon;
             return (
-              <div 
-                key={resource.id} 
-                className="bg-white rounded-[2rem] border border-gray-200 p-6 shadow-sm flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#5a32fa]/10 transition-all duration-300 group"
-              >
+              <React.Fragment key={resource.id}>
+                <div 
+                  className="bg-white rounded-[2rem] border border-gray-200 p-6 shadow-sm flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#5a32fa]/10 transition-all duration-300 group"
+                >
                 <div className="flex justify-between items-start mb-4">
                   <div 
                     className="w-14 h-14 rounded-2xl flex items-center justify-center text-white border border-gray-200 shadow-sm"
@@ -195,7 +204,21 @@ export default function ResourcesPage() {
                     Download
                   </button>
                 </div>
-              </div>
+                </div>
+
+                {(index + 1) % 5 === 0 && (
+                  <div className="w-full bg-white rounded-[2rem] overflow-hidden shadow-sm border border-gray-200 relative group min-h-[300px]">
+                    <img src={["/AD3.png", "/AD6.png", "/AD7.png"][Math.floor(index / 5) % 3]} alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 absolute inset-0" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 pointer-events-none">
+                      <div className="pointer-events-auto mt-auto">
+                        <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white text-gray-900 font-bold text-sm py-2 px-5 rounded-xl w-max hover:bg-gray-100 transition-colors shadow-sm">
+                          Know More
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </React.Fragment>
             );
           })}
 

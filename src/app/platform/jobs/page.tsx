@@ -300,15 +300,9 @@ export default function JobsPage() {
               <Star size={24} className="text-[#ffc900] fill-current" /> Top Companies Hiring
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {TOP_COMPANIES.map((company, idx) => (
-                <div key={idx} className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 flex items-center gap-4 hover:-translate-y-0.5 hover:shadow-sm transition-all cursor-pointer">
-                  <div className="w-14 h-14 rounded-2xl border border-gray-100 flex items-center justify-center font-bold text-xl text-gray-900 shrink-0" style={{ backgroundColor: company.color }}>
-                    {company.initial}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 leading-tight">{company.name}</h3>
-                    <p className="text-[#5a32fa] font-bold text-sm mt-1">{company.openRoles} open roles</p>
-                  </div>
+              {['/JOBAD1.png', '/JOBAD2.png', '/JOBAD3.png', '/JOBAD4.png'].map((adSrc, idx) => (
+                <div key={idx} className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer relative h-[104px] group">
+                  <img src={adSrc} alt={`Featured Company ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
               ))}
             </div>
