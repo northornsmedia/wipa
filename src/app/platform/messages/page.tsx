@@ -523,24 +523,24 @@ function MessagesContent() {
   );
 
   return (
-    <div className="h-[calc(100vh-73px)] overflow-hidden bg-[#f8f9fa] flex flex-col">
+    <div className="h-[calc(100vh-73px)] overflow-hidden bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
 
 
       {/* Main Messaging UI */}
-      <div className="flex-1 flex w-full p-0 md:p-6 lg:p-8 min-h-0 md:gap-6 bg-white md:bg-transparent">
+      <div className="flex-1 flex w-full p-0 md:p-6 lg:p-8 min-h-0 md:gap-6 bg-white dark:bg-[#0f172a] md:bg-transparent">
         
         {/* Left Pane: Conversations List */}
-        <div className={`w-full md:w-[350px] lg:w-[400px] bg-white md:rounded-2xl border-0 md:border border-gray-200 md:shadow-md flex-col overflow-hidden shrink-0 h-full min-h-0 ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
+        <div className={`w-full md:w-[350px] lg:w-[400px] bg-white dark:bg-[#0f172a] md:rounded-2xl border-0 md:border border-gray-200 dark:border-white/20 md:shadow-md flex-col overflow-hidden shrink-0 h-full min-h-0 ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
           
-          <div className="hidden md:block p-6 border-b border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Inbox</h2>
+          <div className="hidden md:block p-6 border-b border-gray-100 dark:border-white/10">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Inbox</h2>
             <div className="relative">
               <input 
                 type="text" 
                 placeholder="Search messages..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium text-sm transition-colors bg-white"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-gray-200 dark:border-white/20 focus:outline-none focus:border-[#5a32fa] font-medium text-sm transition-colors bg-white dark:bg-[#0f172a]"
               />
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
@@ -551,20 +551,20 @@ function MessagesContent() {
               <div 
                 key={chat.id}
                 onClick={() => markAsRead(chat.id)}
-                className={`flex items-center gap-4 p-4 border-b-2 border-gray-100 cursor-pointer transition-colors ${activeChatId === chat.id ? 'bg-[#5a32fa]/10' : 'hover:bg-gray-50'}`}
+                className={`flex items-center gap-4 p-4 border-b-2 border-gray-100 dark:border-white/10 cursor-pointer transition-colors ${activeChatId === chat.id ? 'bg-[#5a32fa]/10' : 'hover:bg-gray-50 dark:bg-white/5'}`}
               >
                 <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg border border-gray-200" style={{ backgroundColor: chat.color }}>
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg border border-gray-200 dark:border-white/20" style={{ backgroundColor: chat.color }}>
                     {chat.initial}
                   </div>
                   {chat.unread > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#ffc900] border border-gray-200 rounded-full"></span>
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#ffc900] border border-gray-200 dark:border-white/20 rounded-full"></span>
                   )}
                 </div>
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-1">
-                    <h3 className={`font-bold text-[15px] truncate ${chat.unread > 0 ? 'text-gray-900' : 'text-gray-700'}`}>
+                    <h3 className={`font-bold text-[15px] truncate ${chat.unread > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-200'}`}>
                       {chat.name}
                     </h3>
                     <span className={`text-[10px] whitespace-nowrap ml-2 ${chat.unread > 0 ? 'font-bold text-[#5a32fa]' : 'font-medium text-gray-400'}`}>
@@ -572,7 +572,7 @@ function MessagesContent() {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <p className={`text-xs truncate pr-2 ${chat.unread > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-500'}`}>
+                    <p className={`text-xs truncate pr-2 ${chat.unread > 0 ? 'font-bold text-gray-900 dark:text-white' : 'font-medium text-gray-500 dark:text-gray-400'}`}>
                       {chat.lastMessage}
                     </p>
                     {chat.unread > 0 && (
@@ -585,7 +585,7 @@ function MessagesContent() {
               </div>
             ))}
             {filteredConversations.length === 0 && (
-              <div className="p-8 text-center text-gray-500 font-medium">
+              <div className="p-8 text-center text-gray-500 dark:text-gray-400 font-medium">
                 No conversations found.
               </div>
             )}
@@ -593,46 +593,46 @@ function MessagesContent() {
         </div>
 
         {/* Right Pane: Active Chat */}
-        <div className={`bg-white md:rounded-2xl border-0 md:border border-gray-200 md:shadow-md flex-col overflow-hidden ${!showMobileChat ? 'hidden md:flex flex-1 h-full min-h-0 relative' : 'flex fixed inset-0 z-[100] md:relative md:flex-1 md:inset-auto md:z-auto h-full min-h-0'}`}>
+        <div className={`bg-white dark:bg-[#0f172a] md:rounded-2xl border-0 md:border border-gray-200 dark:border-white/20 md:shadow-md flex-col overflow-hidden ${!showMobileChat ? 'hidden md:flex flex-1 h-full min-h-0 relative' : 'flex fixed inset-0 z-[100] md:relative md:flex-1 md:inset-auto md:z-auto h-full min-h-0'}`}>
           
           {activeChat ? (
             <>
               {/* Chat Header */}
-              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white shrink-0 z-10">
+              <div className="px-6 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-white dark:bg-[#0f172a] shrink-0 z-10">
                 <div className="flex items-center gap-2 md:gap-4">
                   <button 
                     onClick={() => setShowMobileChat(false)}
-                    className="md:hidden w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 -ml-2"
+                    className="md:hidden w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:bg-white/10 -ml-2"
                   >
-                    <ArrowLeft size={20} className="text-gray-900" />
+                    <ArrowLeft size={20} className="text-gray-900 dark:text-white" />
                   </button>
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg border border-gray-200" style={{ backgroundColor: activeChat.color }}>
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg border border-gray-200 dark:border-white/20" style={{ backgroundColor: activeChat.color }}>
                     {activeChat.initial}
                   </div>
                   <div>
-                    <h2 className="font-bold text-lg text-gray-900 flex items-center gap-1">
+                    <h2 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-1">
                       {activeChat.name}
                       <BadgeCheck size={16} className="text-[#5a32fa]" />
                     </h2>
-                    <p className="text-xs font-medium text-gray-500">{activeChat.role}</p>
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{activeChat.role}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3 relative">
                   {activeChat.participantId && (
-                    <Link href={`/platform/profile/${activeChat.participantId}`} className="hidden sm:block px-4 py-2 border-2 border-gray-200 rounded-xl font-bold text-xs text-gray-600 hover:border-gray-200 hover:text-[#131313] transition-colors">
+                    <Link href={`/platform/profile/${activeChat.participantId}`} className="hidden sm:block px-4 py-2 border-2 border-gray-200 dark:border-white/20 rounded-xl font-bold text-xs text-gray-600 dark:text-gray-300 hover:border-gray-200 dark:border-white/20 hover:text-[#131313] transition-colors">
                       View Profile
                     </Link>
                   )}
                   <button 
                     onClick={() => setIsChatOptionsOpen(!isChatOptionsOpen)}
-                    className="w-10 h-10 flex items-center justify-center border-2 border-gray-200 rounded-xl text-gray-600 hover:border-gray-200 hover:bg-gray-50 transition-colors"
+                    className="w-10 h-10 flex items-center justify-center border-2 border-gray-200 dark:border-white/20 rounded-xl text-gray-600 dark:text-gray-300 hover:border-gray-200 dark:border-white/20 hover:bg-gray-50 dark:bg-white/5 transition-colors"
                   >
                     <MoreHorizontal size={20} />
                   </button>
                   
                   {isChatOptionsOpen && (
-                    <div className="absolute top-12 right-0 w-48 bg-white border border-gray-200 rounded-xl shadow-sm py-2 z-50 overflow-hidden">
+                    <div className="absolute top-12 right-0 w-48 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/20 rounded-xl shadow-sm py-2 z-50 overflow-hidden">
                       <button 
                         onClick={() => { setIsChatOptionsOpen(false); alert("User blocked!"); }}
                         className="w-full text-left px-4 py-2.5 text-sm font-bold text-[#ff4b4b] hover:bg-red-50 transition-colors"
@@ -641,13 +641,13 @@ function MessagesContent() {
                       </button>
                       <button 
                         onClick={() => { setIsChatOptionsOpen(false); alert("Chat cleared!"); }}
-                        className="w-full text-left px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-100 transition-colors"
+                        className="w-full text-left px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-white/10 transition-colors"
                       >
                         Clear Chat
                       </button>
                       <button 
                         onClick={() => { setIsChatOptionsOpen(false); alert("Notifications muted!"); }}
-                        className="w-full text-left px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-100 transition-colors"
+                        className="w-full text-left px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-white/10 transition-colors"
                       >
                         Mute Notifications
                       </button>
@@ -657,7 +657,7 @@ function MessagesContent() {
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto p-6 bg-[#f8f9fa]">
+              <div className="flex-1 overflow-y-auto p-6 bg-[#f8f9fa] dark:bg-[#0f172a]">
                 <div className="space-y-6 flex flex-col">
                   {activeChat.messages.map((msg, index) => {
                     const isMe = msg.sender === "me";
@@ -665,21 +665,21 @@ function MessagesContent() {
                     return (
                       <div key={msg.id} className={`flex flex-col max-w-[75%] ${isMe ? 'self-end items-end' : 'self-start items-start'}`}>
                         <div 
-                          className={`px-5 py-3 border border-gray-200 text-[15px] font-medium leading-relaxed ${
+                          className={`px-5 py-3 border border-gray-200 dark:border-white/20 text-[15px] font-medium leading-relaxed ${
                             isMe 
                               ? 'bg-[#00d26a] text-[#131313] rounded-t-2xl rounded-bl-2xl rounded-br-sm shadow-[-4px_4px_0px_0px_#131313]' 
-                              : 'bg-white text-gray-900 rounded-t-2xl rounded-br-2xl rounded-bl-sm shadow-sm'
+                              : 'bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white rounded-t-2xl rounded-br-2xl rounded-bl-sm shadow-sm'
                           }`}
                         >
                           {/* Media Rendering */}
                           {msg.type === 'image' && msg.mediaUrl && (
-                            <img src={msg.mediaUrl} alt="Attached image" className="max-w-full h-auto rounded-xl border border-gray-200 mb-2" />
+                            <img src={msg.mediaUrl} alt="Attached image" className="max-w-full h-auto rounded-xl border border-gray-200 dark:border-white/20 mb-2" />
                           )}
                           {msg.type === 'video' && msg.mediaUrl && (
-                            <video src={msg.mediaUrl} controls className="max-w-full h-auto rounded-xl border border-gray-200 mb-2" />
+                            <video src={msg.mediaUrl} controls className="max-w-full h-auto rounded-xl border border-gray-200 dark:border-white/20 mb-2" />
                           )}
                           {msg.type === 'document' && (
-                            <div className="flex items-center gap-3 bg-white/50 p-3 rounded-xl border border-gray-200 mb-2">
+                            <div className="flex items-center gap-3 bg-white dark:bg-[#0f172a]/50 p-3 rounded-xl border border-gray-200 dark:border-white/20 mb-2">
                               <FileText size={24} className="text-[#5a32fa]" />
                               <span className="font-bold text-sm truncate max-w-[200px]">{msg.text}</span>
                             </div>
@@ -711,7 +711,7 @@ function MessagesContent() {
               </div>
 
               {/* Chat Input */}
-              <div className="p-4 sm:p-6 border-t border-gray-100 bg-white shrink-0">
+              <div className="p-4 sm:p-6 border-t border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] shrink-0">
                 <form onSubmit={handleSendMessage} className="flex items-end gap-3">
                   <div className="relative">
                     <button 
@@ -719,8 +719,8 @@ function MessagesContent() {
                       onClick={() => setIsAttachmentMenuOpen(!isAttachmentMenuOpen)}
                       className={`w-12 h-12 flex items-center justify-center shrink-0 border-2 rounded-xl transition-colors ${
                         isAttachmentMenuOpen 
-                          ? 'border-gray-200 text-[#131313] bg-gray-50' 
-                          : 'border-gray-200 text-gray-400 hover:border-gray-200 hover:text-[#131313]'
+                          ? 'border-gray-200 dark:border-white/20 text-[#131313] bg-gray-50 dark:bg-white/5' 
+                          : 'border-gray-200 dark:border-white/20 text-gray-400 hover:border-gray-200 dark:border-white/20 hover:text-[#131313]'
                       }`}
                     >
                       <Paperclip size={20} />
@@ -728,24 +728,24 @@ function MessagesContent() {
 
                     {/* Attachment Menu Popover */}
                     {isAttachmentMenuOpen && (
-                      <div className="absolute bottom-[calc(100%+12px)] left-0 bg-white border border-gray-200 rounded-2xl shadow-[6px_6px_0px_0px_#131313] py-2 w-56 z-50 overflow-hidden">
-                        <button type="button" onClick={openCamera} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
+                      <div className="absolute bottom-[calc(100%+12px)] left-0 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/20 rounded-2xl shadow-[6px_6px_0px_0px_#131313] py-2 w-56 z-50 overflow-hidden">
+                        <button type="button" onClick={openCamera} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
                           <Camera size={18} className="group-hover:scale-110 transition-transform" /> Camera
                         </button>
-                        <button type="button" onClick={startVoiceRecord} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
+                        <button type="button" onClick={startVoiceRecord} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
                           <Mic size={18} className="group-hover:scale-110 transition-transform" /> Voice Message
                         </button>
-                        <button type="button" onClick={handleLocationShare} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
+                        <button type="button" onClick={handleLocationShare} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
                           <MapPin size={18} className="group-hover:scale-110 transition-transform" /> Location
                         </button>
-                        <div className="h-[2px] bg-gray-100 my-1 mx-4"></div>
-                        <button type="button" onClick={() => imageInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
+                        <div className="h-[2px] bg-gray-100 dark:bg-white/10 my-1 mx-4"></div>
+                        <button type="button" onClick={() => imageInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
                           <ImageIcon size={18} className="group-hover:scale-110 transition-transform" /> Images
                         </button>
-                        <button type="button" onClick={() => videoInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
+                        <button type="button" onClick={() => videoInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
                           <Video size={18} className="group-hover:scale-110 transition-transform" /> Videos
                         </button>
-                        <button type="button" onClick={() => docInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
+                        <button type="button" onClick={() => docInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-sm text-left group">
                           <FileText size={18} className="group-hover:scale-110 transition-transform" /> Documents
                         </button>
                       </div>
@@ -774,7 +774,7 @@ function MessagesContent() {
                           value={newMessage}
                           onChange={(e) => setNewMessage(e.target.value)}
                           placeholder="Write a message..."
-                          className="w-full pl-4 pr-14 py-3 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium text-[15px] transition-colors"
+                          className="w-full pl-4 pr-14 py-3 rounded-xl border-2 border-gray-200 dark:border-white/20 focus:outline-none focus:border-[#5a32fa] font-medium text-[15px] transition-colors"
                         />
                         <button 
                           type="submit" 
@@ -782,7 +782,7 @@ function MessagesContent() {
                           className={`absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-lg transition-all ${
                             newMessage.trim() 
                               ? 'bg-[#5a32fa] text-white hover:bg-[#4020ca]' 
-                              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                              : 'bg-gray-100 dark:bg-white/10 text-gray-400 cursor-not-allowed'
                           }`}
                         >
                           <Send size={16} className={newMessage.trim() ? "ml-0.5" : ""} />
@@ -794,7 +794,7 @@ function MessagesContent() {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#f8f9fa]">
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#f8f9fa] dark:bg-[#0f172a]">
               <div className="w-24 h-24 bg-gray-200 rounded-3xl mb-6 border-4 border-gray-300"></div>
               <h2 className="text-2xl font-bold text-gray-400">Select a conversation</h2>
               <p className="text-gray-400 font-medium mt-2">Choose someone from your inbox to start chatting.</p>
@@ -817,9 +817,9 @@ function MessagesContent() {
               <div className="p-8 flex justify-center bg-[#5a32fa] border-t-2 border-gray-800">
                 <button 
                   onClick={capturePhoto} 
-                  className="w-20 h-20 bg-white rounded-full border-4 border-gray-400 flex items-center justify-center active:scale-95 transition-transform"
+                  className="w-20 h-20 bg-white dark:bg-[#0f172a] rounded-full border-4 border-gray-400 flex items-center justify-center active:scale-95 transition-transform"
                 >
-                  <div className="w-16 h-16 bg-white rounded-full border border-gray-200"></div>
+                  <div className="w-16 h-16 bg-white dark:bg-[#0f172a] rounded-full border border-gray-200 dark:border-white/20"></div>
                 </button>
               </div>
             </div>

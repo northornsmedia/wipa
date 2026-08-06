@@ -7,7 +7,7 @@ const ThreeAnimation = dynamic(() => import('@/components/ThreeAnimation'), { ss
 
 export default function PublicFooter() {
   return (
-    <footer className="w-full bg-white pt-20 pb-12 px-6 relative overflow-hidden">
+    <footer className="w-full bg-white dark:bg-[#0f172a] pt-20 pb-12 px-6 relative overflow-hidden">
       <div className="block md:hidden">
         <ThreeAnimation />
       </div>
@@ -19,7 +19,7 @@ export default function PublicFooter() {
           <div className="flex items-center gap-[2px] mb-6">
             <span className="font-serif text-4xl font-bold tracking-tight text-[#1a1a1a]">WIPA</span>
           </div>
-          <p className="text-gray-500 text-sm leading-relaxed max-w-[280px]">
+          <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-[280px]">
             Connect, collaborate, and grow professionally within the premier global Intellectual Property community for women.
           </p>
         </div>
@@ -28,18 +28,18 @@ export default function PublicFooter() {
         <div className="grid grid-cols-2 gap-8 lg:col-span-2">
           {/* Col 2 */}
           <div className="flex flex-col gap-5 pt-2">
-            <Link href="/about" className="text-gray-700 font-medium text-sm hover:text-[#ff5241] transition-colors">About</Link>
-            <Link href="/contact" className="text-gray-700 font-medium text-sm hover:text-[#ff5241] transition-colors">Contact</Link>
-            <Link href="/pricing" className="text-gray-700 font-medium text-sm hover:text-[#ff5241] transition-colors">Pricing</Link>
-            <Link href="/resources" className="text-gray-700 font-medium text-sm hover:text-[#ff5241] transition-colors">Resources</Link>
+            <Link href="/about" className="text-gray-700 dark:text-gray-200 font-medium text-sm hover:text-[#ff5241] transition-colors">About</Link>
+            <Link href="/contact" className="text-gray-700 dark:text-gray-200 font-medium text-sm hover:text-[#ff5241] transition-colors">Contact</Link>
+            <Link href="/pricing" className="text-gray-700 dark:text-gray-200 font-medium text-sm hover:text-[#ff5241] transition-colors">Pricing</Link>
+            <Link href="/resources" className="text-gray-700 dark:text-gray-200 font-medium text-sm hover:text-[#ff5241] transition-colors">Resources</Link>
           </div>
 
           {/* Col 3 */}
           <div className="flex flex-col gap-5 pt-2">
-            <a href="#" className="text-gray-700 font-medium text-sm hover:text-[#ff5241] transition-colors">Terms of Service</a>
-            <a href="#" className="text-gray-700 font-medium text-sm hover:text-[#ff5241] transition-colors">Privacy Policy</a>
-            <a href="#" className="text-gray-700 font-medium text-sm hover:text-[#ff5241] transition-colors">Cookie Policy</a>
-            <a href="#" className="text-gray-700 font-medium text-sm hover:text-[#ff5241] transition-colors">Accessibility</a>
+            <a href="#" className="text-gray-700 dark:text-gray-200 font-medium text-sm hover:text-[#ff5241] transition-colors">Terms of Service</a>
+            <a href="#" className="text-gray-700 dark:text-gray-200 font-medium text-sm hover:text-[#ff5241] transition-colors">Privacy Policy</a>
+            <a href="#" className="text-gray-700 dark:text-gray-200 font-medium text-sm hover:text-[#ff5241] transition-colors">Cookie Policy</a>
+            <a href="#" className="text-gray-700 dark:text-gray-200 font-medium text-sm hover:text-[#ff5241] transition-colors">Accessibility</a>
           </div>
         </div>
 
@@ -49,15 +49,15 @@ export default function PublicFooter() {
           
           <div className="space-y-1">
             <p className="font-bold text-[#1a1a1a] text-sm underline decoration-2 decoration-[#b892ff] underline-offset-4 mb-3">United Kingdom Office:</p>
-            <p className="text-gray-600 text-sm font-medium">60 Castle Street, Dover,</p>
-            <p className="text-gray-600 text-sm font-medium">CT16 1PJ, United Kingdom</p>
-            <p className="text-[#1a1a1a] text-sm font-bold mt-2">+ 44 (0)203-813-0457 <span className="text-gray-500 font-medium">(United Kingdom)</span></p>
+            <p className="text-gray-600 dark:text-gray-300 text-sm font-medium">60 Castle Street, Dover,</p>
+            <p className="text-gray-600 dark:text-gray-300 text-sm font-medium">CT16 1PJ, United Kingdom</p>
+            <p className="text-[#1a1a1a] text-sm font-bold mt-2">+ 44 (0)203-813-0457 <span className="text-gray-500 dark:text-gray-400 font-medium">(United Kingdom)</span></p>
           </div>
 
           <div className="space-y-1 mt-2">
             <p className="font-bold text-[#1a1a1a] text-sm underline decoration-2 decoration-[#48d29b] underline-offset-4 mb-3">India Office:</p>
-            <p className="text-gray-600 text-sm font-medium leading-relaxed">E-606, Prahlad Nagar Trade Center(PNTC),<br/>Times Of India Press Rd, Satellite, Shyamal,<br/>Ahmedabad, Gujarat, India, 380015</p>
-            <p className="text-[#1a1a1a] text-sm font-bold mt-2">+ 91 90545 75950 <span className="text-gray-500 font-medium">(India)</span></p>
+            <p className="text-gray-600 dark:text-gray-300 text-sm font-medium leading-relaxed">E-606, Prahlad Nagar Trade Center(PNTC),<br/>Times Of India Press Rd, Satellite, Shyamal,<br/>Ahmedabad, Gujarat, India, 380015</p>
+            <p className="text-[#1a1a1a] text-sm font-bold mt-2">+ 91 90545 75950 <span className="text-gray-500 dark:text-gray-400 font-medium">(India)</span></p>
           </div>
 
           <div className="mt-2">
@@ -73,7 +73,7 @@ export default function PublicFooter() {
       <div className="max-w-7xl mx-auto w-full h-px bg-black/10"></div>
       
       {/* Copyright */}
-      <div className="max-w-7xl mx-auto mt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500 font-medium">
+      <div className="max-w-7xl mx-auto mt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400 font-medium">
         <p>© {new Date().getFullYear()} Women in Intellectual Property Association. All rights reserved.</p>
         <p>Designed for the WIPA Global Community</p>
       </div>

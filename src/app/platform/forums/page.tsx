@@ -124,7 +124,7 @@ export default function ForumsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
       {/* Main Content */}
       <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
         
@@ -137,12 +137,12 @@ export default function ForumsPage() {
               </div>
               Community Forums
             </h1>
-            <p className="text-gray-500 font-medium mt-3 text-lg">Ask questions, share insights, and discuss the latest in IP law.</p>
+            <p className="text-gray-500 dark:text-gray-400 font-medium mt-3 text-lg">Ask questions, share insights, and discuss the latest in IP law.</p>
           </div>
 
           <div className="flex items-center gap-4">
             <button className="group relative flex items-center gap-2 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white px-7 py-3.5 rounded-2xl font-bold shadow-lg shadow-[#5a32fa]/25 hover:shadow-xl hover:shadow-[#5a32fa]/40 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+              <div className="absolute inset-0 bg-white dark:bg-[#0f172a]/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
               <Plus size={20} strokeWidth={3} className="relative z-10 group-hover:rotate-90 transition-transform duration-300" />
               <span className="relative z-10">New Topic</span>
             </button>
@@ -158,8 +158,8 @@ export default function ForumsPage() {
                 onClick={() => setActiveTab(tab as 'Recent' | 'Hot' | 'Unanswered')}
                 className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 whitespace-nowrap shrink-0 ${
                   activeTab === tab
-                    ? 'bg-white text-[#5a32fa] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100/50 scale-105'
-                    : 'bg-transparent text-gray-500 hover:bg-white/60 hover:text-gray-800 hover:shadow-sm'
+                    ? 'bg-white dark:bg-[#0f172a] text-[#5a32fa] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 dark:border-white/10/50 scale-105'
+                    : 'bg-transparent text-gray-500 dark:text-gray-400 hover:bg-white dark:bg-[#0f172a]/60 hover:text-gray-800 dark:text-gray-100 hover:shadow-sm'
                 }`}
               >
                 {tab === 'Hot' && <TrendingUp size={16} className={activeTab === tab ? 'text-[#ff4b4b]' : ''} />}
@@ -172,14 +172,14 @@ export default function ForumsPage() {
 
           <div className="relative flex-1 w-full max-w-md mx-auto md:ml-auto md:mx-0 group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-            <div className="relative flex items-center bg-white rounded-2xl border border-gray-100 shadow-sm group-hover:shadow-md transition-shadow overflow-hidden">
+            <div className="relative flex items-center bg-white dark:bg-[#0f172a] rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm group-hover:shadow-md transition-shadow overflow-hidden">
               <Search className="w-5 h-5 text-gray-400 ml-4 shrink-0 group-focus-within:text-[#5a32fa] transition-colors" />
               <input 
                 type="text" 
                 placeholder="Search discussions..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent py-3.5 pl-3 pr-4 font-medium text-gray-800 focus:outline-none placeholder-gray-400"
+                className="w-full bg-transparent py-3.5 pl-3 pr-4 font-medium text-gray-800 dark:text-gray-100 focus:outline-none placeholder-gray-400"
               />
             </div>
           </div>
@@ -187,11 +187,11 @@ export default function ForumsPage() {
 
         {/* Forums List */}
         <div className="flex flex-col gap-4">
-          <div className="w-full bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-md border border-gray-200 relative h-32 md:h-40 group shrink-0 mb-2">
+          <div className="w-full bg-white dark:bg-[#0f172a] rounded-2xl md:rounded-3xl overflow-hidden shadow-md border border-gray-200 dark:border-white/20 relative h-32 md:h-40 group shrink-0 mb-2">
             <img src="/AD5.jpg" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 pointer-events-none">
               <div className="pointer-events-auto">
-                <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white text-gray-900 font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 transition-colors shadow-sm">
+                <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 dark:bg-white/10 transition-colors shadow-sm">
                   Know More
                 </a>
               </div>
@@ -202,7 +202,7 @@ export default function ForumsPage() {
             <React.Fragment key={topic.id}>
               <div 
                 onClick={() => setSelectedTopicId(topic.id)}
-                className="bg-white rounded-2xl md:rounded-3xl border border-gray-200 p-6 shadow-md hover:-translate-y-1 hover:shadow-lg transition-all flex flex-col md:flex-row gap-6 items-start md:items-center cursor-pointer"
+                className="bg-white dark:bg-[#0f172a] rounded-2xl md:rounded-3xl border border-gray-200 dark:border-white/20 p-6 shadow-md hover:-translate-y-1 hover:shadow-lg transition-all flex flex-col md:flex-row gap-6 items-start md:items-center cursor-pointer"
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -215,11 +215,11 @@ export default function ForumsPage() {
                       </span>
                     )}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-1 hover:text-[#5a32fa] transition-colors">{topic.title}</h3>
-                  <p className="text-sm text-gray-500 font-medium">Started by <span className="font-bold text-gray-800">{topic.author}</span></p>
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1 hover:text-[#5a32fa] transition-colors">{topic.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Started by <span className="font-bold text-gray-800 dark:text-gray-100">{topic.author}</span></p>
                 </div>
 
-                <div className="flex items-center gap-6 text-sm font-bold text-gray-600 shrink-0 border-t md:border-t-0 md:border-l border-gray-100 md:border-gray-100 pt-4 md:pt-0 md:pl-6 w-full md:w-auto justify-between md:justify-end">
+                <div className="flex items-center gap-6 text-sm font-bold text-gray-600 dark:text-gray-300 shrink-0 border-t md:border-t-0 md:border-l border-gray-100 dark:border-white/10 md:border-gray-100 dark:border-white/10 pt-4 md:pt-0 md:pl-6 w-full md:w-auto justify-between md:justify-end">
                   <div className="flex items-center gap-2">
                     <MessageCircle size={18} className="text-[#5a32fa]" />
                     {topic.replies} <span className="hidden md:inline">replies</span>
@@ -239,10 +239,10 @@ export default function ForumsPage() {
           ))}
 
           {filteredTopics.length === 0 && (
-            <div className="py-20 text-center bg-white rounded-[2rem] border border-gray-200 border-dashed">
+            <div className="py-20 text-center bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-200 dark:border-white/20 border-dashed">
               <MessageSquare size={48} className="mx-auto text-gray-300 mb-4" />
-              <h3 className="text-xl font-bold text-gray-800 mb-2">No discussions found</h3>
-              <p className="text-gray-500 font-medium">Try adjusting your filters or start a new topic.</p>
+              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">No discussions found</h3>
+              <p className="text-gray-500 dark:text-gray-400 font-medium">Try adjusting your filters or start a new topic.</p>
             </div>
           )}
         </div>
@@ -252,51 +252,51 @@ export default function ForumsPage() {
       {/* Topic Discussion Modal */}
       {selectedTopic && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#5a32fa]/60 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-2xl rounded-[2rem] border border-gray-200 shadow-[8px_8px_0px_0px_#131313] flex flex-col max-h-[85vh]">
-            <div className="flex justify-between items-start p-6 border-b border-gray-100">
+          <div className="bg-white dark:bg-[#0f172a] w-full max-w-2xl rounded-[2rem] border border-gray-200 dark:border-white/20 shadow-[8px_8px_0px_0px_#131313] flex flex-col max-h-[85vh]">
+            <div className="flex justify-between items-start p-6 border-b border-gray-100 dark:border-white/10">
               <div>
                 <span className="bg-[#fbe8d5] text-[#131313] text-xs font-bold px-3 py-1 rounded-lg  inline-block mb-2">
                   {selectedTopic.category}
                 </span>
-                <h2 className="text-2xl font-bold text-gray-800 leading-tight pr-8">{selectedTopic.title}</h2>
-                <p className="text-sm text-gray-500 font-medium mt-2">Started by <span className="font-bold text-gray-800">{selectedTopic.author}</span></p>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 leading-tight pr-8">{selectedTopic.title}</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mt-2">Started by <span className="font-bold text-gray-800 dark:text-gray-100">{selectedTopic.author}</span></p>
               </div>
               <button 
                 onClick={() => setSelectedTopicId(null)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 text-gray-600 border-2 border-transparent hover:border-[#131313] hover:bg-gray-200 transition-all shrink-0"
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 border-2 border-transparent hover:border-[#131313] hover:bg-gray-200 transition-all shrink-0"
               >
                 <span className="font-bold text-xl">X</span>
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50 dark:bg-white/5">
               {topicReplies.map(reply => (
-                <div key={reply.id} className="bg-white p-5 rounded-2xl border-2 border-gray-200 flex gap-4">
+                <div key={reply.id} className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border-2 border-gray-200 dark:border-white/20 flex gap-4">
                   <div className="w-10 h-10 rounded-full  flex items-center justify-center font-bold text-white text-sm shrink-0" style={{ backgroundColor: reply.color }}>
                     {reply.initial}
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-bold text-gray-800">{reply.author}</h4>
+                      <h4 className="font-bold text-gray-800 dark:text-gray-100">{reply.author}</h4>
                       <span className="text-xs font-medium text-gray-400">{reply.time}</span>
                     </div>
                     {reply.replyTo && (
                       <div className="flex flex-col gap-1 text-xs font-bold text-[#5a32fa] bg-[#5a32fa]/5 px-3 py-2 rounded-lg w-full border-l-4 border-[#5a32fa] mb-2 mt-1">
                         <span>Replying to @{reply.replyTo.author}</span>
-                        <p className="text-gray-600 font-medium line-clamp-1">{reply.replyTo.content}</p>
+                        <p className="text-gray-600 dark:text-gray-300 font-medium line-clamp-1">{reply.replyTo.content}</p>
                       </div>
                     )}
-                    <p className="text-gray-700 text-[15px] leading-relaxed">{reply.content}</p>
+                    <p className="text-gray-700 dark:text-gray-200 text-[15px] leading-relaxed">{reply.content}</p>
                     <div className="flex items-center gap-4 mt-3">
                       <button 
                         onClick={() => setReplyingTo({ author: reply.author, content: reply.content })}
-                        className="text-xs font-bold text-gray-500 hover:text-[#5a32fa] transition-colors"
+                        className="text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] transition-colors"
                       >
                         Reply
                       </button>
                       <button 
                         onClick={() => handleHelpfulClick(reply.id)}
-                        className={`text-xs font-bold transition-colors ${reply.isHelpful ? 'text-[#5a32fa]' : 'text-gray-500 hover:text-[#5a32fa]'}`}
+                        className={`text-xs font-bold transition-colors ${reply.isHelpful ? 'text-[#5a32fa]' : 'text-gray-500 dark:text-gray-400 hover:text-[#5a32fa]'}`}
                       >
                         Helpful ({reply.helpfulCount})
                       </button>
@@ -306,14 +306,14 @@ export default function ForumsPage() {
               ))}
             </div>
 
-            <div className="p-6 border-t border-gray-100 bg-white rounded-b-[2rem] flex flex-col gap-3">
+            <div className="p-6 border-t border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] rounded-b-[2rem] flex flex-col gap-3">
               {replyingTo && (
                 <div className="flex flex-col gap-1 text-xs font-bold text-[#5a32fa] bg-[#5a32fa]/10 px-4 py-2 rounded-xl w-full border-2 border-[#5a32fa]/20">
                   <div className="flex items-center justify-between">
                     <span>Replying to @{replyingTo.author}</span>
                     <button onClick={() => setReplyingTo(null)} className="hover:text-[#ff4b4b] transition-colors ml-1 px-1">X</button>
                   </div>
-                  <p className="text-gray-600 font-medium line-clamp-1 border-l-2 border-[#5a32fa]/30 pl-2 mt-1">{replyingTo.content}</p>
+                  <p className="text-gray-600 dark:text-gray-300 font-medium line-clamp-1 border-l-2 border-[#5a32fa]/30 pl-2 mt-1">{replyingTo.content}</p>
                 </div>
               )}
               <div className="flex gap-3">
@@ -321,7 +321,7 @@ export default function ForumsPage() {
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder="Type your reply here..." 
-                  className="flex-1 bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-800 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors resize-none h-[52px]"
+                  className="flex-1 bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-4 py-3 text-gray-800 dark:text-gray-100 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors resize-none h-[52px]"
                 />
                 <button 
                   onClick={handleReplySubmit}

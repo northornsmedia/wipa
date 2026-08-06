@@ -102,7 +102,7 @@ export default function ResourcesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
       {/* Main Content */}
       <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
         
@@ -115,12 +115,12 @@ export default function ResourcesPage() {
               </div>
               Resource Library
             </h1>
-            <p className="text-gray-500 font-medium mt-3 text-lg">Access exclusive guides, templates, webinars, and reports.</p>
+            <p className="text-gray-500 dark:text-gray-400 font-medium mt-3 text-lg">Access exclusive guides, templates, webinars, and reports.</p>
           </div>
 
           <div className="flex items-center gap-4">
             <button className="group relative flex items-center gap-2 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white px-7 py-3.5 rounded-2xl font-bold shadow-lg shadow-[#5a32fa]/25 hover:shadow-xl hover:shadow-[#5a32fa]/40 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+              <div className="absolute inset-0 bg-white dark:bg-[#0f172a]/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
               <Plus size={20} strokeWidth={3} className="relative z-10 group-hover:rotate-90 transition-transform duration-300" />
               <span className="relative z-10">Upload Resource</span>
             </button>
@@ -136,8 +136,8 @@ export default function ResourcesPage() {
                 onClick={() => setActiveTab(tab)}
                 className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 whitespace-nowrap shrink-0 ${
                   activeTab === tab
-                    ? 'bg-white text-[#5a32fa] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100/50 scale-105'
-                    : 'bg-transparent text-gray-500 hover:bg-white/60 hover:text-gray-800 hover:shadow-sm border border-transparent'
+                    ? 'bg-white dark:bg-[#0f172a] text-[#5a32fa] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 dark:border-white/10/50 scale-105'
+                    : 'bg-transparent text-gray-500 dark:text-gray-400 hover:bg-white dark:bg-[#0f172a]/60 hover:text-gray-800 dark:text-gray-100 hover:shadow-sm border border-transparent'
                 }`}
               >
                 {tab === 'Saved' && <Bookmark size={16} className={activeTab === tab ? "fill-[#5a32fa] text-[#5a32fa]" : ""} />}
@@ -148,14 +148,14 @@ export default function ResourcesPage() {
 
           <div className="relative flex-1 w-full max-w-md ml-auto group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-            <div className="relative flex items-center bg-white rounded-2xl border border-gray-100 shadow-sm group-hover:shadow-md transition-shadow overflow-hidden">
+            <div className="relative flex items-center bg-white dark:bg-[#0f172a] rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm group-hover:shadow-md transition-shadow overflow-hidden">
               <Search className="w-5 h-5 text-gray-400 ml-4 shrink-0 group-focus-within:text-[#5a32fa] transition-colors" />
               <input 
                 type="text" 
                 placeholder="Search resources..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent py-3.5 pl-3 pr-4 font-medium text-gray-800 focus:outline-none placeholder-gray-400"
+                className="w-full bg-transparent py-3.5 pl-3 pr-4 font-medium text-gray-800 dark:text-gray-100 focus:outline-none placeholder-gray-400"
               />
             </div>
           </div>
@@ -168,11 +168,11 @@ export default function ResourcesPage() {
             return (
               <React.Fragment key={resource.id}>
                 <div 
-                  className="bg-white rounded-[2rem] border border-gray-200 p-6 shadow-sm flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#5a32fa]/10 transition-all duration-300 group"
+                  className="bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-200 dark:border-white/20 p-6 shadow-sm flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#5a32fa]/10 transition-all duration-300 group"
                 >
                 <div className="flex justify-between items-start mb-4">
                   <div 
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-white border border-gray-200 shadow-sm"
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-white border border-gray-200 dark:border-white/20 shadow-sm"
                     style={{ backgroundColor: resource.color }}
                   >
                     <Icon size={24} strokeWidth={2.5} />
@@ -186,20 +186,20 @@ export default function ResourcesPage() {
                   </button>
                 </div>
 
-                <div className="bg-[#fbe8d5] text-[#131313] text-xs font-bold px-3 py-1 rounded-lg border border-gray-200 w-fit mb-3">
+                <div className="bg-[#fbe8d5] text-[#131313] text-xs font-bold px-3 py-1 rounded-lg border border-gray-200 dark:border-white/20 w-fit mb-3">
                   {resource.type}
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2">{resource.title}</h3>
-                <p className="text-sm text-gray-600 font-medium mb-6 flex-1">{resource.description}</p>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2">{resource.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mb-6 flex-1">{resource.description}</p>
                 
-                <div className="flex items-center justify-between mt-auto border-t-2 border-gray-100 pt-4">
-                  <div className="flex flex-col text-xs font-bold text-gray-500">
+                <div className="flex items-center justify-between mt-auto border-t-2 border-gray-100 dark:border-white/10 pt-4">
+                  <div className="flex flex-col text-xs font-bold text-gray-500 dark:text-gray-400">
                     <span>{resource.author}</span>
                     <span>{resource.date}</span>
                   </div>
                   
-                  <button className="flex items-center gap-2 px-4 py-2 bg-[#5a32fa] text-white rounded-xl border border-gray-200 font-bold text-sm hover:opacity-90 hover:border-[#5a32fa] transition-colors shadow-[2px_2px_0px_0px_#131313]">
+                  <button className="flex items-center gap-2 px-4 py-2 bg-[#5a32fa] text-white rounded-xl border border-gray-200 dark:border-white/20 font-bold text-sm hover:opacity-90 hover:border-[#5a32fa] transition-colors shadow-[2px_2px_0px_0px_#131313]">
                     <Download size={16} />
                     Download
                   </button>
@@ -207,11 +207,11 @@ export default function ResourcesPage() {
                 </div>
 
                 {(index + 1) % 5 === 0 && (
-                  <div className="w-full bg-white rounded-[2rem] overflow-hidden shadow-sm border border-gray-200 relative group min-h-[300px]">
+                  <div className="w-full bg-white dark:bg-[#0f172a] rounded-[2rem] overflow-hidden shadow-sm border border-gray-200 dark:border-white/20 relative group min-h-[300px]">
                     <img src={["/AD3.png", "/AD6.png", "/AD7.png"][Math.floor(index / 5) % 3]} alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 absolute inset-0" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 pointer-events-none">
                       <div className="pointer-events-auto mt-auto">
-                        <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white text-gray-900 font-bold text-sm py-2 px-5 rounded-xl w-max hover:bg-gray-100 transition-colors shadow-sm">
+                        <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white font-bold text-sm py-2 px-5 rounded-xl w-max hover:bg-gray-100 dark:bg-white/10 transition-colors shadow-sm">
                           Know More
                         </a>
                       </div>
@@ -223,10 +223,10 @@ export default function ResourcesPage() {
           })}
 
           {filteredResources.length === 0 && (
-            <div className="col-span-full py-20 text-center bg-white rounded-[2rem] border border-gray-200 border-dashed">
+            <div className="col-span-full py-20 text-center bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-200 dark:border-white/20 border-dashed">
               <BookOpen size={48} className="mx-auto text-gray-300 mb-4" />
-              <h3 className="text-xl font-bold text-gray-800 mb-2">No resources found</h3>
-              <p className="text-gray-500 font-medium">Try adjusting your search filters to find what you're looking for.</p>
+              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">No resources found</h3>
+              <p className="text-gray-500 dark:text-gray-400 font-medium">Try adjusting your search filters to find what you're looking for.</p>
             </div>
           )}
         </div>

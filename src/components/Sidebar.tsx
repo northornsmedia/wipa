@@ -38,7 +38,7 @@ export default function Sidebar() {
     return `flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-[13px] transition-colors ${
       isActive(path) 
         ? 'bg-[#f0ebff] text-[#5a32fa] font-bold' 
-        : 'text-gray-600 hover:bg-gray-50'
+        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5'
     }`;
   };
 
@@ -87,11 +87,11 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className={`hidden lg:flex flex-col shrink-0 bg-white sticky top-[73px] h-[calc(100vh-73px)] transition-all duration-300 relative ${isOpen ? 'w-[260px] border-r border-gray-100' : 'w-0 border-r-0'}`}>
+    <aside className={`hidden lg:flex flex-col shrink-0 bg-white dark:bg-[#0f172a] sticky top-[73px] h-[calc(100vh-73px)] transition-all duration-300 relative ${isOpen ? 'w-[260px] border-r border-gray-100 dark:border-white/10' : 'w-0 border-r-0'}`}>
       
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute top-4 -right-3 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center cursor-pointer z-50 text-gray-400 hover:text-[#5a32fa] transition-all shadow-sm hover:border-[#5a32fa]"
+        className="absolute top-4 -right-3 w-6 h-6 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/20 rounded-full flex items-center justify-center cursor-pointer z-50 text-gray-400 hover:text-[#5a32fa] transition-all shadow-sm hover:border-[#5a32fa]"
       >
         {isOpen ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
       </button>
@@ -157,24 +157,24 @@ export default function Sidebar() {
       <div className="px-4 mb-8">
         <p className="text-[13px] font-bold text-[#131313] mb-4 px-3">All Channels</p>
         <nav className="space-y-1">
-          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors group">
             <div className="flex items-center gap-2">
               <Hash size={16} className="text-gray-400" /> General
             </div>
           </Link>
-          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors group">
             <div className="flex items-center gap-2">
               <Hash size={16} className="text-gray-400" /> daily-highlights
               <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
             </div>
           </Link>
-          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors group">
             <div className="flex items-center gap-2">
               <Hash size={16} className="text-gray-400" /> time-tracking
             </div>
             <BellOff size={14} className="text-gray-400" />
           </Link>
-          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-900 bg-gray-50 rounded-xl font-medium text-[13px] transition-colors group">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors group">
             <div className="flex items-center gap-2">
               <Hash size={16} className="text-gray-400" /> productivity-systems
             </div>
@@ -185,13 +185,13 @@ export default function Sidebar() {
       <div className="px-4 mb-8">
         <p className="text-[13px] font-bold text-[#131313] mb-4 px-3">Links</p>
         <nav className="space-y-1">
-          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors">
             <div className="flex items-center gap-2">
                 iOS App
             </div>
             <ArrowUpRight size={14} className="text-gray-400" />
           </Link>
-          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-xl font-medium text-[13px] transition-colors">
+          <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors">
             <div className="flex items-center gap-2">
                 Android App
             </div>
@@ -202,7 +202,7 @@ export default function Sidebar() {
 
       {/* Creative Sidebar Advertisement */}
       <div className="px-4 mb-6">
-        <div className="relative w-full rounded-2xl overflow-hidden group cursor-pointer shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-500 hover:-translate-y-1">
+        <div className="relative w-full rounded-2xl overflow-hidden group cursor-pointer shadow-sm border border-gray-100 dark:border-white/10 hover:shadow-lg transition-all duration-500 hover:-translate-y-1">
           {/* Animated Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] z-0"></div>
           
@@ -219,7 +219,7 @@ export default function Sidebar() {
             <p className="text-[9px] font-black tracking-widest text-[#ff90e8] uppercase mb-1.5 drop-shadow-sm">Sponsored Partner</p>
             <h4 className="text-[15px] font-black text-white mb-2 leading-tight">AI in IP Law</h4>
             <p className="text-[11px] text-gray-300 font-medium mb-4 leading-relaxed">The definitive 2026 guide to patenting AI models.</p>
-            <button className="w-full bg-white text-[#131313] text-xs font-black py-2.5 rounded-xl hover:bg-[#ffc900] hover:scale-105 hover:shadow-md transition-all duration-300">
+            <button className="w-full bg-white dark:bg-[#0f172a] text-[#131313] text-xs font-black py-2.5 rounded-xl hover:bg-[#ffc900] hover:scale-105 hover:shadow-md transition-all duration-300">
               Download Free
             </button>
           </div>
@@ -228,25 +228,25 @@ export default function Sidebar() {
 
       <div className="mt-auto px-7 mb-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-gray-900">Complete Your Intro</h3>
+          <h3 className="text-sm font-bold text-gray-900 dark:text-white">Complete Your Intro</h3>
           <div className="w-4 h-4 rounded-full border-2 border-[#00d26a] border-t-transparent animate-spin-slow"></div>
         </div>
         <div className="space-y-3">
           <div className="flex items-start gap-3">
             <Circle size={16} className="text-gray-300 mt-0.5 shrink-0" />
-            <a href="#" className="text-sm text-gray-500 hover:text-gray-900 underline decoration-gray-300 underline-offset-4">Watch intro video</a>
+            <a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white underline decoration-gray-300 underline-offset-4">Watch intro video</a>
           </div>
           <div className="flex items-start gap-3">
-            <CheckCircle2 size={16} className="text-gray-900 mt-0.5 shrink-0" />
-            <span className="text-sm text-gray-900 font-medium">React to a post</span>
+            <CheckCircle2 size={16} className="text-gray-900 dark:text-white mt-0.5 shrink-0" />
+            <span className="text-sm text-gray-900 dark:text-white font-medium">React to a post</span>
           </div>
         </div>
       </div>
       
-        <div className="px-4 py-4 border-t border-gray-100">
+        <div className="px-4 py-4 border-t border-gray-100 dark:border-white/10">
           <div className="flex items-center gap-3">
             {user?.avatar_url ? (
-              <img src={user.avatar_url} alt={user?.name || 'User'} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+              <img src={user.avatar_url} alt={user?.name || 'User'} className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-white/20" />
             ) : (
               <div className="w-10 h-10 rounded-full bg-[#131313] text-white flex items-center justify-center text-lg font-bold">
                 {user?.name?.charAt(0)?.toUpperCase() || 'U'}

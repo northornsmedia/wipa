@@ -136,7 +136,7 @@ export default function PlatformHeader() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-4 sm:px-6 py-3 md:py-4 border-b border-gray-100 bg-white sticky top-0 z-50 min-h-[73px]">
+      <header className="flex items-center justify-between px-4 sm:px-6 py-3 md:py-4 border-b border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] sticky top-0 z-50 min-h-[73px]">
         {isSearchOpen ? (
           <div className="flex items-center w-full gap-4 max-w-4xl mx-auto animate-in fade-in duration-200">
             <Search size={20} className="text-gray-400 flex-shrink-0" />
@@ -146,11 +146,11 @@ export default function PlatformHeader() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search people, jobs, events..."
-              className="flex-1 bg-gray-50 rounded-full py-2.5 px-6 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/20 focus:bg-white border border-transparent focus:border-[#5a32fa] transition-all text-gray-900"
+              className="flex-1 bg-gray-50 dark:bg-white/5 rounded-full py-2.5 px-6 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/20 focus:bg-white dark:bg-[#0f172a] border border-transparent focus:border-[#5a32fa] transition-all text-gray-900 dark:text-white"
             />
             <button 
               onClick={handleCloseSearch}
-              className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-full transition-colors flex-shrink-0"
+              className="p-2 text-gray-400 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:bg-white/5 rounded-full transition-colors flex-shrink-0"
             >
               <X size={20} />
             </button>
@@ -164,7 +164,7 @@ export default function PlatformHeader() {
               </Link>
             </div>
             
-            <nav className="hidden md:flex items-center gap-10 bg-gray-50 rounded-full px-10 py-1 border border-gray-100 shadow-sm">
+            <nav className="hidden md:flex items-center gap-10 bg-gray-50 dark:bg-white/5 rounded-full px-10 py-1 border border-gray-100 dark:border-white/10 shadow-sm">
               {navItems.map((item) => {
                 const isActive = item.path === '/platform' ? pathname === '/platform' : pathname.startsWith(item.path);
                 const Icon = item.icon;
@@ -185,7 +185,7 @@ export default function PlatformHeader() {
               })}
             </nav>
 
-            <div className="flex items-center gap-4 sm:gap-6 text-gray-500">
+            <div className="flex items-center gap-4 sm:gap-6 text-gray-500 dark:text-gray-400">
               {/* Theme Toggle From Uiverse.io by Galahhad */}
               <label className="theme-switch hidden sm:block">
                 <style>{`
@@ -386,9 +386,9 @@ export default function PlatformHeader() {
               </label>
 
               <button onClick={() => setIsSearchOpen(true)} className="hidden sm:block">
-                <Search size={20} className="cursor-pointer hover:text-gray-900 transition-colors" />
+                <Search size={20} className="cursor-pointer hover:text-gray-900 dark:text-white transition-colors" />
               </button>
-              <Link href="/platform/notifications" className="relative cursor-pointer hover:text-gray-900 transition-colors">
+              <Link href="/platform/notifications" className="relative cursor-pointer hover:text-gray-900 dark:text-white transition-colors">
                 <Bell size={20} />
                 {unreadNotificationsCount > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-[3px] bg-red-500 border-2 border-white rounded-full flex items-center justify-center text-[8px] text-white font-bold">
@@ -417,22 +417,22 @@ export default function PlatformHeader() {
             className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[40] transition-opacity top-[73px]"
             onClick={handleCloseSearch}
           />
-          <div className="fixed top-[73px] left-0 w-full bg-white border-b border-gray-100 shadow-lg z-[45] animate-in slide-in-from-top-2 duration-200 max-h-[60vh] overflow-y-auto">
+          <div className="fixed top-[73px] left-0 w-full bg-white dark:bg-[#0f172a] border-b border-gray-100 dark:border-white/10 shadow-lg z-[45] animate-in slide-in-from-top-2 duration-200 max-h-[60vh] overflow-y-auto">
             <div className="max-w-4xl mx-auto p-6">
               
               {!searchQuery.trim() ? (
                 <>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-2">Recent Searches</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <button onClick={() => handleResultClick('/platform/events')} className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-600 hover:bg-gray-50 rounded-xl transition-colors text-left border border-transparent hover:border-gray-100">
+                    <button onClick={() => handleResultClick('/platform/events')} className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl transition-colors text-left border border-transparent hover:border-gray-100 dark:border-white/10">
                       <Search size={16} className="text-gray-400 flex-shrink-0" />
                       <span className="truncate">IP Law events in London</span>
                     </button>
-                    <button onClick={() => handleResultClick('/platform/network')} className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-600 hover:bg-gray-50 rounded-xl transition-colors text-left border border-transparent hover:border-gray-100">
+                    <button onClick={() => handleResultClick('/platform/network')} className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl transition-colors text-left border border-transparent hover:border-gray-100 dark:border-white/10">
                       <UsersRound size={16} className="text-gray-400 flex-shrink-0" />
                       <span className="truncate">Sarah Jenkins</span>
                     </button>
-                    <button onClick={() => handleResultClick('/platform/jobs')} className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-600 hover:bg-gray-50 rounded-xl transition-colors text-left border border-transparent hover:border-gray-100">
+                    <button onClick={() => handleResultClick('/platform/jobs')} className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl transition-colors text-left border border-transparent hover:border-gray-100 dark:border-white/10">
                       <Briefcase size={16} className="text-gray-400 flex-shrink-0" />
                       <span className="truncate">Patent Attorney jobs</span>
                     </button>
@@ -449,14 +449,14 @@ export default function PlatformHeader() {
                           <button 
                             key={idx} 
                             onClick={() => handleResultClick(result.path)}
-                            className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-600 hover:bg-gray-50 rounded-xl transition-colors text-left border border-transparent hover:border-gray-100 group"
+                            className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl transition-colors text-left border border-transparent hover:border-gray-100 dark:border-white/10 group"
                           >
-                            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-[#5a32fa]/10 transition-colors flex-shrink-0">
-                              <Icon size={14} className="text-gray-500 group-hover:text-[#5a32fa] transition-colors" />
+                            <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center group-hover:bg-[#5a32fa]/10 transition-colors flex-shrink-0">
+                              <Icon size={14} className="text-gray-500 dark:text-gray-400 group-hover:text-[#5a32fa] transition-colors" />
                             </div>
                             <div className="flex flex-col overflow-hidden">
-                              <span className="font-bold text-gray-900 truncate group-hover:text-[#5a32fa] transition-colors">{result.title}</span>
-                              <span className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">{result.type}</span>
+                              <span className="font-bold text-gray-900 dark:text-white truncate group-hover:text-[#5a32fa] transition-colors">{result.title}</span>
+                              <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">{result.type}</span>
                             </div>
                           </button>
                         )
@@ -465,7 +465,7 @@ export default function PlatformHeader() {
                   ) : (
                     <div className="text-center py-8">
                       <Search size={32} className="text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500 font-bold text-sm">No results found for &quot;{searchQuery}&quot;</p>
+                      <p className="text-gray-500 dark:text-gray-400 font-bold text-sm">No results found for &quot;{searchQuery}&quot;</p>
                       <p className="text-gray-400 text-xs mt-1">Try searching for events, people, or jobs.</p>
                     </div>
                   )}

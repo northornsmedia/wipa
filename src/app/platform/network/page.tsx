@@ -225,7 +225,7 @@ export default function NetworkPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
 
 
       {/* MAIN SCROLLABLE CONTENT */}
@@ -234,13 +234,13 @@ export default function NetworkPage() {
           
           <div className="flex-1">
           
-          <div className="hidden md:flex mb-8 border-b border-gray-100 pb-6 items-center justify-between">
+          <div className="hidden md:flex mb-8 border-b border-gray-100 dark:border-white/10 pb-6 items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                 <UsersRound size={32} className="text-[#5a32fa]" />
                 My Network
               </h1>
-              <p className="text-gray-500 font-medium mt-2">
+              <p className="text-gray-500 dark:text-gray-400 font-medium mt-2">
                 Manage your connections and discover people in the IP space.
               </p>
             </div>
@@ -249,31 +249,31 @@ export default function NetworkPage() {
           {/* Pending Invitations */}
           {invitations.length > 0 && (
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Pending Invitations ({invitations.length})</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Pending Invitations ({invitations.length})</h2>
               <div className="flex flex-col gap-4">
                 {invitations.map((invite) => (
-                  <div key={invite.id} className="bg-white border border-gray-100 shadow-sm p-4 rounded-2xl flex items-center justify-between">
+                  <div key={invite.id} className="bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-white/10 shadow-sm p-4 rounded-2xl flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-[#b892ff] rounded-full border border-gray-100 flex items-center justify-center font-bold text-xl text-white">
+                      <div className="w-12 h-12 bg-[#b892ff] rounded-full border border-gray-100 dark:border-white/10 flex items-center justify-center font-bold text-xl text-white">
                         {invite.requester.full_name?.charAt(0) || 'U'}
                       </div>
                       <div>
                         <Link href={`/platform/profile/${invite.requester.id}`} className="font-bold text-lg hover:underline decoration-2">
                           {invite.requester.full_name || 'Anonymous User'}
                         </Link>
-                        <p className="text-sm text-gray-500 font-medium">Sent you a connection request</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Sent you a connection request</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <button 
                         onClick={() => handleAccept(invite.id)}
-                        className="px-4 py-2 bg-[#00d26a] text-gray-900 font-bold border border-gray-100 rounded-xl  shadow-sm transition-all"
+                        className="px-4 py-2 bg-[#00d26a] text-gray-900 dark:text-white font-bold border border-gray-100 dark:border-white/10 rounded-xl  shadow-sm transition-all"
                       >
                         Accept
                       </button>
                       <button 
                         onClick={() => handleReject(invite.id)}
-                        className="px-4 py-2 bg-white text-gray-600 font-bold border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+                        className="px-4 py-2 bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 font-bold border-2 border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-white/5 transition-colors"
                       >
                         Ignore
                       </button>
@@ -289,19 +289,19 @@ export default function NetworkPage() {
             <div className="flex items-center gap-4">
               <button 
                 onClick={() => setActiveTab('Connections')}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Connections' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
+                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Connections' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900'}`}
               >
                 Connections
               </button>
               <button 
                 onClick={() => setActiveTab('Following')}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Following' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
+                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Following' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900'}`}
               >
                 Following
               </button>
               <button 
                 onClick={() => setActiveTab('Followers')}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Followers' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
+                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Followers' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900'}`}
               >
                 Followers
               </button>
@@ -313,21 +313,21 @@ export default function NetworkPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search network..."
-                className="w-full sm:w-64 pl-10 pr-4 py-2.5 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-[#5a32fa] font-medium text-sm transition-colors bg-white"
+                className="w-full sm:w-64 pl-10 pr-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-white/20 focus:outline-none focus:border-[#5a32fa] font-medium text-sm transition-colors bg-white dark:bg-[#0f172a]"
               />
               <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
           </div>
 
           {/* Advanced Filters */}
-          <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-white rounded-[1.5rem] border border-gray-100 shadow-sm">
-            <h3 className="font-bold text-sm text-gray-900 uppercase tracking-wider mr-2 flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-white dark:bg-[#0f172a] rounded-[1.5rem] border border-gray-100 dark:border-white/10 shadow-sm">
+            <h3 className="font-bold text-sm text-gray-900 dark:text-white uppercase tracking-wider mr-2 flex items-center gap-2">
               <Filter size={16} className="text-[#5a32fa]" /> Filters
             </h3>
             <select 
               value={selectedCountry}
               onChange={(e) => setSelectedCountry(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-gray-50 font-bold text-sm text-gray-700 focus:border-[#131313] focus:outline-none cursor-pointer hover:border-gray-900 transition-colors"
+              className="px-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-sm text-gray-700 dark:text-gray-200 focus:border-[#131313] focus:outline-none cursor-pointer hover:border-gray-900 transition-colors"
             >
               <option value="">All Countries</option>
               {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -335,7 +335,7 @@ export default function NetworkPage() {
             <select 
               value={selectedPracticeArea}
               onChange={(e) => setSelectedPracticeArea(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-gray-50 font-bold text-sm text-gray-700 focus:border-[#131313] focus:outline-none cursor-pointer hover:border-gray-900 transition-colors"
+              className="px-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-sm text-gray-700 dark:text-gray-200 focus:border-[#131313] focus:outline-none cursor-pointer hover:border-gray-900 transition-colors"
             >
               <option value="">All Practice Areas</option>
               {PRACTICE_AREAS.map(p => <option key={p} value={p}>{p}</option>)}
@@ -343,7 +343,7 @@ export default function NetworkPage() {
             <select 
               value={selectedIndustry}
               onChange={(e) => setSelectedIndustry(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-gray-50 font-bold text-sm text-gray-700 focus:border-[#131313] focus:outline-none cursor-pointer hover:border-gray-900 transition-colors"
+              className="px-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-sm text-gray-700 dark:text-gray-200 focus:border-[#131313] focus:outline-none cursor-pointer hover:border-gray-900 transition-colors"
             >
               <option value="">All Industries</option>
               {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
@@ -371,10 +371,10 @@ export default function NetworkPage() {
               if (selectedIndustry && person.industrySector !== selectedIndustry) return false;
               return true;
             }).length === 0 ? (
-              <div className="sm:col-span-2 lg:col-span-3 bg-white rounded-[2rem] border border-gray-100 shadow-sm p-16 text-center flex flex-col items-center">
+              <div className="sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-100 dark:border-white/10 shadow-sm p-16 text-center flex flex-col items-center">
                 <UsersRound size={64} className="text-gray-300 mb-6" />
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">No {activeTab.toLowerCase()} found</h3>
-                <p className="text-gray-500 font-medium text-lg">Try adjusting your search filters.</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">No {activeTab.toLowerCase()} found</h3>
+                <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">Try adjusting your search filters.</p>
               </div>
             ) : network.filter(person => {
               if (activeTab === 'Connections' && !person.isConnection) return false;
@@ -386,20 +386,20 @@ export default function NetworkPage() {
               if (selectedIndustry && person.industrySector !== selectedIndustry) return false;
               return true; 
             }).map((person) => (
-              <div key={person.id} className="bg-white rounded-[1rem] md:rounded-[1.5rem] border-[1.5px] md:border border-gray-100 shadow-sm md:shadow-sm overflow-hidden flex flex-row md:flex-col items-center p-3 md:p-6 text-left md:text-center transition-all hover:-translate-y-1 hover:shadow-sm md:hover:shadow-sm gap-3 md:gap-0">
+              <div key={person.id} className="bg-white dark:bg-[#0f172a] rounded-[1rem] md:rounded-[1.5rem] border-[1.5px] md:border border-gray-100 dark:border-white/10 shadow-sm md:shadow-sm overflow-hidden flex flex-row md:flex-col items-center p-3 md:p-6 text-left md:text-center transition-all hover:-translate-y-1 hover:shadow-sm md:hover:shadow-sm gap-3 md:gap-0">
                 
-                <div className="w-12 h-12 md:w-20 md:h-20 rounded-full border-[1.5px] md:border border-gray-100 flex items-center justify-center font-bold text-lg md:text-3xl text-[#131313] md:mb-4 shrink-0" style={{ backgroundColor: person.avatarColor }}>
+                <div className="w-12 h-12 md:w-20 md:h-20 rounded-full border-[1.5px] md:border border-gray-100 dark:border-white/10 flex items-center justify-center font-bold text-lg md:text-3xl text-[#131313] md:mb-4 shrink-0" style={{ backgroundColor: person.avatarColor }}>
                   {person.initial}
                 </div>
                 
                 <div className="flex-1 min-w-0">
                   <Link href={`/platform/profile/${person.id}`}>
-                    <h3 className="text-[14px] md:text-lg font-bold text-gray-900 mb-0.5 md:mb-1 leading-tight hover:text-[#5a32fa] transition-colors cursor-pointer truncate hover:underline decoration-2">
+                    <h3 className="text-[14px] md:text-lg font-bold text-gray-900 dark:text-white mb-0.5 md:mb-1 leading-tight hover:text-[#5a32fa] transition-colors cursor-pointer truncate hover:underline decoration-2">
                       {person.name}
                     </h3>
                   </Link>
-                  <p className="text-gray-500 font-medium text-[11px] md:text-xs mb-0.5 md:mb-1 truncate">{person.role}</p>
-                  <p className="text-gray-500 font-bold text-[10px] md:text-[11px] mb-0.5 md:mb-2 truncate opacity-80">{person.country} • {person.practiceArea}</p>
+                  <p className="text-gray-500 dark:text-gray-400 font-medium text-[11px] md:text-xs mb-0.5 md:mb-1 truncate">{person.role}</p>
+                  <p className="text-gray-500 dark:text-gray-400 font-bold text-[10px] md:text-[11px] mb-0.5 md:mb-2 truncate opacity-80">{person.country} • {person.practiceArea}</p>
                   <p className="text-[10px] md:text-[11px] font-bold text-gray-400 hidden md:block md:mb-6">
                     {person.mutualConnections} mutual connections
                   </p>
@@ -407,14 +407,14 @@ export default function NetworkPage() {
 
                 <div className="flex md:w-full md:mt-auto gap-2 shrink-0">
                   <Link href={`/platform/messages?userId=${person.id}`} className="md:flex-1">
-                    <button className="w-full flex items-center justify-center gap-1.5 bg-[#5a32fa] text-white px-3 py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[11px] md:text-xs border border-gray-100 shadow-sm hover:-translate-y-0.5 md:hover:shadow-sm transition-all">
+                    <button className="w-full flex items-center justify-center gap-1.5 bg-[#5a32fa] text-white px-3 py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[11px] md:text-xs border border-gray-100 dark:border-white/10 shadow-sm hover:-translate-y-0.5 md:hover:shadow-sm transition-all">
                       <MessageCircle size={14} className="hidden md:block" />
                       Message
                     </button>
                   </Link>
                   <button 
                     onClick={() => activeTab === 'Following' ? toggleFollow(person.id) : toggleConnection(person.id)}
-                    className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-100 text-gray-600 rounded-lg md:rounded-xl font-bold border-[1.5px] md:border-2 border-gray-200 hover:border-gray-900 hover:text-gray-900 transition-colors shrink-0"
+                    className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 rounded-lg md:rounded-xl font-bold border-[1.5px] md:border-2 border-gray-200 dark:border-white/20 hover:border-gray-900 hover:text-gray-900 dark:text-white transition-colors shrink-0"
                   >
                     {activeTab === 'Following' ? <UserMinus size={14} /> : <UserMinus size={14} />}
                   </button>
@@ -429,11 +429,11 @@ export default function NetworkPage() {
           <div className="w-full xl:w-[350px] shrink-0 flex flex-col gap-6">
             
             {/* Advertisement Space */}
-            <div className="w-full rounded-[1.5rem] overflow-hidden shadow-sm border border-gray-100 bg-white relative h-64 group shrink-0 hidden xl:block">
+            <div className="w-full rounded-[1.5rem] overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative h-64 group shrink-0 hidden xl:block">
               <img src="/AD4.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 pointer-events-none">
                 <div className="pointer-events-auto">
-                  <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white text-gray-900 font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 transition-colors shadow-sm">
+                  <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 dark:bg-white/10 transition-colors shadow-sm">
                     Know More
                   </a>
                 </div>
@@ -441,10 +441,10 @@ export default function NetworkPage() {
             </div>
 
             {/* Incoming Requests */}
-            <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex flex-col max-h-[500px]">
+            <div className="bg-white dark:bg-[#0f172a] p-6 rounded-[1.5rem] border border-gray-100 dark:border-white/10 shadow-sm flex flex-col max-h-[500px]">
               <div className="flex justify-between items-center mb-6 shrink-0">
-                <h3 className="font-bold text-lg text-gray-900">Invitations</h3>
-                <span className="bg-[#5a32fa] text-white text-xs font-bold px-2 py-1 rounded-md border border-gray-100">7</span>
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Invitations</h3>
+                <span className="bg-[#5a32fa] text-white text-xs font-bold px-2 py-1 rounded-md border border-gray-100 dark:border-white/10">7</span>
               </div>
               <div className="space-y-4 overflow-y-auto no-scrollbar pr-2 -mr-2">
                 {[
@@ -457,17 +457,17 @@ export default function NetworkPage() {
                   { id: 7, name: 'Bruce Banner', role: 'Research Scientist', icon: 'B', color: '#00d26a' },
                 ].map((inv) => (
                   <div key={inv.id} className="flex gap-4">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white border border-gray-100 shrink-0 text-xl" style={{ backgroundColor: inv.color }}>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white border border-gray-100 dark:border-white/10 shrink-0 text-xl" style={{ backgroundColor: inv.color }}>
                       {inv.icon}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-bold text-gray-900">{inv.name}</p>
-                      <p className="text-xs text-gray-500 font-medium mb-3">{inv.role}</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">{inv.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-3">{inv.role}</p>
                       <div className="flex gap-2">
-                        <button className="flex-1 bg-[#131313] text-white text-xs font-bold py-2 rounded-xl border border-gray-100 hover:bg-[#5a32fa] hover:border-[#5a32fa] transition-colors shadow-sm">
+                        <button className="flex-1 bg-[#131313] text-white text-xs font-bold py-2 rounded-xl border border-gray-100 dark:border-white/10 hover:bg-[#5a32fa] hover:border-[#5a32fa] transition-colors shadow-sm">
                           Accept
                         </button>
-                        <button className="flex-1 bg-white text-gray-600 text-xs font-bold py-2 rounded-xl border-2 border-gray-200 hover:border-gray-900 transition-colors">
+                        <button className="flex-1 bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 text-xs font-bold py-2 rounded-xl border-2 border-gray-200 dark:border-white/20 hover:border-gray-900 transition-colors">
                           Ignore
                         </button>
                       </div>
@@ -478,9 +478,9 @@ export default function NetworkPage() {
             </div>
 
             {/* Suggested Connections */}
-            <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm">
+            <div className="bg-white dark:bg-[#0f172a] p-6 rounded-[1.5rem] border border-gray-100 dark:border-white/10 shadow-sm">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-lg text-gray-900">Suggested for you</h3>
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Suggested for you</h3>
                 <button className="text-sm font-bold text-[#5a32fa] hover:underline">See all</button>
               </div>
               <div className="space-y-5">
@@ -489,14 +489,14 @@ export default function NetworkPage() {
                   { name: 'Ben Stokes', role: 'Counsel', icon: 'B', color: '#ffc900' },
                 ].map((person, i) => (
                   <div key={i} className="flex items-center gap-4 group">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border border-gray-100" style={{ backgroundColor: person.color }}>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border border-gray-100 dark:border-white/10" style={{ backgroundColor: person.color }}>
                       {person.icon}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors cursor-pointer">{person.name}</p>
-                      <p className="text-xs text-gray-500 font-medium">{person.role}</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors cursor-pointer">{person.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{person.role}</p>
                     </div>
-                    <button className="w-10 h-10 rounded-xl border-2 border-gray-200 flex items-center justify-center text-gray-600 hover:border-[#131313] hover:text-[#131313] hover:bg-gray-50 transition-colors shrink-0">
+                    <button className="w-10 h-10 rounded-xl border-2 border-gray-200 dark:border-white/20 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:border-[#131313] hover:text-[#131313] hover:bg-gray-50 dark:bg-white/5 transition-colors shrink-0">
                       <UserPlus size={16} />
                     </button>
                   </div>

@@ -231,20 +231,20 @@ export default function PlatformPage() {
 
   return (
     <div className="w-full font-sans flex flex-col h-[calc(100vh-73px)] overflow-hidden">
-      <div className="w-full bg-white flex flex-col flex-1 overflow-hidden">
+      <div className="w-full bg-white dark:bg-[#0f172a] flex flex-col flex-1 overflow-hidden">
         
         {/* MAIN LAYOUT */}
         <div className="flex flex-1 overflow-hidden">
           
           {/* MAIN CONTENT AREA */}
-          <main className="flex-1 bg-slate-50/50 overflow-y-auto p-4 sm:p-6 md:p-8 no-scrollbar flex gap-6 xl:gap-8">
+          <main className="flex-1 bg-slate-50/50 dark:bg-[#0b1120] overflow-y-auto p-4 sm:p-6 md:p-8 no-scrollbar flex gap-6 xl:gap-8">
             
             {/* LEFT COLUMN */}
             <div className="flex-1 flex justify-center pb-20">
               <div className="w-full max-w-4xl space-y-6">
               
               {/* HERO BANNER */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
+              <div className="bg-white dark:bg-[#0f172a] rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-white/10 relative overflow-hidden">
                 <div className="absolute inset-0 w-full h-full overflow-hidden opacity-40 pointer-events-none">
                    <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[150%] bg-[#ffcc00] rounded-full mix-blend-multiply filter blur-3xl opacity-30 transform -rotate-45"></div>
                    <div className="absolute top-[-30%] right-[20%] w-[40%] h-[120%] bg-[#ff4b4b] rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform rotate-12"></div>
@@ -253,9 +253,9 @@ export default function PlatformPage() {
                 
                 <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start gap-6">
                   <div className="lg:w-[60%]">
-                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight mb-4">Hello{user?.name ? ` ${user.name}` : ''},<br/>Welcome to WIPA</h1>
-                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">Building the Future of Innovation Together</h2>
-                    <p className="text-gray-500 text-sm leading-relaxed mb-8 sm:w-5/6">
+                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4">Hello{user?.name ? ` ${user.name}` : ''},<br/>Welcome to WIPA</h1>
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Building the Future of Innovation Together</h2>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-8 sm:w-5/6">
                       Connect with innovators, IP professionals, founders, researchers, and investors to share knowledge, collaborate, and turn ideas into impact.
                     </p>
                   </div>
@@ -264,7 +264,7 @@ export default function PlatformPage() {
                 </div>
                 
                 {/* Tabs & Search */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6 border-b border-gray-100 pb-0 relative z-10">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6 border-b border-gray-100 dark:border-white/10 pb-0 relative z-10">
                   <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
                     {['Latest', 'Trending', 'Following', 'Saved'].map((tab) => (
                       <button 
@@ -272,8 +272,8 @@ export default function PlatformPage() {
                         onClick={() => setActiveTab(tab)}
                         className={`pb-3 text-sm transition-colors whitespace-nowrap ${
                           activeTab === tab 
-                            ? 'font-bold text-gray-900 border-b-2 border-[#5a32fa]' 
-                            : 'font-medium text-gray-500 hover:text-gray-900'
+                            ? 'font-bold text-gray-900 dark:text-white border-b-2 border-[#5a32fa]' 
+                            : 'font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white'
                         }`}
                       >
                         {tab}
@@ -285,7 +285,7 @@ export default function PlatformPage() {
                     <input 
                       type="text" 
                       placeholder="Search feeds" 
-                      className="pl-9 pr-4 py-1.5 bg-gray-50 border border-gray-100 rounded-full text-sm w-full sm:w-48 focus:outline-none focus:ring-1 focus:ring-gray-200 focus:bg-white transition-all" 
+                      className="pl-9 pr-4 py-1.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-full text-sm w-full sm:w-48 focus:outline-none focus:ring-1 focus:ring-gray-200 focus:bg-white dark:bg-[#0f172a] transition-all" 
                     />
                   </div>
                 </div>
@@ -293,12 +293,12 @@ export default function PlatformPage() {
 
               {/* COMPOSER */}
               <div 
-                className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 flex flex-col overflow-hidden cursor-pointer hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-gray-200 transition-all duration-300 relative group"
+                className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 dark:border-white/10 flex flex-col overflow-hidden cursor-pointer hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-gray-200 dark:border-white/20 transition-all duration-300 relative group"
                 onClick={() => setIsCreatePostModalOpen(true)}
               >
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#131313] via-[#5a32fa] to-[#ff90e8] opacity-80 group-hover:opacity-100 transition-opacity"></div>
                 
-                <div className="flex gap-4 p-5 pb-4 border-b border-gray-50 pt-6">
+                <div className="flex gap-4 p-5 pb-4 border-b border-gray-50 dark:border-white/5 pt-6">
                   {user?.avatar_url ? (
                     <img src={user.avatar_url} alt={user?.name || 'User'} className="w-10 h-10 rounded-full object-cover shrink-0 mt-1 shadow-sm" />
                   ) : (
@@ -306,29 +306,29 @@ export default function PlatformPage() {
                       {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                     </div>
                   )}
-                  <div className="flex-1 bg-gray-50 hover:bg-gray-100 transition-colors rounded-2xl p-4 min-h-[80px] border border-gray-100 group-hover:border-gray-200">
-                    <span className="text-gray-500 font-medium text-[15px]">What's on your mind?</span>
+                  <div className="flex-1 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:bg-white/10 transition-colors rounded-2xl p-4 min-h-[80px] border border-gray-100 dark:border-white/10 group-hover:border-gray-200 dark:border-white/20">
+                    <span className="text-gray-500 dark:text-gray-400 font-medium text-[15px]">What's on your mind?</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between gap-1 sm:gap-2 px-4 py-2 bg-gray-50/30">
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 text-gray-600 hover:text-gray-900 rounded-xl transition-colors font-medium text-[13px]">
+                <div className="flex items-center justify-between gap-1 sm:gap-2 px-4 py-2 bg-gray-50 dark:bg-white/5/30">
+                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white rounded-xl transition-colors font-medium text-[13px]">
                     <ImageIcon size={18} className="text-[#00d26a]" />
                     <span className="hidden sm:block">Photo</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 text-gray-600 hover:text-gray-900 rounded-xl transition-colors font-medium text-[13px]">
+                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white rounded-xl transition-colors font-medium text-[13px]">
                     <Video size={18} className="text-[#ff4b4b]" />
                     <span className="hidden sm:block">Video</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 text-gray-600 hover:text-gray-900 rounded-xl transition-colors font-medium text-[13px]">
+                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white rounded-xl transition-colors font-medium text-[13px]">
                     <Calendar size={18} className="text-[#ffc900]" />
                     <span className="hidden sm:block">Event</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 text-gray-600 hover:text-gray-900 rounded-xl transition-colors font-medium text-[13px]">
+                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white rounded-xl transition-colors font-medium text-[13px]">
                     <FileText size={18} className="text-[#5a32fa]" />
                     <span className="hidden sm:block">Attach</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 text-gray-600 hover:text-gray-900 rounded-xl transition-colors font-medium text-[13px]">
+                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white rounded-xl transition-colors font-medium text-[13px]">
                     <Smile size={18} className="text-[#ff90e8]" />
                     <span className="hidden sm:block">Feeling</span>
                   </button>
@@ -338,31 +338,31 @@ export default function PlatformPage() {
               {/* CREATE POST MODAL */}
               {isCreatePostModalOpen && (
                 <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-0 transition-opacity">
-                  <div className="bg-white rounded-[2rem] w-full max-w-lg shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col transform transition-transform scale-100 border border-white/50 relative group">
+                  <div className="bg-white dark:bg-[#0f172a] rounded-[2rem] w-full max-w-lg shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col transform transition-transform scale-100 border border-white/50 relative group">
                     
                     {publishSuccess ? (
                       <div className="flex flex-col items-center justify-center p-12 text-center animate-in fade-in zoom-in duration-300">
                         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
                           <CheckCircle2 size={40} className="text-green-500" />
                         </div>
-                        <h2 className="text-2xl font-black text-gray-900 mb-2">Post Published!</h2>
-                        <p className="text-gray-500 mb-8">Your post has been successfully shared to the feed.</p>
+                        <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Post Published!</h2>
+                        <p className="text-gray-500 dark:text-gray-400 mb-8">Your post has been successfully shared to the feed.</p>
                         <button 
                           onClick={handleCloseModal}
-                          className="px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-xl font-bold transition-colors"
+                          className="px-8 py-3 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 text-gray-900 dark:text-white rounded-xl font-bold transition-colors"
                         >
                           Close
                         </button>
                       </div>
                     ) : (
                       <>
-                        <div className="flex items-center justify-between p-5 border-b border-gray-50 pt-6">
-                          <h2 className="text-xl font-black text-gray-900 tracking-tight">Create Post</h2>
+                        <div className="flex items-center justify-between p-5 border-b border-gray-50 dark:border-white/5 pt-6">
+                          <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Create Post</h2>
                           <button 
                             onClick={handleCloseModal}
-                            className="p-2 hover:bg-gray-100 rounded-full transition-colors group/close"
+                            className="p-2 hover:bg-gray-100 dark:bg-white/10 rounded-full transition-colors group/close"
                           >
-                            <X size={20} className="text-gray-400 group-hover/close:text-gray-900 transition-colors" />
+                            <X size={20} className="text-gray-400 group-hover/close:text-gray-900 dark:text-white transition-colors" />
                           </button>
                         </div>
                     
@@ -375,47 +375,47 @@ export default function PlatformPage() {
                         </div>
                       )}
                       <div>
-                        <p className="font-bold text-[15px] text-gray-900 leading-tight">{user?.name || 'User'}</p>
+                        <p className="font-bold text-[15px] text-gray-900 dark:text-white leading-tight">{user?.name || 'User'}</p>
                         <div className="relative">
                           <div 
-                            className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 hover:border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer px-2.5 py-1 rounded-lg mt-1 w-fit"
+                            className="flex items-center gap-1.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gray-200 dark:border-white/20 hover:bg-gray-100 dark:bg-white/10 transition-colors cursor-pointer px-2.5 py-1 rounded-lg mt-1 w-fit"
                             onClick={() => setIsPrivacyDropdownOpen(!isPrivacyDropdownOpen)}
                           >
-                            <Users size={12} className="text-gray-600" />
-                            <span className="text-[11px] font-bold text-gray-600">{postPrivacy}</span>
+                            <Users size={12} className="text-gray-600 dark:text-gray-300" />
+                            <span className="text-[11px] font-bold text-gray-600 dark:text-gray-300">{postPrivacy}</span>
                             <span className="text-[10px] text-gray-400 ml-0.5">▼</span>
                           </div>
                           
                           {isPrivacyDropdownOpen && (
-                            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-100 rounded-xl shadow-lg z-50 overflow-hidden">
+                            <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-white/10 rounded-xl shadow-lg z-50 overflow-hidden">
                               <button 
-                                className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 transition-colors border-b border-gray-50"
+                                className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:bg-white/5 flex items-center gap-3 transition-colors border-b border-gray-50 dark:border-white/5"
                                 onClick={() => {
                                   setPostPrivacy('Anyone');
                                   setIsPrivacyDropdownOpen(false);
                                 }}
                               >
-                                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-                                  <Users size={14} className="text-gray-600" />
+                                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center shrink-0">
+                                  <Users size={14} className="text-gray-600 dark:text-gray-300" />
                                 </div>
                                 <div>
-                                  <p className="text-sm font-bold text-gray-900">Anyone</p>
-                                  <p className="text-[11px] text-gray-500">Anyone on or off WIPA</p>
+                                  <p className="text-sm font-bold text-gray-900 dark:text-white">Anyone</p>
+                                  <p className="text-[11px] text-gray-500 dark:text-gray-400">Anyone on or off WIPA</p>
                                 </div>
                               </button>
                               <button 
-                                className="w-full text-left px-4 py-3 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                                className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:bg-white/5 flex items-center gap-3 transition-colors"
                                 onClick={() => {
                                   setPostPrivacy('Followers only');
                                   setIsPrivacyDropdownOpen(false);
                                 }}
                               >
-                                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-                                  <Users size={14} className="text-gray-600" />
+                                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center shrink-0">
+                                  <Users size={14} className="text-gray-600 dark:text-gray-300" />
                                 </div>
                                 <div>
-                                  <p className="text-sm font-bold text-gray-900">Followers only</p>
-                                  <p className="text-[11px] text-gray-500">Only your connections</p>
+                                  <p className="text-sm font-bold text-gray-900 dark:text-white">Followers only</p>
+                                  <p className="text-[11px] text-gray-500 dark:text-gray-400">Only your connections</p>
                                 </div>
                               </button>
                             </div>
@@ -426,7 +426,7 @@ export default function PlatformPage() {
                     
                     <div className="px-5 pb-2">
                       <textarea 
-                        className="w-full min-h-[160px] resize-none outline-none text-xl text-gray-900 placeholder-gray-300 font-medium leading-relaxed bg-transparent"
+                        className="w-full min-h-[160px] resize-none outline-none text-xl text-gray-900 dark:text-white placeholder-gray-300 font-medium leading-relaxed bg-transparent"
                         placeholder="What's on your mind?"
                         autoFocus
                         value={postContent}
@@ -436,8 +436,8 @@ export default function PlatformPage() {
                     
                     <div className="px-5 pb-5 relative">
                       <div className="absolute inset-x-5 inset-y-0 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] rounded-2xl blur opacity-20 pointer-events-none"></div>
-                      <div className="relative flex items-center justify-between border border-white/50 bg-white/80 backdrop-blur-xl rounded-2xl p-3 shadow-lg shadow-[#5a32fa]/5">
-                        <span className="font-bold text-[13px] text-gray-600 pl-2">Add to your post</span>
+                      <div className="relative flex items-center justify-between border border-white/50 bg-white dark:bg-[#0f172a]/80 backdrop-blur-xl rounded-2xl p-3 shadow-lg shadow-[#5a32fa]/5">
+                        <span className="font-bold text-[13px] text-gray-600 dark:text-gray-300 pl-2">Add to your post</span>
                         <div className="flex items-center gap-1">
                           <input type="file" accept="image/*" className="hidden" id="modal-image-upload" onChange={(e) => handleUpload(e, 'image')} />
                           <input type="file" accept="video/*" className="hidden" id="modal-video-upload" onChange={(e) => handleUpload(e, 'video')} />
@@ -452,10 +452,10 @@ export default function PlatformPage() {
                     </div>
                     
                     <div className="px-5 pb-5">
-                      <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3 border border-gray-100">
+                      <div className="flex items-center gap-3 bg-gray-50 dark:bg-white/5 rounded-xl p-3 border border-gray-100 dark:border-white/10">
                         <div className="w-1 h-8 bg-black rounded-full shrink-0"></div>
-                        <p className="text-[12px] text-gray-600 font-medium leading-snug">
-                          <strong className="text-gray-900">Do you know?</strong> Ennoble IP is ranked #3 for patents and IP.
+                        <p className="text-[12px] text-gray-600 dark:text-gray-300 font-medium leading-snug">
+                          <strong className="text-gray-900 dark:text-white">Do you know?</strong> Ennoble IP is ranked #3 for patents and IP.
                         </p>
                       </div>
                     </div>
@@ -496,8 +496,8 @@ export default function PlatformPage() {
                     <Loader2 size={32} className="animate-spin" />
                   </div>
                 ) : feedPosts.length === 0 ? (
-                  <div className="bg-white rounded-2xl p-10 text-center border border-gray-100">
-                    <p className="text-gray-500 font-medium">No posts yet. Be the first to share something!</p>
+                  <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-10 text-center border border-gray-100 dark:border-white/10">
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">No posts yet. Be the first to share something!</p>
                   </div>
                 ) : feedPosts.map((post) => {
                   const isLiked = dbLikedPostIds.has(post.id);
@@ -510,7 +510,7 @@ export default function PlatformPage() {
                     : 'Unknown';
                     
                   return (
-                    <div key={post.id} className="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100">
+                    <div key={post.id} className="bg-white dark:bg-[#0f172a] rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-white/10">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <Link href={`/platform/profile/${post.author_id}`} className="shrink-0 hover:opacity-80 transition-opacity block">
@@ -525,21 +525,21 @@ export default function PlatformPage() {
                           <div className="flex flex-col">
                             <div className="flex items-center gap-2">
                               <Link href={`/platform/profile/${post.author_id}`} className="hover:underline hover:text-[#5a32fa] transition-colors">
-                                <h3 className="font-bold text-[14px] text-gray-900 leading-none">{authorName}</h3>
+                                <h3 className="font-bold text-[14px] text-gray-900 dark:text-white leading-none">{authorName}</h3>
                               </Link>
                               <span className="text-gray-300 text-xs">•</span>
-                              <span className="text-xs text-gray-500 font-medium leading-none">{timeAgo}</span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-none">{timeAgo}</span>
                             </div>
-                            <p className="text-xs text-gray-500 mt-1 font-medium">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
                               {author.practice_area ? `${author.practice_area} • ` : ''}Member since {memberSince}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 text-gray-400 relative">
-                          <button className="p-1.5 hover:bg-gray-50 hover:text-gray-600 rounded-lg transition-colors"><Bookmark size={18} /></button>
+                          <button className="p-1.5 hover:bg-gray-50 dark:bg-white/5 hover:text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Bookmark size={18} /></button>
                           <button 
                             onClick={() => setActiveMenuPostId(activeMenuPostId === post.id ? null : post.id)}
-                            className="p-1.5 hover:bg-gray-50 hover:text-gray-600 rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-gray-50 dark:bg-white/5 hover:text-gray-600 dark:text-gray-300 rounded-lg transition-colors"
                           >
                             <MoreVertical size={18} />
                           </button>
@@ -547,7 +547,7 @@ export default function PlatformPage() {
                           {activeMenuPostId === post.id && (
                             <>
                               <div className="fixed inset-0 z-40" onClick={() => setActiveMenuPostId(null)}></div>
-                              <div className="absolute right-0 top-10 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden py-1">
+                              <div className="absolute right-0 top-10 w-56 bg-white dark:bg-[#0f172a] rounded-xl shadow-xl border border-gray-100 dark:border-white/10 z-50 overflow-hidden py-1">
                                 {user?.id === post.author_id && (
                                   <button 
                                     onClick={() => {
@@ -555,27 +555,27 @@ export default function PlatformPage() {
                                       setEditContent(post.content);
                                       setActiveMenuPostId(null);
                                     }}
-                                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-white/5 flex items-center gap-3 transition-colors"
                                   >
                                     <Pencil size={16} /> Edit Post
                                   </button>
                                 )}
                                 <button 
                                   onClick={() => handleCopyLink(post.id)}
-                                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-white/5 flex items-center gap-3 transition-colors"
                                 >
                                   <Copy size={16} /> Copy Link
                                 </button>
                                 {user?.id === post.author_id && (
                                   <>
-                                    <div className="h-px bg-gray-100 my-1"></div>
+                                    <div className="h-px bg-gray-100 dark:bg-white/10 my-1"></div>
                                     <button 
                                       onClick={() => handleToggleComments(post.id, !!post.comments_disabled)}
-                                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-white/5 flex items-center gap-3 transition-colors"
                                     >
                                       <MessageSquareOff size={16} /> {post.comments_disabled ? 'Turn On Comments' : 'Turn Off Comments'}
                                     </button>
-                                    <div className="h-px bg-gray-100 my-1"></div>
+                                    <div className="h-px bg-gray-100 dark:bg-white/10 my-1"></div>
                                     <button 
                                       onClick={() => handleDeletePost(post.id)}
                                       className="w-full text-left px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"
@@ -593,24 +593,24 @@ export default function PlatformPage() {
                       {editingPost?.id === post.id ? (
                         <div className="space-y-3">
                           <textarea 
-                            className="w-full p-3 border border-gray-200 rounded-xl text-sm"
+                            className="w-full p-3 border border-gray-200 dark:border-white/20 rounded-xl text-sm"
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
                           />
                           <div className="flex gap-2">
-                            <button onClick={() => setEditingPost(null)} className="px-4 py-2 text-xs font-bold text-gray-600 bg-gray-100 rounded-lg">Cancel</button>
+                            <button onClick={() => setEditingPost(null)} className="px-4 py-2 text-xs font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 rounded-lg">Cancel</button>
                             <button onClick={submitEditPost} disabled={isUpdatingPost} className="px-4 py-2 text-xs font-bold text-white bg-[#5a32fa] rounded-lg">
                               {isUpdatingPost ? 'Saving...' : 'Save Changes'}
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <p className="text-[14px] text-gray-800 leading-relaxed mb-6 font-medium whitespace-pre-wrap">
+                        <p className="text-[14px] text-gray-800 dark:text-gray-100 leading-relaxed mb-6 font-medium whitespace-pre-wrap">
                           {post.content}
                         </p>
                       )}
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-50 dark:border-white/5">
                         <div className="flex items-center gap-3 sm:gap-4 text-gray-400">
                           <button 
                             onClick={() => handleLikePost(post.id)} 
@@ -645,12 +645,12 @@ export default function PlatformPage() {
             <aside className="hidden xl:flex flex-col w-[320px] shrink-0 space-y-6 pb-20">
                 
                 {/* Advertisement Space */}
-                <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white relative h-64 group shrink-0">
+                <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative h-64 group shrink-0">
                   
                   <img src="/AD3.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 pointer-events-none">
                     <div className="pointer-events-auto">
-                      <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white text-gray-900 font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 transition-colors shadow-sm">
+                      <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 dark:bg-white/10 transition-colors shadow-sm">
                         Know More
                       </a>
                     </div>
@@ -658,45 +658,45 @@ export default function PlatformPage() {
                 </div>
 
                 {/* Profile Completion / Welcome */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                  <h3 className="font-bold text-gray-900 mb-2">Enhance your feed</h3>
-                  <p className="text-sm text-gray-500 mb-4 leading-relaxed">Follow more people and join groups to see more relevant content.</p>
+                <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-sm border border-gray-100 dark:border-white/10 p-5">
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-2">Enhance your feed</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">Follow more people and join groups to see more relevant content.</p>
                   <div className="space-y-3">
                     <button className="w-full py-2 bg-[#5a32fa]/10 text-[#5a32fa] font-bold rounded-xl text-sm hover:bg-[#5a32fa]/20 transition-colors">
                       Discover Connections
                     </button>
-                    <button className="w-full py-2 bg-gray-50 text-gray-700 font-bold rounded-xl text-sm hover:bg-gray-100 transition-colors">
+                    <button className="w-full py-2 bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-sm hover:bg-gray-100 dark:bg-white/10 transition-colors">
                       Browse Groups
                     </button>
                   </div>
                 </div>
 
                 {/* Trending Topics */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                  <h3 className="font-bold text-gray-900 mb-4">Trending Topics</h3>
+                <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-sm border border-gray-100 dark:border-white/10 p-5">
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-4">Trending Topics</h3>
                   <div className="space-y-4">
                     <div className="group cursor-pointer">
-                      <p className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">#AIinIP</p>
-                      <p className="text-xs text-gray-500 mt-0.5">1,245 discussions</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">#AIinIP</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">1,245 discussions</p>
                     </div>
                     <div className="group cursor-pointer">
-                      <p className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">#PatentLaw</p>
-                      <p className="text-xs text-gray-500 mt-0.5">856 discussions</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">#PatentLaw</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">856 discussions</p>
                     </div>
                     <div className="group cursor-pointer">
-                      <p className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">#WomenInTech</p>
-                      <p className="text-xs text-gray-500 mt-0.5">643 discussions</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">#WomenInTech</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">643 discussions</p>
                     </div>
                     <div className="group cursor-pointer">
-                      <p className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors">#TrademarkUpdates</p>
-                      <p className="text-xs text-gray-500 mt-0.5">421 discussions</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">#TrademarkUpdates</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">421 discussions</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Upcoming Events */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                  <h3 className="font-bold text-gray-900 mb-4">Upcoming Events</h3>
+                <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-sm border border-gray-100 dark:border-white/10 p-5">
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-4">Upcoming Events</h3>
                   <div className="space-y-4">
                     <div className="flex gap-3 items-start group cursor-pointer">
                       <div className="bg-[#ff90e8]/10 text-[#ff90e8] rounded-lg p-2 text-center min-w-[48px] shrink-0">
@@ -704,8 +704,8 @@ export default function PlatformPage() {
                         <p className="text-lg font-black leading-none">12</p>
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors line-clamp-2">Global IP Conference 2026</h4>
-                        <p className="text-xs text-gray-500 mt-1">Virtual • 10:00 AM EST</p>
+                        <h4 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors line-clamp-2">Global IP Conference 2026</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Virtual • 10:00 AM EST</p>
                       </div>
                     </div>
                     <div className="flex gap-3 items-start group cursor-pointer">
@@ -714,8 +714,8 @@ export default function PlatformPage() {
                         <p className="text-lg font-black leading-none">18</p>
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-gray-900 group-hover:text-[#5a32fa] transition-colors line-clamp-2">Networking Mixer: Tech Law</h4>
-                        <p className="text-xs text-gray-500 mt-1">New York, NY • 6:00 PM</p>
+                        <h4 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors line-clamp-2">Networking Mixer: Tech Law</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">New York, NY • 6:00 PM</p>
                       </div>
                     </div>
                     <button className="w-full py-2 mt-2 text-[#5a32fa] font-bold text-sm hover:underline transition-all">
@@ -726,11 +726,11 @@ export default function PlatformPage() {
 
                 {/* Helpful Links / Footer-ish */}
                 <div className="px-2 pb-6">
-                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-500 font-medium">
-                    <a href="#" className="hover:text-gray-900">About</a>
-                    <a href="#" className="hover:text-gray-900">Help Center</a>
-                    <a href="#" className="hover:text-gray-900">Privacy & Terms</a>
-                    <a href="#" className="hover:text-gray-900">Advertising</a>
+                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                    <a href="#" className="hover:text-gray-900 dark:text-white">About</a>
+                    <a href="#" className="hover:text-gray-900 dark:text-white">Help Center</a>
+                    <a href="#" className="hover:text-gray-900 dark:text-white">Privacy & Terms</a>
+                    <a href="#" className="hover:text-gray-900 dark:text-white">Advertising</a>
                   </div>
                   <p className="text-xs text-gray-400 mt-4">© 2026 WIPA. All rights reserved.</p>
                 </div>
@@ -744,23 +744,23 @@ export default function PlatformPage() {
       {/* Comment Modal */}
       {activeCommentPost && (
         <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[600px] overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-[600px] overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 border-b border-gray-50 pt-6 shrink-0">
-              <h2 className="text-xl font-black text-gray-900 tracking-tight">Comments</h2>
+            <div className="flex items-center justify-between p-5 border-b border-gray-50 dark:border-white/5 pt-6 shrink-0">
+              <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Comments</h2>
               <button 
                 onClick={() => {
                   setActiveCommentPost(null);
                   setCommentText('');
                 }}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors group/close"
+                className="p-2 hover:bg-gray-100 dark:bg-white/10 rounded-full transition-colors group/close"
               >
-                <X size={20} className="text-gray-400 group-hover/close:text-gray-900 transition-colors" />
+                <X size={20} className="text-gray-400 group-hover/close:text-gray-900 dark:text-white transition-colors" />
               </button>
             </div>
             
             {/* Original Post Context */}
-            <div className="p-5 border-b border-gray-50 bg-gray-50/50 shrink-0">
+            <div className="p-5 border-b border-gray-50 dark:border-white/5 bg-gray-50 dark:bg-white/5/50 shrink-0">
               <div className="flex items-center gap-3 mb-3">
                 {activeCommentPost.author?.avatar_url ? (
                   <img src={activeCommentPost.author.avatar_url} alt="Author" className="w-8 h-8 rounded-full object-cover shadow-sm" />
@@ -770,11 +770,11 @@ export default function PlatformPage() {
                   </div>
                 )}
                 <div>
-                  <h3 className="font-bold text-[13px] text-gray-900 leading-none">{activeCommentPost.author?.full_name || 'Anonymous User'}</h3>
-                  <span className="text-[11px] text-gray-500 font-medium">{formatDistanceToNow(parseISO(activeCommentPost.created_at), { addSuffix: true })}</span>
+                  <h3 className="font-bold text-[13px] text-gray-900 dark:text-white leading-none">{activeCommentPost.author?.full_name || 'Anonymous User'}</h3>
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">{formatDistanceToNow(parseISO(activeCommentPost.created_at), { addSuffix: true })}</span>
                 </div>
               </div>
-              <p className="text-[13px] text-gray-800 leading-relaxed font-medium whitespace-pre-wrap">
+              <p className="text-[13px] text-gray-800 dark:text-gray-100 leading-relaxed font-medium whitespace-pre-wrap">
                 {activeCommentPost.content}
               </p>
             </div>
@@ -797,16 +797,16 @@ export default function PlatformPage() {
                       {commentAuthor.avatar_url ? (
                         <img src={commentAuthor.avatar_url} alt={cName} className="w-8 h-8 rounded-full object-cover shadow-sm mt-0.5" />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-0.5">
+                        <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 dark:text-gray-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-0.5">
                           {cInitial}
                         </div>
                       )}
-                      <div className="flex-1 bg-gray-50 p-3 rounded-2xl rounded-tl-none border border-gray-100">
+                      <div className="flex-1 bg-gray-50 dark:bg-white/5 p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-white/10">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-bold text-[13px] text-gray-900 leading-none">{cName}</h4>
+                          <h4 className="font-bold text-[13px] text-gray-900 dark:text-white leading-none">{cName}</h4>
                           <span className="text-[11px] text-gray-400 font-medium leading-none">{cTime}</span>
                         </div>
-                        <p className="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
+                        <p className="text-[13px] text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
                       </div>
                     </div>
                   );
@@ -815,7 +815,7 @@ export default function PlatformPage() {
             </div>
             
             {/* Add Comment Input Area (Footer) */}
-            <div className="p-5 border-t border-gray-50 bg-white shrink-0">
+            <div className="p-5 border-t border-gray-50 dark:border-white/5 bg-white dark:bg-[#0f172a] shrink-0">
               <div className="flex gap-3">
                 {user?.avatar_url ? (
                   <img src={user.avatar_url} alt={user?.name || 'User'} className="w-8 h-8 rounded-full object-cover shadow-sm mt-0.5" />
@@ -826,7 +826,7 @@ export default function PlatformPage() {
                 )}
                 <div className="flex-1 flex flex-col items-end gap-2">
                   <textarea 
-                    className="w-full min-h-[80px] resize-none outline-none text-[13px] text-gray-900 placeholder-gray-400 bg-gray-50 p-3 rounded-xl border border-gray-100 focus:border-gray-200 focus:bg-white transition-colors disabled:opacity-50"
+                    className="w-full min-h-[80px] resize-none outline-none text-[13px] text-gray-900 dark:text-white placeholder-gray-400 bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/10 focus:border-gray-200 dark:border-white/20 focus:bg-white dark:bg-[#0f172a] transition-colors disabled:opacity-50"
                     placeholder={activeCommentPost.comments_disabled ? "Comments are turned off" : "Write a comment..."}
                     autoFocus
                     disabled={activeCommentPost.comments_disabled}
@@ -851,18 +851,18 @@ export default function PlatformPage() {
       {/* Delete Confirmation Modal */}
       {postToDelete && (
         <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-[400px] overflow-hidden flex flex-col p-6 animate-in zoom-in-95 duration-200 text-center">
+          <div className="bg-white dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-[400px] overflow-hidden flex flex-col p-6 animate-in zoom-in-95 duration-200 text-center">
             <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <Trash2 size={28} />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Delete Post?</h2>
-            <p className="text-[14px] text-gray-500 mb-8 leading-relaxed px-2">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Delete Post?</h2>
+            <p className="text-[14px] text-gray-500 dark:text-gray-400 mb-8 leading-relaxed px-2">
               Are you sure you want to delete this post? Once deleted, it cannot be recovered.
             </p>
             <div className="flex gap-3">
               <button 
                 onClick={() => setPostToDelete(null)}
-                className="flex-1 bg-gray-100 text-gray-700 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition-colors"
+                className="flex-1 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition-colors"
               >
                 Cancel
               </button>

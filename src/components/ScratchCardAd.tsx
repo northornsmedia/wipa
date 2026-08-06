@@ -129,7 +129,7 @@ export default function ScratchCardAd() {
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
       <div className="absolute inset-0 bg-gradient-to-br from-[#ffc900] via-[#ff90e8] to-[#5a32fa] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between z-0">
         <div className="text-center md:text-left flex-1">
-          <div className="inline-block bg-white/20 px-3 py-1 rounded-full text-white font-black text-[10px] md:text-xs mb-2 backdrop-blur-sm border border-white/30 shadow-sm animate-pulse">
+          <div className="inline-block bg-white dark:bg-[#0f172a]/20 px-3 py-1 rounded-full text-white font-black text-[10px] md:text-xs mb-2 backdrop-blur-sm border border-white/30 shadow-sm animate-pulse">
             🎉 SECRET UNLOCKED
           </div>
           <h2 className="text-2xl md:text-4xl font-black text-white mb-1 tracking-tight leading-none drop-shadow-xl" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>

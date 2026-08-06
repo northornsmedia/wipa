@@ -270,26 +270,26 @@ export default function JobsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] pt-8">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] pt-8">
       
       {/* MAIN SCROLLABLE CONTENT - FULL WIDTH */}
       <div className="w-full">
         <div className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
           
 
-          <div className="mb-12 border-b border-gray-100 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="mb-12 border-b border-gray-100 dark:border-white/10 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 flex items-center gap-4">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white flex items-center gap-4">
                 <Briefcase size={40} className="text-[#5a32fa]" />
                 Jobs Board
               </h1>
-              <p className="text-gray-500 font-medium mt-3 text-lg">
+              <p className="text-gray-500 dark:text-gray-400 font-medium mt-3 text-lg">
                 Explore top roles and advance your career in Intellectual Property.
               </p>
             </div>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#5a32fa] text-white px-8 py-4 rounded-xl font-bold text-lg border border-gray-100 shadow-sm hover:shadow-sm hover:-translate-y-0.5 transition-all"
+              className="bg-[#5a32fa] text-white px-8 py-4 rounded-xl font-bold text-lg border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-sm hover:-translate-y-0.5 transition-all"
             >
               + Post a Job
             </button>
@@ -297,12 +297,12 @@ export default function JobsPage() {
 
           {/* TOP COMPANIES SECTION */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
               <Star size={24} className="text-[#ffc900] fill-current" /> Top Companies Hiring
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {['/JOBAD1.png', '/JOBAD2.png', '/JOBAD3.png', '/JOBAD4.png'].map((adSrc, idx) => (
-                <div key={idx} className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer relative h-[104px] group">
+                <div key={idx} className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-200 dark:border-white/20 shadow-sm overflow-hidden hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer relative h-[104px] group">
                   <img src={adSrc} alt={`Featured Company ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
               ))}
@@ -313,7 +313,7 @@ export default function JobsPage() {
 
           {/* JOB FEED */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Latest Roles</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Latest Roles</h2>
             
             <div className="flex items-center gap-3 overflow-x-auto pb-2 md:pb-0">
               <input
@@ -321,12 +321,12 @@ export default function JobsPage() {
                 placeholder="Filter by location..."
                 value={locationFilter}
                 onChange={(e) => setLocationFilter(e.target.value)}
-                className="px-4 py-2.5 rounded-full font-bold text-sm border border-gray-100 bg-white text-gray-900 focus:outline-none focus:border-[#131313] transition-colors shrink-0 w-40 placeholder:text-gray-400"
+                className="px-4 py-2.5 rounded-full font-bold text-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:border-[#131313] transition-colors shrink-0 w-40 placeholder:text-gray-400"
               />
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as any)}
-                className="px-4 py-2.5 rounded-full font-bold text-sm border border-gray-100 bg-white text-gray-900 focus:outline-none focus:border-[#131313] transition-colors shrink-0 cursor-pointer appearance-none pr-8 relative"
+                className="px-4 py-2.5 rounded-full font-bold text-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white focus:outline-none focus:border-[#131313] transition-colors shrink-0 cursor-pointer appearance-none pr-8 relative"
                 style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.65rem auto' }}
               >
                 <option value="All Types">All Types</option>
@@ -339,19 +339,19 @@ export default function JobsPage() {
 
               <button 
                 onClick={() => setActiveTab('All Jobs')}
-                className={`px-6 py-2.5 rounded-full font-bold text-sm border-2 transition-all shrink-0 ${activeTab === 'All Jobs' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
+                className={`px-6 py-2.5 rounded-full font-bold text-sm border-2 transition-all shrink-0 ${activeTab === 'All Jobs' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900'}`}
               >
                 All Jobs
               </button>
               <button 
                 onClick={() => setActiveTab('Saved')}
-                className={`px-6 py-2.5 rounded-full font-bold text-sm border-2 transition-all shrink-0 ${activeTab === 'Saved' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
+                className={`px-6 py-2.5 rounded-full font-bold text-sm border-2 transition-all shrink-0 ${activeTab === 'Saved' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900'}`}
               >
                 Saved
               </button>
               <button 
                 onClick={() => setActiveTab('My Applications')}
-                className={`px-6 py-2.5 rounded-full font-bold text-sm border-2 transition-all shrink-0 ${activeTab === 'My Applications' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900'}`}
+                className={`px-6 py-2.5 rounded-full font-bold text-sm border-2 transition-all shrink-0 ${activeTab === 'My Applications' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900'}`}
               >
                 My Applications
               </button>
@@ -366,10 +366,10 @@ export default function JobsPage() {
               if (locationFilter && !job.location.toLowerCase().includes(locationFilter.toLowerCase())) return false;
               return true;
             }).length === 0 ? (
-              <div className="xl:col-span-4 md:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm p-16 text-center flex flex-col items-center">
+              <div className="xl:col-span-4 md:col-span-2 bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm p-16 text-center flex flex-col items-center">
                 <Briefcase size={64} className="text-gray-300 mb-6" />
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">No jobs found</h3>
-                <p className="text-gray-500 font-medium text-lg">Try adjusting your filters or tabs.</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">No jobs found</h3>
+                <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">Try adjusting your filters or tabs.</p>
               </div>
             ) : jobs.filter(job => {
               if (activeTab === 'Saved' && !job.isSaved) return false;
@@ -378,11 +378,11 @@ export default function JobsPage() {
               if (locationFilter && !job.location.toLowerCase().includes(locationFilter.toLowerCase())) return false;
               return true; 
             }).map((job) => (
-              <div key={job.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col group transition-all hover:translate-y-[-4px] hover:shadow-sm p-5">
+              <div key={job.id} className="bg-white dark:bg-[#0f172a] rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm overflow-hidden flex flex-col group transition-all hover:translate-y-[-4px] hover:shadow-sm p-5">
                 
                 <div className="flex items-start justify-between mb-4">
                   {/* Logo Block */}
-                  <div className="w-12 h-12 rounded-xl border border-gray-100 flex items-center justify-center font-bold text-xl text-gray-900 shrink-0" style={{ backgroundColor: job.color }}>
+                  <div className="w-12 h-12 rounded-xl border border-gray-100 dark:border-white/10 flex items-center justify-center font-bold text-xl text-gray-900 dark:text-white shrink-0" style={{ backgroundColor: job.color }}>
                     {job.logoInitial}
                   </div>
                   
@@ -392,7 +392,7 @@ export default function JobsPage() {
                       {job.postedAt}
                     </span>
                     {job.hasApplied && (
-                      <span className="bg-[#00d26a] text-gray-900 text-[9px] font-bold px-2 py-1 rounded border border-gray-100">
+                      <span className="bg-[#00d26a] text-gray-900 dark:text-white text-[9px] font-bold px-2 py-1 rounded border border-gray-100 dark:border-white/10">
                         Applied
                       </span>
                     )}
@@ -402,27 +402,27 @@ export default function JobsPage() {
                 {/* Job Details */}
                 <div className="flex-1 flex flex-col">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="bg-[#131313] text-white text-[9px] font-bold px-2 py-1 rounded uppercase border border-gray-100">
+                    <span className="bg-[#131313] text-white text-[9px] font-bold px-2 py-1 rounded uppercase border border-gray-100 dark:border-white/10">
                       {job.type}
                     </span>
                   </div>
                   
-                  <h3 className="text-[17px] font-bold text-gray-900 mb-1 leading-tight group-hover:text-[#5a32fa] transition-colors line-clamp-2">
+                  <h3 className="text-[17px] font-bold text-gray-900 dark:text-white mb-1 leading-tight group-hover:text-[#5a32fa] transition-colors line-clamp-2">
                     {job.title}
                   </h3>
-                  <p className="text-gray-900 font-bold mb-3 text-sm line-clamp-1">{job.company}</p>
+                  <p className="text-gray-900 dark:text-white font-bold mb-3 text-sm line-clamp-1">{job.company}</p>
                   
-                  <p className="text-gray-600 font-medium text-xs mb-4 leading-relaxed line-clamp-2">
+                  <p className="text-gray-600 dark:text-gray-300 font-medium text-xs mb-4 leading-relaxed line-clamp-2">
                     {job.description}
                   </p>
 
-                  <div className="grid grid-cols-1 gap-2 mb-4 bg-gray-50 rounded-xl p-3 border border-gray-100">
-                    <div className="flex items-center gap-2 text-gray-700 font-bold text-[11px] truncate">
+                  <div className="grid grid-cols-1 gap-2 mb-4 bg-gray-50 dark:bg-white/5 rounded-xl p-3 border border-gray-100 dark:border-white/10">
+                    <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-bold text-[11px] truncate">
                       <MapPin size={14} className="text-[#5a32fa] shrink-0" />
                       <span className="truncate">{job.location}</span>
                     </div>
                     {job.salary && (
-                      <div className="flex items-center gap-2 text-gray-700 font-bold text-[11px] truncate">
+                      <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200 font-bold text-[11px] truncate">
                         <DollarSign size={14} className="text-[#00d26a] shrink-0" />
                         <span className="truncate">{job.salary}</span>
                       </div>
@@ -435,7 +435,7 @@ export default function JobsPage() {
                       className={`flex items-center justify-center p-2.5 rounded-xl border-2 transition-all shrink-0 ${
                         job.isSaved 
                           ? 'bg-[#131313] text-white border-[#131313]' 
-                          : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900 hover:text-gray-900'
+                          : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900 hover:text-gray-900 dark:text-white'
                       }`}
                     >
                       <Bookmark size={16} className={job.isSaved ? 'fill-current' : ''} />
@@ -444,9 +444,9 @@ export default function JobsPage() {
                     <button 
                       onClick={() => !job.hasApplied && handleApply(job.id)}
                       disabled={job.hasApplied}
-                      className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl font-bold text-xs border border-gray-100 transition-all truncate ${
+                      className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl font-bold text-xs border border-gray-100 dark:border-white/10 transition-all truncate ${
                         job.hasApplied 
-                          ? 'bg-gray-100 text-gray-400 border-gray-200' 
+                          ? 'bg-gray-100 dark:bg-white/10 text-gray-400 border-gray-200 dark:border-white/20' 
                           : 'bg-[#5a32fa] text-white shadow-sm hover:-translate-y-0.5 hover:shadow-sm'
                       }`}
                     >
@@ -466,50 +466,50 @@ export default function JobsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
           
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 md:p-8 w-full max-w-lg relative z-10 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm p-6 md:p-8 w-full max-w-lg relative z-10 animate-in fade-in zoom-in-95 duration-200">
             <button 
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 p-2 rounded-full"
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 dark:text-white transition-colors bg-gray-100 dark:bg-white/10 hover:bg-gray-200 p-2 rounded-full"
             >
               <X size={20} />
             </button>
             
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
               <Briefcase size={28} className="text-[#5a32fa]" />
               Post a Job
             </h2>
             
             <form onSubmit={handleCreateJob} className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">Job Title</label>
+                <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Job Title</label>
                 <input 
                   type="text" 
                   required
                   value={newJob.title}
                   onChange={e => setNewJob({...newJob, title: e.target.value})}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors"
+                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors"
                   placeholder="e.g. Senior IP Counsel"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1">Company</label>
+                  <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Company</label>
                   <input 
                     type="text" 
                     required
                     value={newJob.company}
                     onChange={e => setNewJob({...newJob, company: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors"
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors"
                     placeholder="e.g. Innovatech Inc."
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1">Work Type</label>
+                  <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Work Type</label>
                   <select 
                     value={newJob.type}
                     onChange={e => setNewJob({...newJob, type: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors appearance-none"
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors appearance-none"
                   >
                     <option>Remote</option>
                     <option>Hybrid</option>
@@ -520,41 +520,41 @@ export default function JobsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1">Location</label>
+                  <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Location</label>
                   <input 
                     type="text" 
                     required
                     value={newJob.location}
                     onChange={e => setNewJob({...newJob, location: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors"
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors"
                     placeholder="e.g. London, UK"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1">Salary Range</label>
+                  <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Salary Range</label>
                   <input 
                     type="text" 
                     value={newJob.salary}
                     onChange={e => setNewJob({...newJob, salary: e.target.value})}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors"
+                    className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors"
                     placeholder="e.g. £90k - £120k"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">Description</label>
+                <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Description</label>
                 <textarea 
                   required
                   value={newJob.description}
                   onChange={e => setNewJob({...newJob, description: e.target.value})}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors resize-none h-24"
+                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors resize-none h-24"
                   placeholder="What is this role about?"
                 />
               </div>
 
               <div className="pt-4">
-                <button type="submit" className="w-full bg-[#5a32fa] text-white px-6 py-4 rounded-xl font-bold text-lg border border-gray-100 hover:shadow-sm hover:-translate-y-0.5 transition-all active:translate-y-0 active:shadow-none">
+                <button type="submit" className="w-full bg-[#5a32fa] text-white px-6 py-4 rounded-xl font-bold text-lg border border-gray-100 dark:border-white/10 hover:shadow-sm hover:-translate-y-0.5 transition-all active:translate-y-0 active:shadow-none">
                   PUBLISH JOB
                 </button>
               </div>

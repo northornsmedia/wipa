@@ -126,25 +126,25 @@ export default function EventsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a]">
       
       {/* MAIN SCROLLABLE CONTENT */}
       <div className="w-full min-h-[calc(100vh-73px)]">
         <div className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 pt-8">
           
-          <div className="mb-8 border-b border-gray-100 pb-6 flex items-center justify-between">
+          <div className="mb-8 border-b border-gray-100 dark:border-white/10 pb-6 flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                 <Calendar size={32} className="text-[#5a32fa]" />
                 Events
               </h1>
-              <p className="text-gray-500 font-medium mt-2">
+              <p className="text-gray-500 dark:text-gray-400 font-medium mt-2">
                 Discover upcoming webinars, meetups, and conferences.
               </p>
             </div>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#5a32fa] text-white px-6 py-3 rounded-xl font-bold text-sm border border-gray-100 hover:shadow-sm hover:-translate-y-0.5 transition-all"
+              className="bg-[#5a32fa] text-white px-6 py-3 rounded-xl font-bold text-sm border border-gray-100 dark:border-white/10 hover:shadow-sm hover:-translate-y-0.5 transition-all"
             >
               + Create Event
             </button>
@@ -153,19 +153,19 @@ export default function EventsPage() {
           <div className="flex items-center gap-4 mb-8">
             <button 
               onClick={() => setActiveTab('Upcoming')}
-              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'Upcoming' ? 'bg-[#5a32fa] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'Upcoming' ? 'bg-[#5a32fa] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200'}`}
             >
               Upcoming
             </button>
             <button 
               onClick={() => setActiveTab('My Events')}
-              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'My Events' ? 'bg-[#5a32fa] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'My Events' ? 'bg-[#5a32fa] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200'}`}
             >
               My Events
             </button>
             <button 
               onClick={() => setActiveTab('Past')}
-              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'Past' ? 'bg-[#5a32fa] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'Past' ? 'bg-[#5a32fa] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200'}`}
             >
               Past
             </button>
@@ -177,10 +177,10 @@ export default function EventsPage() {
               if (activeTab === 'Past') return false; // In a real app, compare dates
               return true; // Upcoming
             }).length === 0 ? (
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center flex flex-col items-center">
+              <div className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm p-12 text-center flex flex-col items-center">
                 <Calendar size={48} className="text-gray-300 mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-2">No {activeTab.toLowerCase()} events found</h3>
-                <p className="text-gray-500 font-medium">Check back later or explore other tabs.</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No {activeTab.toLowerCase()} events found</h3>
+                <p className="text-gray-500 dark:text-gray-400 font-medium">Check back later or explore other tabs.</p>
               </div>
             ) : events.filter(event => {
               if (activeTab === 'My Events') return event.isRegistered;
@@ -216,9 +216,9 @@ export default function EventsPage() {
                         <div className="flex -space-x-2">
                           <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8]"></div>
                           <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-gradient-to-tr from-[#00d26a] to-[#ffc900]"></div>
-                          <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-white flex items-center justify-center text-[10px] font-bold text-gray-900">+5k</div>
+                          <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-white dark:bg-[#0f172a] flex items-center justify-center text-[10px] font-bold text-gray-900 dark:text-white">+5k</div>
                         </div>
-                        <span className="text-xs font-bold text-gray-500">Professionals joined</span>
+                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Professionals joined</span>
                       </div>
                     </div>
                     
@@ -227,84 +227,84 @@ export default function EventsPage() {
                       <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
                       
                       <div className="w-full">
-                        <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">Admit One</div>
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-bold mb-2">Admit One</div>
                         <div className="text-2xl font-black text-[#ff90e8] mb-1">VIP ACCESS</div>
                         <div className="text-xs text-gray-400 font-medium">Valid until Aug 31</div>
                       </div>
                       
-                      <button className="w-full py-3.5 mt-6 bg-white text-[#131313] font-black text-sm rounded-xl hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                      <button className="w-full py-3.5 mt-6 bg-white dark:bg-[#0f172a] text-[#131313] font-black text-sm rounded-xl hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                         CLAIM NOW
                       </button>
                       
                       {/* Fake Barcode */}
                       <div className="w-full flex justify-between h-10 mt-6 opacity-40 px-2">
-                        <div className="w-1 bg-white h-full"></div>
-                        <div className="w-2 bg-white h-full"></div>
-                        <div className="w-1 bg-white h-full"></div>
-                        <div className="w-3 bg-white h-full"></div>
-                        <div className="w-1 bg-white h-full"></div>
-                        <div className="w-2 bg-white h-full"></div>
-                        <div className="w-1 bg-white h-full"></div>
-                        <div className="w-2 bg-white h-full"></div>
-                        <div className="w-1 bg-white h-full"></div>
-                        <div className="w-4 bg-white h-full"></div>
+                        <div className="w-1 bg-white dark:bg-[#0f172a] h-full"></div>
+                        <div className="w-2 bg-white dark:bg-[#0f172a] h-full"></div>
+                        <div className="w-1 bg-white dark:bg-[#0f172a] h-full"></div>
+                        <div className="w-3 bg-white dark:bg-[#0f172a] h-full"></div>
+                        <div className="w-1 bg-white dark:bg-[#0f172a] h-full"></div>
+                        <div className="w-2 bg-white dark:bg-[#0f172a] h-full"></div>
+                        <div className="w-1 bg-white dark:bg-[#0f172a] h-full"></div>
+                        <div className="w-2 bg-white dark:bg-[#0f172a] h-full"></div>
+                        <div className="w-1 bg-white dark:bg-[#0f172a] h-full"></div>
+                        <div className="w-4 bg-white dark:bg-[#0f172a] h-full"></div>
                       </div>
                     </div>
                     
                     {/* Cutouts for ticket effect */}
-                    <div className="hidden md:block absolute -top-4 right-[240px] w-8 h-8 rounded-full bg-[#f8f9fa] z-20 shadow-inner"></div>
-                    <div className="hidden md:block absolute -bottom-4 right-[240px] w-8 h-8 rounded-full bg-[#f8f9fa] z-20 shadow-inner"></div>
+                    <div className="hidden md:block absolute -top-4 right-[240px] w-8 h-8 rounded-full bg-[#f8f9fa] dark:bg-[#0f172a] z-20 shadow-inner"></div>
+                    <div className="hidden md:block absolute -bottom-4 right-[240px] w-8 h-8 rounded-full bg-[#f8f9fa] dark:bg-[#0f172a] z-20 shadow-inner"></div>
                   </div>
                 )}
                 
                 <div 
                   onClick={() => router.push(`/platform/events/${event.id}`)}
-                  className="cursor-pointer bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col md:flex-row group transition-all hover:-translate-y-0.5 hover:shadow-sm">
+                  className="cursor-pointer bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm overflow-hidden flex flex-col md:flex-row group transition-all hover:-translate-y-0.5 hover:shadow-sm">
                 
                 {/* Date Block */}
-                <div className="md:w-48 border-b border-gray-100 md:border-b-0 md:border-r flex flex-row md:flex-col items-center justify-center p-6 md:p-8" style={{ backgroundColor: event.color }}>
-                  <div className="text-gray-900 font-bold text-2xl md:text-3xl tracking-widest uppercase">{event.month}</div>
+                <div className="md:w-48 border-b border-gray-100 dark:border-white/10 md:border-b-0 md:border-r flex flex-row md:flex-col items-center justify-center p-6 md:p-8" style={{ backgroundColor: event.color }}>
+                  <div className="text-gray-900 dark:text-white font-bold text-2xl md:text-3xl tracking-widest uppercase">{event.month}</div>
                   <div className="text-white text-5xl md:text-7xl font-bold md:mt-2" style={{ textShadow: "none" }}>{event.day}</div>
                 </div>
 
                 {/* Event Details */}
                 <div className="flex-1 p-6 md:p-8 flex flex-col justify-center">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-gray-100 text-gray-800 text-[11px] font-bold px-3 py-1 rounded-md uppercase tracking-wider border-2 border-gray-200">
+                    <span className="bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-100 text-[11px] font-bold px-3 py-1 rounded-md uppercase tracking-wider border-2 border-gray-200 dark:border-white/20">
                       {event.type}
                     </span>
                     {event.isRegistered && (
-                      <span className="bg-[#00d26a] text-white text-[11px] font-bold px-3 py-1 rounded-md uppercase tracking-wider border border-gray-100">
+                      <span className="bg-[#00d26a] text-white text-[11px] font-bold px-3 py-1 rounded-md uppercase tracking-wider border border-gray-100 dark:border-white/10">
                         Attending
                       </span>
                     )}
                   </div>
                   
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
                     {event.title}
                   </h3>
                   
-                  <p className="text-gray-600 font-medium mb-6 leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 font-medium mb-6 leading-relaxed">
                     {event.description}
                   </p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                    <div className="flex items-center gap-2 text-gray-600 font-bold text-sm">
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 font-bold text-sm">
                       <Clock size={18} className="text-[#5a32fa]" />
                       {event.time}
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600 font-bold text-sm">
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 font-bold text-sm">
                       <MapPin size={18} className="text-[#5a32fa]" />
                       {event.location}
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-6 border-t-2 border-dashed border-gray-200">
+                  <div className="flex items-center justify-between pt-6 border-t-2 border-dashed border-gray-200 dark:border-white/20">
                     <div className="flex items-center -space-x-2">
                       <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white"></div>
                       <div className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"></div>
                       <div className="w-8 h-8 rounded-full bg-gray-400 border-2 border-white"></div>
-                      <div className="pl-4 text-xs font-bold text-gray-500">
+                      <div className="pl-4 text-xs font-bold text-gray-500 dark:text-gray-400">
                         +{event.attendees} attending
                       </div>
                     </div>
@@ -314,9 +314,9 @@ export default function EventsPage() {
                         e.stopPropagation();
                         // handle registration toggle here
                       }}
-                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm border border-gray-100 transition-all ${
+                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm border border-gray-100 dark:border-white/10 transition-all ${
                       event.isRegistered 
-                        ? 'bg-white text-gray-400 border-gray-200 hover:bg-gray-50' 
+                        ? 'bg-white dark:bg-[#0f172a] text-gray-400 border-gray-200 dark:border-white/20 hover:bg-gray-50 dark:bg-white/5' 
                         : 'bg-[#5a32fa] text-white hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#5a32fa]'
                     }`}>
                       {event.isRegistered ? 'Manage' : 'Register'}
@@ -335,39 +335,39 @@ export default function EventsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
           
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 md:p-8 w-full max-w-lg relative z-10 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto no-scrollbar">
+          <div className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm p-6 md:p-8 w-full max-w-lg relative z-10 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto no-scrollbar">
             <button 
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 p-2 rounded-full"
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 dark:text-white transition-colors bg-gray-100 dark:bg-white/10 hover:bg-gray-200 p-2 rounded-full"
             >
               <X size={20} />
             </button>
             
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
               <Calendar size={28} className="text-[#5a32fa]" />
               Create Event
             </h2>
             
             <form onSubmit={handleCreateEvent} className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">Event Title</label>
+                <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Event Title</label>
                 <input 
                   type="text" 
                   required
                   value={newEvent.title}
                   onChange={e => setNewEvent({...newEvent, title: e.target.value})}
-                  className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors"
+                  className="w-full bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors"
                   placeholder="e.g. AI in Healthcare Symposium"
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1">Event Type</label>
+                  <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Event Type</label>
                   <select 
                     value={newEvent.type}
                     onChange={e => setNewEvent({...newEvent, type: e.target.value})}
-                    className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors appearance-none"
+                    className="w-full bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors appearance-none"
                   >
                     <option>Meetup</option>
                     <option>Conference</option>
@@ -376,13 +376,13 @@ export default function EventsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1">Location</label>
+                  <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Location</label>
                   <input 
                     type="text" 
                     required
                     value={newEvent.location}
                     onChange={e => setNewEvent({...newEvent, location: e.target.value})}
-                    className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors"
+                    className="w-full bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors"
                     placeholder="e.g. London or Zoom"
                   />
                 </div>
@@ -390,11 +390,11 @@ export default function EventsPage() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1">Month</label>
+                  <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Month</label>
                   <select 
                     value={newEvent.month}
                     onChange={e => setNewEvent({...newEvent, month: e.target.value})}
-                    className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors appearance-none"
+                    className="w-full bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors appearance-none"
                   >
                     <option>JAN</option><option>FEB</option><option>MAR</option>
                     <option>APR</option><option>MAY</option><option>JUN</option>
@@ -403,43 +403,43 @@ export default function EventsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1">Day</label>
+                  <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Day</label>
                   <input 
                     type="number" 
                     required min="1" max="31"
                     value={newEvent.day}
                     onChange={e => setNewEvent({...newEvent, day: e.target.value})}
-                    className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors"
+                    className="w-full bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors"
                     placeholder="25"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1">Time</label>
+                  <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Time</label>
                   <input 
                     type="text" 
                     required
                     value={newEvent.time}
                     onChange={e => setNewEvent({...newEvent, time: e.target.value})}
-                    className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors"
+                    className="w-full bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors"
                     placeholder="10:00 AM"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-900 mb-1">Description</label>
+                <label className="block text-sm font-bold text-gray-900 dark:text-white mb-1">Description</label>
                 <textarea 
                   required
                   value={newEvent.description}
                   onChange={e => setNewEvent({...newEvent, description: e.target.value})}
-                  className="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors resize-none h-24"
+                  className="w-full bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-4 py-3 text-gray-900 dark:text-white font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors resize-none h-24"
                   placeholder="What is this event about?"
                 />
               </div>
 
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
-                  <label className="block text-sm font-bold text-gray-900">Agenda</label>
+                  <label className="block text-sm font-bold text-gray-900 dark:text-white">Agenda</label>
                   <button 
                     type="button" 
                     onClick={() => setNewEvent({...newEvent, agenda: [...newEvent.agenda, { time: '', brief: '' }]})}
@@ -459,7 +459,7 @@ export default function EventsPage() {
                         newAgenda[idx].time = e.target.value;
                         setNewEvent({...newEvent, agenda: newAgenda});
                       }}
-                      className="w-1/3 bg-gray-50 border-2 border-gray-200 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors"
+                      className="w-1/3 bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors"
                     />
                     <input 
                       type="text"
@@ -470,14 +470,14 @@ export default function EventsPage() {
                         newAgenda[idx].brief = e.target.value;
                         setNewEvent({...newEvent, agenda: newAgenda});
                       }}
-                      className="w-2/3 bg-gray-50 border-2 border-gray-200 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white transition-colors"
+                      className="w-2/3 bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors"
                     />
                   </div>
                 ))}
               </div>
 
               <div className="pt-4">
-                <button type="submit" className="w-full bg-[#00d26a] text-gray-900 px-6 py-4 rounded-xl font-bold text-lg border border-gray-100 hover:shadow-sm hover:-translate-y-0.5 transition-all active:translate-y-0 active:shadow-none">
+                <button type="submit" className="w-full bg-[#00d26a] text-gray-900 dark:text-white px-6 py-4 rounded-xl font-bold text-lg border border-gray-100 dark:border-white/10 hover:shadow-sm hover:-translate-y-0.5 transition-all active:translate-y-0 active:shadow-none">
                   PUBLISH EVENT
                 </button>
               </div>
