@@ -215,7 +215,7 @@ export default function ResourcesPage() {
                 </div>
                 </div>
 
-                {index % 5 === 0 && (
+                {(index % 5) === 3 && (
                   <div className="w-full bg-white dark:bg-[#0f172a] rounded-[2rem] overflow-hidden shadow-sm border border-gray-200 dark:border-white/20 relative group min-h-[300px]">
                     <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
                   </div>
