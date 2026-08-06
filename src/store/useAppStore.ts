@@ -127,6 +127,8 @@ const DUMMY_POSTS: Post[] = [
 ];
 
 interface AppState {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
   isMenuOpen: boolean;
   toggleMenu: () => void;
   user: { name: string; email: string; id?: string; avatar_url?: string; cover_url?: string; member_id?: string } | null;
@@ -139,6 +141,8 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
+      isDarkMode: false,
+      toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
       isMenuOpen: false,
       toggleMenu: () => set((state) => ({ isMenuOpen: !state.isMenuOpen })),
       user: null,

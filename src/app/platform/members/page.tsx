@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { 
@@ -187,8 +187,31 @@ export default function MembersDirectoryPage() {
           </div>
         ) : members.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {members.map((member) => (
-              <div key={member.id} className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col transition-transform hover:-translate-y-1">
+            {members.map((member, index) => (
+              <Fragment key={member.id}>
+                {index === 2 && (
+                  <div className="bg-white rounded-3xl border-2 border-[#ff90e8] shadow-md overflow-hidden flex flex-col relative group hover:-translate-y-1 transition-transform">
+                    <div className="absolute top-3 right-3 bg-[#ff90e8] text-white text-[10px] font-bold px-2 py-1 rounded-md z-10 uppercase tracking-wider shadow-sm">
+                      Sponsored
+                    </div>
+                    <div className="h-28 relative bg-cover bg-center overflow-hidden">
+                      <img src="/AD3.png" alt="Ad" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                      <div className="absolute bottom-3 left-4 text-white font-bold text-lg leading-tight z-10">
+                        Accelerate Your <br/>Career in IP
+                      </div>
+                    </div>
+                    <div className="p-6 pt-5 flex-1 flex flex-col bg-gradient-to-b from-white to-[#ff90e8]/5">
+                      <p className="text-sm text-gray-600 mb-5 flex-1 leading-relaxed">
+                        Join an exclusive network of top-tier IP professionals. Access premium courses, advanced tools, and verified global opportunities.
+                      </p>
+                      <button className="w-full bg-[#131313] text-white font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-gray-800 transition-colors border border-transparent">
+                        Explore Premium
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden flex flex-col transition-transform hover:-translate-y-1">
                 <div 
                   className="h-24 bg-[#5a32fa]/10 border-b-2 border-gray-200 relative bg-cover bg-center"
                   style={{ backgroundImage: member.cover_url ? `url(${member.cover_url})` : undefined }}
@@ -255,6 +278,7 @@ export default function MembersDirectoryPage() {
                   </div>
                 </div>
               </div>
+              </Fragment>
             ))}
           </div>
         ) : (

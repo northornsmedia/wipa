@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { 
   Calendar, LayoutGrid, Users, Mail, UsersRound, FileText, Briefcase, GraduationCap,
@@ -186,11 +186,80 @@ export default function EventsPage() {
               if (activeTab === 'My Events') return event.isRegistered;
               if (activeTab === 'Past') return false; 
               return true; 
-            }).map((event) => (
-              <div 
-                key={event.id} 
-                onClick={() => router.push(`/platform/events/${event.id}`)}
-                className="cursor-pointer bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col md:flex-row group transition-all hover:-translate-y-0.5 hover:shadow-sm">
+            }).map((event, index) => (
+              <Fragment key={event.id}>
+                {index === 0 && (
+                  <div className="relative overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(90,50,250,0.15)] bg-[#0f172a] text-white flex flex-col md:flex-row group my-6 border border-[#5a32fa]/30 hover:border-[#ff90e8]/50 transition-all duration-500 hover:-translate-y-1">
+                    {/* Glowing background blob */}
+                    <div className="absolute -top-32 -left-32 w-64 h-64 bg-[#5a32fa] rounded-full blur-[100px] opacity-60 group-hover:bg-[#ff90e8] transition-colors duration-1000"></div>
+                    
+                    {/* Main Ticket Area */}
+                    <div className="flex-1 p-8 md:p-10 relative z-10 flex flex-col justify-center border-b-2 md:border-b-0 md:border-r-2 border-dashed border-[#5a32fa]/40">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg">
+                          Exclusive Sponsor
+                        </span>
+                        <span className="text-[#00d26a] flex items-center gap-2 text-xs font-bold bg-[#00d26a]/10 px-3 py-1 rounded-full border border-[#00d26a]/20">
+                          <span className="w-2 h-2 rounded-full bg-[#00d26a] animate-pulse"></span> Live Now
+                        </span>
+                      </div>
+                      
+                      <h3 className="text-3xl md:text-4xl font-black mb-3 leading-tight bg-clip-text text-transparent bg-gradient-to-br from-white to-gray-400">
+                        The Legal Tech<br/>Revolution 2026
+                      </h3>
+                      
+                      <p className="text-gray-400 font-medium mb-6 max-w-lg text-sm">
+                        Transform your practice with AI-powered IP management. Get our exclusive whitepaper and 30-day premium trial today.
+                      </p>
+                      
+                      <div className="flex items-center gap-4 mt-auto">
+                        <div className="flex -space-x-2">
+                          <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8]"></div>
+                          <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-gradient-to-tr from-[#00d26a] to-[#ffc900]"></div>
+                          <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-white flex items-center justify-center text-[10px] font-bold text-gray-900">+5k</div>
+                        </div>
+                        <span className="text-xs font-bold text-gray-500">Professionals joined</span>
+                      </div>
+                    </div>
+                    
+                    {/* Ticket Stub */}
+                    <div className="md:w-64 relative z-10 flex flex-col justify-between p-8 bg-gradient-to-br from-[#1e293b] to-[#0f172a] items-center text-center">
+                      <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
+                      
+                      <div className="w-full">
+                        <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">Admit One</div>
+                        <div className="text-2xl font-black text-[#ff90e8] mb-1">VIP ACCESS</div>
+                        <div className="text-xs text-gray-400 font-medium">Valid until Aug 31</div>
+                      </div>
+                      
+                      <button className="w-full py-3.5 mt-6 bg-white text-[#131313] font-black text-sm rounded-xl hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                        CLAIM NOW
+                      </button>
+                      
+                      {/* Fake Barcode */}
+                      <div className="w-full flex justify-between h-10 mt-6 opacity-40 px-2">
+                        <div className="w-1 bg-white h-full"></div>
+                        <div className="w-2 bg-white h-full"></div>
+                        <div className="w-1 bg-white h-full"></div>
+                        <div className="w-3 bg-white h-full"></div>
+                        <div className="w-1 bg-white h-full"></div>
+                        <div className="w-2 bg-white h-full"></div>
+                        <div className="w-1 bg-white h-full"></div>
+                        <div className="w-2 bg-white h-full"></div>
+                        <div className="w-1 bg-white h-full"></div>
+                        <div className="w-4 bg-white h-full"></div>
+                      </div>
+                    </div>
+                    
+                    {/* Cutouts for ticket effect */}
+                    <div className="hidden md:block absolute -top-4 right-[240px] w-8 h-8 rounded-full bg-[#f8f9fa] z-20 shadow-inner"></div>
+                    <div className="hidden md:block absolute -bottom-4 right-[240px] w-8 h-8 rounded-full bg-[#f8f9fa] z-20 shadow-inner"></div>
+                  </div>
+                )}
+                
+                <div 
+                  onClick={() => router.push(`/platform/events/${event.id}`)}
+                  className="cursor-pointer bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col md:flex-row group transition-all hover:-translate-y-0.5 hover:shadow-sm">
                 
                 {/* Date Block */}
                 <div className="md:w-48 border-b border-gray-100 md:border-b-0 md:border-r flex flex-row md:flex-col items-center justify-center p-6 md:p-8" style={{ backgroundColor: event.color }}>
@@ -256,6 +325,7 @@ export default function EventsPage() {
                   </div>
                 </div>
               </div>
+              </Fragment>
             ))}
           </div>
         </div>

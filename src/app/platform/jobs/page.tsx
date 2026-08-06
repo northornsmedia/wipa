@@ -6,6 +6,7 @@ import {
   Briefcase, MapPin, Building2, DollarSign, Bookmark, ArrowRight, X, ExternalLink, ArrowLeft, Star
 } from 'lucide-react';
 import Link from 'next/link';
+import ScratchCardAd from '@/components/ScratchCardAd';
 
 const INITIAL_MOCK_JOBS = [
   {
@@ -307,6 +308,8 @@ export default function JobsPage() {
               ))}
             </div>
           </div>
+
+          <ScratchCardAd />
 
           {/* JOB FEED */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">

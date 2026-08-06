@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeft, Users, Search, Plus, Hash, ShieldCheck, Lock, Globe } from 'lucide-react';
+import { ArrowLeft, Users, Search, Plus, Hash, ShieldCheck, Lock, Globe, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 const MOCK_GROUPS = [
@@ -140,6 +140,43 @@ export default function GroupsPage() {
 
         {/* Groups Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {/* Creative Double-Wide Ad Card */}
+          <div className="md:col-span-2 bg-[#0f172a] rounded-3xl border border-[#334155] shadow-xl relative overflow-hidden group">
+            {/* Animated background gradient shapes */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-[#5a32fa]/20 blur-3xl animate-pulse" />
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-[#ff90e8]/10 blur-3xl mix-blend-screen" />
+            
+            {/* Glossy inner container */}
+            <div className="relative h-full w-full bg-white/5 backdrop-blur-sm rounded-3xl p-8 lg:p-10 flex flex-col md:flex-row items-center gap-8 border border-white/5">
+              <div className="flex-1 text-left z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider mb-5 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-[#00d26a] animate-ping" />
+                  <span className="relative">Featured Partner</span>
+                </div>
+                <h2 className="text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-[#ff90e8] mb-4 leading-tight">
+                  Master Intellectual Property Law in 2026
+                </h2>
+                <p className="text-gray-400 font-medium mb-8 max-w-md leading-relaxed text-sm">
+                  Join 10,000+ professionals in our elite masterclass. Get lifetime access to premium resources, case studies, and a global network.
+                </p>
+                <button className="bg-white text-[#131313] px-6 py-3 rounded-xl font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all flex items-center gap-2">
+                  Claim Your Spot <ArrowUpRight size={18} />
+                </button>
+              </div>
+              
+              <div className="w-full md:w-[250px] relative z-10 hidden md:block">
+                <div className="aspect-[4/5] rounded-2xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] p-1 rotate-3 group-hover:rotate-6 transition-transform duration-500 shadow-2xl">
+                  <div className="w-full h-full bg-[#131313] rounded-xl overflow-hidden relative">
+                     <img src="/AD7.png" alt="Ad" className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" />
+                     <div className="absolute inset-0 border-[3px] border-white/10 rounded-xl"></div>
+                  </div>
+                </div>
+                <div className="absolute -bottom-4 -left-6 bg-white text-[#131313] px-4 py-2 rounded-xl font-bold text-sm shadow-xl -rotate-6 transform animate-bounce z-20">
+                  50% OFF TODAY
+                </div>
+              </div>
+            </div>
+          </div>
           {filteredGroups.map(group => (
             <div 
               key={group.id} 

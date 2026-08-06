@@ -43,6 +43,39 @@ export default function MentorshipPage() {
             </p>
           </div>
 
+          {/* Epic Top Banner Ad */}
+          <div className="mb-10 w-full rounded-3xl overflow-hidden relative group cursor-pointer shadow-xl bg-[#0f172a] h-[140px] md:h-[160px] flex items-center justify-between px-6 md:px-10 border-4 border-transparent hover:border-[#5a32fa]/30 transition-all duration-500 hover:-translate-y-1">
+             <div className="absolute inset-0 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
+             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30 mix-blend-overlay"></div>
+             
+             {/* Decorative circles */}
+             <div className="absolute -left-12 -top-12 w-40 h-40 rounded-full bg-[#ff90e8]/30 blur-2xl group-hover:bg-[#5a32fa]/40 transition-colors duration-700"></div>
+             <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-[#5a32fa]/30 blur-2xl group-hover:bg-[#ff90e8]/40 transition-colors duration-700"></div>
+             
+             {/* Moving light beam */}
+             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent w-[200%] -skew-x-12 translate-x-[-150%] group-hover:animate-[shimmer_2s_infinite]"></div>
+
+             <div className="relative z-10 flex items-center gap-5 md:gap-8">
+                <div className="w-14 h-14 md:w-20 md:h-20 shrink-0 rounded-[1.5rem] bg-gradient-to-tr from-[#00d26a] to-[#ffc900] p-1 shadow-[0_0_20px_rgba(0,210,106,0.3)] animate-pulse group-hover:animate-none group-hover:scale-110 transition-transform duration-500">
+                   <div className="w-full h-full bg-[#131313] rounded-[1.25rem] flex items-center justify-center text-3xl md:text-4xl shadow-inner">🎟️</div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1.5 md:mb-2">
+                    <span className="text-[9px] md:text-[11px] font-black text-[#131313] tracking-widest uppercase bg-[#ffc900] px-2.5 py-0.5 rounded shadow-sm">Featured Sponsor</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff90e8] animate-ping"></span>
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-black text-white leading-tight drop-shadow-lg mb-1">Global IP Summit 2026</h3>
+                  <p className="text-xs md:text-sm text-gray-300 font-medium max-w-sm drop-shadow-md">Join 500+ top executives in Las Vegas for the premier IP networking event of the year.</p>
+                </div>
+             </div>
+             
+             <div className="relative z-10 hidden md:block shrink-0">
+               <button className="bg-white text-[#131313] px-8 py-4 rounded-xl font-black text-base hover:scale-110 hover:bg-[#ffc900] transition-all duration-300 shadow-[0_10px_20px_rgba(0,0,0,0.4)] border-2 border-transparent hover:border-white">
+                 Claim Your Pass
+               </button>
+             </div>
+          </div>
+
           {/* Active Mentorship */}
           <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300">
             {/* Subtle background glow effect */}
@@ -78,6 +111,17 @@ export default function MentorshipPage() {
               </div>
             </div>
           </div>
+
+          {/* Minimalist Advertisement */}
+          <a href="#" className="mt-10 mb-2 block group w-fit">
+            <div className="flex items-center gap-3 text-[13px] border-l-2 border-gray-200 pl-4 py-1 group-hover:border-[#131313] transition-colors duration-300">
+              <span className="font-bold text-gray-300 text-[10px] tracking-widest uppercase">Partner</span>
+              <span className="text-gray-500 font-medium group-hover:text-gray-900 transition-colors duration-300">
+                Looking to sharpen your IP strategy? Explore the new <span className="font-bold text-gray-900 underline decoration-gray-200 underline-offset-4 group-hover:decoration-gray-900 transition-all duration-300">Executive Masterclass Series</span>.
+              </span>
+              <ArrowUpRight size={14} className="text-gray-300 group-hover:text-gray-900 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+            </div>
+          </a>
 
           {/* Find a Mentor */}
           <div>

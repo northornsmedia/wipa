@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 export default function PlatformPage() {
-  const { user, posts, likedPostIds, toggleLike, setUser } = useAppStore();
+  const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode } = useAppStore();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Latest');
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
@@ -230,7 +230,7 @@ export default function PlatformPage() {
   };
 
   return (
-    <div className="w-full bg-white font-sans flex flex-col h-[calc(100vh-73px)] overflow-hidden">
+    <div className="w-full font-sans flex flex-col h-[calc(100vh-73px)] overflow-hidden">
       <div className="w-full bg-white flex flex-col flex-1 overflow-hidden">
         
         {/* MAIN LAYOUT */}
@@ -260,47 +260,7 @@ export default function PlatformPage() {
                     </p>
                   </div>
                   
-                  {/* Advertisement Box container */}
-                  <div className="w-full lg:w-[35%] shrink-0 hidden sm:flex flex-col items-end">
-                    
-                    <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white relative h-36 group">
-                      
-                      <style>{`
-                      @keyframes ad-fade {
-                        0% { opacity: 1; }
-                        40% { opacity: 1; }
-                        50% { opacity: 0; }
-                        90% { opacity: 0; }
-                        100% { opacity: 1; }
-                      }
-                      .ad-container {
-                        position: absolute;
-                        inset: 0;
-                        width: 100%;
-                        height: 100%;
-                        animation: ad-fade 10s infinite;
-                      }
-                      .group:hover .ad-container {
-                        animation-play-state: paused;
-                      }
-                      .ad-img-1 { animation-delay: 0s; }
-                      .ad-img-2 { animation-delay: -5s; }
-                    `}</style>
-                    
-                    <div className="ad-container ad-img-1">
-                      <img src="/AD1.png" alt="Ad 1" className="w-full h-full object-cover" />
-                    </div>
-                    
-                    <div className="ad-container ad-img-2">
-                      <img src="/AD2.png" alt="Ad 2" className="w-full h-full object-cover" />
-                    </div>
-                  </div>
-                  <div className="w-full text-center mt-2">
-                    <span className="inline-block text-slate-800 text-[10px] font-black uppercase tracking-[0.2em] drop-shadow-sm">
-                      Most searched in last 7 days !
-                    </span>
-                  </div>
-                </div>
+
                 </div>
                 
                 {/* Tabs & Search */}
@@ -684,6 +644,19 @@ export default function PlatformPage() {
             {/* RIGHT SIDEBAR */}
             <aside className="hidden xl:flex flex-col w-[320px] shrink-0 space-y-6 pb-20">
                 
+                {/* Advertisement Space */}
+                <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white relative h-64 group shrink-0">
+                  
+                  <img src="/AD3.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 pointer-events-none">
+                    <div className="pointer-events-auto">
+                      <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white text-gray-900 font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 transition-colors shadow-sm">
+                        Know More
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Profile Completion / Welcome */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                   <h3 className="font-bold text-gray-900 mb-2">Enhance your feed</h3>
@@ -695,19 +668,6 @@ export default function PlatformPage() {
                     <button className="w-full py-2 bg-gray-50 text-gray-700 font-bold rounded-xl text-sm hover:bg-gray-100 transition-colors">
                       Browse Groups
                     </button>
-                  </div>
-                </div>
-
-                {/* Advertisement Space */}
-                <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white relative h-64 group shrink-0">
-                  
-                  <img src="/AD3.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 pointer-events-none">
-                    <div className="pointer-events-auto">
-                      <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white text-gray-900 font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 transition-colors shadow-sm">
-                        Know More
-                      </a>
-                    </div>
                   </div>
                 </div>
 
