@@ -194,7 +194,7 @@ export default function MembersDirectoryPage() {
                     <div className="absolute top-4 right-4 bg-[#ff90e8] text-white text-[10px] font-bold px-3 py-1.5 rounded-lg z-20 uppercase tracking-wider shadow-sm">
                       Sponsored
                     </div>
-                    <img src="/AD3.png" alt="Advertisement" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity z-0">AD SPACE</div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </a>
                 )}

@@ -301,9 +301,9 @@ export default function JobsPage() {
               <Star size={24} className="text-[#ffc900] fill-current" /> Top Companies Hiring
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {['/JOBAD1.png', '/JOBAD2.png', '/JOBAD3.png', '/JOBAD4.png'].map((adSrc, idx) => (
+              {[1, 2, 3, 4].map((_, idx) => (
                 <div key={idx} className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-200 dark:border-white/20 shadow-sm overflow-hidden hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer relative h-[104px] group">
-                  <img src={adSrc} alt={`Featured Company ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black tracking-widest opacity-80 group-hover:opacity-100 transition-opacity z-0">AD SPACE</div>
                 </div>
               ))}
             </div>
@@ -312,7 +312,7 @@ export default function JobsPage() {
           {/* Horizontal Ad Banner */}
           <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="block w-full h-24 md:h-32 rounded-3xl overflow-hidden mb-8 shadow-md relative group border border-gray-100 dark:border-white/10">
             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10 pointer-events-none" />
-            <img src="/AD3.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
             <div className="absolute top-2 right-2 md:top-4 md:right-4 z-20 inline-flex items-center px-2 py-1 md:px-3 md:py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider shadow-sm">
               Sponsored
             </div>

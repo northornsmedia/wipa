@@ -165,7 +165,7 @@ export default function GroupsPage() {
                   
                   {/* Image Content */}
                   <div className="w-full md:w-1/2 h-48 md:h-56 relative rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-white/10">
-                    <img src="/AD1.png" alt="Masterclass" className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity z-0">AD SPACE</div>
                   </div>
                 </div>
               </div>
@@ -188,7 +188,7 @@ export default function GroupsPage() {
 
               <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="bg-[#0f172a] rounded-3xl border border-[#334155] shadow-xl relative overflow-hidden group min-h-[290px] flex-1 block cursor-pointer">
                 <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-black/80 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <img src="/AD7.png" alt="Advertisement" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity z-0">AD SPACE</div>
                 
                 <div className="absolute top-4 right-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm z-20">
                   Sponsored

@@ -188,14 +188,7 @@ export default function ForumsPage() {
         {/* Forums List */}
         <div className="flex flex-col gap-4">
           <div className="w-full bg-white dark:bg-[#0f172a] rounded-2xl md:rounded-3xl overflow-hidden shadow-md border border-gray-200 dark:border-white/20 relative h-32 md:h-40 group shrink-0 mb-2">
-            <img src="/AD5.jpg" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 pointer-events-none">
-              <div className="pointer-events-auto">
-                <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white font-bold text-xs py-2 px-4 rounded-xl w-max hover:bg-gray-100 dark:bg-white/10 transition-colors shadow-sm">
-                  Know More
-                </a>
-              </div>
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
           </div>
 
           {filteredTopics.map((topic, index) => (

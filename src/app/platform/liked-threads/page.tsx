@@ -45,18 +45,7 @@ export default function LikedThreadsPage() {
 
           {/* Advertisement Banner */}
           <div className="w-full mb-8 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative h-32 group cursor-pointer flex items-center justify-center">
-            <img src="/AD7.png" alt="Advertisement" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-            <div className="absolute top-3 right-4 z-10">
-              <span className="text-[10px] font-bold text-white/70 bg-black/50 px-2 py-1 rounded-md uppercase tracking-wider backdrop-blur-sm">Sponsored</span>
-            </div>
-            <div className="relative z-10 w-full px-6 flex flex-col justify-center h-full text-white">
-              <h3 className="font-bold text-xl md:text-2xl mb-1 text-white">Elevate Your IP Practice</h3>
-              <p className="text-sm text-gray-200 line-clamp-1 mb-3 max-w-md">Discover next-gen tools for trademark and patent professionals.</p>
-              <div>
-                <button className="text-xs bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white px-5 py-2 rounded-lg font-bold hover:bg-[#ff90e8] hover:text-white transition-colors shadow-sm border border-transparent hover:border-white/20">Learn More</button>
-              </div>
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity z-0">AD SPACE</div>
           </div>
 
           {likedPosts.length === 0 ? (

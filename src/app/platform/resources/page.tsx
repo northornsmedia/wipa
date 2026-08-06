@@ -164,7 +164,7 @@ export default function ResourcesPage() {
         {/* Horizontal Ad Banner */}
         <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="block w-full h-24 md:h-32 rounded-3xl overflow-hidden mb-10 shadow-md relative group border border-gray-100 dark:border-white/10">
           <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10 pointer-events-none" />
-          <img src="/AD2.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
           <div className="absolute top-2 right-2 md:top-4 md:right-4 z-20 inline-flex items-center px-2 py-1 md:px-3 md:py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider shadow-sm">
             Sponsored
           </div>
@@ -217,14 +217,7 @@ export default function ResourcesPage() {
 
                 {index % 5 === 0 && (
                   <div className="w-full bg-white dark:bg-[#0f172a] rounded-[2rem] overflow-hidden shadow-sm border border-gray-200 dark:border-white/20 relative group min-h-[300px]">
-                    <img src={["/AD3.png", "/AD6.png", "/AD7.png"][Math.floor(index / 5) % 3]} alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 absolute inset-0" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 pointer-events-none">
-                      <div className="pointer-events-auto mt-auto">
-                        <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="inline-block bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white font-bold text-sm py-2 px-5 rounded-xl w-max hover:bg-gray-100 dark:bg-white/10 transition-colors shadow-sm">
-                          Know More
-                        </a>
-                      </div>
-                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
                   </div>
                 )}
               </React.Fragment>

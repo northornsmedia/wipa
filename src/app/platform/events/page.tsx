@@ -174,7 +174,7 @@ export default function EventsPage() {
           {/* Horizontal Ad Banner */}
           <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="block w-full h-24 md:h-32 rounded-3xl overflow-hidden mb-6 shadow-md relative group border border-gray-100 dark:border-white/10">
             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10 pointer-events-none" />
-            <img src="/AD4.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
             <div className="absolute top-2 right-2 md:top-4 md:right-4 z-20 inline-flex items-center px-2 py-1 md:px-3 md:py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider shadow-sm">
               Sponsored
             </div>
@@ -198,71 +198,8 @@ export default function EventsPage() {
             }).map((event, index) => (
               <Fragment key={event.id}>
                 {index === 0 && (
-                  <div className="relative overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(90,50,250,0.15)] bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white flex flex-col md:flex-row group my-6 border border-[#5a32fa]/30 hover:border-[#ff90e8]/50 transition-all duration-500 hover:-translate-y-1">
-                    {/* Glowing background blob */}
-                    <div className="absolute -top-32 -left-32 w-64 h-64 bg-[#5a32fa] rounded-full blur-[100px] opacity-20 dark:opacity-60 group-hover:bg-[#ff90e8] transition-colors duration-1000"></div>
-                    
-                    {/* Main Ticket Area */}
-                    <div className="flex-1 p-8 md:p-10 relative z-10 flex flex-col justify-center border-b-2 md:border-b-0 md:border-r-2 border-dashed border-[#5a32fa]/20 dark:border-[#5a32fa]/40">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg">
-                          Exclusive Sponsor
-                        </span>
-                        <span className="text-[#00d26a] flex items-center gap-2 text-xs font-bold bg-[#00d26a]/10 px-3 py-1 rounded-full border border-[#00d26a]/20">
-                          <span className="w-2 h-2 rounded-full bg-[#00d26a] animate-pulse"></span> Live Now
-                        </span>
-                      </div>
-                      
-                      <h3 className="text-3xl md:text-4xl font-black mb-3 leading-tight bg-clip-text text-transparent bg-gradient-to-br from-gray-900 to-gray-500 dark:from-white dark:to-gray-400">
-                        The Legal Tech<br/>Revolution 2026
-                      </h3>
-                      
-                      <p className="text-gray-600 dark:text-gray-400 font-medium mb-6 max-w-lg text-sm">
-                        Transform your practice with AI-powered IP management. Get our exclusive whitepaper and 30-day premium trial today.
-                      </p>
-                      
-                      <div className="flex items-center gap-4 mt-auto">
-                        <div className="flex -space-x-2">
-                          <div className="w-8 h-8 rounded-full border-2 border-white dark:border-[#0f172a] bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8]"></div>
-                          <div className="w-8 h-8 rounded-full border-2 border-white dark:border-[#0f172a] bg-gradient-to-tr from-[#00d26a] to-[#ffc900]"></div>
-                          <div className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-[#0f172a] bg-white dark:bg-[#0f172a] flex items-center justify-center text-[10px] font-bold text-gray-900 dark:text-white">+5k</div>
-                        </div>
-                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Professionals joined</span>
-                      </div>
-                    </div>
-                    
-                    {/* Ticket Stub */}
-                    <div className="md:w-64 relative z-10 flex flex-col justify-between p-8 bg-gray-50 dark:bg-gradient-to-br dark:from-[#1e293b] dark:to-[#0f172a] items-center text-center">
-                      <div className="absolute top-0 right-0 w-full h-full opacity-[0.03] dark:opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
-                      
-                      <div className="w-full">
-                        <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-bold mb-2">Admit One</div>
-                        <div className="text-2xl font-black text-[#ff90e8] mb-1">VIP ACCESS</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Valid until Aug 31</div>
-                      </div>
-                      
-                      <button className="w-full py-3.5 mt-6 bg-[#131313] dark:bg-white text-white dark:text-[#131313] font-black text-sm rounded-xl hover:scale-105 transition-transform shadow-[0_4px_14px_rgba(0,0,0,0.1)] dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
-                        CLAIM NOW
-                      </button>
-                      
-                      {/* Fake Barcode */}
-                      <div className="w-full flex justify-between h-10 mt-6 opacity-20 dark:opacity-40 px-2 relative z-10">
-                        <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
-                        <div className="w-2 bg-gray-900 dark:bg-white h-full"></div>
-                        <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
-                        <div className="w-3 bg-gray-900 dark:bg-white h-full"></div>
-                        <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
-                        <div className="w-2 bg-gray-900 dark:bg-white h-full"></div>
-                        <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
-                        <div className="w-2 bg-gray-900 dark:bg-white h-full"></div>
-                        <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
-                        <div className="w-4 bg-gray-900 dark:bg-white h-full"></div>
-                      </div>
-                    </div>
-                    
-                    {/* Cutouts for ticket effect */}
-                    <div className="hidden md:block absolute -top-4 right-[240px] w-8 h-8 rounded-full bg-[#f8f9fa] dark:bg-[#0f172a] z-20 shadow-inner"></div>
-                    <div className="hidden md:block absolute -bottom-4 right-[240px] w-8 h-8 rounded-full bg-[#f8f9fa] dark:bg-[#0f172a] z-20 shadow-inner"></div>
+                  <div className="w-full rounded-[1.5rem] overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative h-40 md:h-48 group shrink-0 my-6">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl md:text-3xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
                   </div>
                 )}
                 
