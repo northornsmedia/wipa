@@ -200,31 +200,6 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      {/* Creative Sidebar Advertisement */}
-      <div className="px-4 mb-6">
-        <div className="relative w-full rounded-2xl overflow-hidden group cursor-pointer shadow-sm border border-gray-100 dark:border-white/10 hover:shadow-lg transition-all duration-500 hover:-translate-y-1">
-          {/* Animated Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] z-0"></div>
-          
-          {/* Holographic Shimmer */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-0"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent w-[200%] -rotate-45 translate-x-[-150%] group-hover:animate-[pan_3s_linear_infinite] z-0"></div>
-          
-          <div className="relative p-5 z-10 flex flex-col items-center text-center">
-            <div className="w-12 h-12 mb-3 rounded-full bg-gradient-to-tr from-[#ff90e8] to-[#5a32fa] p-0.5 shadow-[0_0_15px_rgba(90,50,250,0.4)] group-hover:shadow-[0_0_25px_rgba(255,144,232,0.6)] transition-all duration-500 animate-bounce">
-               <div className="w-full h-full rounded-full bg-[#131313] flex items-center justify-center relative overflow-hidden">
-                  <span className="text-2xl z-10">🚀</span>
-               </div>
-            </div>
-            <p className="text-[9px] font-black tracking-widest text-[#ff90e8] uppercase mb-1.5 drop-shadow-sm">Sponsored Partner</p>
-            <h4 className="text-[15px] font-black text-white mb-2 leading-tight">AI in IP Law</h4>
-            <p className="text-[11px] text-gray-300 font-medium mb-4 leading-relaxed">The definitive 2026 guide to patenting AI models.</p>
-            <button className="w-full bg-white dark:bg-[#0f172a] text-[#131313] text-xs font-black py-2.5 rounded-xl hover:bg-[#ffc900] hover:scale-105 hover:shadow-md transition-all duration-300">
-              Download Free
-            </button>
-          </div>
-        </div>
-      </div>
 
       <div className="mt-auto px-7 mb-4">
         <div className="flex items-center justify-between mb-4">

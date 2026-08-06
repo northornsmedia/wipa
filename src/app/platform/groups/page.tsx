@@ -140,41 +140,60 @@ export default function GroupsPage() {
 
         {/* Groups Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {/* Creative Double-Wide Ad Card */}
-          <div className="md:col-span-2 bg-[#0f172a] rounded-3xl border border-[#334155] shadow-xl relative overflow-hidden group">
-            {/* Animated background gradient shapes */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-[#5a32fa]/20 blur-3xl animate-pulse" />
-            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-[#ff90e8]/10 blur-3xl mix-blend-screen" />
-            
-            {/* Glossy inner container */}
-            <div className="relative h-full w-full bg-white dark:bg-[#0f172a]/5 backdrop-blur-sm rounded-3xl p-8 lg:p-10 flex flex-col md:flex-row items-center gap-8 border border-white/5">
-              <div className="flex-1 text-left z-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-[#0f172a]/10 border border-white/10 text-white text-[10px] font-bold uppercase tracking-wider mb-5 shadow-sm">
-                  <span className="w-2 h-2 rounded-full bg-[#00d26a] animate-ping" />
-                  <span className="relative">Featured Partner</span>
-                </div>
-                <h2 className="text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-[#ff90e8] mb-4 leading-tight">
-                  Master Intellectual Property Law in 2026
-                </h2>
-                <p className="text-gray-400 font-medium mb-8 max-w-md leading-relaxed text-sm">
-                  Join 10,000+ professionals in our elite masterclass. Get lifetime access to premium resources, case studies, and a global network.
-                </p>
-                <button className="bg-white dark:bg-[#0f172a] text-[#131313] px-6 py-3 rounded-xl font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all flex items-center gap-2">
-                  Claim Your Spot <ArrowUpRight size={18} />
-                </button>
-              </div>
-              
-              <div className="w-full md:w-[250px] relative z-10 hidden md:block">
-                <div className="aspect-[4/5] rounded-2xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] p-1 rotate-3 group-hover:rotate-6 transition-transform duration-500 shadow-2xl">
-                  <div className="w-full h-full bg-[#131313] rounded-xl overflow-hidden relative">
-                     <img src="/AD7.png" alt="Ad" className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" />
-                     <div className="absolute inset-0 border-[3px] border-white/10 rounded-xl"></div>
+          {/* Sponsored Ad Block */}
+          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Ad Card 1 Wrapper */}
+            <div className="md:col-span-3 flex flex-col gap-4">
+              <div className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-200 dark:border-[#334155] shadow-md dark:shadow-xl relative overflow-hidden group min-h-[290px] flex-1">
+                <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 blur-3xl animate-pulse" />
+                <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-[#ff90e8]/10 blur-3xl mix-blend-multiply dark:mix-blend-screen" />
+                
+                <div className="relative h-full w-full bg-white/50 dark:bg-[#0f172a]/5 backdrop-blur-sm rounded-3xl p-6 lg:p-8 flex flex-col md:flex-row gap-6 md:gap-8 items-center border border-white/50 dark:border-white/5 justify-between">
+                  {/* Text Content */}
+                  <div className="z-10 flex flex-col w-full md:w-1/2">
+                    <div className="inline-flex self-start items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-white/10 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white text-[10px] font-bold uppercase tracking-wider mb-4 shadow-sm">
+                      <span className="w-2 h-2 rounded-full bg-[#00d26a] animate-ping" />
+                      <span className="relative">Featured Partner</span>
+                    </div>
+                    <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-[#5a32fa] dark:from-white dark:via-blue-100 dark:to-[#ff90e8] mb-3 leading-tight">
+                      Master Intellectual Property Law
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 font-medium text-sm leading-relaxed m-0">
+                      Join 10,000+ professionals in our elite masterclass. Get lifetime access to resources.
+                    </p>
+                  </div>
+                  
+                  {/* Image Content */}
+                  <div className="w-full md:w-1/2 h-48 md:h-56 relative rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-white/10">
+                    <img src="/AD1.png" alt="Masterclass" className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                   </div>
                 </div>
-                <div className="absolute -bottom-4 -left-6 bg-white dark:bg-[#0f172a] text-[#131313] px-4 py-2 rounded-xl font-bold text-sm shadow-xl -rotate-6 transform animate-bounce z-20">
-                  50% OFF TODAY
-                </div>
               </div>
+              
+              {/* Separated Bottom Bar as CTA Button */}
+              <button className="w-full bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white border border-gray-200 dark:border-[#334155] hover:bg-gray-50 dark:hover:bg-[#1e293b] shadow-sm hover:shadow-md dark:shadow-xl dark:hover:shadow-2xl hover:-translate-y-1 transition-all rounded-2xl p-4 flex items-center justify-center shrink-0 font-bold text-base gap-2 cursor-pointer">
+                Claim Your Spot Now <ArrowUpRight size={18} />
+              </button>
+            </div>
+
+            {/* Ad Card 2 Wrapper */}
+            <div className="md:col-span-1 flex flex-col gap-4">
+              {/* Separated Top Bar for Custom Text */}
+              <div className="w-full bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-[#334155] shadow-sm rounded-2xl p-4 flex items-center justify-center shrink-0">
+                <p className="text-gray-700 dark:text-gray-300 text-sm font-semibold flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#5a32fa] animate-pulse" />
+                  Find your trusted legal partner today
+                </p>
+              </div>
+
+              <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="bg-[#0f172a] rounded-3xl border border-[#334155] shadow-xl relative overflow-hidden group min-h-[290px] flex-1 block cursor-pointer">
+                <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-black/80 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <img src="/AD7.png" alt="Advertisement" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90" />
+                
+                <div className="absolute top-4 right-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm z-20">
+                  Sponsored
+                </div>
+              </a>
             </div>
           </div>
           {filteredGroups.map(group => (

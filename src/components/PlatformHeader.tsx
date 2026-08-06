@@ -175,7 +175,7 @@ export default function PlatformHeader() {
                     className={`flex flex-col items-center justify-center gap-1 cursor-pointer transition-colors pb-1 mt-1 border-b-2 ${
                       isActive 
                         ? 'text-[#5a32fa] border-[#5a32fa]' 
-                        : 'text-[#334155] hover:text-[#5a32fa] border-transparent'
+                        : 'text-[#334155] dark:text-gray-300 hover:text-[#5a32fa] dark:hover:text-white border-transparent'
                     }`}
                   >
                     <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />

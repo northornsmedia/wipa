@@ -147,16 +147,16 @@ export default function MembersDirectoryPage() {
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 no-scrollbar">
         <div className="max-w-6xl mx-auto space-y-6 pb-20">
           {/* Hero Section */}
-          <div className="relative rounded-[2.5rem] bg-gradient-to-br from-[#f0ebff] via-[#f8f9fa] to-white border border-gray-100 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden mb-8">
+          <div className="relative rounded-[2.5rem] bg-gradient-to-br from-[#f0ebff] via-[#f8f9fa] to-white dark:from-[#1e1b4b]/40 dark:via-[#0f172a] dark:to-[#0f172a] border border-gray-100 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden mb-8">
             
             {/* Abstract Background Shapes */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-72 h-72 rounded-full bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/10 blur-3xl mix-blend-multiply" />
-            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 rounded-full bg-gradient-to-tr from-[#00d26a]/10 to-[#ffc900]/10 blur-3xl mix-blend-multiply" />
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-72 h-72 rounded-full bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/10 blur-3xl mix-blend-multiply dark:mix-blend-screen" />
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 rounded-full bg-gradient-to-tr from-[#00d26a]/10 to-[#ffc900]/10 blur-3xl mix-blend-multiply dark:mix-blend-screen" />
             
             <div className="relative p-8 md:p-12 lg:p-16 flex flex-col items-center text-center">
 
               
-              <h1 className="font-black text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#131313] via-[#5a32fa] to-[#ff90e8] tracking-tight mb-4 mt-8 md:mt-0">
+              <h1 className="font-black text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#131313] dark:from-white via-[#5a32fa] to-[#ff90e8] tracking-tight mb-4 mt-8 md:mt-0">
                 Members Directory
               </h1>
               <p className="text-gray-500 dark:text-gray-400 font-medium text-lg max-w-lg mb-10">
@@ -190,26 +190,13 @@ export default function MembersDirectoryPage() {
             {members.map((member, index) => (
               <Fragment key={member.id}>
                 {index === 2 && (
-                  <div className="bg-white dark:bg-[#0f172a] rounded-3xl border-2 border-[#ff90e8] shadow-md overflow-hidden flex flex-col relative group hover:-translate-y-1 transition-transform">
-                    <div className="absolute top-3 right-3 bg-[#ff90e8] text-white text-[10px] font-bold px-2 py-1 rounded-md z-10 uppercase tracking-wider shadow-sm">
+                  <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="rounded-3xl border-2 border-[#ff90e8] shadow-md overflow-hidden relative group hover:-translate-y-1 transition-transform min-h-[320px] block cursor-pointer">
+                    <div className="absolute top-4 right-4 bg-[#ff90e8] text-white text-[10px] font-bold px-3 py-1.5 rounded-lg z-20 uppercase tracking-wider shadow-sm">
                       Sponsored
                     </div>
-                    <div className="h-28 relative bg-cover bg-center overflow-hidden">
-                      <img src="/AD3.png" alt="Ad" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                      <div className="absolute bottom-3 left-4 text-white font-bold text-lg leading-tight z-10">
-                        Accelerate Your <br/>Career in IP
-                      </div>
-                    </div>
-                    <div className="p-6 pt-5 flex-1 flex flex-col bg-gradient-to-b from-white to-[#ff90e8]/5">
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-5 flex-1 leading-relaxed">
-                        Join an exclusive network of top-tier IP professionals. Access premium courses, advanced tools, and verified global opportunities.
-                      </p>
-                      <button className="w-full bg-[#131313] text-white font-bold py-3 px-4 rounded-xl shadow-sm hover:bg-gray-800 transition-colors border border-transparent">
-                        Explore Premium
-                      </button>
-                    </div>
-                  </div>
+                    <img src="/AD3.png" alt="Advertisement" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </a>
                 )}
                 <div className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-200 dark:border-white/20 shadow-sm overflow-hidden flex flex-col transition-transform hover:-translate-y-1">
                 <div 

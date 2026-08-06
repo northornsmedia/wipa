@@ -18,6 +18,7 @@ export default function PlatformPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Latest');
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
+  const [isClosingModal, setIsClosingModal] = useState(false);
   const [postPrivacy, setPostPrivacy] = useState<'Anyone' | 'Followers only'>('Anyone');
   const [isPrivacyDropdownOpen, setIsPrivacyDropdownOpen] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -71,11 +72,33 @@ export default function PlatformPage() {
     fetchFeed();
   }, [fetchFeed]);
   
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isCreatePostModalOpen && !isClosingModal) {
+        setIsClosingModal(true);
+        setTimeout(() => {
+          setIsCreatePostModalOpen(false);
+          setPublishSuccess(false);
+          setPostContent('');
+          setUploadError(null);
+          setIsClosingModal(false);
+        }, 200);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isCreatePostModalOpen, isClosingModal]);
+  
   const handleCloseModal = () => {
-    setIsCreatePostModalOpen(false);
-    setPublishSuccess(false);
-    setPostContent('');
-    setUploadError(null);
+    if (isClosingModal) return;
+    setIsClosingModal(true);
+    setTimeout(() => {
+      setIsCreatePostModalOpen(false);
+      setPublishSuccess(false);
+      setPostContent('');
+      setUploadError(null);
+      setIsClosingModal(false);
+    }, 200);
   };
   
   const handlePublish = async () => {
@@ -311,24 +334,24 @@ export default function PlatformPage() {
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between gap-1 sm:gap-2 px-4 py-2 bg-gray-50 dark:bg-white/5/30">
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white rounded-xl transition-colors font-medium text-[13px]">
+                <div className="flex items-center justify-between gap-1 sm:gap-2 px-4 py-2 bg-gray-50 dark:bg-[#0f172a] border-t border-gray-50 dark:border-white/5">
+                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors font-medium text-[13px]">
                     <ImageIcon size={18} className="text-[#00d26a]" />
                     <span className="hidden sm:block">Photo</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white rounded-xl transition-colors font-medium text-[13px]">
+                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors font-medium text-[13px]">
                     <Video size={18} className="text-[#ff4b4b]" />
                     <span className="hidden sm:block">Video</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white rounded-xl transition-colors font-medium text-[13px]">
+                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors font-medium text-[13px]">
                     <Calendar size={18} className="text-[#ffc900]" />
                     <span className="hidden sm:block">Event</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white rounded-xl transition-colors font-medium text-[13px]">
+                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors font-medium text-[13px]">
                     <FileText size={18} className="text-[#5a32fa]" />
                     <span className="hidden sm:block">Attach</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:text-white rounded-xl transition-colors font-medium text-[13px]">
+                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors font-medium text-[13px]">
                     <Smile size={18} className="text-[#ff90e8]" />
                     <span className="hidden sm:block">Feeling</span>
                   </button>
@@ -337,8 +360,8 @@ export default function PlatformPage() {
 
               {/* CREATE POST MODAL */}
               {isCreatePostModalOpen && (
-                <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-0 transition-opacity">
-                  <div className="bg-white dark:bg-[#0f172a] rounded-[2rem] w-full max-w-lg shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col transform transition-transform scale-100 border border-white/50 relative group">
+                <div className={`fixed inset-0 bg-gray-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-0 transition-opacity ${isClosingModal ? 'animate-out fade-out duration-200' : 'animate-in fade-in duration-200'}`}>
+                  <div className={`bg-white dark:bg-[#0f172a] rounded-[2rem] w-full max-w-lg shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col border border-white/50 relative group ease-out ${isClosingModal ? 'animate-out fade-out zoom-out-95 duration-200' : 'animate-in fade-in zoom-in-95 duration-200'}`}>
                     
                     {publishSuccess ? (
                       <div className="flex flex-col items-center justify-center p-12 text-center animate-in fade-in zoom-in duration-300">
@@ -360,7 +383,7 @@ export default function PlatformPage() {
                           <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Create Post</h2>
                           <button 
                             onClick={handleCloseModal}
-                            className="p-2 hover:bg-gray-100 dark:bg-white/10 rounded-full transition-colors group/close"
+                            className="p-2 hover:bg-gray-200 dark:hover:bg-white/20 active:scale-90 rounded-full transition-all duration-200 group/close"
                           >
                             <X size={20} className="text-gray-400 group-hover/close:text-gray-900 dark:text-white transition-colors" />
                           </button>

@@ -6,7 +6,7 @@ import {
   Briefcase, MapPin, Building2, DollarSign, Bookmark, ArrowRight, X, ExternalLink, ArrowLeft, Star
 } from 'lucide-react';
 import Link from 'next/link';
-import ScratchCardAd from '@/components/ScratchCardAd';
+
 
 const INITIAL_MOCK_JOBS = [
   {
@@ -289,7 +289,7 @@ export default function JobsPage() {
             </div>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#5a32fa] text-white px-8 py-4 rounded-xl font-bold text-lg border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-sm hover:-translate-y-0.5 transition-all"
+              className="Btn font-bold text-lg"
             >
               + Post a Job
             </button>
@@ -309,7 +309,14 @@ export default function JobsPage() {
             </div>
           </div>
 
-          <ScratchCardAd />
+          {/* Horizontal Ad Banner */}
+          <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="block w-full h-24 md:h-32 rounded-3xl overflow-hidden mb-8 shadow-md relative group border border-gray-100 dark:border-white/10">
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10 pointer-events-none" />
+            <img src="/AD3.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute top-2 right-2 md:top-4 md:right-4 z-20 inline-flex items-center px-2 py-1 md:px-3 md:py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider shadow-sm">
+              Sponsored
+            </div>
+          </a>
 
           {/* JOB FEED */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">

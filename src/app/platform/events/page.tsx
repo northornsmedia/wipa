@@ -171,6 +171,15 @@ export default function EventsPage() {
             </button>
           </div>
 
+          {/* Horizontal Ad Banner */}
+          <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="block w-full h-24 md:h-32 rounded-3xl overflow-hidden mb-6 shadow-md relative group border border-gray-100 dark:border-white/10">
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10 pointer-events-none" />
+            <img src="/AD4.png" alt="Advertisement" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="absolute top-2 right-2 md:top-4 md:right-4 z-20 inline-flex items-center px-2 py-1 md:px-3 md:py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider shadow-sm">
+              Sponsored
+            </div>
+          </a>
+
           <div className="space-y-6 pb-24">
             {events.filter(event => {
               if (activeTab === 'My Events') return event.isRegistered;
@@ -189,12 +198,12 @@ export default function EventsPage() {
             }).map((event, index) => (
               <Fragment key={event.id}>
                 {index === 0 && (
-                  <div className="relative overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(90,50,250,0.15)] bg-[#0f172a] text-white flex flex-col md:flex-row group my-6 border border-[#5a32fa]/30 hover:border-[#ff90e8]/50 transition-all duration-500 hover:-translate-y-1">
+                  <div className="relative overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(90,50,250,0.15)] bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white flex flex-col md:flex-row group my-6 border border-[#5a32fa]/30 hover:border-[#ff90e8]/50 transition-all duration-500 hover:-translate-y-1">
                     {/* Glowing background blob */}
-                    <div className="absolute -top-32 -left-32 w-64 h-64 bg-[#5a32fa] rounded-full blur-[100px] opacity-60 group-hover:bg-[#ff90e8] transition-colors duration-1000"></div>
+                    <div className="absolute -top-32 -left-32 w-64 h-64 bg-[#5a32fa] rounded-full blur-[100px] opacity-20 dark:opacity-60 group-hover:bg-[#ff90e8] transition-colors duration-1000"></div>
                     
                     {/* Main Ticket Area */}
-                    <div className="flex-1 p-8 md:p-10 relative z-10 flex flex-col justify-center border-b-2 md:border-b-0 md:border-r-2 border-dashed border-[#5a32fa]/40">
+                    <div className="flex-1 p-8 md:p-10 relative z-10 flex flex-col justify-center border-b-2 md:border-b-0 md:border-r-2 border-dashed border-[#5a32fa]/20 dark:border-[#5a32fa]/40">
                       <div className="flex items-center justify-between mb-4">
                         <span className="bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg">
                           Exclusive Sponsor
@@ -204,50 +213,50 @@ export default function EventsPage() {
                         </span>
                       </div>
                       
-                      <h3 className="text-3xl md:text-4xl font-black mb-3 leading-tight bg-clip-text text-transparent bg-gradient-to-br from-white to-gray-400">
+                      <h3 className="text-3xl md:text-4xl font-black mb-3 leading-tight bg-clip-text text-transparent bg-gradient-to-br from-gray-900 to-gray-500 dark:from-white dark:to-gray-400">
                         The Legal Tech<br/>Revolution 2026
                       </h3>
                       
-                      <p className="text-gray-400 font-medium mb-6 max-w-lg text-sm">
+                      <p className="text-gray-600 dark:text-gray-400 font-medium mb-6 max-w-lg text-sm">
                         Transform your practice with AI-powered IP management. Get our exclusive whitepaper and 30-day premium trial today.
                       </p>
                       
                       <div className="flex items-center gap-4 mt-auto">
                         <div className="flex -space-x-2">
-                          <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8]"></div>
-                          <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-gradient-to-tr from-[#00d26a] to-[#ffc900]"></div>
-                          <div className="w-8 h-8 rounded-full border-2 border-[#0f172a] bg-white dark:bg-[#0f172a] flex items-center justify-center text-[10px] font-bold text-gray-900 dark:text-white">+5k</div>
+                          <div className="w-8 h-8 rounded-full border-2 border-white dark:border-[#0f172a] bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8]"></div>
+                          <div className="w-8 h-8 rounded-full border-2 border-white dark:border-[#0f172a] bg-gradient-to-tr from-[#00d26a] to-[#ffc900]"></div>
+                          <div className="w-8 h-8 rounded-full border-2 border-gray-200 dark:border-[#0f172a] bg-white dark:bg-[#0f172a] flex items-center justify-center text-[10px] font-bold text-gray-900 dark:text-white">+5k</div>
                         </div>
                         <span className="text-xs font-bold text-gray-500 dark:text-gray-400">Professionals joined</span>
                       </div>
                     </div>
                     
                     {/* Ticket Stub */}
-                    <div className="md:w-64 relative z-10 flex flex-col justify-between p-8 bg-gradient-to-br from-[#1e293b] to-[#0f172a] items-center text-center">
-                      <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
+                    <div className="md:w-64 relative z-10 flex flex-col justify-between p-8 bg-gray-50 dark:bg-gradient-to-br dark:from-[#1e293b] dark:to-[#0f172a] items-center text-center">
+                      <div className="absolute top-0 right-0 w-full h-full opacity-[0.03] dark:opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
                       
                       <div className="w-full">
                         <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-bold mb-2">Admit One</div>
                         <div className="text-2xl font-black text-[#ff90e8] mb-1">VIP ACCESS</div>
-                        <div className="text-xs text-gray-400 font-medium">Valid until Aug 31</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Valid until Aug 31</div>
                       </div>
                       
-                      <button className="w-full py-3.5 mt-6 bg-white dark:bg-[#0f172a] text-[#131313] font-black text-sm rounded-xl hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                      <button className="w-full py-3.5 mt-6 bg-[#131313] dark:bg-white text-white dark:text-[#131313] font-black text-sm rounded-xl hover:scale-105 transition-transform shadow-[0_4px_14px_rgba(0,0,0,0.1)] dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                         CLAIM NOW
                       </button>
                       
                       {/* Fake Barcode */}
-                      <div className="w-full flex justify-between h-10 mt-6 opacity-40 px-2">
-                        <div className="w-1 bg-white dark:bg-[#0f172a] h-full"></div>
-                        <div className="w-2 bg-white dark:bg-[#0f172a] h-full"></div>
-                        <div className="w-1 bg-white dark:bg-[#0f172a] h-full"></div>
-                        <div className="w-3 bg-white dark:bg-[#0f172a] h-full"></div>
-                        <div className="w-1 bg-white dark:bg-[#0f172a] h-full"></div>
-                        <div className="w-2 bg-white dark:bg-[#0f172a] h-full"></div>
-                        <div className="w-1 bg-white dark:bg-[#0f172a] h-full"></div>
-                        <div className="w-2 bg-white dark:bg-[#0f172a] h-full"></div>
-                        <div className="w-1 bg-white dark:bg-[#0f172a] h-full"></div>
-                        <div className="w-4 bg-white dark:bg-[#0f172a] h-full"></div>
+                      <div className="w-full flex justify-between h-10 mt-6 opacity-20 dark:opacity-40 px-2 relative z-10">
+                        <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
+                        <div className="w-2 bg-gray-900 dark:bg-white h-full"></div>
+                        <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
+                        <div className="w-3 bg-gray-900 dark:bg-white h-full"></div>
+                        <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
+                        <div className="w-2 bg-gray-900 dark:bg-white h-full"></div>
+                        <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
+                        <div className="w-2 bg-gray-900 dark:bg-white h-full"></div>
+                        <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
+                        <div className="w-4 bg-gray-900 dark:bg-white h-full"></div>
                       </div>
                     </div>
                     
@@ -259,72 +268,92 @@ export default function EventsPage() {
                 
                 <div 
                   onClick={() => router.push(`/platform/events/${event.id}`)}
-                  className="cursor-pointer bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm overflow-hidden flex flex-col md:flex-row group transition-all hover:-translate-y-0.5 hover:shadow-sm">
-                
-                {/* Date Block */}
-                <div className="md:w-48 border-b border-gray-100 dark:border-white/10 md:border-b-0 md:border-r flex flex-row md:flex-col items-center justify-center p-6 md:p-8" style={{ backgroundColor: event.color }}>
-                  <div className="text-gray-900 dark:text-white font-bold text-2xl md:text-3xl tracking-widest uppercase">{event.month}</div>
-                  <div className="text-white text-5xl md:text-7xl font-bold md:mt-2" style={{ textShadow: "none" }}>{event.day}</div>
-                </div>
+                  className="cursor-pointer relative overflow-hidden rounded-3xl shadow-sm hover:shadow-md dark:shadow-xl bg-white dark:bg-[#151c2c] flex flex-col md:flex-row group border border-gray-200 dark:border-white/5 hover:border-[#5a32fa]/40 transition-all duration-500 hover:-translate-y-1"
+                >
+                  {/* Glowing background blob */}
+                  <div className="absolute -top-32 -left-32 w-64 h-64 rounded-full blur-[100px] opacity-20 dark:opacity-30 group-hover:opacity-40 dark:group-hover:opacity-50 transition-opacity duration-1000 pointer-events-none" style={{ backgroundColor: event.color }}></div>
 
-                {/* Event Details */}
-                <div className="flex-1 p-6 md:p-8 flex flex-col justify-center">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-100 text-[11px] font-bold px-3 py-1 rounded-md uppercase tracking-wider border-2 border-gray-200 dark:border-white/20">
-                      {event.type}
-                    </span>
-                    {event.isRegistered && (
-                      <span className="bg-[#00d26a] text-white text-[11px] font-bold px-3 py-1 rounded-md uppercase tracking-wider border border-gray-100 dark:border-white/10">
-                        Attending
+                  {/* Main Ticket Area */}
+                  <div className="flex-1 p-6 md:p-8 relative z-10 flex flex-col justify-center border-b-2 md:border-b-0 md:border-r-2 border-dashed border-gray-200 dark:border-white/10">
+                    <div className="flex items-center gap-3 mb-5">
+                      <span className="bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-200 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest border border-gray-200 dark:border-white/10 shadow-sm">
+                        {event.type}
                       </span>
-                    )}
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
-                    {event.title}
-                  </h3>
-                  
-                  <p className="text-gray-600 dark:text-gray-300 font-medium mb-6 leading-relaxed">
-                    {event.description}
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 font-bold text-sm">
-                      <Clock size={18} className="text-[#5a32fa]" />
-                      {event.time}
+                      {event.isRegistered && (
+                        <span className="bg-[#00d26a] text-white flex items-center gap-2 text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-sm">
+                          Attending
+                        </span>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300 font-bold text-sm">
-                      <MapPin size={18} className="text-[#5a32fa]" />
-                      {event.location}
+                    
+                    <h3 className="text-2xl md:text-3xl font-black mb-3 leading-tight text-gray-900 dark:text-white">
+                      {event.title}
+                    </h3>
+                    
+                    <p className="text-gray-600 dark:text-gray-400 font-medium mb-8 text-sm md:text-base line-clamp-2">
+                      {event.description}
+                    </p>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 mt-auto">
+                      <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 font-bold text-sm">
+                        <Clock size={16} className="text-[#5a32fa]" />
+                        {event.time}
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 font-bold text-sm">
+                        <MapPin size={16} className="text-[#5a32fa]" />
+                        {event.location}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-6 border-t-2 border-dashed border-gray-200 dark:border-white/20">
-                    <div className="flex items-center -space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white"></div>
-                      <div className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"></div>
-                      <div className="w-8 h-8 rounded-full bg-gray-400 border-2 border-white"></div>
-                      <div className="pl-4 text-xs font-bold text-gray-500 dark:text-gray-400">
+                  {/* Ticket Stub (Date & CTA) */}
+                  <div className="md:w-64 relative z-10 flex flex-col justify-between p-6 md:p-8 bg-gray-50/50 dark:bg-black/20 items-center text-center">
+                    <div className="absolute top-0 right-0 w-full h-full opacity-[0.03] dark:opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
+                    
+                    <div className="w-full flex flex-col items-center">
+                      <div className="text-[13px] text-gray-500 dark:text-gray-400 uppercase tracking-widest font-black mb-1">{event.month}</div>
+                      <div className="text-5xl font-black mb-2" style={{ color: event.color }}>{event.day}</div>
+                      
+                      <div className="flex items-center gap-2 mt-4 text-[11px] font-bold text-gray-600 dark:text-gray-300 bg-white dark:bg-[#0f172a] px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/10 shadow-sm relative z-20">
+                        <div className="flex -space-x-1">
+                          <div className="w-5 h-5 rounded-full bg-gray-200 border border-white dark:border-[#0f172a]"></div>
+                          <div className="w-5 h-5 rounded-full bg-gray-300 border border-white dark:border-[#0f172a]"></div>
+                        </div>
                         +{event.attendees} attending
                       </div>
                     </div>
-
+                    
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        // handle registration toggle here
                       }}
-                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm border border-gray-100 dark:border-white/10 transition-all ${
+                      className={`w-full py-3.5 mt-8 font-black text-[13px] tracking-wide rounded-xl transition-all relative z-20 ${
                       event.isRegistered 
-                        ? 'bg-white dark:bg-[#0f172a] text-gray-400 border-gray-200 dark:border-white/20 hover:bg-gray-50 dark:bg-white/5' 
-                        : 'bg-[#5a32fa] text-white hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#5a32fa]'
+                        ? 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-white/20 hover:scale-105 shadow-sm' 
+                        : 'bg-[#131313] dark:bg-white text-white dark:text-[#131313] hover:scale-105 shadow-md dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]'
                     }`}>
-                      {event.isRegistered ? 'Manage' : 'Register'}
-                      {!event.isRegistered && <ArrowRight size={16} />}
+                      {event.isRegistered ? 'MANAGE' : 'REGISTER'}
                     </button>
+
+                    {/* Fake Barcode */}
+                    <div className="w-full flex justify-between h-8 mt-6 opacity-20 dark:opacity-40 px-2 relative z-10">
+                      <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
+                      <div className="w-2 bg-gray-900 dark:bg-white h-full"></div>
+                      <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
+                      <div className="w-3 bg-gray-900 dark:bg-white h-full"></div>
+                      <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
+                      <div className="w-2 bg-gray-900 dark:bg-white h-full"></div>
+                      <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
+                      <div className="w-2 bg-gray-900 dark:bg-white h-full"></div>
+                      <div className="w-1 bg-gray-900 dark:bg-white h-full"></div>
+                      <div className="w-4 bg-gray-900 dark:bg-white h-full"></div>
+                    </div>
                   </div>
+
+                  {/* Cutouts for ticket effect */}
+                  <div className="hidden md:block absolute -top-4 right-[240px] w-8 h-8 rounded-full bg-[#f8f9fa] dark:bg-[#0f172a] z-20 shadow-inner border-b border-gray-200 dark:border-white/10"></div>
+                  <div className="hidden md:block absolute -bottom-4 right-[240px] w-8 h-8 rounded-full bg-[#f8f9fa] dark:bg-[#0f172a] z-20 shadow-inner border-t border-gray-200 dark:border-white/10"></div>
                 </div>
-              </div>
               </Fragment>
             ))}
           </div>
