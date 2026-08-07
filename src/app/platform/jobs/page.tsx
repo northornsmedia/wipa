@@ -301,9 +301,30 @@ export default function JobsPage() {
               <Star size={24} className="text-[#ffc900] fill-current" /> Top Companies Hiring
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[1, 2, 3, 4].map((_, idx) => (
-                <div key={idx} className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-200 dark:border-white/20 shadow-sm overflow-hidden hover:-translate-y-0.5 hover:shadow-md transition-all cursor-pointer relative h-[104px] group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black tracking-widest opacity-80 group-hover:opacity-100 transition-opacity z-0">AD SPACE</div>
+              {TOP_COMPANIES.map((company, idx) => (
+                <div key={idx} className="relative group rounded-3xl border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-[#0f172a]/50 backdrop-blur-xl shadow-sm overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-center p-5">
+                  {/* Subtle background glow based on company color */}
+                  <div 
+                    className="absolute -right-10 -top-10 w-32 h-32 rounded-full blur-[40px] opacity-10 group-hover:opacity-30 transition-opacity duration-500 pointer-events-none"
+                    style={{ backgroundColor: company.color }}
+                  ></div>
+                  
+                  <div className="flex items-center gap-4 relative z-10 w-full">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-2xl text-white shrink-0 shadow-lg group-hover:scale-105 transition-transform duration-300" style={{ backgroundColor: company.color, backgroundImage: `linear-gradient(135deg, ${company.color} 0%, rgba(0,0,0,0.2) 100%)` }}>
+                      {company.initial}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-black text-gray-900 dark:text-white text-lg group-hover:text-[#5a32fa] transition-colors truncate mb-0.5">{company.name}</h3>
+                      <p className="text-gray-500 dark:text-gray-400 font-bold text-[13px] flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: company.color }}></span>
+                        {company.openRoles} open roles
+                      </p>
+                    </div>
+                    
+                    <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-400 group-hover:bg-[#5a32fa] group-hover:text-white transition-colors shrink-0">
+                      <ArrowRight size={16} />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

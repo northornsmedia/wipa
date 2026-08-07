@@ -126,6 +126,12 @@ export default function GroupsPage() {
             ))}
           </div>
 
+          {/* Banner Ad */}
+          <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="hidden md:flex flex-1 mx-4 bg-gradient-to-r from-[#5a32fa]/10 to-[#ff90e8]/10 rounded-xl border border-gray-200 dark:border-white/20 items-center justify-center relative overflow-hidden group hover:border-[#ff90e8] transition-colors h-[52px]">
+            <div className="absolute top-1 right-2 text-[8px] font-bold uppercase tracking-wider text-gray-400">Sponsored</div>
+            <span className="font-black text-gray-400 tracking-widest text-sm group-hover:text-[#5a32fa] transition-colors">AD SPACE</span>
+          </a>
+
           <div className="relative flex-1 max-w-md ml-auto">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input 
@@ -140,62 +146,7 @@ export default function GroupsPage() {
 
         {/* Groups Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {/* Sponsored Ad Block */}
-          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Ad Card 1 Wrapper */}
-            <div className="md:col-span-3 flex flex-col gap-4">
-              <div className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-200 dark:border-[#334155] shadow-md dark:shadow-xl relative overflow-hidden group min-h-[290px] flex-1">
-                <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 blur-3xl animate-pulse" />
-                <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-[#ff90e8]/10 blur-3xl mix-blend-multiply dark:mix-blend-screen" />
-                
-                <div className="relative h-full w-full bg-white/50 dark:bg-[#0f172a]/5 backdrop-blur-sm rounded-3xl p-6 lg:p-8 flex flex-col md:flex-row gap-6 md:gap-8 items-center border border-white/50 dark:border-white/5 justify-between">
-                  {/* Text Content */}
-                  <div className="z-10 flex flex-col w-full md:w-1/2">
-                    <div className="inline-flex self-start items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-white/10 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white text-[10px] font-bold uppercase tracking-wider mb-4 shadow-sm">
-                      <span className="w-2 h-2 rounded-full bg-[#00d26a] animate-ping" />
-                      <span className="relative">Featured Partner</span>
-                    </div>
-                    <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-[#5a32fa] dark:from-white dark:via-blue-100 dark:to-[#ff90e8] mb-3 leading-tight">
-                      Master Intellectual Property Law
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400 font-medium text-sm leading-relaxed m-0">
-                      Join 10,000+ professionals in our elite masterclass. Get lifetime access to resources.
-                    </p>
-                  </div>
-                  
-                  {/* Image Content */}
-                  <div className="w-full md:w-1/2 h-48 md:h-56 relative rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-white/10">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity z-0">AD SPACE</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Separated Bottom Bar as CTA Button */}
-              <button className="w-full bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white border border-gray-200 dark:border-[#334155] hover:bg-gray-50 dark:hover:bg-[#1e293b] shadow-sm hover:shadow-md dark:shadow-xl dark:hover:shadow-2xl hover:-translate-y-1 transition-all rounded-2xl p-4 flex items-center justify-center shrink-0 font-bold text-base gap-2 cursor-pointer">
-                Claim Your Spot Now <ArrowUpRight size={18} />
-              </button>
-            </div>
 
-            {/* Ad Card 2 Wrapper */}
-            <div className="md:col-span-1 flex flex-col gap-4">
-              {/* Separated Top Bar for Custom Text */}
-              <div className="w-full bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-[#334155] shadow-sm rounded-2xl p-4 flex items-center justify-center shrink-0">
-                <p className="text-gray-700 dark:text-gray-300 text-sm font-semibold flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#5a32fa] animate-pulse" />
-                  Find your trusted legal partner today
-                </p>
-              </div>
-
-              <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="bg-[#0f172a] rounded-3xl border border-[#334155] shadow-xl relative overflow-hidden group min-h-[290px] flex-1 block cursor-pointer">
-                <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-black/80 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity z-0">AD SPACE</div>
-                
-                <div className="absolute top-4 right-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm z-20">
-                  Sponsored
-                </div>
-              </a>
-            </div>
-          </div>
           {filteredGroups.map(group => (
             <div 
               key={group.id} 

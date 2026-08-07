@@ -197,11 +197,7 @@ export default function EventsPage() {
               return true; 
             }).map((event, index) => (
               <Fragment key={event.id}>
-                {index === 0 && (
-                  <div className="w-full rounded-[1.5rem] overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative h-40 md:h-48 group shrink-0 my-6">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl md:text-3xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
-                  </div>
-                )}
+
                 
                 <div 
                   onClick={() => router.push(`/platform/events/${event.id}`)}
