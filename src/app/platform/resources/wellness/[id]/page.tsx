@@ -5,11 +5,12 @@ import { ArrowLeft, BookOpen, Download, FileText, Video, Headphones, CheckSquare
 import Link from 'next/link';
 
 // Using a mock ID to simulate dynamic data
-export default function WellnessResourceDetail({ params }: { params: { id: string } }) {
+export default function WellnessResourceDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
   
   // Mock Data
   const resource = {
-    id: params.id || '1',
+    id: id || '1',
     title: "Navigating Burnout: A Practical Guide for IP Professionals",
     type: "Wellness Webinar",
     topic: "Mental Health & Burnout",

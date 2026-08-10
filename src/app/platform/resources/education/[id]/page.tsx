@@ -4,10 +4,12 @@ import React from 'react';
 import { ArrowLeft, BookOpen, Clock, User, Award, CheckCircle, Download, ExternalLink, GraduationCap, Video, FileText, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-export default function EducationDetailPage({ params }: { params: { id: string } }) {
+export default function EducationDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
+
   // Mock data for the specific educational resource
   const course = {
-    id: params.id,
+    id: id,
     title: "Patent Law Fundamentals",
     provider: "UNH Franklin Pierce School of Law",
     instructor: "Prof. Amanda Lewis",
