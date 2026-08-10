@@ -38,6 +38,11 @@ const MOCK_EDU_RESOURCES = [
     expert: "Prof. David Chen",
     time: "4 hours",
     featured: true,
+    university: {
+      logo: "/university.png",
+      name: "University of New Hampshire",
+      description: "A top-ranked powerhouse for intellectual property law education, producing leaders in the IP field for over 50 years."
+    },
     image: "/resource3.jpg"
   },
   {
@@ -49,6 +54,11 @@ const MOCK_EDU_RESOURCES = [
     expert: "UNH Franklin Pierce",
     time: "6 weeks",
     featured: true,
+    university: {
+      logo: "/university.png",
+      name: "University of New Hampshire",
+      description: "A top-ranked powerhouse for intellectual property law education, producing leaders in the IP field for over 50 years."
+    },
     image: "/resourceimg1.jpg"
   },
   {
@@ -228,8 +238,16 @@ export default function EducationHubPage() {
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-[#5a32fa] transition-colors">{resource.title}</h3>
                     <div className="flex items-center justify-between mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">
-                      <span className="flex items-center gap-1.5"><BookOpen size={14} className="text-[#5a32fa]" /> {resource.topic}</span>
-                      <span>{resource.time}</span>
+                      <span className="flex items-center gap-1.5"><BookOpen size={14} className="text-[#5a32fa]" /> {resource.topic} ({resource.time})</span>
+                      {resource.university && (
+                        <div className="relative group/logo">
+                          <img src={resource.university.logo} alt={resource.university.name} className="h-8 w-auto object-contain rounded shadow-sm" />
+                          <div className="absolute bottom-full right-0 mb-2 w-64 bg-white dark:bg-[#1e293b] text-gray-800 dark:text-gray-100 p-4 rounded-xl shadow-xl border border-gray-200 dark:border-white/10 opacity-0 invisible group-hover/logo:opacity-100 group-hover/logo:visible transition-all z-20">
+                            <h4 className="font-bold text-sm mb-1 text-[#5a32fa]">{resource.university.name}</h4>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{resource.university.description}</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </Link>
@@ -253,8 +271,18 @@ export default function EducationHubPage() {
                   </div>
                   <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-[#5a32fa] transition-colors">{resource.title}</h3>
                   <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><BookOpen size={14} /> {resource.topic}</span>
-                    <span className="text-[#5a32fa] text-sm font-bold opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">&rarr;</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><BookOpen size={14} /> {resource.topic} ({resource.time})</span>
+                    {resource.university ? (
+                      <div className="relative group/logo">
+                        <img src={resource.university.logo} alt={resource.university.name} className="h-7 w-auto object-contain rounded shadow-sm" />
+                        <div className="absolute bottom-full right-0 mb-2 w-56 bg-white dark:bg-[#1e293b] text-gray-800 dark:text-gray-100 p-3 rounded-xl shadow-xl border border-gray-200 dark:border-white/10 opacity-0 invisible group-hover/logo:opacity-100 group-hover/logo:visible transition-all z-20">
+                          <h4 className="font-bold text-sm mb-1 text-[#5a32fa]">{resource.university.name}</h4>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{resource.university.description}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-[#5a32fa] text-sm font-bold opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">&rarr;</span>
+                    )}
                   </div>
                 </div>
               </Link>

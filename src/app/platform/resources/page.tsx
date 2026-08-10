@@ -210,7 +210,7 @@ export default function ResourcesPage() {
             const Icon = resource.icon;
             return (
               <Link 
-                href={resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : `/platform/resources/wellness/${resource.id}`}
+                href={resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/resources/womens-ip-world` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : `/platform/resources/wellness/${resource.id}`}
                 key={resource.id}
                 className="bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-200 dark:border-white/20 shadow-sm flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#5a32fa]/10 transition-all duration-300 group cursor-pointer overflow-hidden block"
               >
