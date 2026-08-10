@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowLeft, BookOpen, Clock, User, Award, CheckCircle, Download, ExternalLink, GraduationCap, Video, FileText, ChevronRight } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, User, Award, CheckCircle, Download, ExternalLink, GraduationCap, Video, FileText, ChevronRight, Activity } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EducationDetailPage({ params }: { params: Promise<{ id: string }> }) {
