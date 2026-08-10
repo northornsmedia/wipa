@@ -39,7 +39,8 @@ const MOCK_EDU_RESOURCES = [
     time: "4 hours",
     featured: true,
     university: {
-      logo: "/university.png",
+      logoLight: "/unh_light.png",
+      logoDark: "/unh_dark.png",
       name: "University of New Hampshire",
       description: "A top-ranked powerhouse for intellectual property law education, producing leaders in the IP field for over 50 years."
     },
@@ -55,7 +56,8 @@ const MOCK_EDU_RESOURCES = [
     time: "6 weeks",
     featured: true,
     university: {
-      logo: "/university.png",
+      logoLight: "/unh_light.png",
+      logoDark: "/unh_dark.png",
       name: "University of New Hampshire",
       description: "A top-ranked powerhouse for intellectual property law education, producing leaders in the IP field for over 50 years."
     },
@@ -241,7 +243,8 @@ export default function EducationHubPage() {
                       <span className="flex items-center gap-1.5"><BookOpen size={14} className="text-[#5a32fa]" /> {resource.topic} ({resource.time})</span>
                       {resource.university && (
                         <div className="relative group/logo">
-                          <img src={resource.university.logo} alt={resource.university.name} className="h-8 w-auto object-contain rounded shadow-sm" />
+                          <img src={resource.university.logoLight} alt={resource.university.name} className="h-16 w-auto object-contain rounded shadow-sm dark:hidden" />
+                          <img src={resource.university.logoDark} alt={resource.university.name} className="h-16 w-auto object-contain rounded shadow-sm hidden dark:block" />
                           <div className="absolute bottom-full right-0 mb-2 w-64 bg-white dark:bg-[#1e293b] text-gray-800 dark:text-gray-100 p-4 rounded-xl shadow-xl border border-gray-200 dark:border-white/10 opacity-0 invisible group-hover/logo:opacity-100 group-hover/logo:visible transition-all z-20">
                             <h4 className="font-bold text-sm mb-1 text-[#5a32fa]">{resource.university.name}</h4>
                             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{resource.university.description}</p>
@@ -274,7 +277,8 @@ export default function EducationHubPage() {
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><BookOpen size={14} /> {resource.topic} ({resource.time})</span>
                     {resource.university ? (
                       <div className="relative group/logo">
-                        <img src={resource.university.logo} alt={resource.university.name} className="h-7 w-auto object-contain rounded shadow-sm" />
+                        <img src={resource.university.logoLight} alt={resource.university.name} className="h-14 w-auto object-contain rounded shadow-sm dark:hidden" />
+                        <img src={resource.university.logoDark} alt={resource.university.name} className="h-14 w-auto object-contain rounded shadow-sm hidden dark:block" />
                         <div className="absolute bottom-full right-0 mb-2 w-56 bg-white dark:bg-[#1e293b] text-gray-800 dark:text-gray-100 p-3 rounded-xl shadow-xl border border-gray-200 dark:border-white/10 opacity-0 invisible group-hover/logo:opacity-100 group-hover/logo:visible transition-all z-20">
                           <h4 className="font-bold text-sm mb-1 text-[#5a32fa]">{resource.university.name}</h4>
                           <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{resource.university.description}</p>

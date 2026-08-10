@@ -130,9 +130,26 @@ export default function Sidebar() {
           <Link href="/platform/forums" className={navLinkClass('/platform/forums')}>
             <MessageCircle size={18} /> Discussion Forums
           </Link>
-          <Link href="/platform/resources" className={navLinkClass('/platform/resources')}>
-            <BookOpen size={18} /> Resource Library
-          </Link>
+          <div className="flex flex-col">
+            <Link href="/platform/resources" className={navLinkClass('/platform/resources')}>
+              <BookOpen size={18} /> Resource Library
+            </Link>
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${pathname.startsWith('/platform/resources') ? 'max-h-[400px] opacity-100 mt-1 mb-2' : 'max-h-0 opacity-0'}`}>
+              <div className="pl-[2.75rem] flex flex-col space-y-1.5 border-l-2 border-gray-100 dark:border-white/5 ml-[1.1rem]">
+                <Link href="/platform/resources/webinars" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/webinars') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Webinars & Learning</Link>
+                <Link href="/platform/resources/wellness" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/wellness') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Wellness & Wellbeing</Link>
+                <Link href="/platform/resources/education" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/education') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Education & Dev</Link>
+                <Link href="/platform/resources/womens-ip-world" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/womens-ip-world') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Women's IP World</Link>
+                <Link href="/platform/resources/articles-insights" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/articles-insights') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Articles & Insights</Link>
+                <Link href="/platform/resources/ip-news" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/ip-news') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>IP News & Legal Updates</Link>
+                <Link href="/platform/resources/research-reports" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/research-reports') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Research & Reports</Link>
+                <Link href="/platform/resources/guides-toolkits" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/guides-toolkits') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Guides & Toolkits</Link>
+                <Link href="/platform/resources/career-leadership" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/career-leadership') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Career & Leadership</Link>
+                <Link href="/platform/resources/in-house-counsel" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/in-house-counsel') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>In-House Counsel</Link>
+                <Link href="/platform/resources/podcasts-conversations" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/podcasts-conversations') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Podcasts & Convos</Link>
+              </div>
+            </div>
+          </div>
           <Link href="/platform/events" className={navLinkClass('/platform/events')}>
             <Calendar size={18} /> Events
           </Link>

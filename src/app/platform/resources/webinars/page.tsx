@@ -34,6 +34,11 @@ const MOCK_WEBINAR_RESOURCES = [
     expert: "Dr. Alan Turing, Esq.",
     time: "Oct 24 • 10:00 AM EST",
     featured: true,
+    company: {
+      logo: "/companylogo.png",
+      name: "Turing IP Group",
+      description: "Leading experts in artificial intelligence and intellectual property law."
+    },
     image: "/resourceimg1.jpg"
   },
   {
@@ -45,6 +50,11 @@ const MOCK_WEBINAR_RESOURCES = [
     expert: "Sarah Jenkins & Co.",
     time: "3 hours watch",
     featured: true,
+    company: {
+      logo: "/companylogo.png",
+      name: "Jenkins & Co.",
+      description: "A premier litigation boutique specializing in high-stakes patent disputes."
+    },
     image: "/resourceimg2.jpg"
   },
   {
@@ -220,6 +230,15 @@ export default function WebinarsHubPage() {
                     <div className="absolute bottom-4 left-4 flex gap-2">
                       <span className="bg-[#ff90e8] text-gray-900 text-[10px] font-black uppercase px-2 py-1 rounded-md">{resource.type}</span>
                     </div>
+                    {resource.company && (
+                      <div className="absolute top-4 right-4 z-10 group/company">
+                        <img src={resource.company.logo} alt={resource.company.name} className="h-8 w-auto object-contain bg-black/40 backdrop-blur-sm p-1.5 rounded-lg border border-white/20 shadow-lg" />
+                        <div className="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-[#1e293b] text-gray-800 dark:text-gray-100 p-4 rounded-xl shadow-xl border border-gray-200 dark:border-white/10 opacity-0 invisible group-hover/company:opacity-100 group-hover/company:visible transition-all">
+                          <h4 className="font-bold text-sm mb-1 text-[#ff90e8]">{resource.company.name}</h4>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{resource.company.description}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-[#ff90e8] transition-colors">{resource.title}</h3>
