@@ -1,101 +1,145 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus } from 'lucide-react';
+import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Mic, MonitorPlay, FileCheck, Presentation } from 'lucide-react';
 import Link from 'next/link';
 
-const BASE_MOCK_RESOURCES = [
+const MOCK_CATEGORIES = [
   {
     id: 1,
-    title: "Global Trademark Registration Guide 2026",
-    type: "PDF Guide",
-    icon: FileText,
-    color: "#5a32fa",
-    author: "WIPA Policy Committee",
-    date: "July 2026",
-    downloads: 1245,
-    description: "A comprehensive 50-page guide covering international trademark filing strategies and Madrid Protocol updates.",
-    isSaved: true
+    title: "Webinars & Learning",
+    icon: MonitorPlay,
+    color: "#ff90e8",
+    description: "Interactive sessions and educational courses on intellectual property.",
+    latestItems: [
+      { title: "AI in Patent Law", type: "New Webinar", time: "1 day ago" },
+      { title: "Mastering IP Litigation", type: "Masterclass", time: "3 days ago" }
+    ]
   },
   {
     id: 2,
-    title: "Masterclass: AI and Intellectual Property",
-    type: "Webinar Recording",
-    icon: Video,
-    color: "#ff4b4b",
-    author: "Dr. Sarah Jenkins",
-    date: "June 2026",
-    downloads: 830,
-    description: "Watch the recording of our most popular webinar discussing AI-generated content and copyright.",
-    isSaved: false
+    title: "Wellness & Wellbeing",
+    icon: Headphones,
+    color: "#00d26a",
+    description: "Resources focused on mental health and work-life balance.",
+    latestItems: [
+      { title: "Work-Life Balance for Lawyers", type: "New Webinar", time: "5 hours ago" },
+      { title: "Stress Management Techniques", type: "Audio Guide", time: "2 days ago" }
+    ]
   },
   {
     id: 3,
-    title: "WIPA Podcast: Interview with USPTO Director",
-    type: "Audio",
-    icon: Headphones,
-    color: "#00d26a",
-    author: "WIPA Media",
-    date: "May 2026",
-    downloads: 3200,
-    description: "An exclusive 45-minute interview discussing the future of patent examination.",
-    isSaved: true
+    title: "Education & Professional Development",
+    icon: BookOpen,
+    color: "#5a32fa",
+    description: "Resources for advancing your IP career and knowledge.",
+    latestItems: [
+      { title: "Global IP Strategies 2026", type: "New PDF", time: "2 hours ago" },
+      { title: "Patent Law Fundamentals", type: "New Course", time: "1 day ago" }
+    ]
   },
   {
     id: 4,
-    title: "Sample IP Licensing Agreement",
-    type: "Document Template",
-    icon: FileText,
-    color: "#ffc900",
-    author: "David Chen",
-    date: "April 2026",
-    downloads: 410,
-    description: "A standard, customizable template for software and technology licensing agreements.",
-    isSaved: false
+    title: "Women's IP World",
+    icon: Globe,
+    color: "#e84393",
+    description: "Spotlighting achievements and topics relevant to women in IP.",
+    latestItems: [
+      { title: "Top 50 Women in IP 2026", type: "Report", time: "4 hours ago" },
+      { title: "Overcoming Gender Bias", type: "Article", time: "2 days ago" }
+    ]
   },
   {
     id: 5,
-    title: "Q1 2026 IP Litigation Trends Report",
-    type: "Research Paper",
+    title: "Articles & Insights",
+    icon: FileText,
+    color: "#0984e3",
+    description: "In-depth articles, opinion pieces, and thought leadership.",
+    latestItems: [
+      { title: "The Future of Copyright", type: "Insight", time: "1 hour ago" },
+      { title: "Trademarks in the Metaverse", type: "Article", time: "1 day ago" }
+    ]
+  },
+  {
+    id: 6,
+    title: "IP News & Legal Updates",
+    icon: Newspaper,
+    color: "#d63031",
+    description: "The latest developments in patent, trademark, and copyright law.",
+    latestItems: [
+      { title: "Supreme Court IP Ruling", type: "Breaking", time: "30 mins ago" },
+      { title: "New EPO Guidelines", type: "Update", time: "5 hours ago" }
+    ]
+  },
+  {
+    id: 7,
+    title: "Research & Reports",
+    icon: FileCheck,
+    color: "#6c5ce7",
+    description: "Data-driven insights and comprehensive industry reports.",
+    latestItems: [
+      { title: "2026 IP Filing Statistics", type: "Data", time: "1 day ago" },
+      { title: "Global Innovation Index", type: "Report", time: "1 week ago" }
+    ]
+  },
+  {
+    id: 8,
+    title: "Guides & Toolkits",
     icon: BookOpen,
-    color: "#ff90e8",
-    author: "WIPA Research Team",
-    date: "March 2026",
-    downloads: 950,
-    description: "Statistical analysis of patent and trademark litigation outcomes in major jurisdictions.",
-    isSaved: false
+    color: "#00b894",
+    description: "Practical guides and toolkits for daily IP operations.",
+    latestItems: [
+      { title: "Prior Art Search Guide", type: "PDF Guide", time: "2 days ago" },
+      { title: "IP Due Diligence Checklist", type: "Toolkit", time: "5 days ago" }
+    ]
+  },
+  {
+    id: 9,
+    title: "Career & Leadership",
+    icon: Briefcase,
+    color: "#fdcb6e",
+    description: "Advice on career progression and leadership skills in law.",
+    latestItems: [
+      { title: "Negotiating Partner Track", type: "Video", time: "3 days ago" },
+      { title: "Mentorship in IP Law", type: "Article", time: "1 week ago" }
+    ]
+  },
+  {
+    id: 10,
+    title: "In-House Counsel Resources",
+    icon: Building,
+    color: "#e17055",
+    description: "Tools and strategies specifically for corporate IP counsel.",
+    latestItems: [
+      { title: "Managing Outside Counsel", type: "Webinar", time: "4 days ago" },
+      { title: "IP Budgeting Templates", type: "Toolkit", time: "1 week ago" }
+    ]
+  },
+  {
+    id: 11,
+    title: "Podcasts & Conversations",
+    icon: Mic,
+    color: "#00cec9",
+    description: "Interviews and discussions with leading IP professionals.",
+    latestItems: [
+      { title: "Interview with USPTO Director", type: "New Episode", time: "1 day ago" },
+      { title: "The IP Innovators Series", type: "Podcast", time: "4 days ago" }
+    ]
   }
 ];
 
-const MOCK_RESOURCES = [
-  ...BASE_MOCK_RESOURCES,
-  ...Array.from({ length: 24 }).map((_, i) => ({
-    ...BASE_MOCK_RESOURCES[i % 5],
-    id: i + 6,
-    title: `${BASE_MOCK_RESOURCES[i % 5].title} (Vol. ${Math.floor(i / 5) + 2})`
-  }))
-];
-
 export default function ResourcesPage() {
-  const [resources, setResources] = useState(MOCK_RESOURCES);
+  const [resources, setResources] = useState(MOCK_CATEGORIES);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<string>('All');
-
-  const toggleSave = (id: number) => {
-    setResources(resources.map(r => 
-      r.id === id ? { ...r, isSaved: !r.isSaved } : r
-    ));
-  };
+  const [activeTab, setActiveTab] = useState<string>('All Resources');
 
   const filteredResources = resources.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           r.description.toLowerCase().includes(searchQuery.toLowerCase());
     
     let matchesTab = true;
-    if (activeTab === 'Saved') {
-      matchesTab = r.isSaved;
-    } else if (activeTab !== 'All') {
-      matchesTab = r.type === activeTab;
+    if (activeTab === 'Latest Resources') {
+      matchesTab = r.id === 1;
     }
 
     return matchesSearch && matchesTab;
@@ -128,9 +172,9 @@ export default function ResourcesPage() {
         </div>
 
         {/* Filters & Search */}
-        <div className="flex flex-col xl:flex-row gap-5 mb-10 items-center">
+        <div className="flex flex-col xl:flex-row gap-5 mb-16 items-center">
           <div className="flex gap-2 overflow-x-auto pb-2 xl:pb-0 no-scrollbar w-full xl:w-auto p-1">
-            {['All', 'Saved', 'PDF Guide', 'Audio', 'Document Template', 'Webinar Recording', 'Research Paper'].map((tab) => (
+            {['All Resources', 'Latest Resources'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -140,7 +184,6 @@ export default function ResourcesPage() {
                     : 'bg-transparent text-gray-500 dark:text-gray-400 hover:bg-white dark:bg-[#0f172a]/60 hover:text-gray-800 dark:text-gray-100 hover:shadow-sm border border-transparent'
                 }`}
               >
-                {tab === 'Saved' && <Bookmark size={16} className={activeTab === tab ? "fill-[#5a32fa] text-[#5a32fa]" : ""} />}
                 {tab}
               </button>
             ))}
@@ -161,66 +204,58 @@ export default function ResourcesPage() {
           </div>
         </div>
 
-        {/* Horizontal Ad Banner */}
-        <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="block w-full h-24 md:h-32 rounded-3xl overflow-hidden mb-10 shadow-md relative group border border-gray-100 dark:border-white/10">
-          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
-          <div className="absolute top-2 right-2 md:top-4 md:right-4 z-20 inline-flex items-center px-2 py-1 md:px-3 md:py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider shadow-sm">
-            Sponsored
-          </div>
-        </a>
-
         {/* Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredResources.map((resource, index) => {
+          {filteredResources.map((resource) => {
             const Icon = resource.icon;
             return (
-              <React.Fragment key={resource.id}>
-                <div 
-                  className="bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-200 dark:border-white/20 p-6 shadow-sm flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#5a32fa]/10 transition-all duration-300 group"
-                >
-                <div className="flex justify-between items-start mb-4">
-                  <div 
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-white border border-gray-200 dark:border-white/20 shadow-sm"
-                    style={{ backgroundColor: resource.color }}
-                  >
-                    <Icon size={24} strokeWidth={2.5} />
-                  </div>
-                  
-                  <button 
-                    onClick={() => toggleSave(resource.id)}
-                    className="p-2 text-gray-400 hover:text-[#5a32fa] transition-colors"
-                  >
-                    <Bookmark size={24} strokeWidth={2.5} className={resource.isSaved ? "fill-[#5a32fa] text-[#5a32fa]" : ""} />
-                  </button>
+              <Link 
+                href={resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : `/platform/resources/wellness/${resource.id}`}
+                key={resource.id}
+                className="bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-200 dark:border-white/20 shadow-sm flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#5a32fa]/10 transition-all duration-300 group cursor-pointer overflow-hidden block"
+              >
+                <div className="h-48 w-full relative shrink-0">
+                  <img 
+                    src={resource.id === 1 ? `/resource3.jpg` : resource.id === 4 ? `/Womens-IP-World-Award.webp` : resource.id === 5 ? `https://media.licdn.com/dms/image/v2/D4D12AQGPvWYs0hREpQ/article-cover_image-shrink_720_1280/B4DZUeerAVGkAI-/0/1739973132208?e=2147483647&v=beta&t=jDj9Iy2LLXJfKsScgkaNMKyXRrgy34PP3nZFglw-Rt0` : resource.id === 6 ? `https://www.bennett.edu.in/wp-content/uploads/2025/02/Advanced-Intellectual-Property-Law-Types-Core-Modules-and-Career-Avenues.webp` : resource.id === 7 ? `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxBiK_KFYr8IEt7R9niEFVTTjmFYgcMU7mSy4MLHc1dlrjzLndY55xWRBF&s=10` : resource.id === 8 ? `https://media.licdn.com/dms/image/v2/D5610AQG43vrwkaPiSQ/image-shrink_800/image-shrink_800/0/1707177003680?e=2147483647&v=beta&t=sq45ZJZYH8htsCpG76UiVa0yDDkZUsddD_Axx5yFKKY` : resource.id === 9 ? `https://media.licdn.com/dms/image/v2/D4E12AQEEtjLt4_x96g/article-cover_image-shrink_600_2000/B4EZt2WvkFGYAQ-/0/1767217232568?e=2147483647&v=beta&t=uf-9-XxWoJeKHz6j0AFDlc2l0-RX9BbUZ6lNULQjs1o` : resource.id === 10 ? `https://cdn.prod.website-files.com/696a195e77c16374d6beeb51/698ee7bbc05af6693c7a57eb_63c5782cf0ee732be3f43836_614a0f782b14afae42c142df_InHouse%252520Counsel%252520Empowered%252520by%252520Tech.png` : resource.id === 11 ? `https://coruzant.com/wp-content/uploads/2022/05/podcast-conversation.jpg` : `/resourceimg${resource.id % 2 === 0 ? 2 : 1}.jpg`} 
+                    alt={resource.title} 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-
-                <div className="bg-[#fbe8d5] text-[#131313] text-xs font-bold px-3 py-1 rounded-lg border border-gray-200 dark:border-white/20 w-fit mb-3">
-                  {resource.type}
-                </div>
-
-                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2">{resource.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mb-6 flex-1">{resource.description}</p>
                 
-                <div className="flex items-center justify-between mt-auto border-t-2 border-gray-100 dark:border-white/10 pt-4">
-                  <div className="flex flex-col text-xs font-bold text-gray-500 dark:text-gray-400">
-                    <span>{resource.author}</span>
-                    <span>{resource.date}</span>
-                  </div>
-                  
-                  <button className="flex items-center gap-2 px-4 py-2 bg-[#5a32fa] text-white rounded-xl border border-gray-200 dark:border-white/20 font-bold text-sm hover:opacity-90 hover:border-[#5a32fa] transition-colors shadow-[2px_2px_0px_0px_#131313]">
-                    <Download size={16} />
-                    Download
-                  </button>
-                </div>
-                </div>
+                <div className="p-6 flex flex-col flex-1">
 
-                {(index % 5) === 3 && (
-                  <div className="w-full bg-white dark:bg-[#0f172a] rounded-[2rem] overflow-hidden shadow-sm border border-gray-200 dark:border-white/20 relative group min-h-[300px]">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2 text-center">{resource.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mb-6 flex-1 text-center">{resource.description}</p>
+                
+                {resource.latestItems && (
+                  <div className="mt-2 mb-4 flex flex-col gap-2">
+                    {resource.latestItems.map((item, idx) => (
+                      <div key={idx} className="p-2.5 rounded-lg border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5 animate-pulse flex items-center gap-3">
+                        <div className="relative flex h-2 w-2 shrink-0">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                        </div>
+                        <div className="flex-1 flex items-center justify-between min-w-0 gap-2">
+                          <p className="text-sm font-bold text-gray-800 dark:text-gray-100 truncate">{item.title}</p>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded whitespace-nowrap" style={{ color: resource.color, backgroundColor: `${resource.color}15` }}>
+                              {item.type}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
-              </React.Fragment>
+                
+                <div className="flex items-center justify-end mt-auto border-t-2 border-gray-100 dark:border-white/10 pt-4">
+                  <span className="text-[#5a32fa] font-bold text-sm flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                    Explore Category &rarr;
+                  </span>
+                </div>
+                </div>
+              </Link>
             );
           })}
 
