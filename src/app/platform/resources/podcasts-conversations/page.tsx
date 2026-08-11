@@ -102,7 +102,7 @@ export default function PodcastsHubPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [playingId, setPlayingId] = useState<number | null>(1); // Default to first featured
+  const [playingId, setPlayingId] = useState<number | null>(null); // Paused by default
 
   const filteredResources = MOCK_PODCASTS_RESOURCES.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());

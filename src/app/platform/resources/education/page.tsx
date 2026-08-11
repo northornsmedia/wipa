@@ -166,6 +166,26 @@ export default function EducationHubPage() {
         ))}
       </div>
 
+      {/* Partner Universities Section */}
+      <div className="px-6 max-w-7xl mx-auto mb-20">
+        <div className="text-center mb-8">
+          <p className="text-sm font-bold text-gray-400 dark:text-white/40 uppercase tracking-widest">Learn from top tier institutions</p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-12 md:gap-20 opacity-70 hover:opacity-100 transition-opacity">
+          {[
+            { id: 'cambridge', name: 'Cambridge University', logo: 'https://download.logo.wine/logo/University_of_Cambridge/University_of_Cambridge-Logo.wine.png' },
+            { id: 'yale', name: 'Yale University', logo: 'https://bcassetcdn.com/public/blog-ms/production/sites/2/2022/05/Yale-University-Logo-1.png' },
+            { id: 'columbia', name: 'Columbia University', logo: 'https://bcassetcdn.com/public/blog-ms/production/sites/2/2022/05/Columbia-University-Logo.png' },
+            { id: 'delhi', name: 'Delhi University', logo: 'https://upload.wikimedia.org/wikipedia/en/b/b6/Delhi_University.svg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=original' },
+            { id: 'stanford', name: 'Stanford University', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuWroQgVKxEvraDoi4RCt2EwbfBF2MLlYEGGsyssOeLYu6E-txC_SNJAFt&s=10' },
+          ].map(uni => (
+            <Link key={uni.id} href={`/platform/resources/education/university/${uni.id}`} className="group transition-transform hover:scale-105 active:scale-95 grayscale hover:grayscale-0">
+              <img src={uni.logo} alt={uni.name} className="h-12 md:h-16 w-auto object-contain drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] dark:brightness-125 mix-blend-multiply dark:mix-blend-normal" />
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {/* Featured Masterclasses - Cinematic Cards */}
       {featuredResources.length > 0 && (
         <div className="px-6 max-w-7xl mx-auto mb-20">

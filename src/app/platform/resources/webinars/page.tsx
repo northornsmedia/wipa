@@ -130,22 +130,23 @@ export default function WebinarsHubPage() {
       {/* Cinematic Hero Feature */}
       {mainFeature && (
         <div className="relative w-full h-[70vh] min-h-[600px] flex flex-col justify-between pb-20">
-          <div className="absolute inset-0 z-0">
-            <img src={mainFeature.image} alt={mainFeature.title} className="w-full h-full object-cover opacity-80 dark:opacity-60" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#f8f9fa] via-[#f8f9fa]/80 dark:from-[#0f172a] dark:via-[#0f172a]/50 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#f8f9fa]/90 via-[#f8f9fa]/50 dark:from-[#0f172a] dark:via-[#0f172a]/30 to-transparent" />
+          <div className="absolute inset-0 z-0 bg-gray-100 dark:bg-black">
+            <img src={mainFeature.image} alt={mainFeature.title} className="w-full h-full object-cover opacity-90 dark:opacity-60" />
+            {/* Reduced opacity on light mode via to stop it from washing out the image */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#f8f9fa] via-[#f8f9fa]/40 dark:from-[#0f172a] dark:via-[#0f172a]/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#f8f9fa]/80 via-[#f8f9fa]/20 dark:from-[#0f172a]/90 dark:via-[#0f172a]/50 to-transparent" />
           </div>
 
           {/* Search bar positioned relative to hero */}
-          <div className="relative z-50 p-6 flex items-center justify-between bg-gradient-to-b from-black/50 to-transparent">
-            <div className="flex items-center gap-4 bg-black/20 dark:bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/20 focus-within:border-white/50 transition-all shadow-sm">
-              <Search size={16} className="text-white/80" />
+          <div className="relative z-50 p-6 flex items-center justify-between">
+            <div className="flex items-center gap-4 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full px-4 py-2 border border-gray-300 dark:border-white/20 focus-within:border-gray-400 dark:focus-within:border-white/50 transition-all shadow-sm">
+              <Search size={16} className="text-gray-600 dark:text-white/80" />
               <input 
                 type="text" 
                 placeholder="Search videos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none text-sm text-white placeholder-white/70 w-48"
+                className="bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/70 w-48"
               />
             </div>
           </div>
@@ -153,28 +154,28 @@ export default function WebinarsHubPage() {
           <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row gap-8 items-end justify-between">
             <div className="max-w-3xl">
               <div className="flex items-center gap-3 mb-4">
-                <span className="bg-[#ff2a5f] text-white text-xs font-black uppercase px-3 py-1 rounded-sm flex items-center gap-1.5">
+                <span className="bg-[#ff2a5f] text-white text-xs font-black uppercase px-3 py-1 rounded-sm flex items-center gap-1.5 shadow-md">
                   <MonitorPlay size={14} /> {mainFeature.type}
                 </span>
                 {mainFeature.type === "Upcoming Webinar" && (
-                  <span className="bg-white/10 backdrop-blur-md text-white text-xs font-bold uppercase px-3 py-1 rounded-sm border border-white/10 flex items-center gap-1.5">
+                  <span className="bg-gray-900/10 dark:bg-black/50 backdrop-blur-md text-gray-900 dark:text-white text-xs font-bold uppercase px-3 py-1 rounded-sm border border-gray-900/20 dark:border-white/20 flex items-center gap-1.5">
                     <Calendar size={14} /> {mainFeature.time}
                   </span>
                 )}
               </div>
-              <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white leading-tight mb-6 drop-shadow-sm dark:drop-shadow-none">
+              <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white leading-tight mb-6 drop-shadow-sm dark:drop-shadow-lg">
                 {mainFeature.title}
               </h1>
-              <p className="text-xl text-gray-800 dark:text-white/70 mb-8 max-w-2xl font-medium dark:font-light">
+              <p className="text-xl text-gray-800 dark:text-white/80 mb-8 max-w-2xl font-medium drop-shadow-sm dark:drop-shadow-md">
                 Join {mainFeature.expert} for an in-depth dive into {mainFeature.topic}. {mainFeature.company?.description}
               </p>
               
               <div className="flex items-center gap-4">
-                <Link href={`/platform/resources/webinars/${mainFeature.id}`} className="bg-gray-900 text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-transform hover:scale-105 active:scale-95 shadow-lg">
+                <Link href={`/platform/resources/webinars/${mainFeature.id}`} className="bg-gray-900 text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-transform hover:scale-105 active:scale-95 shadow-xl">
                   <Play size={20} fill="currentColor" />
                   {mainFeature.type === "Upcoming Webinar" ? "Register Now" : "Watch Now"}
                 </Link>
-                <button className="bg-white/50 dark:bg-white/10 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/20 text-gray-900 dark:text-white px-8 py-4 rounded-full font-bold transition-colors border border-gray-300 dark:border-white/10 shadow-sm">
+                <button className="bg-white/50 dark:bg-white/20 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/30 text-gray-900 dark:text-white px-8 py-4 rounded-full font-bold transition-colors border border-gray-300 dark:border-white/20 shadow-lg">
                   More Info
                 </button>
               </div>
