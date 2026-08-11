@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Wrench, ChevronDown, Flame, Activity, Coffee, FileCheck, BookTemplate, Box, Book } from 'lucide-react';
+import { ArrowLeft, Search, Command, ChevronRight, FileCode, CheckSquare, DownloadCloud, Box, LayoutTemplate, Zap, Folder, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
 const MOCK_GUIDES_SUBCATEGORIES = [
@@ -43,7 +43,7 @@ const MOCK_GUIDES_RESOURCES = [
     topic: "IP Strategy",
     subcategory: "toolkits",
     author: "Corporate Practice Team",
-    time: "5 Templates + Guide",
+    time: "5 Templates",
     featured: true,
     image: "/resourceimg2.jpg"
   },
@@ -54,7 +54,7 @@ const MOCK_GUIDES_RESOURCES = [
     topic: "Licensing",
     subcategory: "templates",
     author: "Contracts Division",
-    time: "12 Pages (DOCX)",
+    time: "DOCX",
     featured: false,
     image: "/resource3.jpg"
   },
@@ -65,7 +65,7 @@ const MOCK_GUIDES_RESOURCES = [
     topic: "Patent Law",
     subcategory: "guides",
     author: "Innovation Team",
-    time: "2 Pages (PDF)",
+    time: "PDF",
     featured: false,
     image: "/resourceimg1.jpg"
   },
@@ -76,7 +76,7 @@ const MOCK_GUIDES_RESOURCES = [
     topic: "IP Litigation",
     subcategory: "guides",
     author: "EU Litigation Desk",
-    time: "45 Pages (PDF)",
+    time: "45 Pages",
     featured: false,
     image: "/resourceimg2.jpg"
   },
@@ -97,7 +97,7 @@ export default function GuidesToolkitsHubPage() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // For mobile
 
   const filteredResources = MOCK_GUIDES_RESOURCES.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -111,162 +111,186 @@ export default function GuidesToolkitsHubPage() {
   const regularResources = filteredResources.filter(r => !r.featured);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col pb-20">
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-100 font-sans selection:bg-teal-500/30">
       
-      {/* Hero Header */}
-      <div className="bg-white dark:bg-[#1e293b] border-b border-gray-200 dark:border-white/10 pt-8 pb-12">
-        <div className="w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8">
-          <Link href="/platform/resources" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#14b8a6] font-bold text-sm mb-6 transition-colors">
-            <ArrowLeft size={16} />
-            Back to Resource Library
-          </Link>
+      {/* App Header */}
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/10">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-6 h-20 flex items-center justify-between gap-6">
+          <div className="flex items-center gap-4 md:gap-6">
+
+            <div className="h-6 w-px bg-gray-200 dark:bg-white/10"></div>
+            <div className="flex items-center gap-3">
+               <div className="w-8 h-8 rounded-lg bg-teal-500 text-white flex items-center justify-center shadow-md shadow-teal-500/20 shrink-0">
+                 <Command size={16} />
+               </div>
+               <div>
+                 <h1 className="text-base md:text-lg font-bold leading-none mb-1">Guides & Toolkits</h1>
+                 <p className="text-[10px] text-gray-500 font-medium uppercase tracking-widest leading-none hidden sm:block">Resource Directory</p>
+               </div>
+            </div>
+          </div>
           
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-[#14b8a6] flex items-center justify-center text-white shadow-lg shadow-[#14b8a6]/20">
-              <Wrench size={32} />
+          <div className="flex-1 max-w-xl relative group hidden md:block">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search size={16} className="text-gray-400 group-focus-within:text-teal-500 transition-colors" />
             </div>
-            <div>
-              <h1 className="text-4xl font-black text-gray-800 dark:text-gray-100">Guides & Toolkits</h1>
-              <p className="text-gray-500 dark:text-gray-400 font-medium text-lg mt-1">Practical resources, templates, and actionable playbooks.</p>
+            <input 
+              type="text" 
+              placeholder="Search templates, guides, playbooks..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-gray-100 dark:bg-white/5 border border-transparent focus:bg-white dark:focus:bg-[#111] focus:border-teal-500 rounded-xl py-2.5 pl-11 pr-4 text-sm font-medium transition-all outline-none shadow-sm"
+            />
+            <div className="absolute inset-y-0 right-0 pr-2 flex items-center">
+               <span className="text-[10px] font-bold text-gray-400 bg-gray-200 dark:bg-white/10 px-2 py-1 rounded-md border border-gray-300 dark:border-white/5">⌘K</span>
             </div>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="md:hidden p-2 text-gray-500"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            <Folder size={20} />
+          </button>
+        </div>
+
+        {/* Mobile Search Bar (visible only on small screens) */}
+        <div className="md:hidden px-4 pb-4">
+           <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={14} className="text-gray-400" />
+            </div>
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-gray-100 dark:bg-white/5 border border-transparent focus:border-teal-500 rounded-lg py-2 pl-9 pr-3 text-sm font-medium transition-all outline-none"
+            />
           </div>
         </div>
       </div>
 
-      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
+      <div className="max-w-[1600px] mx-auto px-4 md:px-6 pt-6 md:pt-10 pb-24 flex flex-col lg:flex-row gap-8 lg:gap-12 lg:items-start relative">
         
-        {/* Filter Bar */}
-        <div className="bg-white dark:bg-[#1e293b] p-4 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm flex flex-col xl:flex-row gap-4 items-center mb-10 sticky top-4 z-10">
-          
-          {/* Subcategory Pills */}
-          <div className="flex gap-2 overflow-x-auto pb-2 xl:pb-0 no-scrollbar w-full xl:w-auto">
-            {MOCK_GUIDES_SUBCATEGORIES.map(sub => (
-              <button
-                key={sub.id}
-                onClick={() => setActiveSub(sub.id)}
-                className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 whitespace-nowrap shrink-0 ${
-                  activeSub === sub.id
-                    ? 'bg-[#14b8a6] text-white shadow-md'
-                    : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
-                }`}
-              >
-                {sub.name}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-1 w-full gap-4 xl:ml-auto">
-            {/* Search */}
-            <div className="relative flex-1 group">
-              <div className="absolute -inset-0.5 bg-[#14b8a6] rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-              <div className="relative flex items-center bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden">
-                <Search className="w-5 h-5 text-gray-400 ml-4 shrink-0 group-focus-within:text-[#14b8a6] transition-colors" />
-                <input 
-                  type="text" 
-                  placeholder="Search resources..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent py-2.5 pl-3 pr-4 font-medium text-gray-800 dark:text-gray-100 focus:outline-none placeholder-gray-400"
-                />
-              </div>
-            </div>
-            
-            {/* Custom Type Dropdown */}
-            <div className="relative">
-              <button 
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="bg-gray-50 dark:bg-[#0f172a] border border-[#14b8a6] rounded-xl px-4 py-2.5 font-bold text-gray-800 dark:text-gray-100 flex items-center justify-between gap-3 min-w-[200px]"
-              >
-                {typeFilter}
-                <ChevronDown size={18} className={`text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {isDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-20 max-h-[300px] overflow-y-auto">
-                  {CONTENT_TYPES.map(type => (
-                    <button
-                      key={type}
-                      onClick={() => {
-                        setTypeFilter(type);
-                        setIsDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-2.5 font-medium transition-colors border-l-4 ${
-                        typeFilter === type 
-                          ? 'border-[#14b8a6] bg-[#14b8a6]/10 text-[#14b8a6] font-bold' 
-                          : 'border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+        {/* Notion-style Sidebar */}
+        <div className={`w-full lg:w-64 shrink-0 lg:sticky lg:top-32 flex flex-col ${isSidebarOpen ? 'block' : 'hidden lg:block'}`}>
+           <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400 mb-4 px-3">Directory</h3>
+           <div className="flex flex-col gap-1">
+             {MOCK_GUIDES_SUBCATEGORIES.map(sub => (
+               <button
+                 key={sub.id}
+                 onClick={() => {
+                   setActiveSub(sub.id);
+                   setIsSidebarOpen(false);
+                 }}
+                 className={`flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                   activeSub === sub.id
+                     ? 'bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 font-bold'
+                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                 }`}
+               >
+                 <Folder size={16} className={activeSub === sub.id ? 'text-teal-500' : 'text-gray-400'} />
+                 {sub.name}
+               </button>
+             ))}
+           </div>
+           
+           <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400 mb-4 px-3 mt-8 md:mt-10">File Type</h3>
+           <div className="flex flex-col gap-1">
+             {CONTENT_TYPES.map(type => (
+               <button
+                 key={type}
+                 onClick={() => {
+                   setTypeFilter(type);
+                   setIsSidebarOpen(false);
+                 }}
+                 className={`flex items-center justify-between w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                   typeFilter === type
+                     ? 'bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 font-bold'
+                     : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                 }`}
+               >
+                 {type}
+                 {typeFilter === type && <div className="w-1.5 h-1.5 rounded-full bg-teal-500"></div>}
+               </button>
+             ))}
+           </div>
         </div>
 
-        {/* Featured Cards (Top) */}
-        {featuredResources.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-              <Flame className="text-[#14b8a6] fill-[#14b8a6]" /> Essential Toolkits
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {featuredResources.map(resource => (
-                <Link key={resource.id} href={`/platform/resources/guides-toolkits/${resource.id}`} className="group bg-white dark:bg-[#1e293b] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#14b8a6]/10 transition-all duration-300">
-                  <div className="h-48 w-full relative">
-                    <img src={resource.image} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-4 flex gap-2">
-                      <span className="bg-[#14b8a6] text-white text-[10px] font-black uppercase px-2 py-1 rounded-md">{resource.type}</span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-[#14b8a6] transition-colors">{resource.title}</h3>
-                    <div className="flex items-center justify-between mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">
-                      <span className="flex items-center gap-1.5"><Box size={14} className="text-[#14b8a6]" /> {resource.author}</span>
-                      <span>{resource.time}</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Main Workspace */}
+        <div className="flex-1 min-w-0">
+           
+           {/* Featured "Hero Widgets" */}
+           {featuredResources.length > 0 && (
+             <div className="mb-12 md:mb-16">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                 {featuredResources.map(resource => (
+                   <Link key={resource.id} href={`/platform/resources/guides-toolkits/${resource.id}`} className="group relative rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111] overflow-hidden hover:border-teal-500 dark:hover:border-teal-500 transition-colors shadow-sm hover:shadow-xl hover:shadow-teal-500/10 flex flex-col">
+                     <div className="h-40 md:h-48 w-full relative overflow-hidden bg-gray-100 dark:bg-[#1a1a1a]">
+                       <img src={resource.image} alt={resource.title} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
+                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent" />
+                       <div className="absolute bottom-4 left-5 flex items-center gap-2">
+                         <div className="w-8 h-8 rounded-md bg-teal-500 text-white flex items-center justify-center shadow-lg shadow-teal-500/20">
+                            <Zap size={16} />
+                         </div>
+                         <span className="text-white text-xs font-bold tracking-wide">{resource.type}</span>
+                       </div>
+                     </div>
+                     <div className="p-5 flex flex-col flex-1">
+                       <h3 className="text-lg md:text-xl font-bold leading-snug mb-3 group-hover:text-teal-500 transition-colors line-clamp-2">{resource.title}</h3>
+                       <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
+                         <span className="flex items-center gap-1.5"><Box size={14}/> {resource.author}</span>
+                         <span className="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded-md text-gray-600 dark:text-gray-300 font-mono text-[10px] uppercase">{resource.time}</span>
+                       </div>
+                     </div>
+                   </Link>
+                 ))}
+               </div>
+             </div>
+           )}
 
-        {/* Resource Grid */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-            <Activity className="text-[#14b8a6]" /> All Guides & Templates
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {regularResources.map(resource => (
-              <Link key={resource.id} href={`/platform/resources/guides-toolkits/${resource.id}`} className="group bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-black uppercase text-[#14b8a6] bg-[#14b8a6]/10 px-2 py-1 rounded-md">{resource.type}</span>
-                    <span className="text-[10px] font-medium text-gray-400">{resource.time}</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-[#14b8a6] transition-colors">{resource.title}</h3>
-                  <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-                      {resource.type === 'Template' ? <BookTemplate size={14} /> : resource.type === 'Checklist' ? <FileCheck size={14} /> : <Book size={14} />} 
-                      {resource.author}
-                    </span>
-                    <span className="text-[#14b8a6] text-sm font-bold opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">&rarr;</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-
-            {regularResources.length === 0 && (
-              <div className="col-span-full py-12 text-center bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10 border-dashed">
-                <Coffee size={40} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">No resources found</h3>
-                <p className="text-gray-500 text-sm">Try adjusting your filters.</p>
-              </div>
-            )}
-          </div>
+           {/* Grid "App" Directory */}
+           <div>
+             <h2 className="text-lg md:text-xl font-bold mb-6 flex items-center gap-3 border-b border-gray-200 dark:border-white/10 pb-4">
+               Directory Items
+               <span className="bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-md font-mono border border-gray-200 dark:border-white/5">{regularResources.length}</span>
+             </h2>
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5">
+               {regularResources.map(resource => (
+                 <Link key={resource.id} href={`/platform/resources/guides-toolkits/${resource.id}`} className="group bg-white dark:bg-[#111] rounded-xl border border-gray-200 dark:border-white/10 p-5 hover:border-teal-500 transition-all hover:shadow-md flex flex-col relative overflow-hidden">
+                   
+                   <div className="absolute top-0 right-0 w-16 h-16 bg-teal-500/5 rounded-bl-[100%] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                   
+                   <div className="flex items-start justify-between mb-4">
+                     <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-[#1a1a1a] flex items-center justify-center text-gray-500 group-hover:text-teal-500 group-hover:bg-teal-50 dark:group-hover:bg-teal-500/10 transition-colors">
+                       {resource.type === 'Template' ? <LayoutTemplate size={20} /> : resource.type === 'Checklist' ? <CheckSquare size={20} /> : <FileCode size={20} />}
+                     </div>
+                     <span className="text-[10px] font-mono uppercase bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 px-2 py-1 rounded border border-gray-200 dark:border-white/5">{resource.time}</span>
+                   </div>
+                   
+                   <h3 className="text-sm md:text-base font-bold leading-snug mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{resource.title}</h3>
+                   
+                   <div className="mt-auto pt-4 flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
+                     <span>{resource.author}</span>
+                     <DownloadCloud size={14} className="opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-hover:text-teal-500 transition-all" />
+                   </div>
+                 </Link>
+               ))}
+               
+               {regularResources.length === 0 && (
+                 <div className="col-span-full py-16 text-center border border-dashed border-gray-300 dark:border-white/10 rounded-2xl bg-gray-50 dark:bg-[#111]">
+                   <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-white/10 flex items-center justify-center mx-auto mb-4 text-gray-400">
+                     <Search size={20} />
+                   </div>
+                   <h3 className="text-sm font-bold mb-1">No items match your filter</h3>
+                   <p className="text-xs text-gray-500">Try selecting a different directory or file type.</p>
+                 </div>
+               )}
+             </div>
+           </div>
         </div>
 
       </div>

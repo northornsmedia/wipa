@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Search, BookOpen, GraduationCap, Video, FileText, ChevronDown, Star, Activity, Coffee, Award, PlayCircle } from 'lucide-react';
+import { ArrowLeft, Search, GraduationCap, ChevronDown, PlayCircle, BookOpen, Star, Info, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 const MOCK_EDU_SUBCATEGORIES = [
-  { id: 'all', name: 'All Education' },
+  { id: 'all', name: 'All Classes' },
   { id: 'patent-law', name: 'Patent Law' },
   { id: 'trademark-law', name: 'Trademark Law' },
   { id: 'career-skills', name: 'Career Skills' },
@@ -14,18 +14,11 @@ const MOCK_EDU_SUBCATEGORIES = [
 
 const CONTENT_TYPES = [
   "All Types",
+  "Masterclass",
   "Online Course",
   "CPD Programme",
   "Certification",
-  "Training Programme",
-  "University Course",
-  "Workshop",
-  "Masterclass",
-  "Study Guide",
-  "Learning Path",
-  "Presentation",
-  "Video Lesson",
-  "Course Materials"
+  "Workshop"
 ];
 
 const MOCK_EDU_RESOURCES = [
@@ -127,181 +120,137 @@ export default function EducationHubPage() {
   const regularResources = filteredResources.filter(r => !r.featured);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col pb-20">
-      
-      {/* Hero Header */}
-      <div className="bg-white dark:bg-[#1e293b] border-b border-gray-200 dark:border-white/10 pt-8 pb-12">
-        <div className="w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8">
-          <Link href="/platform/resources" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] font-bold text-sm mb-6 transition-colors">
-            <ArrowLeft size={16} />
-            Back to Resource Library
-          </Link>
-          
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-[#5a32fa] flex items-center justify-center text-white shadow-lg shadow-[#5a32fa]/20">
-              <GraduationCap size={32} />
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-100 font-sans selection:bg-indigo-500/30 pb-24">
+      {/* Sleek Header */}
+      <div className="pt-12 px-6 max-w-7xl mx-auto mb-12">
+
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="max-w-2xl">
+            <h1 className="text-5xl md:text-6xl font-black tracking-tight text-gray-900 dark:text-white mb-4">
+              WIPA <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">Academy</span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 font-medium">
+              Advance your career with masterclasses, CPD programmes, and certifications from industry leaders and top universities.
+            </p>
+          </div>
+          {/* Search */}
+          <div className="relative w-full md:w-80 shrink-0">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+              <Search className="w-5 h-5 text-gray-400" />
             </div>
-            <div>
-              <h1 className="text-4xl font-black text-gray-800 dark:text-gray-100">Education & Professional Development</h1>
-              <p className="text-gray-500 dark:text-gray-400 font-medium text-lg mt-1">Courses, certifications, and training to advance your IP career.</p>
-            </div>
+            <input 
+              type="text" 
+              placeholder="Search curriculum..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-gray-50 dark:bg-[#111111] border border-gray-200 dark:border-white/10 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-gray-900 dark:text-white placeholder-gray-500 outline-none transition-all shadow-sm"
+            />
           </div>
         </div>
       </div>
 
-      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
-        
-        {/* Filter Bar */}
-        <div className="bg-white dark:bg-[#1e293b] p-4 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm flex flex-col xl:flex-row gap-4 items-center mb-10 sticky top-4 z-10">
-          
-          {/* Subcategory Pills */}
-          <div className="flex gap-2 overflow-x-auto pb-2 xl:pb-0 no-scrollbar w-full xl:w-auto">
-            {MOCK_EDU_SUBCATEGORIES.map(sub => (
-              <button
-                key={sub.id}
-                onClick={() => setActiveSub(sub.id)}
-                className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 whitespace-nowrap shrink-0 ${
-                  activeSub === sub.id
-                    ? 'bg-[#5a32fa] text-white shadow-md'
-                    : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
-                }`}
-              >
-                {sub.name}
-              </button>
-            ))}
-          </div>
+      {/* Modern Filter Pills */}
+      <div className="px-6 max-w-7xl mx-auto mb-16 flex gap-3 overflow-x-auto no-scrollbar pb-2">
+        {MOCK_EDU_SUBCATEGORIES.map(sub => (
+          <button
+            key={sub.id}
+            onClick={() => setActiveSub(sub.id)}
+            className={`px-6 py-3 rounded-full text-sm font-bold transition-all whitespace-nowrap border ${
+              activeSub === sub.id
+                ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                : 'bg-white dark:bg-[#111111] border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-indigo-600/50 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            {sub.name}
+          </button>
+        ))}
+      </div>
 
-          <div className="flex flex-1 w-full gap-4 xl:ml-auto">
-            {/* Search */}
-            <div className="relative flex-1 group">
-              <div className="absolute -inset-0.5 bg-[#5a32fa] rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-              <div className="relative flex items-center bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden">
-                <Search className="w-5 h-5 text-gray-400 ml-4 shrink-0 group-focus-within:text-[#5a32fa] transition-colors" />
-                <input 
-                  type="text" 
-                  placeholder="Search education..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent py-2.5 pl-3 pr-4 font-medium text-gray-800 dark:text-gray-100 focus:outline-none placeholder-gray-400"
-                />
-              </div>
-            </div>
-            
-            {/* Custom Type Dropdown */}
-            <div className="relative">
-              <button 
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="bg-gray-50 dark:bg-[#0f172a] border border-[#5a32fa] rounded-xl px-4 py-2.5 font-bold text-gray-800 dark:text-gray-100 flex items-center justify-between gap-3 min-w-[200px]"
-              >
-                {typeFilter}
-                <ChevronDown size={18} className={`text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {isDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-20 max-h-[300px] overflow-y-auto">
-                  {CONTENT_TYPES.map(type => (
-                    <button
-                      key={type}
-                      onClick={() => {
-                        setTypeFilter(type);
-                        setIsDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-2.5 font-medium transition-colors border-l-4 ${
-                        typeFilter === type 
-                          ? 'border-[#5a32fa] bg-[#5a32fa]/10 text-[#5a32fa] font-bold' 
-                          : 'border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Featured Cards (Top) */}
-        {featuredResources.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-              <Star className="text-[#5a32fa] fill-[#5a32fa]" /> Featured Education
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {featuredResources.map(resource => (
-                <Link key={resource.id} href={`/platform/resources/education/${resource.id}`} className="group bg-white dark:bg-[#1e293b] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#5a32fa]/10 transition-all duration-300">
-                  <div className="h-48 w-full relative">
-                    <img src={resource.image} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-4 flex gap-2">
-                      <span className="bg-[#5a32fa] text-white text-[10px] font-black uppercase px-2 py-1 rounded-md">{resource.type}</span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-[#5a32fa] transition-colors">{resource.title}</h3>
-                    <div className="flex items-center justify-between mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">
-                      <span className="flex items-center gap-1.5"><BookOpen size={14} className="text-[#5a32fa]" /> {resource.topic} ({resource.time})</span>
-                      {resource.university && (
-                        <div className="relative group/logo">
-                          <img src={resource.university.logoLight} alt={resource.university.name} className="h-16 w-auto object-contain rounded shadow-sm dark:hidden" />
-                          <img src={resource.university.logoDark} alt={resource.university.name} className="h-16 w-auto object-contain rounded shadow-sm hidden dark:block" />
-                          <div className="absolute bottom-full right-0 mb-2 w-64 bg-white dark:bg-[#1e293b] text-gray-800 dark:text-gray-100 p-4 rounded-xl shadow-xl border border-gray-200 dark:border-white/10 opacity-0 invisible group-hover/logo:opacity-100 group-hover/logo:visible transition-all z-20">
-                            <h4 className="font-bold text-sm mb-1 text-[#5a32fa]">{resource.university.name}</h4>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{resource.university.description}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Resource Grid */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-            <Activity className="text-[#5a32fa]" /> All Educational Resources
+      {/* Featured Masterclasses - Cinematic Cards */}
+      {featuredResources.length > 0 && (
+        <div className="px-6 max-w-7xl mx-auto mb-20">
+          <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <Star className="text-indigo-500 fill-indigo-500" size={24} /> Featured Masterclasses
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {regularResources.map(resource => (
-              <Link key={resource.id} href={`/platform/resources/education/${resource.id}`} className="group bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-black uppercase text-[#5a32fa] bg-[#5a32fa]/10 px-2 py-1 rounded-md">{resource.type}</span>
-                    <span className="text-[10px] font-medium text-gray-400">{resource.time}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {featuredResources.map(resource => (
+              <Link key={resource.id} href={`/platform/resources/education/${resource.id}`} className="group relative rounded-[2rem] overflow-hidden aspect-[4/3] md:aspect-[16/10] bg-gray-100 dark:bg-[#111] border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500">
+                <img src={resource.image} alt={resource.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
+                
+                {/* Play Button Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-indigo-900/20 backdrop-blur-sm">
+                  <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-2xl shadow-indigo-600/50 scale-75 group-hover:scale-100 transition-transform duration-500">
+                    <PlayCircle size={40} className="ml-1" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-[#5a32fa] transition-colors">{resource.title}</h3>
-                  <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><BookOpen size={14} /> {resource.topic} ({resource.time})</span>
-                    {resource.university ? (
-                      <div className="relative group/logo">
-                        <img src={resource.university.logoLight} alt={resource.university.name} className="h-14 w-auto object-contain rounded shadow-sm dark:hidden" />
-                        <img src={resource.university.logoDark} alt={resource.university.name} className="h-14 w-auto object-contain rounded shadow-sm hidden dark:block" />
-                        <div className="absolute bottom-full right-0 mb-2 w-56 bg-white dark:bg-[#1e293b] text-gray-800 dark:text-gray-100 p-3 rounded-xl shadow-xl border border-gray-200 dark:border-white/10 opacity-0 invisible group-hover/logo:opacity-100 group-hover/logo:visible transition-all z-20">
-                          <h4 className="font-bold text-sm mb-1 text-[#5a32fa]">{resource.university.name}</h4>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{resource.university.description}</p>
-                        </div>
+                </div>
+
+                <div className="absolute top-0 right-0 p-6">
+                   {resource.university && (
+                      <div className="bg-white/90 dark:bg-black/50 backdrop-blur-md rounded-2xl p-2 px-4 border border-white/20">
+                        <img src={resource.university.logoLight} alt={resource.university.name} className="h-8 w-auto object-contain dark:hidden" />
+                        <img src={resource.university.logoDark} alt={resource.university.name} className="h-8 w-auto object-contain hidden dark:block" />
                       </div>
-                    ) : (
-                      <span className="text-[#5a32fa] text-sm font-bold opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">&rarr;</span>
-                    )}
+                   )}
+                </div>
+
+                <div className="absolute bottom-0 left-0 right-0 p-8 md:p-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-white/20 backdrop-blur-md text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full border border-white/30">
+                      {resource.type}
+                    </span>
+                    <span className="text-white/80 text-sm font-bold">{resource.time}</span>
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-black text-white mb-2 leading-tight drop-shadow-md group-hover:text-indigo-200 transition-colors">{resource.title}</h3>
+                  <div className="flex items-center gap-2 text-indigo-300 font-bold text-base">
+                    <GraduationCap size={18} /> {resource.expert}
                   </div>
                 </div>
               </Link>
             ))}
-
-            {regularResources.length === 0 && (
-              <div className="col-span-full py-12 text-center bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10 border-dashed">
-                <Coffee size={40} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">No resources found</h3>
-                <p className="text-gray-500 text-sm">Try adjusting your filters.</p>
-              </div>
-            )}
           </div>
         </div>
+      )}
 
+      {/* Curriculum List */}
+      <div className="px-6 max-w-7xl mx-auto">
+         <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <BookOpen className="text-indigo-500" size={24} /> Full Curriculum
+         </h2>
+         <div className="bg-white dark:bg-[#111111] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden shadow-sm">
+            {regularResources.map((resource, idx) => (
+              <Link key={resource.id} href={`/platform/resources/education/${resource.id}`} className={`group flex flex-col sm:flex-row items-start sm:items-center p-6 md:p-8 gap-6 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors ${idx !== regularResources.length - 1 ? 'border-b border-gray-100 dark:border-white/5' : ''}`}>
+                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                   <PlayCircle size={32} />
+                 </div>
+                 <div className="flex-1">
+                   <div className="flex items-center gap-3 mb-2">
+                     <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">{resource.topic}</span>
+                     <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600"></span>
+                     <span className="text-xs font-bold text-gray-500">{resource.type}</span>
+                   </div>
+                   <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{resource.title}</h3>
+                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Instructed by {resource.expert}</p>
+                 </div>
+                 <div className="shrink-0 pt-4 sm:pt-0 flex items-center justify-between w-full sm:w-auto">
+                   <span className="text-sm font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/5">{resource.time}</span>
+                   <div className="w-10 h-10 rounded-full bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-400 ml-4 group-hover:bg-indigo-600 group-hover:border-indigo-600 group-hover:text-white transition-colors">
+                     <ChevronRight size={20} />
+                   </div>
+                 </div>
+              </Link>
+            ))}
+            
+            {regularResources.length === 0 && (
+              <div className="p-16 text-center">
+                <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-6 text-gray-400">
+                  <Info size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No courses found</h3>
+                <p className="text-gray-500 font-medium">Try adjusting your category or search filters.</p>
+              </div>
+            )}
+         </div>
       </div>
     </div>
   );

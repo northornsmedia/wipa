@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Mic, ChevronDown, Star, Activity, Coffee, Video, Headphones, Users, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Search, Mic, Play, Pause, ChevronDown, ListMusic, Headphones, PlayCircle, Clock, Volume2 } from 'lucide-react';
 import Link from 'next/link';
 
 const MOCK_PODCASTS_SUBCATEGORIES = [
@@ -31,7 +31,7 @@ const MOCK_PODCASTS_RESOURCES = [
     subcategory: "podcasts",
     host: "WIPA Media",
     guest: "Dr. Elena Rostova",
-    time: "45 min listen",
+    time: "45:00",
     featured: true,
     image: "/resourceimg1.jpg"
   },
@@ -43,7 +43,7 @@ const MOCK_PODCASTS_RESOURCES = [
     subcategory: "video",
     host: "Sarah Jenkins",
     guest: "Michael Chang, GC",
-    time: "32 min watch",
+    time: "32:15",
     featured: true,
     image: "/resourceimg2.jpg"
   },
@@ -55,7 +55,7 @@ const MOCK_PODCASTS_RESOURCES = [
     subcategory: "expert",
     host: "European IP Desk",
     guest: "Panel of 3 Experts",
-    time: "60 min listen",
+    time: "60:00",
     featured: false,
     image: "/resource3.jpg"
   },
@@ -67,7 +67,7 @@ const MOCK_PODCASTS_RESOURCES = [
     subcategory: "member",
     host: "Mentorship Committee",
     guest: "Jessica Reynolds",
-    time: "25 min watch",
+    time: "25:40",
     featured: false,
     image: "/resourceimg1.jpg"
   },
@@ -79,7 +79,7 @@ const MOCK_PODCASTS_RESOURCES = [
     subcategory: "podcasts",
     host: "The Legal Edge",
     guest: "Alex Thorne",
-    time: "20 min listen",
+    time: "20:00",
     featured: false,
     image: "/resourceimg2.jpg"
   },
@@ -91,7 +91,7 @@ const MOCK_PODCASTS_RESOURCES = [
     subcategory: "expert",
     host: "WIPA DEI Board",
     guest: "Hon. Judge Smith",
-    time: "40 min watch",
+    time: "40:55",
     featured: false,
     image: "/resource3.jpg"
   }
@@ -102,6 +102,7 @@ export default function PodcastsHubPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [playingId, setPlayingId] = useState<number | null>(1); // Default to first featured
 
   const filteredResources = MOCK_PODCASTS_RESOURCES.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -111,163 +112,215 @@ export default function PodcastsHubPage() {
     return matchesSearch && matchesSub && matchesType;
   });
 
-  const featuredResources = filteredResources.filter(r => r.featured);
-  const regularResources = filteredResources.filter(r => !r.featured);
+  const mainFeature = filteredResources.find(r => r.featured) || filteredResources[0];
+  const otherResources = filteredResources.filter(r => r.id !== mainFeature?.id);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col pb-20">
+    <div className="min-h-screen bg-white dark:bg-[#121212] text-gray-900 dark:text-white font-sans selection:bg-[#f59e0b]/30 flex flex-col pb-24">
       
-      {/* Hero Header */}
-      <div className="bg-white dark:bg-[#1e293b] border-b border-gray-200 dark:border-white/10 pt-8 pb-12">
-        <div className="w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8">
-          <Link href="/platform/resources" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#f59e0b] font-bold text-sm mb-6 transition-colors">
-            <ArrowLeft size={16} />
-            Back to Resource Library
-          </Link>
-          
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-[#f59e0b] flex items-center justify-center text-white shadow-lg shadow-[#f59e0b]/20">
-              <Mic size={32} />
+      {/* Streaming App Style Header */}
+      <div className="sticky top-0 z-50 bg-white/80 dark:bg-[#121212]/80 backdrop-blur-md border-b border-gray-200 dark:border-white/5 py-4">
+        <div className="w-full max-w-[1200px] mx-auto px-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6">
+
+            <h1 className="text-xl font-bold tracking-tight hidden sm:block text-gray-900 dark:text-white">Podcasts & Conversations</h1>
+          </div>
+
+          <div className="flex-1 max-w-md relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+              <Search className="w-4 h-4 text-gray-400 dark:text-white/40" />
             </div>
-            <div>
-              <h1 className="text-4xl font-black text-gray-800 dark:text-gray-100">Podcasts & Conversations</h1>
-              <p className="text-gray-500 dark:text-gray-400 font-medium text-lg mt-1">Interviews, discussions, and insights from leading IP professionals.</p>
-            </div>
+            <input 
+              type="text" 
+              placeholder="Search episodes..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-gray-100 dark:bg-white/10 border-transparent focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] rounded-full py-2.5 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/40 outline-none transition-all"
+            />
           </div>
         </div>
       </div>
 
-      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
+      <div className="flex-1 w-full max-w-[1200px] mx-auto px-6 pt-8">
         
-        {/* Filter Bar */}
-        <div className="bg-white dark:bg-[#1e293b] p-4 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm flex flex-col xl:flex-row gap-4 items-center mb-10 sticky top-4 z-10">
-          
-          {/* Subcategory Pills */}
-          <div className="flex gap-2 overflow-x-auto pb-2 xl:pb-0 no-scrollbar w-full xl:w-auto">
-            {MOCK_PODCASTS_SUBCATEGORIES.map(sub => (
-              <button
-                key={sub.id}
-                onClick={() => setActiveSub(sub.id)}
-                className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 whitespace-nowrap shrink-0 ${
-                  activeSub === sub.id
-                    ? 'bg-[#f59e0b] text-white shadow-md'
-                    : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
-                }`}
-              >
-                {sub.name}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-1 w-full gap-4 xl:ml-auto">
-            {/* Search */}
-            <div className="relative flex-1 group">
-              <div className="absolute -inset-0.5 bg-[#f59e0b] rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-              <div className="relative flex items-center bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden">
-                <Search className="w-5 h-5 text-gray-400 ml-4 shrink-0 group-focus-within:text-[#f59e0b] transition-colors" />
-                <input 
-                  type="text" 
-                  placeholder="Search episodes..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent py-2.5 pl-3 pr-4 font-medium text-gray-800 dark:text-gray-100 focus:outline-none placeholder-gray-400"
-                />
-              </div>
+        {/* Dynamic Hero Section */}
+        {mainFeature && (
+          <div className="relative rounded-3xl overflow-hidden mb-12 shadow-sm border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-[#181818]">
+            {/* Blurred background effect */}
+            <div className="absolute inset-0 opacity-20 dark:opacity-30">
+              <img src={mainFeature.image} alt="Background blur" className="w-full h-full object-cover blur-3xl scale-110" />
             </div>
-            
-            {/* Custom Type Dropdown */}
-            <div className="relative">
-              <button 
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="bg-gray-50 dark:bg-[#0f172a] border border-[#f59e0b] rounded-xl px-4 py-2.5 font-bold text-gray-800 dark:text-gray-100 flex items-center justify-between gap-3 min-w-[200px]"
-              >
-                {typeFilter}
-                <ChevronDown size={18} className={`text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {isDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-20 max-h-[300px] overflow-y-auto">
-                  {CONTENT_TYPES.map(type => (
-                    <button
-                      key={type}
-                      onClick={() => {
-                        setTypeFilter(type);
-                        setIsDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-2.5 font-medium transition-colors border-l-4 ${
-                        typeFilter === type 
-                          ? 'border-[#f59e0b] bg-[#f59e0b]/10 text-[#f59e0b] font-bold' 
-                          : 'border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-[#181818]" />
+
+            <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-end gap-8">
+              <div className="w-48 h-48 md:w-64 md:h-64 rounded-xl overflow-hidden shrink-0 shadow-2xl relative group">
+                <img src={mainFeature.image} alt={mainFeature.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                  <Link href={`/platform/resources/podcasts-conversations/${mainFeature.id}`}>
+                     <div className="w-16 h-16 rounded-full bg-[#f59e0b] flex items-center justify-center text-white hover:scale-105 transition-transform shadow-xl">
+                       <Play size={28} fill="currentColor" className="ml-1" />
+                     </div>
+                  </Link>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
+              </div>
 
-        {/* Featured Cards (Top) */}
-        {featuredResources.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-              <Star className="text-[#f59e0b] fill-[#f59e0b]" /> Featured Episodes
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {featuredResources.map(resource => (
-                <Link key={resource.id} href={`/platform/resources/podcasts-conversations/${resource.id}`} className="group bg-white dark:bg-[#1e293b] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#f59e0b]/10 transition-all duration-300">
-                  <div className="h-48 w-full relative">
-                    <img src={resource.image} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-4 flex gap-2">
-                      <span className="bg-[#f59e0b] text-white text-[10px] font-black uppercase px-2 py-1 rounded-md">{resource.type}</span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-[#f59e0b] transition-colors">{resource.title}</h3>
-                    <div className="flex items-center justify-between mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">
-                      <span className="flex items-center gap-1.5"><Users size={14} className="text-[#f59e0b]" /> {resource.guest}</span>
-                      <span>{resource.time}</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+              <div className="flex flex-col flex-1 pb-2">
+                <span className="text-xs font-black uppercase tracking-widest text-[#f59e0b] mb-3">{mainFeature.type}</span>
+                <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white leading-tight mb-4 tracking-tight drop-shadow-sm dark:drop-shadow-none">
+                  {mainFeature.title}
+                </h2>
+                
+                <div className="flex items-center gap-4 text-gray-600 dark:text-white/70 mb-6 font-medium text-sm">
+                   <div className="flex items-center gap-2">
+                     <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#f59e0b] to-yellow-400 flex items-center justify-center text-white text-[10px] font-bold">
+                       {mainFeature.host.charAt(0)}
+                     </div>
+                     <span className="font-bold text-gray-900 dark:text-white">{mainFeature.host}</span>
+                   </div>
+                   <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-white/20"></span>
+                   <span>Guest: {mainFeature.guest}</span>
+                   <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-white/20"></span>
+                   <span>{mainFeature.topic}</span>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <button 
+                    onClick={() => setPlayingId(playingId === mainFeature.id ? null : mainFeature.id)}
+                    className="w-14 h-14 rounded-full bg-[#f59e0b] text-white flex items-center justify-center hover:scale-105 transition-transform shadow-lg"
+                  >
+                    {playingId === mainFeature.id ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+                  </button>
+                  <Link href={`/platform/resources/podcasts-conversations/${mainFeature.id}`} className="px-6 py-3 rounded-full border border-gray-300 dark:border-white/20 text-gray-900 dark:text-white font-bold text-sm hover:border-gray-400 dark:hover:border-white/40 hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
+                    View Show Notes
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Resource Grid */}
+        {/* Filter Badges (Spotify style) */}
+        <div className="flex gap-3 overflow-x-auto no-scrollbar mb-10 pb-2">
+          {MOCK_PODCASTS_SUBCATEGORIES.map(sub => (
+            <button
+              key={sub.id}
+              onClick={() => setActiveSub(sub.id)}
+              className={`px-5 py-2 rounded-full font-bold text-sm transition-all whitespace-nowrap border ${
+                activeSub === sub.id
+                  ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white'
+                  : 'bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10 dark:border-white/10'
+              }`}
+            >
+              {sub.name}
+            </button>
+          ))}
+          
+          <div className="relative ml-auto hidden sm:block">
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="bg-transparent border border-gray-300 dark:border-white/20 rounded-full px-5 py-2 text-sm font-bold text-gray-700 dark:text-white/70 hover:border-gray-400 dark:hover:border-white/40 flex items-center gap-2 transition-all"
+            >
+              {typeFilter}
+              <ChevronDown size={14} className={isDropdownOpen ? 'rotate-180' : ''} />
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-[#282828] border border-gray-100 dark:border-white/5 rounded-xl shadow-xl overflow-hidden z-20">
+                {CONTENT_TYPES.map(type => (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      setTypeFilter(type);
+                      setIsDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors ${
+                      typeFilter === type 
+                        ? 'text-[#f59e0b] bg-gray-50 dark:bg-white/5' 
+                        : 'text-gray-700 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tracklist layout for all episodes */}
         <div className="mb-12">
-          <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-            <Activity className="text-[#f59e0b]" /> All Conversations
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {regularResources.map(resource => (
-              <Link key={resource.id} href={`/platform/resources/podcasts-conversations/${resource.id}`} className="group bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-black uppercase text-[#f59e0b] bg-[#f59e0b]/10 px-2 py-1 rounded-md">{resource.type}</span>
-                    <span className="text-[10px] font-medium text-gray-400">{resource.time}</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-[#f59e0b] transition-colors">{resource.title}</h3>
-                  <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-                      {resource.subcategory === 'video' || resource.subcategory === 'member' ? <Video size={14} /> : <Headphones size={14} />} 
-                      {resource.guest}
+          
+          {/* Table Header */}
+          <div className="flex items-center px-4 py-2 border-b border-gray-200 dark:border-white/10 mb-4 text-xs font-bold text-gray-500 dark:text-white/40 uppercase tracking-widest">
+            <div className="w-12 text-center">#</div>
+            <div className="flex-1">Title</div>
+            <div className="w-48 hidden md:block">Topic</div>
+            <div className="w-48 hidden lg:block">Type</div>
+            <div className="w-24 text-right flex justify-end"><Clock size={14} /></div>
+          </div>
+
+          <div className="flex flex-col">
+            {otherResources.map((resource, index) => {
+              const isPlaying = playingId === resource.id;
+              return (
+                <div 
+                  key={resource.id} 
+                  className={`group flex items-center px-4 py-3 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-white/5 ${isPlaying ? 'bg-gray-50 dark:bg-white/5' : ''}`}
+                >
+                  
+                  {/* Number / Play Button */}
+                  <div className="w-12 text-center flex items-center justify-center shrink-0">
+                    <span className={`text-base font-medium ${isPlaying ? 'text-[#f59e0b] hidden group-hover:block' : 'text-gray-400 dark:text-white/40 group-hover:hidden'}`}>
+                      {index + 1}
                     </span>
-                    <span className="text-[#f59e0b] text-sm font-bold opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">&rarr;</span>
+                    {isPlaying && <Volume2 size={18} className="text-[#f59e0b] group-hover:hidden animate-pulse" />}
+                    
+                    <button 
+                      onClick={() => setPlayingId(isPlaying ? null : resource.id)}
+                      className={`text-gray-900 dark:text-white hover:text-[#f59e0b] dark:hover:text-[#f59e0b] ${isPlaying ? 'hidden group-hover:block' : 'hidden group-hover:block'}`}
+                    >
+                      {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
+                    </button>
+                  </div>
+
+                  {/* Title & Image */}
+                  <div className="flex-1 min-w-0 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-200 dark:bg-white/10 shrink-0">
+                      <img src={resource.image} alt={resource.title} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex flex-col min-w-0 pr-4">
+                      <Link href={`/platform/resources/podcasts-conversations/${resource.id}`} className={`font-bold text-base truncate hover:underline ${isPlaying ? 'text-[#f59e0b]' : 'text-gray-900 dark:text-white'}`}>
+                        {resource.title}
+                      </Link>
+                      <span className="text-sm text-gray-500 dark:text-white/50 truncate">
+                        {resource.host} • {resource.guest}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Topic */}
+                  <div className="w-48 hidden md:block shrink-0">
+                    <span className="text-sm font-medium text-gray-600 dark:text-white/60">{resource.topic}</span>
+                  </div>
+
+                  {/* Type */}
+                  <div className="w-48 hidden lg:block shrink-0">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-white/40">{resource.type}</span>
+                  </div>
+
+                  {/* Duration */}
+                  <div className="w-24 text-right shrink-0">
+                    <span className="text-sm font-medium text-gray-500 dark:text-white/50">{resource.time}</span>
                   </div>
                 </div>
-              </Link>
-            ))}
+              );
+            })}
 
-            {regularResources.length === 0 && (
-              <div className="col-span-full py-12 text-center bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10 border-dashed">
-                <Coffee size={40} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">No episodes found</h3>
-                <p className="text-gray-500 text-sm">Try adjusting your filters.</p>
+            {otherResources.length === 0 && (
+              <div className="py-24 text-center">
+                <Mic size={48} className="mx-auto text-gray-300 dark:text-white/10 mb-6" />
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No episodes found</h3>
+                <p className="text-gray-500 dark:text-white/40 font-medium text-sm">Try adjusting your search criteria.</p>
               </div>
             )}
           </div>

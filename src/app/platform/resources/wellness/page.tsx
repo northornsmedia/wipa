@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Filter, Headphones, Heart, Activity, Coffee, Play, BookOpen, Star, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Search, Filter, Headphones, Heart, Activity, Play, ChevronDown, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 const MOCK_WELLNESS_SUBCATEGORIES = [
@@ -155,162 +155,202 @@ export default function WellnessHubPage() {
   const regularResources = filteredResources.filter(r => !r.featured);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col pb-20">
+    <div className="min-h-screen bg-[#f4f8f7] dark:bg-[#0b1310] flex flex-col font-sans selection:bg-[#00d26a]/30">
       
-      {/* Hero Header */}
-      <div className="bg-white dark:bg-[#1e293b] border-b border-gray-200 dark:border-white/10 pt-8 pb-12">
-        <div className="w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8">
-          <Link href="/platform/resources" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#00d26a] font-bold text-sm mb-6 transition-colors">
-            <ArrowLeft size={16} />
-            Back to Resource Library
-          </Link>
+      {/* Split Hero Layout */}
+      <div className="w-full bg-[#e8f3ef] dark:bg-[#111e19] overflow-hidden rounded-b-[3rem]">
+        <div className="max-w-[1400px] mx-auto p-6 md:p-12 lg:p-16">
           
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-[#00d26a] flex items-center justify-center text-white shadow-lg shadow-[#00d26a]/20">
-              <Headphones size={32} />
+
+
+          <div className="flex flex-col lg:flex-row gap-12 items-center">
+            <div className="flex-1 max-w-2xl z-10">
+              <div className="inline-flex items-center gap-2 bg-[#00d26a]/10 text-[#00d26a] px-4 py-2 rounded-full font-bold text-sm mb-6">
+                <Sparkles size={16} /> Prioritize Your Peace
+              </div>
+              <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white leading-[1.1] mb-6">
+                Find Your <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00d26a] to-[#20c997]">Balance</span>
+              </h1>
+              <p className="text-gray-600 dark:text-gray-300 text-lg md:text-xl font-medium leading-relaxed max-w-xl">
+                Curated resources focused on mental health, work-life balance, and thriving as an IP professional. Take a moment for yourself.
+              </p>
             </div>
-            <div>
-              <h1 className="text-4xl font-black text-gray-800 dark:text-gray-100">Wellness & Wellbeing</h1>
-              <p className="text-gray-500 dark:text-gray-400 font-medium text-lg mt-1">Resources focused on mental health, work-life balance, and thriving in IP.</p>
+
+            <div className="flex-1 w-full relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#00d26a]/20 to-transparent rounded-[3rem] blur-3xl transform -rotate-6"></div>
+              <img src="/wellness-illustration.webp" alt="Wellness" className="relative z-10 w-full h-[400px] object-cover rounded-[3rem] shadow-2xl border-4 border-white/50 dark:border-white/10" onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop'; }} />
+              
+              {/* Floating badges */}
+              <div className="absolute top-10 -left-10 bg-white dark:bg-[#1a231f] p-4 rounded-2xl shadow-xl flex items-center gap-3 z-20 animate-bounce" style={{ animationDuration: '4s' }}>
+                <div className="bg-[#00d26a]/20 p-2 rounded-xl text-[#00d26a]"><Headphones size={20} /></div>
+                <div>
+                  <div className="text-xs text-gray-500 font-bold uppercase">Guided</div>
+                  <div className="font-black text-gray-900 dark:text-white">Meditations</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
+      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-12 flex flex-col lg:flex-row gap-10">
         
-        {/* Filter Bar */}
-        <div className="bg-white dark:bg-[#1e293b] p-4 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm flex flex-col xl:flex-row gap-4 items-center mb-10 sticky top-4 z-10">
-          
-          {/* Subcategory Pills */}
-          <div className="flex gap-2 overflow-x-auto pb-2 xl:pb-0 no-scrollbar w-full xl:w-auto">
-            {MOCK_WELLNESS_SUBCATEGORIES.map(sub => (
-              <button
-                key={sub.id}
-                onClick={() => setActiveSub(sub.id)}
-                className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 whitespace-nowrap shrink-0 ${
-                  activeSub === sub.id
-                    ? 'bg-[#00d26a] text-white shadow-md'
-                    : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
-                }`}
-              >
-                {sub.name}
-              </button>
-            ))}
-          </div>
+        {/* Left Sidebar Filter */}
+        <div className="w-full lg:w-72 shrink-0">
+          <div className="sticky top-8 bg-white dark:bg-[#151c19] rounded-[2rem] p-6 shadow-sm border border-gray-100 dark:border-white/5">
+            <h3 className="font-black text-gray-900 dark:text-white text-xl mb-6 flex items-center gap-2">
+              <Filter className="text-[#00d26a]" size={20} /> Explore
+            </h3>
 
-          <div className="flex flex-1 w-full gap-4 xl:ml-auto">
             {/* Search */}
-            <div className="relative flex-1 group">
-              <div className="absolute -inset-0.5 bg-[#00d26a] rounded-xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-              <div className="relative flex items-center bg-gray-50 dark:bg-[#0f172a] rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden">
-                <Search className="w-5 h-5 text-gray-400 ml-4 shrink-0 group-focus-within:text-[#00d26a] transition-colors" />
-                <input 
-                  type="text" 
-                  placeholder="Search wellness..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent py-2.5 pl-3 pr-4 font-medium text-gray-800 dark:text-gray-100 focus:outline-none placeholder-gray-400"
-                />
+            <div className="relative mb-8 group">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <Search className="w-4 h-4 text-gray-400 group-focus-within:text-[#00d26a]" />
+              </div>
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-gray-50 dark:bg-[#0f1513] border-none rounded-xl py-3 pl-10 pr-4 text-sm font-medium focus:ring-2 focus:ring-[#00d26a]/20 outline-none"
+              />
+            </div>
+
+            <div className="mb-8">
+              <h4 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-4">Focus Area</h4>
+              <div className="flex flex-col gap-2">
+                {MOCK_WELLNESS_SUBCATEGORIES.map(sub => (
+                  <button
+                    key={sub.id}
+                    onClick={() => setActiveSub(sub.id)}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                      activeSub === sub.id
+                        ? 'bg-[#00d26a] text-white shadow-md shadow-[#00d26a]/20'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#1a231f]'
+                    }`}
+                  >
+                    {sub.name}
+                  </button>
+                ))}
               </div>
             </div>
-            
-            {/* Custom Type Dropdown */}
-            <div className="relative">
-              <button 
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="bg-gray-50 dark:bg-[#0f172a] border border-[#00d26a] rounded-xl px-4 py-2.5 font-bold text-gray-800 dark:text-gray-100 flex items-center justify-between gap-3 min-w-[200px]"
-              >
-                {typeFilter}
-                <ChevronDown size={18} className={`text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {isDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-20 max-h-[300px] overflow-y-auto">
-                  {CONTENT_TYPES.map(type => (
-                    <button
-                      key={type}
-                      onClick={() => {
-                        setTypeFilter(type);
-                        setIsDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-2.5 font-medium transition-colors border-l-4 ${
-                        typeFilter === type 
-                          ? 'border-[#00d26a] bg-[#00d26a]/10 text-[#00d26a] font-bold' 
-                          : 'border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
-                      }`}
-                    >
+
+            <div>
+              <h4 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-4">Content Type</h4>
+              <div className="flex flex-col gap-2">
+                {CONTENT_TYPES.map(type => (
+                  <label key={type} className="flex items-center gap-3 p-2 cursor-pointer group">
+                    <div className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all ${typeFilter === type ? 'bg-[#00d26a] border-[#00d26a]' : 'border-gray-300 dark:border-gray-600 group-hover:border-[#00d26a]'}`}>
+                      {typeFilter === type && <div className="w-2 h-2 bg-white rounded-sm"></div>}
+                    </div>
+                    <span className={`text-sm font-medium ${typeFilter === type ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
                       {type}
-                    </button>
-                  ))}
-                </div>
-              )}
+                    </span>
+                    <input 
+                      type="radio" 
+                      name="type" 
+                      className="hidden" 
+                      checked={typeFilter === type}
+                      onChange={() => setTypeFilter(type)}
+                    />
+                  </label>
+                ))}
+              </div>
             </div>
+
           </div>
         </div>
 
-        {/* Featured Cards (Top) */}
-        {featuredResources.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-              <Star className="text-[#00d26a] fill-[#00d26a]" /> Featured Wellness
+        {/* Main Content Area */}
+        <div className="flex-1 min-w-0">
+          
+          {/* Featured Carousel Alternative (Grid for simplicity) */}
+          {featuredResources.length > 0 && (
+            <div className="mb-12">
+              <h2 className="text-2xl font-black text-gray-800 dark:text-white mb-6 flex items-center gap-2">
+                Editor's Picks
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {featuredResources.map(resource => (
+                  <Link key={resource.id} href={`/platform/resources/wellness/${resource.id}`} className="group block relative rounded-[2.5rem] overflow-hidden aspect-[4/3] shadow-sm hover:shadow-2xl hover:shadow-[#00d26a]/20 transition-all duration-500">
+                    <img src={resource.image} alt={resource.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    
+                    <div className="absolute top-6 left-6">
+                      <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full border border-white/30">
+                        {resource.type}
+                      </span>
+                    </div>
+
+                    <div className="absolute bottom-6 left-6 right-6">
+                      <h3 className="text-2xl font-black text-white mb-3 leading-tight">{resource.title}</h3>
+                      <div className="flex items-center gap-3 text-sm text-white/80 font-medium">
+                        <span className="bg-[#00d26a]/20 px-2 py-1 rounded-md text-[#00d26a] bg-white backdrop-blur-md">
+                          <Heart size={14} className="inline mr-1" />
+                          {resource.topic}
+                        </span>
+                        <span>{resource.time}</span>
+                      </div>
+                    </div>
+
+                    {resource.type.includes('Video') || resource.type.includes('Webinar') ? (
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="w-16 h-16 rounded-full bg-[#00d26a] text-white flex items-center justify-center pl-1 shadow-xl transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                          <Play size={24} fill="currentColor" />
+                        </div>
+                      </div>
+                    ) : null}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Soft Cards Grid */}
+          <div>
+            <h2 className="text-2xl font-black text-gray-800 dark:text-white mb-6 flex items-center gap-2">
+              All Resources
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {featuredResources.map(resource => (
-                <Link key={resource.id} href={`/platform/resources/wellness/${resource.id}`} className="group bg-white dark:bg-[#1e293b] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#00d26a]/10 transition-all duration-300">
-                  <div className="h-48 w-full relative">
-                    <img src={resource.image} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-4 flex gap-2">
-                      <span className="bg-[#00d26a] text-white text-[10px] font-black uppercase px-2 py-1 rounded-md">{resource.type}</span>
-                    </div>
+              {regularResources.map(resource => (
+                <Link key={resource.id} href={`/platform/resources/wellness/${resource.id}`} className="group bg-white dark:bg-[#151c19] p-6 rounded-[2rem] border border-gray-100 dark:border-white/5 hover:border-[#00d26a]/30 transition-all duration-300 hover:shadow-xl hover:shadow-[#00d26a]/5 flex flex-col h-full">
+                  
+                  <div className="flex items-start justify-between mb-4">
+                    <span className="inline-block bg-[#e8f3ef] dark:bg-[#00d26a]/10 text-[#00d26a] text-xs font-bold px-3 py-1.5 rounded-xl">
+                      {resource.type}
+                    </span>
+                    <span className="text-xs font-medium text-gray-400 bg-gray-50 dark:bg-white/5 px-2 py-1 rounded-lg">
+                      {resource.time}
+                    </span>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2 group-hover:text-[#00d26a] transition-colors">{resource.title}</h3>
-                    <div className="flex items-center justify-between mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">
-                      <span className="flex items-center gap-1.5"><Heart size={14} className="text-[#00d26a]" /> {resource.topic}</span>
-                      <span>{resource.time}</span>
+
+                  <h3 className="text-xl font-black text-gray-900 dark:text-white mb-4 leading-tight group-hover:text-[#00d26a] transition-colors">{resource.title}</h3>
+                  
+                  <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-50 dark:border-white/5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#00d26a] to-[#20c997] flex items-center justify-center text-white font-bold text-xs">
+                        {resource.expert.charAt(0)}
+                      </div>
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-300">{resource.expert}</span>
                     </div>
                   </div>
                 </Link>
               ))}
+
+              {regularResources.length === 0 && (
+                <div className="col-span-full py-16 text-center bg-white dark:bg-[#151c19] rounded-[2rem] border border-dashed border-gray-200 dark:border-white/10">
+                  <Activity size={48} className="mx-auto text-gray-300 mb-4" />
+                  <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">No resources found</h3>
+                  <p className="text-gray-500">Try adjusting your filters on the left.</p>
+                </div>
+              )}
             </div>
           </div>
-        )}
 
-        {/* Resource Grid */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-            <Activity className="text-[#00d26a]" /> All Wellness Resources
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {regularResources.map(resource => (
-              <Link key={resource.id} href={`/platform/resources/wellness/${resource.id}`} className="group bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-black uppercase text-[#00d26a] bg-[#00d26a]/10 px-2 py-1 rounded-md">{resource.type}</span>
-                    <span className="text-[10px] font-medium text-gray-400">{resource.time}</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-[#00d26a] transition-colors">{resource.title}</h3>
-                  <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1.5"><Heart size={14} /> {resource.topic}</span>
-                    <span className="text-[#00d26a] text-sm font-bold opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">&rarr;</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-
-            {regularResources.length === 0 && (
-              <div className="col-span-full py-12 text-center bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10 border-dashed">
-                <Coffee size={40} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">No resources found</h3>
-                <p className="text-gray-500 text-sm">Try adjusting your filters.</p>
-              </div>
-            )}
-          </div>
         </div>
-
       </div>
     </div>
   );
 }
+
