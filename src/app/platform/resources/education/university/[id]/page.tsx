@@ -13,7 +13,7 @@ const UNIVERSITIES_DB = {
     type: 'Public Research University',
     website: 'cam.ac.uk',
     logo: 'https://download.logo.wine/logo/University_of_Cambridge/University_of_Cambridge-Logo.wine.png',
-    heroImage: 'https://images.unsplash.com/photo-1574514578136-24ba06ebfa50?q=80&w=2070&auto=format&fit=crop',
+    heroImage: '/resourceimg1.jpg',
     description: 'The University of Cambridge is a collegiate research university in Cambridge, United Kingdom. Founded in 1209, Cambridge is the third-oldest university in continuous operation. It offers world-leading courses in intellectual property, technology law, and corporate strategy.',
     stats: { students: '24k+', courses: '150+', alumni: '300k+' },
     theme: { from: 'from-[#002f6c]', to: 'to-[#1b5e20]' }, // Cambridge blue/green
@@ -30,7 +30,7 @@ const UNIVERSITIES_DB = {
     type: 'Private Ivy League',
     website: 'yale.edu',
     logo: 'https://bcassetcdn.com/public/blog-ms/production/sites/2/2022/05/Yale-University-Logo-1.png',
-    heroImage: 'https://images.unsplash.com/photo-1507676184212-d0c30a514d7c?q=80&w=2069&auto=format&fit=crop',
+    heroImage: '/resourceimg2.jpg',
     description: 'Yale University is a private Ivy League research university in New Haven, Connecticut. Founded in 1701, it is the third-oldest institution of higher education in the United States. Yale Law School is consistently ranked as the premier institution for legal studies, including IP and innovation policy.',
     stats: { students: '13k+', courses: '120+', alumni: '190k+' },
     theme: { from: 'from-[#0f4d92]', to: 'to-[#002366]' }, // Yale Blue
@@ -46,7 +46,7 @@ const UNIVERSITIES_DB = {
     type: 'Private Ivy League',
     website: 'columbia.edu',
     logo: 'https://bcassetcdn.com/public/blog-ms/production/sites/2/2022/05/Columbia-University-Logo.png',
-    heroImage: 'https://images.unsplash.com/photo-1629735950007-06dfbe18e24e?q=80&w=2072&auto=format&fit=crop',
+    heroImage: '/resource3.jpg',
     description: 'Columbia University is a private Ivy League research university in New York City. Established in 1754, it is the oldest institution of higher education in New York. Its specialized courses in patent litigation and commercial law are renowned globally.',
     stats: { students: '33k+', courses: '200+', alumni: '380k+' },
     theme: { from: 'from-[#b9d9eb]', to: 'to-[#002b7f]' }, // Columbia Blue
@@ -63,7 +63,7 @@ const UNIVERSITIES_DB = {
     type: 'Public Central University',
     website: 'du.ac.in',
     logo: 'https://upload.wikimedia.org/wikipedia/en/b/b6/Delhi_University.svg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=original',
-    heroImage: 'https://images.unsplash.com/photo-1599387737213-9791444d3209?q=80&w=1974&auto=format&fit=crop',
+    heroImage: '/resourceimg1.jpg',
     description: 'The University of Delhi is a premier university of the country with a venerable legacy and international acclaim for highest academic standards. It offers specialized postgraduate diplomas in Intellectual Property Rights.',
     stats: { students: '600k+', courses: '500+', alumni: '1M+' },
     theme: { from: 'from-[#3b156b]', to: 'to-[#9b2938]' }, // Purple/Red mix
@@ -79,7 +79,7 @@ const UNIVERSITIES_DB = {
     type: 'Private Research University',
     website: 'stanford.edu',
     logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuWroQgVKxEvraDoi4RCt2EwbfBF2MLlYEGGsyssOeLYu6E-txC_SNJAFt&s=10',
-    heroImage: 'https://images.unsplash.com/photo-1620300185906-8c5e7b46d75c?q=80&w=2070&auto=format&fit=crop',
+    heroImage: '/resourceimg2.jpg',
     description: 'Stanford University is a private research university in Stanford, California. The campus occupies 8,180 acres, among the largest in the United States. Its location in Silicon Valley makes it a powerhouse for technology, innovation, and patent law.',
     stats: { students: '17k+', courses: '250+', alumni: '220k+' },
     theme: { from: 'from-[#8c1515]', to: 'to-[#4d0000]' }, // Cardinal Red
@@ -88,12 +88,94 @@ const UNIVERSITIES_DB = {
       { id: 12, title: "Software Patents in the US", type: "Online Course", time: "6 weeks", students: 2800, rating: 4.8, image: "/resourceimg1.jpg" },
       { id: 13, title: "Silicon Valley IP Bootcamp", type: "Workshop", time: "3 days", students: 500, rating: 5.0, image: "/resourceimg2.jpg" },
     ]
+  },
+  harvard: {
+    name: 'Harvard University',
+    location: 'Cambridge, Massachusetts',
+    established: '1636',
+    type: 'Private Ivy League',
+    website: 'harvard.edu',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/7/70/Harvard_University_logo.svg',
+    heroImage: '/resource3.jpg',
+    description: 'Harvard University is a private Ivy League research university in Cambridge, Massachusetts. Founded in 1636, it is the oldest institution of higher learning in the United States. Harvard Law School offers unparalleled resources in global IP policy.',
+    stats: { students: '25k+', courses: '300+', alumni: '400k+' },
+    theme: { from: 'from-[#A51C30]', to: 'to-[#5E101B]' }, // Crimson
+    courses: [
+      { id: 14, title: "Global IP Policy", type: "Masterclass", time: "8 weeks", students: 4200, rating: 4.9, image: "/resourceimg1.jpg" },
+      { id: 15, title: "Biotech Patents", type: "Online Course", time: "6 weeks", students: 1800, rating: 4.7, image: "/resourceimg2.jpg" },
+    ]
+  },
+  oxford: {
+    name: 'Oxford University',
+    location: 'Oxford, United Kingdom',
+    established: '1096',
+    type: 'Public Research University',
+    website: 'ox.ac.uk',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Oxford-University-Circlet.svg',
+    heroImage: '/resourceimg1.jpg',
+    description: 'The University of Oxford is a collegiate research university in Oxford, England. There is evidence of teaching as early as 1096. It boasts one of the most prestigious intellectual property law programs in Europe.',
+    stats: { students: '26k+', courses: '350+', alumni: '350k+' },
+    theme: { from: 'from-[#002147]', to: 'to-[#001228]' }, // Oxford Blue
+    courses: [
+      { id: 16, title: "European Copyright Law", type: "Certification", time: "Self-paced", students: 5000, rating: 4.8, image: "/resource3.jpg" },
+      { id: 17, title: "History of Patents", type: "Masterclass", time: "4 weeks", students: 900, rating: 4.9, image: "/resourceimg2.jpg" },
+    ]
+  },
+  mit: {
+    name: 'Massachusetts Institute of Technology',
+    location: 'Cambridge, Massachusetts',
+    established: '1861',
+    type: 'Private Land-grant University',
+    website: 'mit.edu',
+    logo: 'https://download.logo.wine/logo/Massachusetts_Institute_of_Technology/Massachusetts_Institute_of_Technology-Logo.wine.png',
+    heroImage: '/resourceimg2.jpg',
+    description: 'MIT is a private land-grant research university in Cambridge, Massachusetts. The institute has played a key role in the development of modern technology and science, making its courses on IP transfer and spin-outs world-class.',
+    stats: { students: '11k+', courses: '200+', alumni: '140k+' },
+    theme: { from: 'from-[#A31F34]', to: 'to-[#8A8B8C]' }, // MIT Red and Gray
+    courses: [
+      { id: 18, title: "Tech Transfer & Commercialization", type: "Workshop", time: "2 days", students: 300, rating: 5.0, image: "/resourceimg1.jpg" },
+      { id: 19, title: "Open Source Licensing", type: "Online Course", time: "5 weeks", students: 3100, rating: 4.9, image: "/resource3.jpg" },
+    ]
+  },
+  princeton: {
+    name: 'Princeton University',
+    location: 'Princeton, New Jersey',
+    established: '1746',
+    type: 'Private Ivy League',
+    website: 'princeton.edu',
+    logo: 'https://download.logo.wine/logo/Princeton_University/Princeton_University-Logo.wine.png',
+    heroImage: '/resource3.jpg',
+    description: 'Princeton University is a private Ivy League research university in Princeton, New Jersey. Founded in 1746 in Elizabeth as the College of New Jersey, Princeton is the fourth-oldest institution of higher education in the United States.',
+    stats: { students: '8k+', courses: '150+', alumni: '95k+' },
+    theme: { from: 'from-[#E77500]', to: 'to-[#121212]' }, // Princeton Orange & Black
+    courses: [
+      { id: 20, title: "Innovation Economics", type: "Masterclass", time: "10 weeks", students: 1200, rating: 4.9, image: "/resourceimg2.jpg" },
+      { id: 21, title: "Policy and Technology", type: "Online Course", time: "8 weeks", students: 3000, rating: 4.8, image: "/resource3.jpg" },
+    ]
+  },
+  penn: {
+    name: 'University of Pennsylvania',
+    location: 'Philadelphia, Pennsylvania',
+    established: '1740',
+    type: 'Private Ivy League',
+    website: 'upenn.edu',
+    logo: 'https://download.logo.wine/logo/University_of_Pennsylvania/University_of_Pennsylvania-Logo.wine.png',
+    heroImage: '/resourceimg1.jpg',
+    description: 'The University of Pennsylvania is a private Ivy League research university in Philadelphia, Pennsylvania. Founded in 1740, it is one of the nine colonial colleges chartered prior to the U.S. Declaration of Independence.',
+    stats: { students: '28k+', courses: '250+', alumni: '320k+' },
+    theme: { from: 'from-[#011F5B]', to: 'to-[#990000]' }, // Penn Blue & Red
+    courses: [
+      { id: 22, title: "Wharton: IP Strategy", type: "Certification", time: "12 weeks", students: 6500, rating: 4.9, image: "/resourceimg1.jpg" },
+      { id: 23, title: "Law and Entrepreneurship", type: "Workshop", time: "4 days", students: 450, rating: 4.7, image: "/resourceimg2.jpg" },
+    ]
   }
 };
 
-export default function UniversityProfilePage({ params }: { params: { id: string } }) {
-  // Extract id, handle async if needed in real app, but for sync mock:
-  const uniId = params.id as keyof typeof UNIVERSITIES_DB;
+import { useParams } from 'next/navigation';
+
+export default function UniversityProfilePage() {
+  const params = useParams();
+  const uniId = (params?.id as keyof typeof UNIVERSITIES_DB) || 'cambridge';
   const university = UNIVERSITIES_DB[uniId] || UNIVERSITIES_DB['cambridge']; // fallback
   
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,7 +196,7 @@ export default function UniversityProfilePage({ params }: { params: { id: string
         </div>
         
         {/* Texture Overlay Pattern */}
-        <div className="absolute inset-0 opacity-[0.05] dark:opacity-[0.15] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-0 pointer-events-none mix-blend-overlay"></div>
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-0 pointer-events-none"></div>
 
         {/* Top Nav Overlay */}
         <div className="relative z-50 p-6 flex items-center justify-between">

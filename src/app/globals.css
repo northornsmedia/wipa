@@ -226,3 +226,16 @@ img {
     transform: scale3d(1, 1, 1);
   }
 }
+
+@keyframes marquee {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+.pause-on-hover {
+  animation-play-state: paused;
+}

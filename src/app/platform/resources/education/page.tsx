@@ -167,22 +167,50 @@ export default function EducationHubPage() {
       </div>
 
       {/* Partner Universities Section */}
-      <div className="px-6 max-w-7xl mx-auto mb-20">
-        <div className="text-center mb-8">
-          <p className="text-sm font-bold text-gray-400 dark:text-white/40 uppercase tracking-widest">Learn from top tier institutions</p>
+      <div className="px-6 max-w-[1400px] mx-auto mb-20 overflow-hidden relative group">
+        <div className="text-center mb-8 relative z-10 bg-slate-50 dark:bg-[#020617]">
+          <p className="text-sm font-bold text-gray-400 dark:text-white/40 uppercase tracking-widest inline-block px-4">Learn from top tier institutions</p>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-12 md:gap-20 opacity-70 hover:opacity-100 transition-opacity">
-          {[
-            { id: 'cambridge', name: 'Cambridge University', logo: 'https://download.logo.wine/logo/University_of_Cambridge/University_of_Cambridge-Logo.wine.png' },
-            { id: 'yale', name: 'Yale University', logo: 'https://bcassetcdn.com/public/blog-ms/production/sites/2/2022/05/Yale-University-Logo-1.png' },
-            { id: 'columbia', name: 'Columbia University', logo: 'https://bcassetcdn.com/public/blog-ms/production/sites/2/2022/05/Columbia-University-Logo.png' },
-            { id: 'delhi', name: 'Delhi University', logo: 'https://upload.wikimedia.org/wikipedia/en/b/b6/Delhi_University.svg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=original' },
-            { id: 'stanford', name: 'Stanford University', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuWroQgVKxEvraDoi4RCt2EwbfBF2MLlYEGGsyssOeLYu6E-txC_SNJAFt&s=10' },
-          ].map(uni => (
-            <Link key={uni.id} href={`/platform/resources/education/university/${uni.id}`} className="group transition-transform hover:scale-105 active:scale-95 grayscale hover:grayscale-0">
-              <img src={uni.logo} alt={uni.name} className="h-12 md:h-16 w-auto object-contain drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] dark:brightness-125 mix-blend-multiply dark:mix-blend-normal" />
-            </Link>
-          ))}
+        
+        {/* Marquee Container */}
+        <div className="relative w-full overflow-hidden flex [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+          <div className="flex w-max animate-marquee group-hover:pause-on-hover gap-16 md:gap-24 pl-16 md:pl-24">
+            {/* First Set */}
+            {[
+              { id: 'cambridge', name: 'Cambridge University', logo: 'https://download.logo.wine/logo/University_of_Cambridge/University_of_Cambridge-Logo.wine.png' },
+              { id: 'yale', name: 'Yale University', logo: 'https://bcassetcdn.com/public/blog-ms/production/sites/2/2022/05/Yale-University-Logo-1.png' },
+              { id: 'harvard', name: 'Harvard University', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/70/Harvard_University_logo.svg' },
+              { id: 'oxford', name: 'Oxford University', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Oxford-University-Circlet.svg' },
+              { id: 'mit', name: 'MIT', logo: 'https://download.logo.wine/logo/Massachusetts_Institute_of_Technology/Massachusetts_Institute_of_Technology-Logo.wine.png' },
+              { id: 'columbia', name: 'Columbia University', logo: 'https://bcassetcdn.com/public/blog-ms/production/sites/2/2022/05/Columbia-University-Logo.png' },
+              { id: 'delhi', name: 'Delhi University', logo: 'https://upload.wikimedia.org/wikipedia/en/b/b6/Delhi_University.svg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=original' },
+              { id: 'stanford', name: 'Stanford University', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuWroQgVKxEvraDoi4RCt2EwbfBF2MLlYEGGsyssOeLYu6E-txC_SNJAFt&s=10' },
+              { id: 'princeton', name: 'Princeton University', logo: 'https://download.logo.wine/logo/Princeton_University/Princeton_University-Logo.wine.png' },
+              { id: 'penn', name: 'UPenn', logo: 'https://download.logo.wine/logo/University_of_Pennsylvania/University_of_Pennsylvania-Logo.wine.png' },
+            ].map(uni => (
+              <Link key={`set1-${uni.id}`} href={`/platform/resources/education/university/${uni.id}`} className="shrink-0 transition-transform hover:scale-110">
+                <img src={uni.logo} alt={uni.name} className="h-12 md:h-16 w-auto object-contain drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] dark:brightness-125" />
+              </Link>
+            ))}
+            
+            {/* Duplicate Set for Seamless Loop */}
+            {[
+              { id: 'cambridge', name: 'Cambridge University', logo: 'https://download.logo.wine/logo/University_of_Cambridge/University_of_Cambridge-Logo.wine.png' },
+              { id: 'yale', name: 'Yale University', logo: 'https://bcassetcdn.com/public/blog-ms/production/sites/2/2022/05/Yale-University-Logo-1.png' },
+              { id: 'harvard', name: 'Harvard University', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/70/Harvard_University_logo.svg' },
+              { id: 'oxford', name: 'Oxford University', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Oxford-University-Circlet.svg' },
+              { id: 'mit', name: 'MIT', logo: 'https://download.logo.wine/logo/Massachusetts_Institute_of_Technology/Massachusetts_Institute_of_Technology-Logo.wine.png' },
+              { id: 'columbia', name: 'Columbia University', logo: 'https://bcassetcdn.com/public/blog-ms/production/sites/2/2022/05/Columbia-University-Logo.png' },
+              { id: 'delhi', name: 'Delhi University', logo: 'https://upload.wikimedia.org/wikipedia/en/b/b6/Delhi_University.svg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=original' },
+              { id: 'stanford', name: 'Stanford University', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuWroQgVKxEvraDoi4RCt2EwbfBF2MLlYEGGsyssOeLYu6E-txC_SNJAFt&s=10' },
+              { id: 'princeton', name: 'Princeton University', logo: 'https://download.logo.wine/logo/Princeton_University/Princeton_University-Logo.wine.png' },
+              { id: 'penn', name: 'UPenn', logo: 'https://download.logo.wine/logo/University_of_Pennsylvania/University_of_Pennsylvania-Logo.wine.png' },
+            ].map(uni => (
+              <Link key={`set2-${uni.id}`} href={`/platform/resources/education/university/${uni.id}`} className="shrink-0 transition-transform hover:scale-110">
+                <img src={uni.logo} alt={uni.name} className="h-12 md:h-16 w-auto object-contain drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] dark:brightness-125" />
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 
