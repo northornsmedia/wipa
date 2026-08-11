@@ -181,14 +181,7 @@ export default function WellnessHubPage() {
               <div className="absolute inset-0 bg-gradient-to-tr from-[#00d26a]/20 to-transparent rounded-[3rem] blur-3xl transform -rotate-6"></div>
               <img src="/wellness-illustration.webp" alt="Wellness" className="relative z-10 w-full h-[400px] object-cover rounded-[3rem] shadow-2xl border-4 border-white/50 dark:border-white/10" onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop'; }} />
               
-              {/* Floating badges */}
-              <div className="absolute top-10 -left-10 bg-white dark:bg-[#1a231f] p-4 rounded-2xl shadow-xl flex items-center gap-3 z-20 animate-bounce" style={{ animationDuration: '4s' }}>
-                <div className="bg-[#00d26a]/20 p-2 rounded-xl text-[#00d26a]"><Headphones size={20} /></div>
-                <div>
-                  <div className="text-xs text-gray-500 font-bold uppercase">Guided</div>
-                  <div className="font-black text-gray-900 dark:text-white">Meditations</div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Building, ChevronRight, FileText, Download, Users, Video, Book, Briefcase, ChevronDown, FolderOpen, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, Search, Building, ChevronRight, FileText, Download, Users, Video, Book, Briefcase, ChevronDown, FolderOpen, MoreHorizontal, Shield, Sparkles, Scale } from 'lucide-react';
 import Link from 'next/link';
 
 const MOCK_INHOUSE_SUBCATEGORIES = [
@@ -105,7 +105,6 @@ export default function InHouseCounselHubPage() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
-  const [isTypeMenuOpen, setIsTypeMenuOpen] = useState(false);
 
   const filteredResources = MOCK_INHOUSE_RESOURCES.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -116,213 +115,147 @@ export default function InHouseCounselHubPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0f172a] text-gray-900 dark:text-gray-100 font-sans selection:bg-[#2563eb]/30 flex flex-col md:flex-row h-screen overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-20">
       
-      {/* Enterprise Sidebar (Dashboard Style) */}
-      <aside className="w-full md:w-72 bg-white dark:bg-[#1e293b] border-r border-gray-200 dark:border-white/10 flex flex-col shrink-0 h-auto md:h-screen sticky top-0 z-20">
+      {/* Cinematic Hero Header (Ice Blue Theme) */}
+      <div className="relative min-h-[350px] md:min-h-[450px] w-full flex flex-col justify-center pb-12 pt-8 border-b border-slate-200 dark:border-white/10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-white to-slate-100 dark:from-[#082f49] dark:via-[#020617] dark:to-black z-0 transition-colors duration-300"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-300/30 dark:bg-sky-600/20 rounded-full blur-[150px] pointer-events-none z-0 mix-blend-screen"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[400px] bg-cyan-300/20 dark:bg-cyan-900/30 rounded-full blur-[120px] pointer-events-none z-0 mix-blend-screen"></div>
         
-        <div className="p-6 border-b border-gray-200 dark:border-white/10">
+        {/* Ice crystals overlay pattern */}
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-0 pointer-events-none"></div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#2563eb]/10 dark:bg-[#2563eb]/20 flex items-center justify-center text-[#2563eb] border border-[#2563eb]/20">
-              <Building size={20} />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">In-House Counsel</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Enterprise Knowledge Base</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-4 flex-1 overflow-y-auto">
-          <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4 px-3">Directories</div>
-          <nav className="flex flex-col gap-1">
-            {MOCK_INHOUSE_SUBCATEGORIES.map(sub => {
-              const Icon = sub.icon;
-              return (
-                <button
-                  key={sub.id}
-                  onClick={() => setActiveSub(sub.id)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                    activeSub === sub.id
-                      ? 'bg-[#2563eb] text-white shadow-md'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-gray-200'
-                  }`}
-                >
-                  <Icon size={18} className={activeSub === sub.id ? 'text-white' : 'text-gray-400 dark:text-gray-500'} />
-                  {sub.name}
-                  {activeSub === sub.id && <ChevronRight size={16} className="ml-auto opacity-50" />}
-                </button>
-              )
-            })}
-          </nav>
-
-          <div className="mt-8 border-t border-gray-100 dark:border-white/5 pt-6 px-3">
-            <div className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">Quick Stats</div>
-            <div className="grid grid-cols-2 gap-4">
-               <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-lg border border-gray-100 dark:border-white/5">
-                 <div className="text-2xl font-bold text-gray-900 dark:text-white">142</div>
-                 <div className="text-xs text-gray-500 font-medium">Resources</div>
+        <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 relative z-10 flex flex-col items-center justify-center h-full mt-8 md:mt-12">
+           <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-400 text-xs font-bold uppercase tracking-widest mb-6 shadow-lg shadow-sky-500/10 backdrop-blur-md">
+             <Shield size={14} /> Enterprise Knowledge Base
+           </div>
+           
+           <div className="max-w-5xl mx-auto text-center flex flex-col items-center">
+             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-900 via-sky-700 to-cyan-500 dark:from-white dark:via-sky-200 dark:to-cyan-400">
+               In-House Counsel
+             </h1>
+             <p className="text-lg md:text-xl lg:text-2xl font-medium text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed mx-auto">
+               Access and download exclusive playbooks, templates, and corporate IP insights.
+             </p>
+             
+             {/* Search & Dropdown */}
+             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-2xl mt-12">
+               <div className="relative group w-full">
+                 <div className="absolute inset-0 bg-sky-500 rounded-full blur-md opacity-0 group-focus-within:opacity-20 transition duration-500"></div>
+                 <div className="relative flex items-center bg-white/80 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-full overflow-hidden backdrop-blur-xl shadow-xl dark:shadow-none transition-all">
+                   <Search size={16} className="text-slate-400 dark:text-slate-500 ml-4 shrink-0" />
+                   <input 
+                     type="text" 
+                     placeholder="Search database..." 
+                     value={searchQuery}
+                     onChange={(e) => setSearchQuery(e.target.value)}
+                     className="w-full bg-transparent py-3.5 pl-3 pr-4 text-sm font-bold text-slate-900 dark:text-white focus:outline-none placeholder-slate-500 dark:placeholder-slate-400"
+                   />
+                 </div>
                </div>
-               <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-lg border border-gray-100 dark:border-white/5">
-                 <div className="text-2xl font-bold text-[#2563eb]">12</div>
-                 <div className="text-xs text-gray-500 font-medium">New this week</div>
+               
+               <div className="relative w-full sm:w-48 shrink-0">
+                  <select 
+                     value={typeFilter}
+                     onChange={(e) => setTypeFilter(e.target.value)}
+                     className="appearance-none w-full bg-white/80 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-full px-6 py-3.5 pr-12 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 cursor-pointer backdrop-blur-xl shadow-xl dark:shadow-none transition-all"
+                   >
+                     {CONTENT_TYPES.map(type => (
+                       <option key={type} value={type} className="dark:bg-slate-900">{type}</option>
+                     ))}
+                   </select>
+                   <ChevronDown size={14} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none" />
                </div>
-            </div>
-          </div>
+             </div>
+
+           </div>
         </div>
-      </aside>
+      </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 py-12 relative z-10">
         
-        {/* Top Navbar / Search */}
-        <header className="bg-white dark:bg-[#1e293b] border-b border-gray-200 dark:border-white/10 h-16 shrink-0 flex items-center justify-between px-6 z-10 shadow-sm dark:shadow-none">
-          <div className="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 hidden sm:flex">
-            <span>Corporate IP</span>
-            <ChevronRight size={14} className="mx-2" />
-            <span className="text-gray-900 dark:text-white font-bold">{MOCK_INHOUSE_SUBCATEGORIES.find(s => s.id === activeSub)?.name}</span>
-          </div>
-
-          <div className="flex-1 max-w-lg ml-auto relative group">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Search className="w-4 h-4 text-gray-400 group-focus-within:text-[#2563eb] transition-colors" />
-            </div>
-            <input 
-              type="text" 
-              placeholder="Search database..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-100 dark:bg-[#0f172a] border border-transparent focus:border-[#2563eb] focus:bg-white dark:focus:bg-[#1e293b] rounded-md py-1.5 pl-9 pr-4 text-sm font-medium text-gray-900 dark:text-white placeholder-gray-500 outline-none transition-all shadow-inner dark:shadow-none"
-            />
-          </div>
-        </header>
-
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gray-50 dark:bg-[#0f172a]">
-          
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-end justify-between mb-8">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Document Database</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Access and download templates, guides, and corporate insights.</p>
-              </div>
-              
-              {/* Filter Dropdown */}
-              <div className="relative hidden sm:block">
-                <button 
-                  onClick={() => setIsTypeMenuOpen(!isTypeMenuOpen)}
-                  className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 rounded-md px-4 py-2 text-sm font-bold text-gray-700 dark:text-gray-200 flex items-center gap-2 transition-all shadow-sm"
-                >
-                  Filter: {typeFilter}
-                  <ChevronDown size={14} className={isTypeMenuOpen ? 'rotate-180' : ''} />
-                </button>
-                
-                {isTypeMenuOpen && (
-                  <div className="absolute top-full right-0 mt-1 w-56 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 rounded-md shadow-xl overflow-hidden z-20 max-h-64 overflow-y-auto py-1">
-                    {CONTENT_TYPES.map(type => (
-                      <button
-                        key={type}
-                        onClick={() => {
-                          setTypeFilter(type);
-                          setIsTypeMenuOpen(false);
-                        }}
-                        className={`w-full text-left px-4 py-2 text-sm font-medium transition-colors ${
-                          typeFilter === type 
-                            ? 'text-[#2563eb] bg-[#2563eb]/5' 
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
-                        }`}
-                      >
-                        {type}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Enterprise Data Table View */}
-            <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
-              
-              {/* Table Header */}
-              <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                <div className="col-span-12 md:col-span-6 lg:col-span-5">Name</div>
-                <div className="col-span-3 hidden lg:block">Type</div>
-                <div className="col-span-3 hidden md:block">Organization</div>
-                <div className="col-span-1 hidden lg:block text-right">Actions</div>
-              </div>
-
-              {/* Table Body */}
-              <div className="divide-y divide-gray-100 dark:divide-white/5">
-                {filteredResources.map(resource => (
-                  <div key={resource.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-blue-50/50 dark:hover:bg-white/5 transition-colors group">
-                    
-                    {/* Name & Icon */}
-                    <div className="col-span-12 md:col-span-6 lg:col-span-5 flex items-start gap-4 min-w-0">
-                      <div className={`mt-0.5 shrink-0 ${resource.type === 'Corporate IP Playbook' ? 'text-[#2563eb]' : 'text-gray-400'}`}>
-                        {resource.type === 'Video' || resource.type === 'Webinar' || resource.type === 'GC Roundtable' ? (
-                           <Video size={18} />
-                        ) : resource.type === 'Ask an In-House Counsel' ? (
-                           <Users size={18} />
-                        ) : (
-                           <FileText size={18} />
-                        )}
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <Link href={`/platform/resources/in-house-counsel/${resource.id}`} className="text-sm font-bold text-gray-900 dark:text-white hover:text-[#2563eb] dark:hover:text-[#2563eb] truncate transition-colors">
-                          {resource.title}
-                        </Link>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400 font-medium">
-                           {resource.featured && <span className="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wide">Featured</span>}
-                           <span>{resource.topic}</span>
-                           <span className="opacity-50">•</span>
-                           <span>{resource.date}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Type Badge */}
-                    <div className="col-span-3 hidden lg:flex items-center">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/5 truncate">
-                        {resource.type}
-                      </span>
-                    </div>
-
-                    {/* Organization */}
-                    <div className="col-span-3 hidden md:flex flex-col">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">{resource.organisation}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-500 truncate">{resource.contributor}</span>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="col-span-1 hidden lg:flex items-center justify-end gap-2">
-                       <span className="text-xs text-gray-400 mr-2">{resource.size}</span>
-                       <button className="text-gray-400 hover:text-[#2563eb] p-1 rounded transition-colors opacity-0 group-hover:opacity-100">
-                         <Download size={16} />
-                       </button>
-                       <button className="text-gray-400 hover:text-gray-700 dark:hover:text-white p-1 rounded transition-colors opacity-0 group-hover:opacity-100">
-                         <MoreHorizontal size={16} />
-                       </button>
-                    </div>
-
-                  </div>
-                ))}
-
-                {filteredResources.length === 0 && (
-                  <div className="px-6 py-16 text-center flex flex-col items-center">
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
-                      <Search size={24} className="text-gray-400" />
-                    </div>
-                    <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">No documents found</h3>
-                    <p className="text-sm text-gray-500">Try adjusting your filters or search terms.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-          </div>
+        {/* Navigation & Filters (Horizontal) */}
+        <div className="mb-12">
+           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-4 w-full">
+             {MOCK_INHOUSE_SUBCATEGORIES.map(sub => {
+               const Icon = sub.icon;
+               return (
+                 <button
+                   key={sub.id}
+                   onClick={() => setActiveSub(sub.id)}
+                   className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold transition-all duration-300 ${
+                     activeSub === sub.id 
+                       ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30 scale-105' 
+                       : 'bg-white dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/5'
+                   }`}
+                 >
+                   <Icon size={16} className={activeSub === sub.id ? 'text-white' : 'text-slate-400 dark:text-slate-500'} />
+                   {sub.name}
+                 </button>
+               )
+             })}
+           </div>
         </div>
-      </main>
+
+        {/* Ice Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredResources.map(resource => (
+            <div 
+              key={resource.id} 
+              className="group relative bg-white dark:bg-slate-900/40 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-sky-500/50 dark:hover:border-sky-500/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-sky-500/10 flex flex-col h-full"
+            >
+              {/* Top Accent */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+              <div className="p-6 flex-1 flex flex-col">
+                <div className="flex justify-between items-start mb-6">
+                  <div className={`p-3 rounded-2xl ${resource.featured ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-sky-100 dark:group-hover:bg-sky-900/50 group-hover:text-sky-600 dark:group-hover:text-sky-400'} transition-colors duration-300`}>
+                    {resource.type === 'Video' || resource.type === 'GC Roundtable' ? (
+                       <Video size={24} />
+                    ) : resource.type === 'Ask an In-House Counsel' ? (
+                       <Users size={24} />
+                    ) : (
+                       <FileText size={24} />
+                    )}
+                  </div>
+                  <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{resource.date}</span>
+                </div>
+                
+                <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight mb-3 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                  {resource.title}
+                </h3>
+                
+                <div className="flex items-center gap-2 mb-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+                  <Building size={14} className="text-slate-400" /> {resource.organisation}
+                </div>
+                
+                <div className="mt-auto pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Type</span>
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{resource.type}</span>
+                  </div>
+                  <button className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover:bg-sky-500 group-hover:text-white transition-all duration-300 shadow-sm">
+                    {resource.size.includes('Video') || resource.size === 'Read' ? <ChevronRight size={18} /> : <Download size={18} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {filteredResources.length === 0 && (
+            <div className="col-span-full py-24 flex flex-col items-center justify-center text-center">
+              <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800/50 rounded-full flex items-center justify-center mb-6 border border-slate-200 dark:border-white/5">
+                <Search size={32} className="text-slate-400 dark:text-slate-500" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2">No documents found</h3>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">Try adjusting your filters or search terms.</p>
+            </div>
+          )}
+        </div>
+
+      </div>
     </div>
   );
 }

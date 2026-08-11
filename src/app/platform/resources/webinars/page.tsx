@@ -125,30 +125,29 @@ export default function WebinarsHubPage() {
   const otherResources = filteredResources.filter(r => r.id !== mainFeature?.id);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] text-gray-900 dark:text-white font-sans selection:bg-[#ff2a5f]/30">
+    <div className="relative min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] text-gray-900 dark:text-white font-sans selection:bg-[#ff2a5f]/30">
       
-      {/* Navbar overlay style */}
-      <div className="absolute top-0 left-0 right-0 z-50 p-6 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent">
-
-        <div className="flex items-center gap-4 bg-black/20 dark:bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/20 focus-within:border-white/50 transition-all shadow-sm">
-          <Search size={16} className="text-white/80" />
-          <input 
-            type="text" 
-            placeholder="Search videos..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent border-none outline-none text-sm text-white placeholder-white/70 w-48"
-          />
-        </div>
-      </div>
-
       {/* Cinematic Hero Feature */}
       {mainFeature && (
-        <div className="relative w-full h-[70vh] min-h-[600px] flex items-end pb-20">
-          <div className="absolute inset-0">
+        <div className="relative w-full h-[70vh] min-h-[600px] flex flex-col justify-between pb-20">
+          <div className="absolute inset-0 z-0">
             <img src={mainFeature.image} alt={mainFeature.title} className="w-full h-full object-cover opacity-80 dark:opacity-60" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#f8f9fa] via-[#f8f9fa]/80 dark:from-[#0f172a] dark:via-[#0f172a]/50 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#f8f9fa]/90 via-[#f8f9fa]/50 dark:from-[#0f172a] dark:via-[#0f172a]/30 to-transparent" />
+          </div>
+
+          {/* Search bar positioned relative to hero */}
+          <div className="relative z-50 p-6 flex items-center justify-between bg-gradient-to-b from-black/50 to-transparent">
+            <div className="flex items-center gap-4 bg-black/20 dark:bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/20 focus-within:border-white/50 transition-all shadow-sm">
+              <Search size={16} className="text-white/80" />
+              <input 
+                type="text" 
+                placeholder="Search videos..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent border-none outline-none text-sm text-white placeholder-white/70 w-48"
+              />
+            </div>
           </div>
           
           <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row gap-8 items-end justify-between">
