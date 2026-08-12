@@ -110,16 +110,23 @@ export default function EducationHubPage() {
 
   const allUniversityCourses = React.useMemo(() => {
     const courses: any[] = [];
-    Object.values(UNIVERSITIES_DB).forEach((uni: any) => {
+    Object.entries(UNIVERSITIES_DB).forEach(([key, uni]: [string, any]) => {
       uni.courses.forEach((course: any) => {
         courses.push({
           ...course,
           universityName: uni.name,
-          universityImage: uni.heroImage
+          universityLogo: uni.logo,
+          isUNH: key === 'unh'
         });
       });
     });
-    return courses;
+    
+    // Sort so UNH courses appear first
+    return courses.sort((a, b) => {
+      if (a.isUNH && !b.isUNH) return -1;
+      if (!a.isUNH && b.isUNH) return 1;
+      return 0;
+    });
   }, []);
 
   const filteredResources = MOCK_EDU_RESOURCES.filter(r => {
@@ -288,10 +295,10 @@ export default function EducationHubPage() {
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {allUniversityCourses.map((course, idx) => (
               <Link key={course.id} href={`/platform/resources/education/university/${course.id}`} className="group flex flex-col bg-white dark:bg-[#111111] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden shadow-sm hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300">
-                 <div className="relative h-48 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
-                    <img src={course.universityImage} alt={course.universityName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-indigo-600 dark:text-white shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                 <div className="relative h-48 w-full overflow-hidden bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center p-8 border-b border-gray-100 dark:border-white/5">
+                    <img src={course.universityLogo} alt={course.universityName} className="w-full h-full object-contain filter group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white dark:bg-black/80 flex items-center justify-center text-indigo-600 dark:text-white shadow-md border border-gray-100 dark:border-white/10 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                       <PlayCircle size={20} className="ml-0.5" />
                     </div>
                  </div>
