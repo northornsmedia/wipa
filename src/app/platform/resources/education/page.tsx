@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Search, GraduationCap, ChevronDown, PlayCircle, BookOpen, Star, Info, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Search, GraduationCap, ChevronDown, PlayCircle, BookOpen, Star, Info, ChevronRight, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { UNIVERSITIES_DB } from './data';
 const MOCK_EDU_SUBCATEGORIES = [
@@ -114,7 +114,8 @@ export default function EducationHubPage() {
       uni.courses.forEach((course: any) => {
         courses.push({
           ...course,
-          universityName: uni.name
+          universityName: uni.name,
+          universityImage: uni.heroImage
         });
       });
     });
@@ -282,27 +283,32 @@ export default function EducationHubPage() {
       {/* Curriculum List */}
       <div className="px-6 max-w-7xl mx-auto">
          <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-            <BookOpen className="text-indigo-500" size={24} /> Full Curriculum
+            <BookOpen className="text-indigo-500" size={24} /> All Available Courses
          </h2>
-         <div className="bg-white dark:bg-[#111111] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden shadow-sm">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {allUniversityCourses.map((course, idx) => (
-              <Link key={course.id} href={`/platform/resources/education/university/${course.id}`} className={`group flex flex-col sm:flex-row items-start sm:items-center p-6 md:p-8 gap-6 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors ${idx !== allUniversityCourses.length - 1 ? 'border-b border-gray-100 dark:border-white/5' : ''}`}>
-                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
-                   <PlayCircle size={32} />
+              <Link key={course.id} href={`/platform/resources/education/university/${course.id}`} className="group flex flex-col bg-white dark:bg-[#111111] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden shadow-sm hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300">
+                 <div className="relative h-48 w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <img src={course.universityImage} alt={course.universityName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-indigo-600 dark:text-white shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                      <PlayCircle size={20} className="ml-0.5" />
+                    </div>
                  </div>
-                 <div className="flex-1">
-                   <div className="flex items-center gap-3 mb-2">
-                     <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">{course.type}</span>
-                     <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600"></span>
-                     <span className="text-xs font-bold text-gray-500">{course.universityName}</span>
+                 <div className="p-6 md:p-8 flex-1 flex flex-col">
+                   <div className="flex items-center gap-3 mb-3">
+                     <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-1 rounded-md">{course.type}</span>
                    </div>
-                   <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{course.title}</h3>
-                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Instructed by {course.universityName} Faculty</p>
-                 </div>
-                 <div className="shrink-0 pt-4 sm:pt-0 flex items-center justify-between w-full sm:w-auto">
-                   <span className="text-sm font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/5">{course.time}</span>
-                   <div className="w-10 h-10 rounded-full bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-400 ml-4 group-hover:bg-indigo-600 group-hover:border-indigo-600 group-hover:text-white transition-colors">
-                     <ChevronRight size={20} />
+                   <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight line-clamp-2">{course.title}</h3>
+                   
+                   <div className="mt-auto pt-6 flex items-end justify-between">
+                      <div>
+                        <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Provided By</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-300 line-clamp-1">{course.universityName}</p>
+                      </div>
+                      <div className="shrink-0 flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-lg">
+                        <Clock size={14} /> {course.time}
+                      </div>
                    </div>
                  </div>
               </Link>
