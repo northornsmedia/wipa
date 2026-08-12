@@ -23,13 +23,13 @@ const CONTENT_TYPES = [
 
 const MOCK_EDU_RESOURCES = [
   {
-    id: 1,
-    title: "Global IP Strategies 2026",
-    type: "Masterclass",
-    topic: "IP Strategy",
+    id: 24,
+    title: "LL.M. in Intellectual Property (Online)",
+    type: "Online Degree",
+    topic: "Intellectual Property",
     subcategory: "ip-strategy",
-    expert: "Prof. David Chen",
-    time: "4 hours",
+    expert: "UNH Law Faculty",
+    time: "1-2 years",
     featured: true,
     university: {
       logoLight: "/unh_light.png",
@@ -40,13 +40,13 @@ const MOCK_EDU_RESOURCES = [
     image: "/resource3.jpg"
   },
   {
-    id: 2,
-    title: "Patent Law Fundamentals",
-    type: "Online Course",
-    topic: "Patent Law",
+    id: 25,
+    title: "Master's in Intellectual Property (Online)",
+    type: "Online Degree",
+    topic: "Intellectual Property",
     subcategory: "patent-law",
-    expert: "UNH Franklin Pierce",
-    time: "6 weeks",
+    expert: "UNH Law Faculty",
+    time: "1-2 years",
     featured: true,
     university: {
       logoLight: "/unh_light.png",
