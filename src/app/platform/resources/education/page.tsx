@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Search, GraduationCap, ChevronDown, PlayCircle, BookOpen, Star, Info, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-
+import { UNIVERSITIES_DB } from './data';
 const MOCK_EDU_SUBCATEGORIES = [
   { id: 'all', name: 'All Classes' },
   { id: 'patent-law', name: 'Patent Law' },
@@ -107,6 +107,19 @@ export default function EducationHubPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const allUniversityCourses = React.useMemo(() => {
+    const courses: any[] = [];
+    Object.values(UNIVERSITIES_DB).forEach((uni: any) => {
+      uni.courses.forEach((course: any) => {
+        courses.push({
+          ...course,
+          universityName: uni.name
+        });
+      });
+    });
+    return courses;
+  }, []);
 
   const filteredResources = MOCK_EDU_RESOURCES.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -272,22 +285,22 @@ export default function EducationHubPage() {
             <BookOpen className="text-indigo-500" size={24} /> Full Curriculum
          </h2>
          <div className="bg-white dark:bg-[#111111] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden shadow-sm">
-            {regularResources.map((resource, idx) => (
-              <Link key={resource.id} href={`/platform/resources/education/${resource.id}`} className={`group flex flex-col sm:flex-row items-start sm:items-center p-6 md:p-8 gap-6 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors ${idx !== regularResources.length - 1 ? 'border-b border-gray-100 dark:border-white/5' : ''}`}>
+            {allUniversityCourses.map((course, idx) => (
+              <Link key={course.id} href={`/platform/resources/education/university/${course.id}`} className={`group flex flex-col sm:flex-row items-start sm:items-center p-6 md:p-8 gap-6 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors ${idx !== allUniversityCourses.length - 1 ? 'border-b border-gray-100 dark:border-white/5' : ''}`}>
                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
                    <PlayCircle size={32} />
                  </div>
                  <div className="flex-1">
                    <div className="flex items-center gap-3 mb-2">
-                     <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">{resource.topic}</span>
+                     <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">{course.type}</span>
                      <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-600"></span>
-                     <span className="text-xs font-bold text-gray-500">{resource.type}</span>
+                     <span className="text-xs font-bold text-gray-500">{course.universityName}</span>
                    </div>
-                   <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{resource.title}</h3>
-                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Instructed by {resource.expert}</p>
+                   <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{course.title}</h3>
+                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Instructed by {course.universityName} Faculty</p>
                  </div>
                  <div className="shrink-0 pt-4 sm:pt-0 flex items-center justify-between w-full sm:w-auto">
-                   <span className="text-sm font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/5">{resource.time}</span>
+                   <span className="text-sm font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/5">{course.time}</span>
                    <div className="w-10 h-10 rounded-full bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-400 ml-4 group-hover:bg-indigo-600 group-hover:border-indigo-600 group-hover:text-white transition-colors">
                      <ChevronRight size={20} />
                    </div>
@@ -295,7 +308,7 @@ export default function EducationHubPage() {
               </Link>
             ))}
             
-            {regularResources.length === 0 && (
+            {allUniversityCourses.length === 0 && (
               <div className="p-16 text-center">
                 <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-6 text-gray-400">
                   <Info size={32} />
