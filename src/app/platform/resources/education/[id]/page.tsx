@@ -187,7 +187,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
                 <CheckCircle className="text-[#5a32fa]" size={20} /> Learning Outcomes
               </h3>
               <ul className="space-y-3 mb-8">
-                {course.learningOutcomes.map((outcome, idx) => (
+                {course.learningOutcomes?.map((outcome: string, idx: number) => (
                   <li key={idx} className="flex items-start gap-3 text-gray-600 dark:text-gray-300">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#5a32fa] mt-2 shrink-0"></span>
                     <span>{outcome}</span>
@@ -196,10 +196,10 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
               </ul>
 
               <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <BookOpen className="text-[#5a32fa]" size={20} /> Course Modules
+                <BookOpen className="text-[#5a32fa]" size={20} /> Course Curriculum
               </h3>
-              <div className="space-y-3">
-                {course.modules.map((mod, idx) => (
+              <div className="space-y-4">
+                {course.modules?.map((mod: { week: string, title: string }, idx: number) => (
                   <div key={idx} className="flex gap-4 p-4 rounded-xl bg-gray-50 dark:bg-[#0f172a] border border-gray-100 dark:border-white/5">
                     <span className="font-bold text-[#5a32fa] shrink-0 w-16">{mod.week}</span>
                     <span className="font-medium text-gray-800 dark:text-gray-100">{mod.title}</span>

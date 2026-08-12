@@ -114,6 +114,28 @@ const ITEMS: GalleryItem[] = [
         </p>
       </div>
     ),
+  },
+  {
+    id: "member-3",
+    title: "Adriana Barrera",
+    subtitle: "Inaugural WIPA Chair - South America",
+    image: "/10.jpg",
+    color: "#e0f2fe",
+    flag: "https://flagcdn.com/w40/pe.png",
+    bio: (
+      <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed max-w-3xl">
+        <p className="font-semibold text-lg text-[#5a32fa] dark:text-[#ff90e8]">Founding Partner, BARLAW – Barrera & Asociados</p>
+        <p>
+          Adriana Barrera is a Founding Partner of BARLAW – Barrera & Asociados and a highly regarded Peruvian intellectual property lawyer with more than 25 years of experience in the profession. Her practice encompasses trademarks, copyright, patents, IP enforcement, litigation, anti-piracy and anti-counterfeiting, as well as internet and e-commerce matters. Since co-founding BARLAW in 2011, she has played an important role in developing the firm into one of Peru’s recognised specialist intellectual property practices.
+        </p>
+        <p>
+          With particular expertise in brand protection, enforcement and anti-counterfeiting, Adriana advises national and international clients on strategies to protect and defend valuable intellectual property rights. Her career has included positions at several leading Peruvian law firms as well as international experience with AOL Time Warner in New York. She holds an LL.M. in Intellectual Property from Franklin Pierce Law Center and has undertaken further intellectual property studies at the University of Salamanca.
+        </p>
+        <p>
+          Adriana is widely recognised within the international IP community for her expertise and leadership. She is ranked by Chambers and Partners for Intellectual Property in Peru and, in 2026, was recognised for the sixth consecutive year in WTR Global Leaders: Private Practice. She was also ranked among the top three in the Leadership in IP Commercialisation & Licensing category of the Women’s IP World Top 100 Influential Women Leaders in IP Law 2026. Through her leadership, international perspective and longstanding commitment to protecting innovation and brands, Adriana continues to be an influential figure within the Peruvian and wider Latin American intellectual property community.
+        </p>
+      </div>
+    ),
   }
 ];
 
