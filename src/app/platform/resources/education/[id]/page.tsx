@@ -487,7 +487,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
                   <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 mb-4 uppercase tracking-wider">{UNIVERSITIES_DB.unh.contact.role}</p>
                   
                   <div className="mb-6 flex justify-center w-full">
-                    <img src={UNIVERSITIES_DB.unh.logo} alt={UNIVERSITIES_DB.unh.name} className="h-12 object-contain opacity-80" />
+                    <img src={UNIVERSITIES_DB.unh.logo} alt={UNIVERSITIES_DB.unh.name} className="h-12 object-contain" />
                   </div>
                   
                   <div className="w-full space-y-3">
