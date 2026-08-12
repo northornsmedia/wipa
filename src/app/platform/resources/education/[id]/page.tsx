@@ -73,24 +73,168 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
       title: "Graduate Certificate in Intellectual Property (Online)",
       provider: "UNH Franklin Pierce School of Law",
       instructor: "UNH Law Faculty",
-      duration: "6-12 months",
-      level: "Intermediate",
+      duration: "1 year",
+      level: "Intermediate/Advanced",
       type: "Online Certificate",
-      overview: "A flexible, focused online graduate certificate in Intellectual Property for working professionals. Gain specialized knowledge in patents, trademarks, and copyrights without committing to a full degree program. Credits can often be applied toward a master's degree.",
+      overview: "Designed for busy professionals, the Graduate Certificate in Intellectual Property provides a foundational understanding of IP law in an accessible online format.",
       learningOutcomes: [
-        "Understand the core concepts of IP protection.",
-        "Evaluate the patentability and commercial potential of inventions.",
-        "Learn the basics of trademark and copyright registration.",
-        "Apply IP principles to real-world business scenarios."
+        "Gain a foundational understanding of IP law.",
+        "Learn the basics of patent, trademark, and copyright.",
+        "Understand IP management and strategy."
       ],
       modules: [
-        { week: "Course 1", title: "Fundamentals of Intellectual Property" },
-        { week: "Course 2", title: "Patent Law and Practice" },
-        { week: "Course 3", title: "Trademarks and Copyrights" },
-        { week: "Course 4", title: "IP Management or Tech Transfer" }
+        { week: "Core", title: "Fundamentals of Intellectual Property" },
+        { week: "Core", title: "Patent Law Essentials" },
+        { week: "Core", title: "Trademarks and Copyrights" }
       ],
       downloads: [
-        { title: "Certificate Requirements (PDF)", type: "PDF", size: "1.1 MB" }
+        { title: "Certificate Curriculum (PDF)", type: "PDF", size: "1.0 MB" }
+      ],
+      certificate: true
+    },
+    "27": {
+      id: "27",
+      title: "LL.M. in Intellectual Property",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "1 year",
+      level: "Advanced (Requires Law Degree)",
+      type: "Residential Degree",
+      overview: "Franklin Pierce School of Law's LL.M. in Intellectual Property program is designed for legal professionals seeking specialization in IP. Ranked top 10 for IP law for over 30 years, this residential program provides comprehensive training in patent, copyright, and trademark law.",
+      learningOutcomes: [
+        "Master the fundamentals of US and international intellectual property law.",
+        "Navigate complex patent prosecution and litigation.",
+        "Understand trademark registration and enforcement strategies.",
+        "Develop expertise in copyright law and digital media."
+      ],
+      modules: [
+        { week: "Core", title: "Fundamentals of Intellectual Property" },
+        { week: "Core", title: "Patent Practice and Procedure" },
+        { week: "Core", title: "Trademarks and Deceptive Practices" },
+        { week: "Elective", title: "Technology Transfer" },
+        { week: "Elective", title: "International and Comparative IP" }
+      ],
+      downloads: [
+        { title: "Program Curriculum (PDF)", type: "PDF", size: "2.1 MB" }
+      ],
+      certificate: true
+    },
+    "28": {
+      id: "28",
+      title: "LL.M. in Commerce and Technology Law",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "1 year",
+      level: "Advanced (Requires Law Degree)",
+      type: "Residential Degree",
+      overview: "Supported by UNH Franklin Pierce Law School's strong IP foundation, the Commerce and Technology program is built at the intersection of business and law. The program explores evolving legal issues facing new business and e-commerce in the global information age economy, with a focus on data and privacy law.",
+      learningOutcomes: [
+        "Navigate the intersection of business, law, and technology.",
+        "Address evolving legal issues in e-commerce.",
+        "Master data privacy and cybersecurity regulations.",
+        "Counsel clients on digital economy legal matters."
+      ],
+      modules: [
+        { week: "Core", title: "Information Privacy Law" },
+        { week: "Core", title: "E-Commerce and Digital Business" },
+        { week: "Core", title: "Technology Contracting" },
+        { week: "Elective", title: "Cybersecurity Law" },
+        { week: "Elective", title: "Fintech and Blockchain" }
+      ],
+      downloads: [
+        { title: "Commerce & Tech Curriculum (PDF)", type: "PDF", size: "1.8 MB" }
+      ],
+      certificate: true
+    },
+    "29": {
+      id: "29",
+      title: "Master's in Intellectual Property",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "1-2 years",
+      level: "Intermediate/Advanced (No Law Degree Required)",
+      type: "Residential Degree",
+      overview: "The Master's in Intellectual Property (MIP) program is designed for professionals without a law degree who want to advance their careers by gaining deep expertise in IP. Perfect for scientists, engineers, and business leaders.",
+      learningOutcomes: [
+        "Gain a solid foundation in the legal framework of intellectual property.",
+        "Understand how to protect and commercialize innovations.",
+        "Learn patent searching and drafting essentials."
+      ],
+      modules: [
+        { week: "Core", title: "Introduction to the Legal System" },
+        { week: "Core", title: "Fundamentals of Intellectual Property" },
+        { week: "Core", title: "Patent Law for Non-Lawyers" }
+      ],
+      downloads: [
+        { title: "MIP Overview (PDF)", type: "PDF", size: "1.5 MB" }
+      ],
+      certificate: true
+    },
+    "30": {
+      id: "30",
+      title: "Master's in Commerce and Technology Law",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "1-2 years",
+      level: "Intermediate/Advanced (No Law Degree Required)",
+      type: "Residential Degree",
+      overview: "Built at the intersection of business and law, the Master's in Commerce and Technology program is designed for non-lawyers tackling evolving legal issues in e-commerce, data privacy, and the global information age economy.",
+      learningOutcomes: [
+        "Understand the legal principles guiding digital business.",
+        "Navigate data privacy laws and compliance.",
+        "Gain practical knowledge of technology contracting."
+      ],
+      modules: [
+        { week: "Core", title: "Introduction to the Legal System" },
+        { week: "Core", title: "Information Privacy Law" },
+        { week: "Core", title: "E-Commerce Law Basics" }
+      ],
+      downloads: [
+        { title: "MCTL Overview (PDF)", type: "PDF", size: "1.4 MB" }
+      ],
+      certificate: true
+    },
+    "31": {
+      id: "31",
+      title: "Graduate Certificate in Intellectual Property",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "1 year",
+      level: "Intermediate/Advanced",
+      type: "Residential Certificate",
+      overview: "The residential Graduate Certificate in Intellectual Property provides a foundational understanding of IP law for professionals seeking to enhance their credentials in a focused format.",
+      learningOutcomes: [
+        "Understand core IP law concepts.",
+        "Learn to identify and protect IP assets."
+      ],
+      modules: [
+        { week: "Core", title: "Fundamentals of Intellectual Property" },
+        { week: "Core", title: "Patent Law Essentials" }
+      ],
+      downloads: [
+        { title: "IP Certificate Guide (PDF)", type: "PDF", size: "1.1 MB" }
+      ],
+      certificate: true
+    },
+    "32": {
+      id: "32",
+      title: "Graduate Certificate in Commerce and Technology",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "1 year",
+      level: "Intermediate/Advanced",
+      type: "Residential Certificate",
+      overview: "Supported by UNH Law's strong IP foundation, the Commerce and Technology certificate program provides a streamlined overview of legal issues facing new business and e-commerce in the information age.",
+      learningOutcomes: [
+        "Learn the basics of data privacy and cybersecurity law.",
+        "Understand the legal implications of digital commerce."
+      ],
+      modules: [
+        { week: "Core", title: "Information Privacy Law" },
+        { week: "Core", title: "E-Commerce and Digital Business" }
+      ],
+      downloads: [
+        { title: "Commerce & Tech Certificate Guide (PDF)", type: "PDF", size: "1.1 MB" }
       ],
       certificate: true
     }
