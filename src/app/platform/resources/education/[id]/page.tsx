@@ -484,7 +484,11 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
                     <img src={UNIVERSITIES_DB.unh.contact.image} alt={UNIVERSITIES_DB.unh.contact.name} className="relative w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm dark:border-[#0f172a]" />
                   </div>
                   <h4 className="font-black text-gray-900 dark:text-white text-xl">{UNIVERSITIES_DB.unh.contact.name}</h4>
-                  <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 mb-6 uppercase tracking-wider">{UNIVERSITIES_DB.unh.contact.role}</p>
+                  <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 mb-4 uppercase tracking-wider">{UNIVERSITIES_DB.unh.contact.role}</p>
+                  
+                  <div className="mb-6 flex justify-center w-full">
+                    <img src={UNIVERSITIES_DB.unh.logo} alt={UNIVERSITIES_DB.unh.name} className="h-12 object-contain opacity-80" />
+                  </div>
                   
                   <div className="w-full space-y-3">
                     <a href={`mailto:${UNIVERSITIES_DB.unh.contact.email}`} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-[#0f172a] border border-transparent hover:border-indigo-500/30 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all group text-left">
