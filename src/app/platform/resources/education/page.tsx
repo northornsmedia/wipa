@@ -294,7 +294,7 @@ export default function EducationHubPage() {
          </h2>
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {allUniversityCourses.map((course, idx) => (
-              <Link key={course.id} href={`/platform/resources/education/university/${course.id}`} className="group flex flex-col bg-white dark:bg-[#111111] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden shadow-sm hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300">
+              <Link key={course.id} href={`/platform/resources/education/${course.id}`} className="group flex flex-col bg-white dark:bg-[#111111] rounded-[2rem] border border-gray-200 dark:border-white/10 overflow-hidden shadow-sm hover:shadow-xl hover:border-indigo-500/30 transition-all duration-300">
                  <div className="relative h-48 w-full overflow-hidden bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center p-8 border-b border-gray-100 dark:border-white/5">
                     <img src={course.universityLogo} alt={course.universityName} className="w-full h-full object-contain filter group-hover:scale-105 transition-transform duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

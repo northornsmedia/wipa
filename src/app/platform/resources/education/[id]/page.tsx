@@ -96,35 +96,25 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
     }
   };
 
-  const course = COURSE_DB[id] || {
-    id: id,
-    title: "Patent Law Fundamentals",
-    provider: "UNH Franklin Pierce School of Law",
-    instructor: "Prof. Amanda Lewis",
-    duration: "6 weeks",
-    level: "Intermediate",
-    type: "Online Course",
-    overview: "This comprehensive course covers the foundational principles of patent law, including patentability requirements, the patent application process, and strategies for patent enforcement and defense. Designed specifically for IP professionals seeking to deepen their technical understanding.",
-    learningOutcomes: [
-      "Understand the key requirements for patentability (novelty, non-obviousness, utility).",
-      "Navigate the patent prosecution process effectively.",
-      "Analyze patent claims and determine scope of protection.",
-      "Identify strategies for patent portfolio management and monetization."
-    ],
-    modules: [
-      { week: "Week 1", title: "Introduction to Intellectual Property and Patents" },
-      { week: "Week 2", title: "Requirements for Patentability" },
-      { week: "Week 3", title: "The Patent Application and Prosecution Process" },
-      { week: "Week 4", title: "Patent Claims and Claim Construction" },
-      { week: "Week 5", title: "Infringement and Defenses" },
-      { week: "Week 6", title: "International Patent Law and Strategies" }
-    ],
-    downloads: [
-      { title: "Course Syllabus (PDF)", type: "PDF", size: "1.2 MB" },
-      { title: "Patent Case Law Summary", type: "Doc", size: "450 KB" }
-    ],
-    certificate: true
-  };
+  const course = COURSE_DB[id];
+
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col items-center justify-center p-6">
+        <div className="w-full max-w-[1200px] mx-auto text-left mb-8">
+          <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] font-bold text-sm transition-colors">
+            <ArrowLeft size={16} />
+            Back to previous page
+          </button>
+        </div>
+        <div className="bg-white dark:bg-[#1e293b] p-12 rounded-[2rem] shadow-sm text-center max-w-lg mx-auto border border-gray-200 dark:border-white/10">
+          <BookOpen className="text-gray-300 dark:text-gray-600 mx-auto mb-6" size={64} />
+          <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">No Details Available</h2>
+          <p className="text-gray-500 dark:text-gray-400 font-medium">Detailed information for this specific course has not been provided yet.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] pb-20">
