@@ -370,7 +370,18 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
           <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-gray-600 dark:text-gray-300 border-t border-gray-200 dark:border-white/10 pt-6">
             <div className="flex items-center gap-2">
               <GraduationCap size={18} className="text-[#5a32fa]" />
-              <span>Provider: <strong className="text-gray-800 dark:text-gray-100">{course.provider}</strong></span>
+              <span>Provider: {
+                (() => {
+                  const uniKey = Object.keys(UNIVERSITIES_DB).find(key => course.provider.includes(UNIVERSITIES_DB[key].name) || (key === 'unh' && course.provider.includes('UNH')));
+                  return uniKey ? (
+                    <Link href={`/platform/resources/education/university/${uniKey}`} className="font-bold text-[#5a32fa] hover:text-[#4927d3] hover:underline transition-colors">
+                      {course.provider}
+                    </Link>
+                  ) : (
+                    <strong className="text-gray-800 dark:text-gray-100">{course.provider}</strong>
+                  );
+                })()
+              }</span>
             </div>
             <div className="flex items-center gap-2">
               <User size={18} className="text-[#5a32fa]" />
