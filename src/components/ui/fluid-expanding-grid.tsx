@@ -1,9 +1,64 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { X, Mail, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const LinkedinIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
+
+const InstagramIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+  </svg>
+);
+
+const WLogo = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <polyline points="3 5 8 19 12 9 16 19 21 5" />
+  </svg>
+);
 
 export interface GalleryItem {
   id: string;
@@ -185,6 +240,27 @@ export function FluidExpandingGrid({
                       >
                         {activeItem.subtitle}
                       </motion.p>
+                      
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="flex items-center gap-4 mt-4"
+                      >
+                        <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center text-gray-500 hover:bg-[#0077b5] hover:text-white dark:hover:bg-[#0077b5] dark:text-gray-400 dark:hover:text-white transition-all duration-300">
+                          <LinkedinIcon size={18} />
+                        </a>
+                        <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center text-gray-500 hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-600 hover:text-white dark:hover:text-white transition-all duration-300">
+                          <InstagramIcon size={18} />
+                        </a>
+                        <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center text-gray-500 hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:text-gray-400 dark:hover:text-white transition-all duration-300">
+                          <Mail size={18} />
+                        </a>
+                        <a href="#" className="h-10 px-4 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 hover:bg-[#5a32fa] hover:text-white dark:hover:bg-[#ff90e8] dark:hover:text-gray-900 transition-all duration-300 font-medium text-sm group">
+                          <WLogo size={16} className="group-hover:text-white dark:group-hover:text-gray-900 transition-colors" />
+                          <span>WIPA Profile</span>
+                        </a>
+                      </motion.div>
                     </div>
                   </div>
 
