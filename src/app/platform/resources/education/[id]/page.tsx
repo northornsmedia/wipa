@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { ArrowLeft, BookOpen, Clock, User, Award, CheckCircle, Download, ExternalLink, GraduationCap, Video, FileText, ChevronRight, Activity } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, User, Award, CheckCircle, Download, ExternalLink, GraduationCap, Video, FileText, ChevronRight, Activity, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
+import { UNIVERSITIES_DB } from '../data';
 import { useRouter } from 'next/navigation';
 
 export default function EducationDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -436,6 +437,31 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
                 Enrol / Register <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
+
+            {/* Contact Admissions */}
+            {course.provider.includes("UNH") && UNIVERSITIES_DB.unh.contact && (
+              <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
+                <h3 className="font-black text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+                  <User size={20} className="text-[#5a32fa]" /> Program Contact
+                </h3>
+                <div className="flex flex-col items-center text-center">
+                  <img src={UNIVERSITIES_DB.unh.contact.image} alt={UNIVERSITIES_DB.unh.contact.name} className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-gray-50 shadow-sm dark:border-[#0f172a]" />
+                  <h4 className="font-bold text-gray-800 dark:text-gray-100 text-lg">{UNIVERSITIES_DB.unh.contact.name}</h4>
+                  <p className="text-sm font-medium text-[#5a32fa] mb-4">{UNIVERSITIES_DB.unh.contact.role}</p>
+                  
+                  <div className="w-full space-y-2 mt-2">
+                    <a href={`mailto:${UNIVERSITIES_DB.unh.contact.email}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-colors group text-left">
+                      <Mail size={16} className="text-gray-400 group-hover:text-[#5a32fa]" />
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-[#5a32fa] truncate">{UNIVERSITIES_DB.unh.contact.email}</span>
+                    </a>
+                    <a href={`tel:${UNIVERSITIES_DB.unh.contact.phone}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-colors group text-left">
+                      <Phone size={16} className="text-gray-400 group-hover:text-[#5a32fa]" />
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-[#5a32fa]">{UNIVERSITIES_DB.unh.contact.phone}</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Downloads Card */}
             <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
