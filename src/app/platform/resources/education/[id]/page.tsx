@@ -237,6 +237,88 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
         { title: "Commerce & Tech Certificate Guide (PDF)", type: "PDF", size: "1.1 MB" }
       ],
       certificate: true
+    },
+    "33": {
+      id: "33",
+      title: "Hybrid JD",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "3.5 years",
+      level: "Advanced (Juris Doctor)",
+      type: "Hybrid Degree",
+      overview: "Stay in your home. Stay in your job. Earn your JD primarily online. Join the first and only ABA-approved Hybrid Juris Doctor (JD) Program with a focus on Intellectual Property, Technology, and Health Law.",
+      learningOutcomes: [
+        "Earn an ABA-approved Juris Doctor degree primarily online.",
+        "Gain comprehensive knowledge of the U.S. legal system.",
+        "Develop essential legal writing and analytical skills.",
+        "Prepare for the bar exam and legal practice."
+      ],
+      modules: [
+        { week: "Core", title: "Contracts and Torts" },
+        { week: "Core", title: "Civil Procedure" },
+        { week: "Core", title: "Criminal Law" },
+        { week: "Core", title: "Constitutional Law" },
+        { week: "Residency", title: "On-Campus Immersion Periods" }
+      ],
+      downloads: [
+        { title: "Hybrid JD Program Guide (PDF)", type: "PDF", size: "3.2 MB" },
+        { title: "Admissions Requirements", type: "PDF", size: "1.5 MB" }
+      ],
+      certificate: false
+    },
+    "34": {
+      id: "34",
+      title: "Hybrid JD — Intellectual Property, Technology, and Information Law",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "3.5 years",
+      level: "Advanced (Juris Doctor)",
+      type: "Hybrid Degree",
+      overview: "The Intellectual Property, Technology, and Information Law concentration within the Hybrid JD program prepares students to tackle complex legal issues in the tech sector, patents, and digital information, all while earning their degree primarily online.",
+      learningOutcomes: [
+        "Earn a JD with specialized focus in IP and technology law.",
+        "Navigate patent, trademark, and copyright laws.",
+        "Address legal challenges in technology and information sectors.",
+        "Complete a capstone or clinic in IP law."
+      ],
+      modules: [
+        { week: "Core", title: "Fundamentals of Intellectual Property" },
+        { week: "Core", title: "Patent Practice and Procedure" },
+        { week: "Core", title: "Technology Contracting" },
+        { week: "Elective", title: "Data Privacy Law" },
+        { week: "Residency", title: "IP Immersion" }
+      ],
+      downloads: [
+        { title: "IP Concentration Guide (PDF)", type: "PDF", size: "2.1 MB" }
+      ],
+      certificate: false
+    },
+    "35": {
+      id: "35",
+      title: "Hybrid JD — Health and Life Science Law",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "3.5 years",
+      level: "Advanced (Juris Doctor)",
+      type: "Hybrid Degree",
+      overview: "The Health and Life Sciences concentration within the Hybrid JD program provides specialized training in healthcare regulations, bioethics, and life science compliance, allowing professionals to advance their careers without leaving their jobs.",
+      learningOutcomes: [
+        "Earn a JD with specialized focus in health and life sciences.",
+        "Navigate complex healthcare regulations and compliance.",
+        "Address legal issues in bioethics, pharmaceuticals, and public health.",
+        "Complete a capstone or clinic in health law."
+      ],
+      modules: [
+        { week: "Core", title: "Health Law and Policy" },
+        { week: "Core", title: "Food and Drug Law" },
+        { week: "Core", title: "Bioethics and the Law" },
+        { week: "Elective", title: "Public Health Law" },
+        { week: "Residency", title: "Health Law Immersion" }
+      ],
+      downloads: [
+        { title: "Health Law Concentration Guide (PDF)", type: "PDF", size: "2.0 MB" }
+      ],
+      certificate: false
     }
   };
 
