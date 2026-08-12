@@ -372,7 +372,8 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
               <GraduationCap size={18} className="text-[#5a32fa]" />
               <span>Provider: {
                 (() => {
-                  const uniKey = Object.keys(UNIVERSITIES_DB).find(key => course.provider.includes(UNIVERSITIES_DB[key].name) || (key === 'unh' && course.provider.includes('UNH')));
+                  const foundEntry = Object.entries(UNIVERSITIES_DB).find(([key, uni]) => course.provider.includes((uni as any).name) || (key === 'unh' && course.provider.includes('UNH')));
+                  const uniKey = foundEntry ? foundEntry[0] : null;
                   return uniKey ? (
                     <Link href={`/platform/resources/education/university/${uniKey}`} className="font-bold text-[#5a32fa] hover:text-[#4927d3] hover:underline transition-colors">
                       {course.provider}
