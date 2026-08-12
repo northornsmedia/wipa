@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  Search, Home, UsersRound, Briefcase, Calendar, Star, Bell, X
+  Search, Home, UsersRound, Globe, Briefcase, Calendar, Star, Bell, X, BookOpen
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -12,11 +12,11 @@ import { searchProfiles } from '@/app/actions/profiles';
 
 const navItems = [
   { name: 'Home', icon: Home, path: '/platform' },
-  { name: 'My Network', icon: UsersRound, path: '/platform/network' },
-  { name: 'Jobs', icon: Briefcase, path: '/platform/jobs' },
+  { name: 'My Network', icon: Globe, path: '/platform/network' },
   { name: 'Groups', icon: UsersRound, path: '/platform/groups' },
   { name: 'Events', icon: Calendar, path: '/platform/events' },
-  { name: 'Memberships', icon: Star, path: '/platform/memberships' },
+  { name: 'Resources', icon: BookOpen, path: '/platform/resources' },
+  { name: 'Jobs', icon: Briefcase, path: '/platform/jobs' },
 ];
 
 const mockSearchData = [
@@ -160,11 +160,11 @@ export default function PlatformHeader() {
             <div className="flex items-center gap-2">
               <Link href="/platform">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/WIPALOGO.png" alt="WIPA Logo" className="h-8 w-auto object-contain" />
+                <img src="/WIPA-Logo.png" alt="WIPA Logo" className="h-10 w-auto object-contain" />
               </Link>
             </div>
             
-            <nav className="hidden md:flex items-center gap-10 bg-gray-50 dark:bg-white/5 rounded-full px-10 py-1 border border-gray-100 dark:border-white/10 shadow-sm">
+            <nav className="hidden md:flex items-center gap-1 bg-white/60 dark:bg-[#020617]/40 backdrop-blur-xl rounded-2xl px-2 py-2 border border-gray-200/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
               {navItems.map((item) => {
                 const isActive = item.path === '/platform' ? pathname === '/platform' : pathname.startsWith(item.path);
                 const Icon = item.icon;
@@ -172,14 +172,43 @@ export default function PlatformHeader() {
                   <Link 
                     key={item.name} 
                     href={item.path} 
-                    className={`flex flex-col items-center justify-center gap-1 cursor-pointer transition-colors pb-1 mt-1 border-b-2 ${
+                    className={`group relative flex flex-col items-center justify-center w-[72px] h-[52px] rounded-xl transition-all duration-500 ease-out overflow-hidden ${
                       isActive 
-                        ? 'text-[#5a32fa] border-[#5a32fa]' 
-                        : 'text-[#334155] dark:text-gray-300 hover:text-[#5a32fa] dark:hover:text-white border-transparent'
+                        ? 'text-[#5a32fa] dark:text-[#818cf8]' 
+                        : 'text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] dark:hover:text-[#818cf8]'
                     }`}
                   >
-                    <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                    <span className="text-[11px] font-bold">{item.name}</span>
+                    {/* Active state background */}
+                    {isActive && (
+                      <div className="absolute inset-0 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 rounded-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] border border-[#5a32fa]/10 dark:border-[#5a32fa]/20" />
+                    )}
+                    
+                    {/* Hover animated background (expanding circle effect) */}
+                    {!isActive && (
+                      <div className="absolute inset-0 bg-[#5a32fa]/5 dark:bg-[#5a32fa]/10 rounded-xl opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out" />
+                    )}
+                    
+                    {/* Icon with crazy bounce */}
+                    <Icon 
+                      size={20} 
+                      strokeWidth={isActive ? 2.5 : 2} 
+                      className={`relative z-10 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                        isActive 
+                          ? '-translate-y-2.5 scale-110 drop-shadow-md' 
+                          : 'group-hover:-translate-y-2.5 group-hover:scale-125 group-hover:rotate-[8deg] group-hover:drop-shadow-lg'
+                      }`} 
+                    />
+                    
+                    {/* Text slides up on active/hover */}
+                    <span 
+                      className={`text-[9px] font-bold tracking-wider absolute bottom-1.5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] whitespace-nowrap ${
+                        isActive 
+                          ? 'opacity-100 translate-y-0' 
+                          : 'opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0'
+                      }`}
+                    >
+                      {item.name}
+                    </span>
                   </Link>
                 );
               })}

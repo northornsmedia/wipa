@@ -7,7 +7,7 @@ import {
   Search, Bell, LayoutGrid, BookOpen, Calendar, Users, Info, Settings, 
   Hash, BellOff, ArrowUpRight, CheckCircle2, Circle, Image as ImageIcon, Video, Smile,
   Bookmark, MoreVertical, Heart, MessageCircle, Gift, LogOut, Pencil, Copy, MessageSquareOff, Trash2, Globe, Lock, Shield,
-  FileText, Loader2, PlayCircle, Plus, Send, X, Mail, ThumbsUp, UsersRound, MessageSquare, Briefcase, GraduationCap, Home, Star
+  FileText, Loader2, PlayCircle, Plus, Send, X, Mail, ThumbsUp, UsersRound, MessageSquare, Briefcase, GraduationCap, Home, Star, Paperclip
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -266,95 +266,98 @@ export default function PlatformPage() {
             <div className="flex-1 flex justify-center pb-20">
               <div className="w-full max-w-4xl space-y-6">
               
-              {/* HERO BANNER */}
-              <div className="bg-white dark:bg-[#0f172a] rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 dark:border-white/10 relative overflow-hidden">
-                <div className="absolute inset-0 w-full h-full overflow-hidden opacity-40 pointer-events-none">
-                   <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[150%] bg-[#ffcc00] rounded-full mix-blend-multiply filter blur-3xl opacity-30 transform -rotate-45"></div>
-                   <div className="absolute top-[-30%] right-[20%] w-[40%] h-[120%] bg-[#ff4b4b] rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform rotate-12"></div>
-                   <div className="absolute bottom-[-10%] left-[10%] w-[60%] h-[80%] bg-[#5a32fa] rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+              {/* PREMIUM HERO BANNER */}
+              <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] dark:from-[#0a0a0f] dark:to-[#12121a] p-6 sm:p-8 shadow-[inset_0_1px_1px_rgba(255,255,255,1)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] border border-white/50 dark:border-white/5 group">
+                {/* Animated Mesh Background */}
+                <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+                   <div className="absolute -top-[50%] -right-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_20s_linear_infinite]"></div>
+                   <div className="absolute -bottom-[50%] -left-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#00d26a] to-[#00b8ff] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_25s_linear_infinite_reverse]"></div>
+                   
+                   {/* Glassmorphic Grain Overlay */}
+                   <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] z-0 mix-blend-overlay"></div>
                 </div>
                 
-                <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start gap-6">
-                  <div className="lg:w-[60%]">
-                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4">Hello{user?.name ? ` ${user.name}` : ''},<br/>Welcome to WIPA</h1>
-                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Building the Future of Innovation Together</h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-8 sm:w-5/6">
+                <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start gap-4">
+                  <div className="lg:w-[70%]">
+                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tighter mb-2 leading-[1.1] transition-transform duration-500 group-hover:scale-[1.01] origin-left">
+                      Hello{user?.name ? ` ${user.name}` : ''},<br/>
+                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#5a32fa] via-[#ff90e8] to-[#5a32fa] animate-gradient bg-[length:200%_auto]">Welcome to WIPA</span>
+                    </h1>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2 tracking-tight">Building the Future of Innovation Together</h2>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:w-5/6 font-medium">
                       Connect with innovators, IP professionals, founders, researchers, and investors to share knowledge, collaborate, and turn ideas into impact.
                     </p>
                   </div>
-                  
-
                 </div>
                 
-                {/* Tabs & Search */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6 border-b border-gray-100 dark:border-white/10 pb-0 relative z-10">
-                  <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
+                {/* Premium iOS-style Segmented Tabs & Search */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2 relative z-10">
+                  <div className="flex items-center gap-1 overflow-x-auto no-scrollbar bg-black/5 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5 shadow-inner">
                     {['Latest', 'Trending', 'Following', 'Saved'].map((tab) => (
                       <button 
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`pb-3 text-sm transition-colors whitespace-nowrap ${
+                        className={`relative px-6 py-2.5 text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap rounded-xl z-10 ${
                           activeTab === tab 
-                            ? 'font-bold text-gray-900 dark:text-white border-b-2 border-[#5a32fa]' 
-                            : 'font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white'
+                            ? 'text-gray-900 dark:text-white' 
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                         }`}
                       >
+                        {activeTab === tab && (
+                          <div className="absolute inset-0 bg-white dark:bg-[#1e293b] rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.4)] border border-black/5 dark:border-white/5 -z-10 animate-in zoom-in-95 duration-200" />
+                        )}
                         {tab}
                       </button>
                     ))}
                   </div>
-                  <div className="relative pb-3 shrink-0">
-                    <Search className="absolute left-3 top-2 w-4 h-4 text-gray-400" />
+                  <div className="relative shrink-0 group/search">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] rounded-2xl blur opacity-0 group-hover/search:opacity-20 transition-opacity duration-500"></div>
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                     <input 
                       type="text" 
-                      placeholder="Search feeds" 
-                      className="pl-9 pr-4 py-1.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-full text-sm w-full sm:w-48 focus:outline-none focus:ring-1 focus:ring-gray-200 focus:bg-white dark:bg-[#0f172a] transition-all" 
+                      placeholder="Search feeds..." 
+                      className="relative z-10 pl-11 pr-5 py-3 bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/50 focus:border-transparent transition-all shadow-sm font-medium placeholder:text-gray-400" 
                     />
                   </div>
                 </div>
               </div>
 
-              {/* COMPOSER */}
+              {/* PREMIUM COMPOSER */}
               <div 
-                className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 dark:border-white/10 flex flex-col overflow-hidden cursor-pointer hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-gray-200 dark:border-white/20 transition-all duration-300 relative group"
+                className="bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] border border-white dark:border-white/10 flex flex-col overflow-hidden cursor-pointer hover:shadow-[0_20px_40px_rgb(0,0,0,0.12)] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 relative group z-20"
                 onClick={() => setIsCreatePostModalOpen(true)}
               >
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#131313] via-[#5a32fa] to-[#ff90e8] opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 pointer-events-none rounded-[2rem]" />
                 
-                <div className="flex gap-4 p-5 pb-4 border-b border-gray-50 dark:border-white/5 pt-6">
-                  {user?.avatar_url ? (
-                    <img src={user.avatar_url} alt={user?.name || 'User'} className="w-10 h-10 rounded-full object-cover shrink-0 mt-1 shadow-sm" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-sm shrink-0 mt-1 shadow-sm shadow-[#ff90e8]/30">
-                      {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                    </div>
-                  )}
-                  <div className="flex-1 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:bg-white/10 transition-colors rounded-2xl p-4 min-h-[80px] border border-gray-100 dark:border-white/10 group-hover:border-gray-200 dark:border-white/20">
-                    <span className="text-gray-500 dark:text-gray-400 font-medium text-[15px]">What's on your mind?</span>
+                <div className="relative z-10 flex gap-4 p-6 border-b border-gray-100 dark:border-white/5">
+                  <div className="relative shrink-0">
+                    {user?.avatar_url ? (
+                      <img src={user.avatar_url} alt={user?.name || 'User'} className="relative z-10 w-12 h-12 rounded-full object-cover border-2 border-white dark:border-[#1e293b]" />
+                    ) : (
+                      <div className="relative z-10 w-12 h-12 rounded-full bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-black text-lg border-2 border-white dark:border-[#1e293b]">
+                        {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex-1 bg-gray-50/50 dark:bg-black/20 hover:bg-white dark:hover:bg-white/5 transition-all duration-300 rounded-2xl p-4 min-h-[80px] border border-gray-200/50 dark:border-white/10 group-hover:border-[#5a32fa]/30 group-hover:shadow-[0_0_20px_rgba(90,50,250,0.1)] flex items-center">
+                    <span className="text-gray-400 dark:text-gray-500 font-bold text-lg tracking-tight group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">Start a conversation...</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between gap-1 sm:gap-2 px-4 py-2 bg-gray-50 dark:bg-[#0f172a] border-t border-gray-50 dark:border-white/5">
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors font-medium text-[13px]">
-                    <ImageIcon size={18} className="text-[#00d26a]" />
-                    <span className="hidden sm:block">Photo</span>
-                  </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors font-medium text-[13px]">
-                    <Video size={18} className="text-[#ff4b4b]" />
-                    <span className="hidden sm:block">Video</span>
-                  </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors font-medium text-[13px]">
-                    <Calendar size={18} className="text-[#ffc900]" />
-                    <span className="hidden sm:block">Event</span>
-                  </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors font-medium text-[13px]">
-                    <FileText size={18} className="text-[#5a32fa]" />
-                    <span className="hidden sm:block">Attach</span>
-                  </button>
-                  <button className="flex-1 flex items-center justify-center gap-2 p-2.5 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-xl transition-colors font-medium text-[13px]">
-                    <Smile size={18} className="text-[#ff90e8]" />
-                    <span className="hidden sm:block">Feeling</span>
-                  </button>
+                <div className="relative z-10 flex items-center justify-between gap-2 px-6 py-4 bg-gray-50/30 dark:bg-[#020617]/30">
+                  {[
+                    { icon: ImageIcon, label: 'Photo', color: 'text-[#00d26a]', bg: 'hover:bg-[#00d26a]/10' },
+                    { icon: Video, label: 'Video', color: 'text-[#ff4b4b]', bg: 'hover:bg-[#ff4b4b]/10' },
+                    { icon: Calendar, label: 'Event', color: 'text-[#ffc900]', bg: 'hover:bg-[#ffc900]/10' },
+                    { icon: Paperclip, label: 'Attach', color: 'text-[#5a32fa]', bg: 'hover:bg-[#5a32fa]/10' },
+                    { icon: Smile, label: 'Feeling', color: 'text-[#ff90e8]', bg: 'hover:bg-[#ff90e8]/10' },
+                  ].map((btn, i) => (
+                    <button key={i} className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 p-3 ${btn.bg} text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-2xl transition-all duration-300 ease-out group/btn hover:-translate-y-1 hover:shadow-sm font-bold text-[13px]`}>
+                      <btn.icon size={20} className={`${btn.color} transition-transform duration-300 group-hover/btn:scale-110 group-hover/btn:rotate-[-5deg]`} />
+                      <span className="hidden sm:block">{btn.label}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -533,8 +536,9 @@ export default function PlatformPage() {
                     : 'Unknown';
                     
                   return (
-                    <div key={post.id} className="bg-white dark:bg-[#0f172a] rounded-2xl p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-white/10">
-                      <div className="flex items-start justify-between mb-4">
+                    <div key={post.id} className="bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-xl rounded-[2rem] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-white dark:border-white/5 transition-all duration-300 hover:shadow-[0_10px_40px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 group/post relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent dark:from-white/5 opacity-0 group-hover/post:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                      <div className="flex items-start justify-between mb-4 relative z-10">
                         <div className="flex items-center gap-3">
                           <Link href={`/platform/profile/${post.author_id}`} className="shrink-0 hover:opacity-80 transition-opacity block">
                             {author.avatar_url ? (

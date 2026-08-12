@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Mic, MonitorPlay, FileCheck, Presentation } from 'lucide-react';
 import Link from 'next/link';
 
@@ -132,6 +132,14 @@ export default function ResourcesPage() {
   const [resources, setResources] = useState(MOCK_CATEGORIES);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<string>('All Resources');
+  const [isGenerating, setIsGenerating] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsGenerating(false);
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredResources = resources.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -144,6 +152,167 @@ export default function ResourcesPage() {
 
     return matchesSearch && matchesTab;
   });
+
+  if (isGenerating) {
+    return (
+      <div className="w-full min-h-[calc(100vh-73px)] flex items-center justify-center bg-white dark:bg-[#0f172a] overflow-hidden relative z-10">
+        <style dangerouslySetInnerHTML={{ __html: `
+          .loader-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 120px;
+            width: auto;
+            margin: 2rem;
+
+            font-family: "Poppins", sans-serif;
+            font-size: 1.6em;
+            font-weight: 600;
+            user-select: none;
+
+            scale: 2;
+          }
+
+          .loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 1;
+
+            background-color: transparent;
+            mask: repeating-linear-gradient(
+              90deg,
+              transparent 0,
+              transparent 6px,
+              black 7px,
+              black 8px
+            );
+          }
+
+          .loader::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 300%;
+            height: 100%;
+
+            background-image: radial-gradient(ellipse at 50% 50%, #ff0 0%, transparent 50%),
+              radial-gradient(ellipse at 45% 45%, #f00 0%, transparent 45%),
+              radial-gradient(ellipse at 55% 55%, #0ff 0%, transparent 45%),
+              radial-gradient(ellipse at 45% 55%, #0f0 0%, transparent 45%),
+              radial-gradient(ellipse at 55% 45%, #00f 0%, transparent 45%);
+            mask: radial-gradient(
+              ellipse at 50% 50%,
+              transparent 0%,
+              transparent 10%,
+              black 25%
+            );
+            animation:
+              transform-animation 4s infinite alternate,
+              opacity-animation 4s infinite;
+            animation-timing-function: cubic-bezier(0.6, 0.8, 0.5, 1);
+          }
+
+          @keyframes transform-animation {
+            0% {
+              transform: translate(-33%);
+            }
+            100% {
+              transform: translate(33%);
+            }
+          }
+
+          @keyframes opacity-animation {
+            0%,
+            100% {
+              opacity: 0;
+            }
+            15% {
+              opacity: 1;
+            }
+            65% {
+              opacity: 0;
+            }
+          }
+
+          .loader-letter {
+            display: inline-block;
+            opacity: 0;
+            animation: loader-letter-anim 4s infinite linear;
+            z-index: 2;
+          }
+
+          .loader-letter:nth-child(1) { animation-delay: 0.1s; }
+          .loader-letter:nth-child(2) { animation-delay: 0.205s; }
+          .loader-letter:nth-child(3) { animation-delay: 0.31s; }
+          .loader-letter:nth-child(4) { animation-delay: 0.415s; }
+          .loader-letter:nth-child(5) { animation-delay: 0.521s; }
+          .loader-letter:nth-child(6) { animation-delay: 0.626s; }
+          .loader-letter:nth-child(7) { animation-delay: 0.731s; }
+          .loader-letter:nth-child(8) { animation-delay: 0.837s; }
+          .loader-letter:nth-child(9) { animation-delay: 0.942s; }
+          .loader-letter:nth-child(10) { animation-delay: 1.047s; }
+          .loader-letter:nth-child(11) { animation-delay: 1.152s; }
+          .loader-letter:nth-child(12) { animation-delay: 1.257s; }
+          .loader-letter:nth-child(13) { animation-delay: 1.362s; }
+          .loader-letter:nth-child(14) { animation-delay: 1.467s; }
+          .loader-letter:nth-child(15) { animation-delay: 1.572s; }
+          .loader-letter:nth-child(16) { animation-delay: 1.677s; }
+          .loader-letter:nth-child(17) { animation-delay: 1.782s; }
+          .loader-letter:nth-child(18) { animation-delay: 1.887s; }
+          .loader-letter:nth-child(19) { animation-delay: 1.992s; }
+          .loader-letter:nth-child(20) { animation-delay: 2.097s; }
+          .loader-letter:nth-child(21) { animation-delay: 2.202s; }
+          .loader-letter:nth-child(22) { animation-delay: 2.307s; }
+          .loader-letter:nth-child(23) { animation-delay: 2.412s; }
+          .loader-letter:nth-child(24) { animation-delay: 2.517s; }
+
+          @keyframes loader-letter-anim {
+            0% { opacity: 0; }
+            5% {
+              opacity: 1;
+              text-shadow: 0 0 4px currentColor;
+              transform: scale(1.1) translateY(-2px);
+            }
+            20% { opacity: 0.2; }
+            100% { opacity: 0; }
+          }
+        `}} />
+        <div className="loader-wrapper text-[#111] dark:text-white">
+          <span className="loader-letter">O</span>
+          <span className="loader-letter">p</span>
+          <span className="loader-letter">e</span>
+          <span className="loader-letter">n</span>
+          <span className="loader-letter">i</span>
+          <span className="loader-letter">n</span>
+          <span className="loader-letter">g</span>
+          <span className="loader-letter">&nbsp;</span>
+          <span className="loader-letter">R</span>
+          <span className="loader-letter">e</span>
+          <span className="loader-letter">s</span>
+          <span className="loader-letter">o</span>
+          <span className="loader-letter">u</span>
+          <span className="loader-letter">r</span>
+          <span className="loader-letter">c</span>
+          <span className="loader-letter">e</span>
+          <span className="loader-letter">&nbsp;</span>
+          <span className="loader-letter">L</span>
+          <span className="loader-letter">i</span>
+          <span className="loader-letter">b</span>
+          <span className="loader-letter">r</span>
+          <span className="loader-letter">a</span>
+          <span className="loader-letter">r</span>
+          <span className="loader-letter">y</span>
+
+          <div className="loader"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
@@ -212,21 +381,24 @@ export default function ResourcesPage() {
               <Link 
                 href={resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/resources/womens-ip-world` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : `/platform/resources/wellness/${resource.id}`}
                 key={resource.id}
-                className="bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-200 dark:border-white/20 shadow-sm flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-[#5a32fa]/10 transition-all duration-300 group cursor-pointer overflow-hidden block"
+                className="relative bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.15)] transition-all duration-500 group cursor-pointer overflow-hidden block z-10"
               >
-                <div className="h-48 w-full relative shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/5 to-[#ff90e8]/5 dark:from-[#5a32fa]/10 dark:to-[#ff90e8]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
+                
+                <div className="h-52 w-full relative shrink-0 overflow-hidden z-10">
                   <img 
                     src={resource.id === 1 ? `/resource3.jpg` : resource.id === 2 ? `/wellbeing.jpg` : resource.id === 4 ? `/Womens-IP-World-Award.webp` : resource.id === 5 ? `https://media.licdn.com/dms/image/v2/D4D12AQGPvWYs0hREpQ/article-cover_image-shrink_720_1280/B4DZUeerAVGkAI-/0/1739973132208?e=2147483647&v=beta&t=jDj9Iy2LLXJfKsScgkaNMKyXRrgy34PP3nZFglw-Rt0` : resource.id === 6 ? `https://www.bennett.edu.in/wp-content/uploads/2025/02/Advanced-Intellectual-Property-Law-Types-Core-Modules-and-Career-Avenues.webp` : resource.id === 7 ? `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxBiK_KFYr8IEt7R9niEFVTTjmFYgcMU7mSy4MLHc1dlrjzLndY55xWRBF&s=10` : resource.id === 8 ? `https://media.licdn.com/dms/image/v2/D5610AQG43vrwkaPiSQ/image-shrink_800/image-shrink_800/0/1707177003680?e=2147483647&v=beta&t=sq45ZJZYH8htsCpG76UiVa0yDDkZUsddD_Axx5yFKKY` : resource.id === 9 ? `https://media.licdn.com/dms/image/v2/D4E12AQEEtjLt4_x96g/article-cover_image-shrink_600_2000/B4EZt2WvkFGYAQ-/0/1767217232568?e=2147483647&v=beta&t=uf-9-XxWoJeKHz6j0AFDlc2l0-RX9BbUZ6lNULQjs1o` : resource.id === 10 ? `https://cdn.prod.website-files.com/696a195e77c16374d6beeb51/698ee7bbc05af6693c7a57eb_63c5782cf0ee732be3f43836_614a0f782b14afae42c142df_InHouse%252520Counsel%252520Empowered%252520by%252520Tech.png` : resource.id === 11 ? `https://coruzant.com/wp-content/uploads/2022/05/podcast-conversation.jpg` : `/resourceimg${resource.id % 2 === 0 ? 2 : 1}.jpg`} 
                     alt={resource.title} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#0f172a] via-transparent to-transparent opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-[#5a32fa]/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
                 
-                <div className="p-6 flex flex-col flex-1">
+                <div className="p-6 pt-2 flex flex-col flex-1 relative z-10">
 
-                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2 text-center">{resource.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mb-6 flex-1 text-center">{resource.description}</p>
+                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 line-clamp-2 text-center group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[#5a32fa] group-hover:to-[#ff90e8] transition-all duration-300">{resource.title}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-6 flex-1 text-center leading-relaxed">{resource.description}</p>
                 
                 {resource.latestItems && (
                   <div className="mt-2 mb-4 flex flex-col gap-2">
@@ -249,9 +421,10 @@ export default function ResourcesPage() {
                   </div>
                 )}
                 
-                <div className="flex items-center justify-end mt-auto border-t-2 border-gray-100 dark:border-white/10 pt-4">
-                  <span className="text-[#5a32fa] font-bold text-sm flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                    Explore Category &rarr;
+                <div className="flex items-center justify-end mt-auto border-t border-gray-100 dark:border-white/5 pt-5 relative">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#5a32fa]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <span className="font-bold text-sm flex items-center gap-2 group-hover:translate-x-1 transition-all duration-300 text-gray-400 group-hover:text-[#5a32fa]">
+                    Explore Category <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
                   </span>
                 </div>
                 </div>

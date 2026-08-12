@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { useIdleTimeout } from '@/hooks/useIdleTimeout';
+import OrbitingCirclesGlobe from '@/components/ui/orbiting-circles-02';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user } = useAppStore();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
+  const hasSeenAnimation = typeof window !== 'undefined' ? sessionStorage.getItem('hasSeenAuthAnimation') === 'true' : false;
 
   // Initialize the idle timeout
   useIdleTimeout(15 * 60 * 1000); // 15 minutes
@@ -18,6 +20,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     setMounted(true);
     
     const checkOnboarding = async () => {
+      // Check if they've already seen the animation this session
+
+      if (!hasSeenAnimation && typeof window !== 'undefined') {
+        sessionStorage.setItem('hasSeenAuthAnimation', 'true');
+      }
+
       let shouldRedirect = false;
       try {
         const { supabase } = await import('@/lib/supabase');
@@ -74,10 +82,23 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   // Prevent flash of protected content while checking or redirecting
   if (!mounted || !user || isCheckingOnboarding) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fbe8d5] bg-grid-pattern">
-        <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-full border-4 border-[#5a32fa] border-t-transparent animate-spin"></div>
-          <p className="font-bold text-gray-900 dark:text-white text-sm">Checking authentication...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-[#0a0a0f] relative overflow-hidden">
+        
+        {/* Glow effect */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#5a32fa]/5 to-[#ff90e8]/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="flex flex-col items-center gap-6 z-20 mb-20 relative px-4 text-center">
+          <div className="w-16 h-16 rounded-full border-4 border-[#5a32fa] border-t-transparent animate-spin shadow-lg shadow-[#5a32fa]/20"></div>
+          <div className="flex flex-col gap-2 mt-4">
+            <p className="font-bold text-gray-900 dark:text-white text-lg tracking-wider uppercase animate-pulse">Authenticating...</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm max-w-md mx-auto">
+              You're an IP professional, so we want your details to be strictly encrypted. Just running a quick authentication check!
+            </p>
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 inset-x-0 w-full pointer-events-none">
+          <OrbitingCirclesGlobe />
         </div>
       </div>
     );

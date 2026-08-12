@@ -22,8 +22,10 @@ import {
   Circle,
   CheckCircle2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Crown
 } from 'lucide-react';
+import { ShinyButton } from './ShinyButton';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -153,9 +155,6 @@ export default function Sidebar() {
           <Link href="/platform/events" className={navLinkClass('/platform/events')}>
             <Calendar size={18} /> Events
           </Link>
-          <Link href="/platform/memberships" className={navLinkClass('/platform/memberships')}>
-            <FileText size={18} /> Memberships
-          </Link>
           <Link href="/platform/jobs" className={navLinkClass('/platform/jobs')}>
             <Briefcase size={18} /> Jobs Board
           </Link>
@@ -168,11 +167,14 @@ export default function Sidebar() {
               <span className="relative px-2 py-0.5 bg-[#00d26a] text-white text-[10px] font-bold rounded-full shadow-sm">NEW</span>
             </span>
           </Link>
+          <Link href="/platform/board-members" className={navLinkClass('/platform/board-members')}>
+            <Crown size={18} /> Board Members
+          </Link>
         </nav>
       </div>
 
       <div className="px-4 mb-8">
-        <p className="text-[13px] font-bold text-[#131313] mb-4 px-3">All Channels</p>
+        <p className="text-[13px] font-bold text-[#131313] dark:text-gray-400 mb-4 px-3">All Channels</p>
         <nav className="space-y-1">
           <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors group">
             <div className="flex items-center gap-2">
@@ -200,7 +202,7 @@ export default function Sidebar() {
       </div>
 
       <div className="px-4 mb-8">
-        <p className="text-[13px] font-bold text-[#131313] mb-4 px-3">Links</p>
+        <p className="text-[13px] font-bold text-[#131313] dark:text-gray-400 mb-4 px-3">Links</p>
         <nav className="space-y-1">
           <Link href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors">
             <div className="flex items-center gap-2">
