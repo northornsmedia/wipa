@@ -163,9 +163,9 @@ export function FluidExpandingGrid({
   }, [activeItem]);
 
   return (
-    <div className={cn("w-full max-w-4xl mx-auto pt-0 pb-12 px-6", className)}>
+    <div className={cn("w-full max-w-7xl mx-auto pt-0 pb-12 px-6", className)}>
       {/* Unexpanded Grid */}
-      <div className="w-full max-w-6xl mx-auto flex flex-wrap justify-center gap-6 pb-8">
+      <div className="w-full mx-auto flex flex-wrap justify-center gap-6 pb-8">
         {items.map((item) => (
           <motion.div
             key={item.id}
