@@ -346,13 +346,14 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] pb-20">
       
-      {/* Top Navigation & Cinematic Header */}
-      <div className="relative bg-gradient-to-b from-indigo-900 via-[#1e293b] to-[#1e293b] border-b border-gray-200 dark:border-white/10 pt-8 pb-12 overflow-hidden">
-        {/* Subtle Background Glows */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
-        
-        <div className="relative z-10 w-full max-w-[1200px] mx-auto p-4 md:p-6 lg:p-8">
+      {/* Top Navigation & Cinematic Header (Card Style) */}
+      <div className="w-full max-w-[1200px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
+        <div className="relative bg-gradient-to-b from-indigo-900 via-[#1e293b] to-[#1e293b] border border-indigo-500/20 rounded-[2.5rem] pt-8 pb-12 overflow-hidden shadow-2xl shadow-indigo-900/10">
+          {/* Subtle Background Glows */}
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
+          
+          <div className="relative z-10 px-6 md:px-10 lg:px-12">
           <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-indigo-200 hover:text-white font-bold text-sm mb-8 transition-all group bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
             Back to previous page
