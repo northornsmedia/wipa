@@ -171,7 +171,7 @@ export function FluidExpandingGrid({
             key={item.id}
             layoutId={`card-${item.id}`}
             onClick={() => setActiveItem(item)}
-            className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-lg w-full md:w-[calc(50%-12px)] h-[380px]"
+            className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-lg w-full md:w-[calc(33.333%-16px)] h-[380px]"
             whileHover={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
