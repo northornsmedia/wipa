@@ -183,7 +183,7 @@ export const UNIVERSITIES_DB = {
     description: 'The University of New Hampshire is a public land-grant research university with its main campus in Durham, New Hampshire. It offers leading programs in law, intellectual property, and technology transfer through its Franklin Pierce School of Law.',
     stats: { students: '15k+', courses: '100+', alumni: '140k+' },
     theme: { from: 'from-[#041E42]', to: 'to-[#1f2a44]' },
-    contact: { name: "Sarah Dorner", role: "Assistant Dean for Graduate Admissions & International Outreach", email: "sarah.dorner@law.unh.edu", phone: "(603) 228.1541", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=250&auto=format&fit=crop" },
+    contact: { name: "Sarah Dorner", role: "Assistant Dean for Graduate Admissions & International Outreach", email: "sarah.dorner@law.unh.edu", phone: "(603) 228.1541", image: "/sarah-dorner.png" },
     courses: [
       { id: 24, title: "LL.M. in Intellectual Property (Online)", type: "Degree", time: "Online", students: 450, rating: 4.9, image: "/resourceimg1.jpg" },
       { id: 25, title: "Master's in Intellectual Property (Online)", type: "Degree", time: "Online", students: 600, rating: 4.8, image: "/resourceimg2.jpg" },

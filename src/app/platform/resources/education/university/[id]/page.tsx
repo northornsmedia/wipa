@@ -5,7 +5,7 @@ import { ArrowLeft, PlayCircle, BookOpen, Clock, Star, Users, MapPin, Building, 
 import Link from 'next/link';
 
 // Mock University Data
-import { UNIVERSITIES_DB } from '../data';
+import { UNIVERSITIES_DB } from '../../data';
 
 import { useParams } from 'next/navigation';
 
