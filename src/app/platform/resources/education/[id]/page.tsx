@@ -402,7 +402,9 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
               <span className="text-indigo-200">Level: <strong className="text-white ml-1">{course.level}</strong></span>
             </div>
           </div>
+          </div>
         </div>
+      </div>
       </div>
 
       {/* Main Content Area */}
