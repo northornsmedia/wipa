@@ -405,7 +405,6 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
           </div>
         </div>
       </div>
-      </div>
 
       {/* Main Content Area */}
       <div className="w-full max-w-[1200px] mx-auto p-4 md:p-6 lg:p-8 pt-8 relative z-20">
