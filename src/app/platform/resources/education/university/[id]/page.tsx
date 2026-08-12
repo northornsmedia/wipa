@@ -178,6 +178,33 @@ const UNIVERSITIES_DB = {
       { id: 22, title: "Wharton: IP Strategy", type: "Certification", time: "12 weeks", students: 6500, rating: 4.9, image: "/resourceimg1.jpg" },
       { id: 23, title: "Law and Entrepreneurship", type: "Workshop", time: "4 days", students: 450, rating: 4.7, image: "/resourceimg2.jpg" },
     ]
+  },
+  unh: {
+    name: 'University of New Hampshire',
+    location: 'Durham, New Hampshire',
+    established: '1866',
+    type: 'Public Research University',
+    website: 'unh.edu',
+    logo: '/university.png',
+    heroImage: '/resourceimg1.jpg',
+    description: 'The University of New Hampshire is a public land-grant research university with its main campus in Durham, New Hampshire. It offers leading programs in law, intellectual property, and technology transfer through its Franklin Pierce School of Law.',
+    stats: { students: '15k+', courses: '100+', alumni: '140k+' },
+    theme: { from: 'from-[#041E42]', to: 'to-[#1f2a44]' },
+    contact: { name: "Dr. Emily Chen", role: "Franklin Pierce Programs", email: "emily.c@wipa.org", phone: "+1 (603) 862-1234", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=250&auto=format&fit=crop" },
+    courses: [
+      { id: 24, title: "LL.M. in Intellectual Property (Online)", type: "Degree", time: "Online", students: 450, rating: 4.9, image: "/resourceimg1.jpg" },
+      { id: 25, title: "Master's in Intellectual Property (Online)", type: "Degree", time: "Online", students: 600, rating: 4.8, image: "/resourceimg2.jpg" },
+      { id: 26, title: "Graduate Certificate in Intellectual Property (Online)", type: "Certificate", time: "Online", students: 850, rating: 4.7, image: "/resource3.jpg" },
+      { id: 27, title: "LL.M. in IP", type: "Degree", time: "Residential", students: 300, rating: 4.9, image: "/resourceimg1.jpg" },
+      { id: 28, title: "LL.M. in Commerce and Technology", type: "Degree", time: "Residential", students: 320, rating: 4.9, image: "/resourceimg2.jpg" },
+      { id: 29, title: "Master's in IP", type: "Degree", time: "Residential", students: 380, rating: 4.8, image: "/resource3.jpg" },
+      { id: 30, title: "Master's in Commerce and Technology", type: "Degree", time: "Residential", students: 410, rating: 4.8, image: "/resourceimg1.jpg" },
+      { id: 31, title: "Graduate Certificate in IP", type: "Certificate", time: "Residential", students: 450, rating: 4.7, image: "/resourceimg2.jpg" },
+      { id: 32, title: "Graduate Certificate in Commerce and Technology", type: "Certificate", time: "Residential", students: 500, rating: 4.7, image: "/resource3.jpg" },
+      { id: 33, title: "Hybrid JD — main program page (both specializations)", type: "Hybrid JD", time: "Hybrid", students: 200, rating: 5.0, image: "/resourceimg1.jpg" },
+      { id: 34, title: "Hybrid JD — Intellectual Property, Technology, and Information Law concentration", type: "Hybrid JD", time: "Hybrid", students: 120, rating: 5.0, image: "/resourceimg2.jpg" },
+      { id: 35, title: "Hybrid JD — Health and Life Science Law concentration", type: "Hybrid JD", time: "Hybrid", students: 90, rating: 4.9, image: "/resource3.jpg" },
+    ]
   }
 };
 
@@ -339,7 +366,7 @@ export default function UniversityProfilePage() {
         {/* Course Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredCourses.map(course => (
-            <div key={course.id} className="group relative bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-[2rem] overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col">
+            <Link href={`/platform/resources/education/${course.id}`} key={course.id} className="group relative bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-[2rem] overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col">
               <div className="relative aspect-[16/10] overflow-hidden">
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent z-10 transition-colors duration-500" />
                 <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -375,7 +402,7 @@ export default function UniversityProfilePage() {
               
               {/* Bottom accent bar using university theme */}
               <div className={`absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r ${university.theme.from} ${university.theme.to} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-            </div>
+            </Link>
           ))}
 
           {filteredCourses.length === 0 && (

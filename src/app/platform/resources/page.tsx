@@ -17,17 +17,6 @@ const MOCK_CATEGORIES = [
     ]
   },
   {
-    id: 2,
-    title: "Wellness & Wellbeing",
-    icon: Headphones,
-    color: "#00d26a",
-    description: "Resources focused on mental health and work-life balance.",
-    latestItems: [
-      { title: "Work-Life Balance for Lawyers", type: "New Webinar", time: "5 hours ago" },
-      { title: "Stress Management Techniques", type: "Audio Guide", time: "2 days ago" }
-    ]
-  },
-  {
     id: 3,
     title: "Education & Professional Development",
     icon: BookOpen,
@@ -124,6 +113,17 @@ const MOCK_CATEGORIES = [
     latestItems: [
       { title: "Interview with USPTO Director", type: "New Episode", time: "1 day ago" },
       { title: "The IP Innovators Series", type: "Podcast", time: "4 days ago" }
+    ]
+  },
+  {
+    id: 2,
+    title: "Wellness & Wellbeing",
+    icon: Headphones,
+    color: "#00d26a",
+    description: "Resources focused on mental health and work-life balance.",
+    latestItems: [
+      { title: "Work-Life Balance for Lawyers", type: "New Webinar", time: "5 hours ago" },
+      { title: "Stress Management Techniques", type: "Audio Guide", time: "2 days ago" }
     ]
   }
 ];

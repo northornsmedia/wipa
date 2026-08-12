@@ -3,12 +3,100 @@
 import React from 'react';
 import { ArrowLeft, BookOpen, Clock, User, Award, CheckCircle, Download, ExternalLink, GraduationCap, Video, FileText, ChevronRight, Activity } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function EducationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
+  const router = useRouter();
 
-  // Mock data for the specific educational resource
-  const course = {
+  const COURSE_DB: Record<string, any> = {
+    "24": {
+      id: "24",
+      title: "LL.M. in Intellectual Property (Online)",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "1-2 years",
+      level: "Advanced (Requires Law Degree)",
+      type: "Online Degree",
+      overview: "Franklin Pierce School of Law's LL.M. in Intellectual Property online program is designed for legal professionals seeking specialization in IP. Ranked top 10 for IP law for over 30 years, this program provides comprehensive training in patent, copyright, and trademark law.",
+      learningOutcomes: [
+        "Master the fundamentals of US and international intellectual property law.",
+        "Navigate complex patent prosecution and litigation.",
+        "Understand trademark registration and enforcement strategies.",
+        "Develop expertise in copyright law and digital media."
+      ],
+      modules: [
+        { week: "Core", title: "Fundamentals of Intellectual Property" },
+        { week: "Core", title: "Patent Practice and Procedure" },
+        { week: "Core", title: "Trademarks and Deceptive Practices" },
+        { week: "Elective", title: "Technology Transfer" },
+        { week: "Elective", title: "International and Comparative IP" },
+        { week: "Elective", title: "Copyright Law" }
+      ],
+      downloads: [
+        { title: "Program Curriculum (PDF)", type: "PDF", size: "2.1 MB" },
+        { title: "Admissions Guide", type: "PDF", size: "1.5 MB" }
+      ],
+      certificate: true
+    },
+    "25": {
+      id: "25",
+      title: "Master's in Intellectual Property (Online)",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "1-2 years",
+      level: "Intermediate/Advanced (No Law Degree Required)",
+      type: "Online Degree",
+      overview: "The Master's in Intellectual Property (MIP) online program is designed for professionals without a law degree who want to advance their careers by gaining deep expertise in IP. Perfect for scientists, engineers, and business leaders.",
+      learningOutcomes: [
+        "Gain a solid foundation in the legal framework of intellectual property.",
+        "Understand how to protect and commercialize innovations.",
+        "Learn patent searching and drafting essentials.",
+        "Navigate IP issues in business strategy and technology transfer."
+      ],
+      modules: [
+        { week: "Core", title: "Introduction to the Legal System" },
+        { week: "Core", title: "Fundamentals of Intellectual Property" },
+        { week: "Core", title: "Patent Law for Non-Lawyers" },
+        { week: "Elective", title: "IP Management and Valuation" },
+        { week: "Elective", title: "Licensing Intellectual Property" },
+        { week: "Elective", title: "Trademarks in Business" }
+      ],
+      downloads: [
+        { title: "MIP Program Overview (PDF)", type: "PDF", size: "1.8 MB" },
+        { title: "Career Opportunities in IP", type: "PDF", size: "900 KB" }
+      ],
+      certificate: true
+    },
+    "26": {
+      id: "26",
+      title: "Graduate Certificate in Intellectual Property (Online)",
+      provider: "UNH Franklin Pierce School of Law",
+      instructor: "UNH Law Faculty",
+      duration: "6-12 months",
+      level: "Intermediate",
+      type: "Online Certificate",
+      overview: "A flexible, focused online graduate certificate in Intellectual Property for working professionals. Gain specialized knowledge in patents, trademarks, and copyrights without committing to a full degree program. Credits can often be applied toward a master's degree.",
+      learningOutcomes: [
+        "Understand the core concepts of IP protection.",
+        "Evaluate the patentability and commercial potential of inventions.",
+        "Learn the basics of trademark and copyright registration.",
+        "Apply IP principles to real-world business scenarios."
+      ],
+      modules: [
+        { week: "Course 1", title: "Fundamentals of Intellectual Property" },
+        { week: "Course 2", title: "Patent Law and Practice" },
+        { week: "Course 3", title: "Trademarks and Copyrights" },
+        { week: "Course 4", title: "IP Management or Tech Transfer" }
+      ],
+      downloads: [
+        { title: "Certificate Requirements (PDF)", type: "PDF", size: "1.1 MB" }
+      ],
+      certificate: true
+    }
+  };
+
+  const course = COURSE_DB[id] || {
     id: id,
     title: "Patent Law Fundamentals",
     provider: "UNH Franklin Pierce School of Law",
@@ -44,10 +132,10 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
       {/* Top Navigation */}
       <div className="bg-white dark:bg-[#1e293b] border-b border-gray-200 dark:border-white/10 pt-8 pb-6">
         <div className="w-full max-w-[1200px] mx-auto p-4 md:p-6 lg:p-8">
-          <Link href="/platform/resources/education" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] font-bold text-sm mb-6 transition-colors">
+          <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] font-bold text-sm mb-6 transition-colors">
             <ArrowLeft size={16} />
-            Back to Education Hub
-          </Link>
+            Back to previous page
+          </button>
           
           <div className="flex items-center gap-3 text-sm font-bold text-[#5a32fa] mb-4">
             <span className="bg-[#5a32fa]/10 px-3 py-1 rounded-full uppercase tracking-wider text-[10px]">{course.type}</span>

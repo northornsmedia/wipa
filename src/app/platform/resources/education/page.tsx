@@ -188,6 +188,7 @@ export default function EducationHubPage() {
                 { id: 'stanford', name: 'Stanford University', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuWroQgVKxEvraDoi4RCt2EwbfBF2MLlYEGGsyssOeLYu6E-txC_SNJAFt&s=10' },
                 { id: 'princeton', name: 'Princeton University', logo: 'https://download.logo.wine/logo/Princeton_University/Princeton_University-Logo.wine.png' },
                 { id: 'penn', name: 'UPenn', logo: 'https://download.logo.wine/logo/University_of_Pennsylvania/University_of_Pennsylvania-Logo.wine.png' },
+                { id: 'unh', name: 'University of New Hampshire', logo: '/university.png' },
               ].map(uni => (
                 <Link key={`set1-${uni.id}`} href={`/platform/resources/education/university/${uni.id}`} className="shrink-0 transition-transform hover:scale-110">
                   <img src={uni.logo} alt={uni.name} className="h-16 md:h-20 w-auto object-contain drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] dark:brightness-125" />
@@ -208,6 +209,7 @@ export default function EducationHubPage() {
                 { id: 'stanford', name: 'Stanford University', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuWroQgVKxEvraDoi4RCt2EwbfBF2MLlYEGGsyssOeLYu6E-txC_SNJAFt&s=10' },
                 { id: 'princeton', name: 'Princeton University', logo: 'https://download.logo.wine/logo/Princeton_University/Princeton_University-Logo.wine.png' },
                 { id: 'penn', name: 'UPenn', logo: 'https://download.logo.wine/logo/University_of_Pennsylvania/University_of_Pennsylvania-Logo.wine.png' },
+                { id: 'unh', name: 'University of New Hampshire', logo: '/university.png' },
               ].map(uni => (
                 <Link key={`set2-${uni.id}`} href={`/platform/resources/education/university/${uni.id}`} className="shrink-0 transition-transform hover:scale-110">
                   <img src={uni.logo} alt={uni.name} className="h-16 md:h-20 w-auto object-contain drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] dark:brightness-125" />
