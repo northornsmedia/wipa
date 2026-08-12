@@ -227,7 +227,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
                 <Download size={20} className="text-[#5a32fa]" /> Downloadable Materials
               </h3>
               <div className="space-y-3">
-                {course.downloads.map((doc, idx) => (
+                {course.downloads?.map((doc: { title: string, type: string, size: string }, idx: number) => (
                   <a key={idx} href="#" className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-colors group">
                     <div className="flex items-center gap-3">
                       <FileText size={18} className="text-gray-400 group-hover:text-[#5a32fa] transition-colors" />
