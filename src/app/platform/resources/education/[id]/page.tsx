@@ -346,92 +346,105 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] pb-20">
       
-      {/* Top Navigation */}
-      <div className="bg-white dark:bg-[#1e293b] border-b border-gray-200 dark:border-white/10 pt-8 pb-6">
-        <div className="w-full max-w-[1200px] mx-auto p-4 md:p-6 lg:p-8">
-          <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] font-bold text-sm mb-6 transition-colors">
-            <ArrowLeft size={16} />
+      {/* Top Navigation & Cinematic Header */}
+      <div className="relative bg-gradient-to-b from-indigo-900 via-[#1e293b] to-[#1e293b] border-b border-gray-200 dark:border-white/10 pt-8 pb-12 overflow-hidden">
+        {/* Subtle Background Glows */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
+        
+        <div className="relative z-10 w-full max-w-[1200px] mx-auto p-4 md:p-6 lg:p-8">
+          <button onClick={() => router.back()} className="inline-flex items-center gap-2 text-indigo-200 hover:text-white font-bold text-sm mb-8 transition-all group bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
             Back to previous page
           </button>
           
-          <div className="flex items-center gap-3 text-sm font-bold text-[#5a32fa] mb-4">
-            <span className="bg-[#5a32fa]/10 px-3 py-1 rounded-full uppercase tracking-wider text-[10px]">{course.type}</span>
+          <div className="flex items-center gap-3 text-sm font-bold text-indigo-300 mb-6">
+            <span className="bg-indigo-500/20 text-indigo-200 px-4 py-1.5 rounded-full uppercase tracking-widest text-[11px] border border-indigo-500/30 backdrop-blur-md">{course.type}</span>
             {course.certificate && (
-              <span className="flex items-center gap-1 text-[#00d26a] bg-[#00d26a]/10 px-3 py-1 rounded-full uppercase tracking-wider text-[10px]">
-                <Award size={12} /> Certificate Available
+              <span className="flex items-center gap-1.5 text-emerald-300 bg-emerald-500/20 px-4 py-1.5 rounded-full uppercase tracking-widest text-[11px] border border-emerald-500/30 backdrop-blur-md">
+                <Award size={14} /> Certificate Available
               </span>
             )}
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-black text-gray-800 dark:text-gray-100 mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-8 leading-tight drop-shadow-lg max-w-4xl">
             {course.title}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-gray-600 dark:text-gray-300 border-t border-gray-200 dark:border-white/10 pt-6">
-            <div className="flex items-center gap-2">
-              <GraduationCap size={18} className="text-[#5a32fa]" />
-              <span>Provider: {
+          <div className="flex flex-wrap items-center gap-4 text-sm font-medium pt-8 border-t border-white/10">
+            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md px-4 py-2 rounded-xl border border-white/5">
+              <GraduationCap size={18} className="text-indigo-400" />
+              <span className="text-indigo-200">Provider: {
                 (() => {
                   const foundEntry = Object.entries(UNIVERSITIES_DB).find(([key, uni]) => course.provider.includes((uni as any).name) || (key === 'unh' && course.provider.includes('UNH')));
                   const uniKey = foundEntry ? foundEntry[0] : null;
                   return uniKey ? (
-                    <Link href={`/platform/resources/education/university/${uniKey}`} className="font-bold text-[#5a32fa] hover:text-[#4927d3] hover:underline transition-colors">
+                    <Link href={`/platform/resources/education/university/${uniKey}`} className="font-bold text-white hover:text-indigo-300 transition-colors drop-shadow-md ml-1">
                       {course.provider}
                     </Link>
                   ) : (
-                    <strong className="text-gray-800 dark:text-gray-100">{course.provider}</strong>
+                    <strong className="text-white ml-1">{course.provider}</strong>
                   );
                 })()
               }</span>
             </div>
-            <div className="flex items-center gap-2">
-              <User size={18} className="text-[#5a32fa]" />
-              <span>Instructor: <strong className="text-gray-800 dark:text-gray-100">{course.instructor}</strong></span>
+            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md px-4 py-2 rounded-xl border border-white/5">
+              <User size={18} className="text-indigo-400" />
+              <span className="text-indigo-200">Instructor: <strong className="text-white ml-1">{course.instructor}</strong></span>
             </div>
-            <div className="flex items-center gap-2">
-              <Clock size={18} className="text-[#5a32fa]" />
-              <span>Duration: <strong className="text-gray-800 dark:text-gray-100">{course.duration}</strong></span>
+            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md px-4 py-2 rounded-xl border border-white/5">
+              <Clock size={18} className="text-indigo-400" />
+              <span className="text-indigo-200">Duration: <strong className="text-white ml-1">{course.duration}</strong></span>
             </div>
-            <div className="flex items-center gap-2">
-              <Activity size={18} className="text-[#5a32fa]" />
-              <span>Level: <strong className="text-gray-800 dark:text-gray-100">{course.level}</strong></span>
+            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-md px-4 py-2 rounded-xl border border-white/5">
+              <Activity size={18} className="text-indigo-400" />
+              <span className="text-indigo-200">Level: <strong className="text-white ml-1">{course.level}</strong></span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="w-full max-w-[1200px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
+      <div className="w-full max-w-[1200px] mx-auto p-4 md:p-6 lg:p-8 -mt-8 relative z-20">
         <div className="flex flex-col lg:flex-row gap-8">
           
           {/* Left Column (Content) */}
           <div className="flex-1">
-            <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-8 border border-gray-200 dark:border-white/10 shadow-sm mb-8">
-              <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-4">Course Overview</h2>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg mb-8">
+            <div className="bg-white/80 dark:bg-[#1e293b]/90 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 border border-gray-200 dark:border-white/10 shadow-xl shadow-indigo-900/5 mb-8">
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">Course Overview</h2>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg mb-10">
                 {course.overview}
               </p>
 
-              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <CheckCircle className="text-[#5a32fa]" size={20} /> Learning Outcomes
-              </h3>
-              <ul className="space-y-3 mb-8">
-                {course.learningOutcomes?.map((outcome: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-3 text-gray-600 dark:text-gray-300">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#5a32fa] mt-2 shrink-0"></span>
-                    <span>{outcome}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl p-6 md:p-8 mb-10 border border-indigo-100 dark:border-indigo-500/20">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                  <div className="p-2 bg-indigo-500 rounded-lg text-white shadow-lg shadow-indigo-500/30">
+                    <CheckCircle size={20} />
+                  </div>
+                  Learning Outcomes
+                </h3>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {course.learningOutcomes?.map((outcome: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-3 text-gray-700 dark:text-gray-300 bg-white dark:bg-[#0f172a] p-4 rounded-xl shadow-sm border border-gray-100 dark:border-white/5">
+                      <span className="w-2 h-2 rounded-full bg-indigo-500 mt-2 shrink-0 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></span>
+                      <span className="font-medium text-sm leading-relaxed">{outcome}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <BookOpen className="text-[#5a32fa]" size={20} /> Course Curriculum
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                <div className="p-2 bg-purple-500 rounded-lg text-white shadow-lg shadow-purple-500/30">
+                  <BookOpen size={20} />
+                </div>
+                Course Curriculum
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {course.modules?.map((mod: { week: string, title: string }, idx: number) => (
-                  <div key={idx} className="flex gap-4 p-4 rounded-xl bg-gray-50 dark:bg-[#0f172a] border border-gray-100 dark:border-white/5">
-                    <span className="font-bold text-[#5a32fa] shrink-0 w-16">{mod.week}</span>
-                    <span className="font-medium text-gray-800 dark:text-gray-100">{mod.title}</span>
+                  <div key={idx} className="group flex items-center gap-4 p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-white/5 hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300">
+                    <span className="font-black text-indigo-500 shrink-0 w-20 text-sm uppercase tracking-wider">{mod.week}</span>
+                    <div className="w-px h-8 bg-gray-200 dark:bg-white/10 group-hover:bg-indigo-500/30 transition-colors"></div>
+                    <span className="font-bold text-gray-800 dark:text-gray-100 text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{mod.title}</span>
                   </div>
                 ))}
               </div>
@@ -439,36 +452,52 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
           </div>
 
           {/* Right Column (Sidebar) */}
-          <div className="w-full lg:w-[350px] flex flex-col gap-6">
+          <div className="w-full lg:w-[380px] flex flex-col gap-6">
             
             {/* Enrollment Action Card */}
-            <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-[#5a32fa]/30 shadow-lg shadow-[#5a32fa]/5 text-center">
-              <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-2">Ready to advance your career?</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Enrollment is currently open for the next cohort.</p>
-              <button className="w-full bg-[#5a32fa] hover:bg-[#4927d3] text-white font-bold py-3.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 group">
-                Enrol / Register <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </button>
+            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[2rem] p-1 border border-indigo-400/50 shadow-2xl shadow-indigo-600/20 text-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+              <div className="bg-white dark:bg-[#0f172a] rounded-[1.8rem] p-8 relative z-10 h-full flex flex-col items-center justify-center">
+                <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-4 border border-indigo-100 dark:border-indigo-500/20">
+                  <Award size={32} className="text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Ready to advance?</h3>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-8 leading-relaxed">Enrollment is currently open for the next cohort. Secure your spot today.</p>
+                <button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2 group transform hover:scale-[1.02] active:scale-95">
+                  Enrol / Register <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
             </div>
 
             {/* Contact Admissions */}
             {course.provider.includes("UNH") && UNIVERSITIES_DB.unh.contact && (
-              <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
-                <h3 className="font-black text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                  <User size={20} className="text-[#5a32fa]" /> Program Contact
+              <div className="bg-white/80 dark:bg-[#1e293b]/90 backdrop-blur-xl rounded-[2rem] p-6 border border-gray-200 dark:border-white/10 shadow-lg shadow-gray-200/20 dark:shadow-none transition-all hover:border-indigo-500/30">
+                <h3 className="font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                  <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400">
+                    <User size={20} />
+                  </div>
+                  Program Contact
                 </h3>
                 <div className="flex flex-col items-center text-center">
-                  <img src={UNIVERSITIES_DB.unh.contact.image} alt={UNIVERSITIES_DB.unh.contact.name} className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-gray-50 shadow-sm dark:border-[#0f172a]" />
-                  <h4 className="font-bold text-gray-800 dark:text-gray-100 text-lg">{UNIVERSITIES_DB.unh.contact.name}</h4>
-                  <p className="text-sm font-medium text-[#5a32fa] mb-4">{UNIVERSITIES_DB.unh.contact.role}</p>
+                  <div className="relative mb-4">
+                    <div className="absolute inset-0 bg-indigo-500 rounded-full blur-md opacity-20"></div>
+                    <img src={UNIVERSITIES_DB.unh.contact.image} alt={UNIVERSITIES_DB.unh.contact.name} className="relative w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm dark:border-[#0f172a]" />
+                  </div>
+                  <h4 className="font-black text-gray-900 dark:text-white text-xl">{UNIVERSITIES_DB.unh.contact.name}</h4>
+                  <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 mb-6 uppercase tracking-wider">{UNIVERSITIES_DB.unh.contact.role}</p>
                   
-                  <div className="w-full space-y-2 mt-2">
-                    <a href={`mailto:${UNIVERSITIES_DB.unh.contact.email}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-colors group text-left">
-                      <Mail size={16} className="text-gray-400 group-hover:text-[#5a32fa]" />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-[#5a32fa] truncate">{UNIVERSITIES_DB.unh.contact.email}</span>
+                  <div className="w-full space-y-3">
+                    <a href={`mailto:${UNIVERSITIES_DB.unh.contact.email}`} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-[#0f172a] border border-transparent hover:border-indigo-500/30 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all group text-left">
+                      <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0">
+                        <Mail size={16} className="text-indigo-600 dark:text-indigo-400" />
+                      </div>
+                      <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">{UNIVERSITIES_DB.unh.contact.email}</span>
                     </a>
-                    <a href={`tel:${UNIVERSITIES_DB.unh.contact.phone}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-colors group text-left">
-                      <Phone size={16} className="text-gray-400 group-hover:text-[#5a32fa]" />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-[#5a32fa]">{UNIVERSITIES_DB.unh.contact.phone}</span>
+                    <a href={`tel:${UNIVERSITIES_DB.unh.contact.phone}`} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-[#0f172a] border border-transparent hover:border-indigo-500/30 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all group text-left">
+                      <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center shrink-0">
+                        <Phone size={16} className="text-indigo-600 dark:text-indigo-400" />
+                      </div>
+                      <span className="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{UNIVERSITIES_DB.unh.contact.phone}</span>
                     </a>
                   </div>
                 </div>
@@ -476,18 +505,23 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
             )}
 
             {/* Downloads Card */}
-            <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
-              <h3 className="font-black text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <Download size={20} className="text-[#5a32fa]" /> Downloadable Materials
+            <div className="bg-white/80 dark:bg-[#1e293b]/90 backdrop-blur-xl rounded-[2rem] p-6 border border-gray-200 dark:border-white/10 shadow-lg shadow-gray-200/20 dark:shadow-none transition-all hover:border-indigo-500/30">
+              <h3 className="font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400">
+                  <Download size={20} />
+                </div>
+                Materials
               </h3>
               <div className="space-y-3">
                 {course.downloads?.map((doc: { title: string, type: string, size: string }, idx: number) => (
-                  <a key={idx} href="#" className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-colors group">
-                    <div className="flex items-center gap-3">
-                      <FileText size={18} className="text-gray-400 group-hover:text-[#5a32fa] transition-colors" />
+                  <a key={idx} href="#" className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-[#0f172a] border border-transparent hover:border-indigo-500/30 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all group">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-white dark:bg-[#1e293b] shadow-sm flex items-center justify-center shrink-0 border border-gray-100 dark:border-white/5">
+                        <FileText size={18} className="text-gray-400 group-hover:text-indigo-600 transition-colors" />
+                      </div>
                       <div>
-                        <p className="text-sm font-bold text-gray-800 dark:text-gray-100 group-hover:text-[#5a32fa] transition-colors">{doc.title}</p>
-                        <p className="text-xs text-gray-500">{doc.type} • {doc.size}</p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors">{doc.title}</p>
+                        <p className="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wider">{doc.type} • {doc.size}</p>
                       </div>
                     </div>
                   </a>
@@ -496,19 +530,21 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
             </div>
 
             {/* Related Resources */}
-            <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
-              <h3 className="font-black text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <BookOpen size={20} className="text-[#5a32fa]" /> Related Learning
+            <div className="bg-white/80 dark:bg-[#1e293b]/90 backdrop-blur-xl rounded-[2rem] p-6 border border-gray-200 dark:border-white/10 shadow-lg shadow-gray-200/20 dark:shadow-none transition-all hover:border-indigo-500/30">
+              <h3 className="font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400">
+                  <BookOpen size={20} />
+                </div>
+                Related Learning
               </h3>
-              <div className="space-y-4">
-                <Link href="/platform/resources/education/2" className="block group">
-                  <span className="text-[10px] font-black uppercase text-[#0984e3] mb-1 block">Article</span>
-                  <h4 className="text-sm font-bold text-gray-800 dark:text-gray-100 group-hover:text-[#5a32fa] transition-colors line-clamp-2">How to Navigate the EPO Examination Process</h4>
+              <div className="space-y-5">
+                <Link href="/platform/resources/education/2" className="block group bg-gray-50 dark:bg-[#0f172a] p-4 rounded-2xl border border-transparent hover:border-indigo-500/30 transition-all">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#0984e3] mb-2 block">Article</span>
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors line-clamp-2">How to Navigate the EPO Examination Process</h4>
                 </Link>
-                <div className="border-t border-gray-100 dark:border-white/5"></div>
-                <Link href="/platform/resources/education/3" className="block group">
-                  <span className="text-[10px] font-black uppercase text-[#e84393] mb-1 block">Masterclass</span>
-                  <h4 className="text-sm font-bold text-gray-800 dark:text-gray-100 group-hover:text-[#5a32fa] transition-colors line-clamp-2">Advanced Claim Drafting Techniques</h4>
+                <Link href="/platform/resources/education/3" className="block group bg-gray-50 dark:bg-[#0f172a] p-4 rounded-2xl border border-transparent hover:border-indigo-500/30 transition-all">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#e84393] mb-2 block">Masterclass</span>
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors line-clamp-2">Advanced Claim Drafting Techniques</h4>
                 </Link>
               </div>
             </div>
