@@ -5,10 +5,7 @@ import { ArrowLeft, Search, Mic, Play, Pause, ChevronDown, ListMusic, Headphones
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
-const MOCK_PODCASTS_SUBCATEGORIES = [
-  { id: 'all', name: 'All Episodes' },
-  { id: 'categories', name: 'All Categories' }
-];
+// MOCK categories removed in favor of dynamic albums from DB
 
 const CONTENT_TYPES = [
   "All Types",
@@ -29,13 +26,18 @@ export default function PodcastsHubPage() {
   const [playingId, setPlayingId] = useState<number | null>(null); // Paused by default
 
   const [podcasts, setPodcasts] = useState<any[]>([]);
+  const [albums, setAlbums] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchPodcasts() {
-      const { data, error } = await supabase.from('podcasts').select('*').order('created_at', { ascending: false });
-      if (!error && data) {
-        const formattedData = data.map(dbItem => ({
+      const [podcastsRes, albumsRes] = await Promise.all([
+        supabase.from('podcasts').select('*').order('created_at', { ascending: false }),
+        supabase.from('podcast_albums').select('*').order('name', { ascending: true })
+      ]);
+
+      if (!podcastsRes.error && podcastsRes.data) {
+        const formattedData = podcastsRes.data.map(dbItem => ({
           id: dbItem.id,
           title: dbItem.title,
           type: dbItem.content_type,
@@ -51,6 +53,11 @@ export default function PodcastsHubPage() {
         }));
         setPodcasts(formattedData);
       }
+      
+      if (!albumsRes.error && albumsRes.data) {
+        setAlbums(albumsRes.data);
+      }
+      
       setLoading(false);
     }
     fetchPodcasts();
@@ -97,22 +104,33 @@ export default function PodcastsHubPage() {
         
         {/* Filter Badges (Spotify style) */}
         <div className="flex gap-3 overflow-x-auto no-scrollbar mb-10 pb-2">
-          {MOCK_PODCASTS_SUBCATEGORIES.map(sub => (
-            <button
-              key={sub.id}
-              onClick={() => {
-                setActiveSub(sub.id);
-                if (sub.id === 'all') setSelectedCategory('');
-              }}
-              className={`px-5 py-2 rounded-full font-bold text-sm transition-all whitespace-nowrap border ${
-                activeSub === sub.id && !selectedCategory
-                  ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white'
-                  : 'bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10 dark:border-white/10'
-              }`}
-            >
-              {sub.name}
-            </button>
-          ))}
+          <button
+            onClick={() => {
+              setActiveSub('all');
+              setSelectedCategory('');
+            }}
+            className={`px-5 py-2 rounded-full font-bold text-sm transition-all whitespace-nowrap border ${
+              activeSub === 'all' && !selectedCategory
+                ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white'
+                : 'bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10 dark:border-white/10'
+            }`}
+          >
+            All Episodes
+          </button>
+          
+          <button
+            onClick={() => {
+              setActiveSub('categories');
+              setSelectedCategory('');
+            }}
+            className={`px-5 py-2 rounded-full font-bold text-sm transition-all whitespace-nowrap border ${
+              activeSub === 'categories' && !selectedCategory
+                ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white'
+                : 'bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10 dark:border-white/10'
+            }`}
+          >
+            All Categories
+          </button>
           
           {activeSub === 'all' && (
             <div className="relative ml-auto hidden sm:block">
@@ -150,33 +168,30 @@ export default function PodcastsHubPage() {
 
         {activeSub === 'categories' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
-            {/* Mock Category 1 */}
-            <div 
-              onClick={() => { setSelectedCategory('Leadership & Career'); setActiveSub('all'); }}
-              className="bg-gray-50 dark:bg-[#181818] border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group shadow-sm"
-            >
-              <div className="h-48 bg-gradient-to-br from-indigo-500 to-purple-600 relative overflow-hidden flex items-end p-5">
-                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                 <h3 className="relative z-10 text-2xl font-black text-white drop-shadow-md">Leadership & Career</h3>
+            {albums.map((album) => (
+              <div 
+                key={album.id}
+                onClick={() => { setSelectedCategory(album.name); setActiveSub('all'); }}
+                className="bg-gray-50 dark:bg-[#181818] border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group shadow-sm flex flex-col"
+              >
+                <div className="h-48 relative overflow-hidden flex items-end p-5 shrink-0 bg-[#27272a]">
+                   {album.cover_image_url && (
+                     <img src={album.cover_image_url} alt={album.name} className="absolute inset-0 w-full h-full object-cover" />
+                   )}
+                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+                   <h3 className="relative z-10 text-2xl font-black text-white drop-shadow-md">{album.name}</h3>
+                </div>
+                <div className="p-5 flex-1">
+                  <p className="text-sm font-medium text-gray-500 dark:text-white/60">{album.description || "No description provided."}</p>
+                </div>
               </div>
-              <div className="p-5">
-                <p className="text-sm font-medium text-gray-500 dark:text-white/60">Conversations with industry leaders and experts.</p>
+            ))}
+            
+            {albums.length === 0 && !loading && (
+              <div className="col-span-full py-12 text-center">
+                <p className="text-gray-500 dark:text-white/40">No albums have been created yet.</p>
               </div>
-            </div>
-
-            {/* Mock Category 2 */}
-            <div 
-              onClick={() => { setSelectedCategory('Diversity in IP'); setActiveSub('all'); }}
-              className="bg-gray-50 dark:bg-[#181818] border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group shadow-sm"
-            >
-              <div className="h-48 bg-gradient-to-br from-rose-500 to-orange-500 relative overflow-hidden flex items-end p-5">
-                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                 <h3 className="relative z-10 text-2xl font-black text-white drop-shadow-md">Diversity in IP</h3>
-              </div>
-              <div className="p-5">
-                <p className="text-sm font-medium text-gray-500 dark:text-white/60">Exploring DEI initiatives across the patent world.</p>
-              </div>
-            </div>
+            )}
           </div>
         ) : (
           <>
