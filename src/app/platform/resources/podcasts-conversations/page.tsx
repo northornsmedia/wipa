@@ -101,9 +101,9 @@ export default function PodcastsHubPage() {
               />
             </div>
             
-            <button className="hidden md:flex items-center gap-2 bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/10 hover:border-[#f59e0b] dark:hover:border-[#f59e0b] text-gray-700 dark:text-white hover:text-[#f59e0b] dark:hover:text-[#f59e0b] px-5 py-2.5 rounded-full font-bold text-sm shadow-sm transition-all whitespace-nowrap">
+            <Link href="/platform/resources/podcasts-conversations/upload" className="hidden md:flex items-center gap-2 bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/10 hover:border-[#f59e0b] dark:hover:border-[#f59e0b] text-gray-700 dark:text-white hover:text-[#f59e0b] dark:hover:text-[#f59e0b] px-5 py-2.5 rounded-full font-bold text-sm shadow-sm transition-all whitespace-nowrap">
               Want to upload a podcast?
-            </button>
+            </Link>
           </div>
         </div>
       </div>
