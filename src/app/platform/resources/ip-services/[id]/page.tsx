@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { use } from 'react';
 import { ArrowLeft, Building, MapPin, Globe, Mail, Phone, Shield, FileText, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -38,8 +38,9 @@ const MOCK_COMPANIES = [
   }
 ];
 
-export default function CompanyProfilePage({ params }: { params: { id: string } }) {
-  const company = MOCK_COMPANIES.find(c => c.id === params.id) || MOCK_COMPANIES[0];
+export default function CompanyProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const company = MOCK_COMPANIES.find(c => c.id === resolvedParams.id) || MOCK_COMPANIES[0];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden pb-20">
