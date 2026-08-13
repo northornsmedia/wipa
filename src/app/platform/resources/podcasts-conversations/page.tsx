@@ -87,17 +87,23 @@ export default function PodcastsHubPage() {
             <h1 className="text-xl font-bold tracking-tight hidden sm:block text-gray-900 dark:text-white">Podcasts & Conversations</h1>
           </div>
 
-          <div className="flex-1 max-w-md relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-              <Search className="w-4 h-4 text-gray-400 dark:text-white/40" />
+          <div className="flex items-center gap-4 flex-1 justify-end">
+            <div className="w-full max-w-md relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                <Search className="w-4 h-4 text-gray-400 dark:text-white/40" />
+              </div>
+              <input 
+                type="text" 
+                placeholder="Search episodes..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-gray-100 dark:bg-white/10 border-transparent focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] rounded-full py-2.5 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/40 outline-none transition-all"
+              />
             </div>
-            <input 
-              type="text" 
-              placeholder="Search episodes..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-100 dark:bg-white/10 border-transparent focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] rounded-full py-2.5 pl-11 pr-4 text-sm font-medium text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/40 outline-none transition-all"
-            />
+            
+            <button className="hidden md:flex items-center gap-2 bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/10 hover:border-[#f59e0b] dark:hover:border-[#f59e0b] text-gray-700 dark:text-white hover:text-[#f59e0b] dark:hover:text-[#f59e0b] px-5 py-2.5 rounded-full font-bold text-sm shadow-sm transition-all whitespace-nowrap">
+              Want to upload a podcast?
+            </button>
           </div>
         </div>
       </div>
