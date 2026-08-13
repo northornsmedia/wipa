@@ -172,17 +172,30 @@ export default function PodcastsHubPage() {
               <div 
                 key={album.id}
                 onClick={() => { setSelectedCategory(album.name); setActiveSub('all'); }}
-                className="bg-gray-50 dark:bg-[#181818] border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group shadow-sm flex flex-col"
+                className="bg-[#181818] p-4 rounded-xl hover:bg-[#282828] transition-colors cursor-pointer group flex flex-col"
               >
-                <div className="h-48 relative overflow-hidden flex items-end p-5 shrink-0 bg-[#27272a]">
-                   {album.cover_image_url && (
-                     <img src={album.cover_image_url} alt={album.name} className="absolute inset-0 w-full h-full object-cover" />
+                {/* Image Container with Hover Play Button */}
+                <div className="relative w-full aspect-square rounded-md overflow-hidden bg-[#27272a] shadow-lg mb-4 shrink-0">
+                   {album.cover_image_url ? (
+                     <img src={album.cover_image_url} alt={album.name} className="w-full h-full object-cover" />
+                   ) : (
+                     <div className="w-full h-full flex items-center justify-center text-gray-500">
+                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                     </div>
                    )}
-                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
-                   <h3 className="relative z-10 text-2xl font-black text-white drop-shadow-md">{album.name}</h3>
+                   
+                   {/* Spotify-style Play Button */}
+                   <div className="absolute bottom-2 right-2 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out z-10 shadow-xl">
+                     <button className="w-12 h-12 bg-[#1ed760] rounded-full flex items-center justify-center hover:bg-[#1fdf64] hover:scale-105 transition-all text-black shadow-lg">
+                       <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                     </button>
+                   </div>
                 </div>
-                <div className="p-5 flex-1">
-                  <p className="text-sm font-medium text-gray-500 dark:text-white/60">{album.description || "No description provided."}</p>
+                
+                {/* Text Content */}
+                <div className="flex flex-col flex-1">
+                  <h3 className="text-base font-bold text-white mb-1 truncate">{album.name}</h3>
+                  <p className="text-[13px] font-medium text-gray-400 line-clamp-2">{album.description || "No description provided."}</p>
                 </div>
               </div>
             ))}
