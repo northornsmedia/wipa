@@ -23,13 +23,14 @@ const CONTENT_TYPES = [
 
 const MOCK_COMPANIES = [
   {
-    id: "wipa-legal",
-    title: "WIPA Legal Team",
+    id: "pss-solutions",
+    title: "PSS Solutions",
     type: "Enterprise IP Solutions",
     subcategory: "all",
     location: "Global",
     sponsored: true,
-    description: "Premier intellectual property services focusing on comprehensive global trademark registration and patent drafting."
+    logo: "https://cdn.prod.website-files.com/64c4a14aa0442cfa0e0c62e9/6593a22b139e1daa37dd5974_PSS_Pfront_BLUE%20(1).svg",
+    description: "PSS Solutions provides premier intellectual property services, focusing on comprehensive global trademark registration and patent drafting."
   },
   {
     id: "tech-protect-llp",
@@ -171,8 +172,12 @@ export default function IPServicesPage() {
 
               <div className="p-6 flex-1 flex flex-col">
                 <div className="flex justify-between items-start mb-6">
-                  <div className={`p-3 rounded-2xl ${resource.sponsored ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-sky-100 dark:group-hover:bg-sky-900/50 group-hover:text-sky-600 dark:group-hover:text-sky-400'} transition-colors duration-300`}>
-                    <Building size={24} />
+                  <div className={`p-3 rounded-2xl ${resource.sponsored ? 'bg-white shadow-lg shadow-sky-500/30 w-16 h-16 flex items-center justify-center' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-sky-100 dark:group-hover:bg-sky-900/50 group-hover:text-sky-600 dark:group-hover:text-sky-400'} transition-colors duration-300`}>
+                    {resource.logo ? (
+                      <img src={resource.logo} alt={resource.title} className="max-w-full max-h-full object-contain" />
+                    ) : (
+                      <Building size={24} />
+                    )}
                   </div>
                   {resource.sponsored && (
                     <span className="text-[10px] font-black text-amber-500 bg-amber-500/10 px-3 py-1 rounded-full uppercase tracking-widest border border-amber-500/20">Sponsored</span>

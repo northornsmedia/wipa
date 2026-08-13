@@ -7,13 +7,14 @@ import Link from 'next/link';
 // Using the same mock data to find the specific company
 const MOCK_COMPANIES = [
   {
-    id: "wipa-legal",
-    name: "WIPA Legal Team",
+    id: "pss-solutions",
+    name: "PSS Solutions",
     type: "Enterprise IP Solutions",
     location: "Global",
-    website: "www.wipa.org",
+    website: "www.psssolutions.com",
     sponsored: true,
-    description: "The official WIPA Legal Team provides premier intellectual property services, focusing on comprehensive global trademark registration, patent drafting, and enterprise-level IP portfolio management.",
+    logo: "https://cdn.prod.website-files.com/64c4a14aa0442cfa0e0c62e9/6593a22b139e1daa37dd5974_PSS_Pfront_BLUE%20(1).svg",
+    description: "PSS Solutions provides premier intellectual property services, focusing on comprehensive global trademark registration, patent drafting, and enterprise-level IP portfolio management.",
     services: ["Global Trademark Registration", "Patent Drafting", "IP Portfolio Audit", "Infringement Litigation"],
   },
   {
@@ -56,8 +57,12 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
           </Link>
           
           <div className="flex items-center gap-6 mb-6">
-            <div className="w-24 h-24 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xl flex items-center justify-center shrink-0">
-              <Building size={40} className="text-sky-500" />
+            <div className="w-24 h-24 rounded-2xl bg-white border border-slate-200 dark:border-white/10 shadow-xl flex items-center justify-center shrink-0 p-4">
+              {company.logo ? (
+                <img src={company.logo} alt={company.name} className="max-w-full max-h-full object-contain" />
+              ) : (
+                <Building size={40} className="text-sky-500" />
+              )}
             </div>
             <div>
               {company.sponsored && (
