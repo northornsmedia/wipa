@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Mic, Upload, CheckCircle2, Lock, FileText, Send, User } from 'lucide-react';
+import { ArrowLeft, Mic, Upload, CheckCircle2, Lock, FileText, Send, User, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,7 @@ export default function PodcastUploadPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [canPublish, setCanPublish] = useState(false);
+  const [requestStatus, setRequestStatus] = useState<'none' | 'pending' | 'rejected'>('none');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
@@ -41,6 +42,18 @@ export default function PodcastUploadPage() {
 
         if (profile?.can_publish_podcast) {
           setCanPublish(true);
+        } else {
+          // Check for existing requests if they can't publish yet
+          const { data: requests } = await supabase
+            .from('podcast_requests')
+            .select('status')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1);
+            
+          if (requests && requests.length > 0) {
+            setRequestStatus(requests[0].status as 'pending' | 'rejected');
+          }
         }
       } catch (err) {
         console.error("Auth check error:", err);
@@ -155,7 +168,7 @@ export default function PodcastUploadPage() {
           </div>
 
           <div className="max-w-2xl mx-auto">
-            {submitSuccess ? (
+            {submitSuccess || requestStatus === 'pending' ? (
                <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-green-200/50 dark:border-green-500/20 rounded-[2rem] p-12 text-center flex flex-col items-center shadow-2xl relative overflow-hidden group">
                  <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                  <div className="w-24 h-24 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mb-8 relative z-10 shadow-[0_0_30px_rgba(34,197,94,0.2)]">
@@ -163,7 +176,21 @@ export default function PodcastUploadPage() {
                  </div>
                  <h2 className="text-3xl font-black mb-4 relative z-10">Application Submitted!</h2>
                  <p className="text-gray-600 dark:text-gray-400 mb-10 text-lg relative z-10">
-                   Our team will review your publisher application within 2-3 business days. We will notify you via email once approved.
+                   Our team is currently reviewing your publisher application. We will notify you via email once approved.
+                 </p>
+                 <Link href="/platform/resources/podcasts-conversations" className="relative z-10 bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/10 px-8 py-4 rounded-full font-bold hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                   Return to Podcasts
+                 </Link>
+               </div>
+            ) : requestStatus === 'rejected' ? (
+               <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-red-200/50 dark:border-red-500/20 rounded-[2rem] p-12 text-center flex flex-col items-center shadow-2xl relative overflow-hidden group">
+                 <div className="absolute inset-0 bg-gradient-to-b from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                 <div className="w-24 h-24 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mb-8 relative z-10 shadow-[0_0_30px_rgba(239,68,68,0.2)]">
+                   <XCircle className="w-12 h-12 text-red-600 dark:text-red-400" />
+                 </div>
+                 <h2 className="text-3xl font-black mb-4 relative z-10">Application Declined</h2>
+                 <p className="text-gray-600 dark:text-gray-400 mb-10 text-lg relative z-10">
+                   We're sorry, but your publisher application did not match our current platform guidelines. You may reach out to support for more details.
                  </p>
                  <Link href="/platform/resources/podcasts-conversations" className="relative z-10 bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/10 px-8 py-4 rounded-full font-bold hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                    Return to Podcasts
