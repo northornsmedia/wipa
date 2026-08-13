@@ -117,98 +117,106 @@ export default function PodcastUploadPage() {
   // 2. Authenticated but No Permission -> Show Application Form
   if (!canPublish) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#121212] pb-24 text-gray-900 dark:text-white">
-        <div className="bg-[#f59e0b]/10 border-b border-[#f59e0b]/20 pt-8 pb-12">
-          <div className="max-w-3xl mx-auto px-6">
-            <Link href="/platform/resources/podcasts-conversations" className="inline-flex items-center gap-2 text-[#f59e0b] font-bold text-sm mb-6 hover:-translate-x-1 transition-transform">
-              <ArrowLeft size={16} /> Back to Podcasts
-            </Link>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-[#f59e0b] rounded-2xl flex items-center justify-center shadow-lg shadow-[#f59e0b]/20">
-                <Mic className="text-white w-6 h-6" />
-              </div>
-              <h1 className="text-4xl font-black">Become a Publisher</h1>
+      <div className="min-h-screen bg-white dark:bg-[#09090b] pb-24 text-gray-900 dark:text-white relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#f59e0b]/10 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] rounded-full bg-orange-500/10 blur-[100px] pointer-events-none" />
+
+        <div className="max-w-4xl mx-auto px-6 pt-16 relative z-10">
+          <Link href="/platform/resources/podcasts-conversations" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#f59e0b] dark:hover:text-[#f59e0b] font-bold text-sm mb-12 hover:-translate-x-1 transition-all">
+            <ArrowLeft size={16} /> Back to Podcasts
+          </Link>
+          
+          <div className="flex flex-col items-center text-center mb-16">
+            <div className="w-20 h-20 bg-gradient-to-br from-[#f59e0b] to-[#d97706] rounded-[2rem] flex items-center justify-center shadow-[0_0_40px_rgba(245,158,11,0.3)] mb-6 transform rotate-3">
+              <Mic className="text-white w-10 h-10 -rotate-3" />
             </div>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              You currently don't have permissions to upload directly. Please submit an application to join our network of certified podcast publishers.
+            <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6">
+              Become a <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f59e0b] to-[#ea580c]">Publisher</span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl font-medium leading-relaxed">
+              You currently don't have permissions to upload directly. Please submit an application to join our exclusive network of certified podcast publishers.
             </p>
           </div>
-        </div>
 
-        <div className="max-w-3xl mx-auto px-6 mt-12">
-          {submitSuccess ? (
-             <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-3xl p-10 text-center flex flex-col items-center">
-               <div className="w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mb-6">
-                 <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
+          <div className="max-w-2xl mx-auto">
+            {submitSuccess ? (
+               <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-green-200/50 dark:border-green-500/20 rounded-[2rem] p-12 text-center flex flex-col items-center shadow-2xl relative overflow-hidden group">
+                 <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                 <div className="w-24 h-24 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mb-8 relative z-10 shadow-[0_0_30px_rgba(34,197,94,0.2)]">
+                   <CheckCircle2 className="w-12 h-12 text-green-600 dark:text-green-400" />
+                 </div>
+                 <h2 className="text-3xl font-black mb-4 relative z-10">Application Submitted!</h2>
+                 <p className="text-gray-600 dark:text-gray-400 mb-10 text-lg relative z-10">
+                   Our team will review your publisher application within 2-3 business days. We will notify you via email once approved.
+                 </p>
+                 <Link href="/platform/resources/podcasts-conversations" className="relative z-10 bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/10 px-8 py-4 rounded-full font-bold hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                   Return to Podcasts
+                 </Link>
                </div>
-               <h2 className="text-2xl font-black mb-2">Application Submitted!</h2>
-               <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
-                 Our team will review your publisher application within 2-3 business days. We will notify you via email once approved.
-               </p>
-               <Link href="/platform/resources/podcasts-conversations" className="bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/10 px-6 py-3 rounded-full font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                 Return to Podcasts
-               </Link>
-             </div>
-          ) : (
-            <form onSubmit={handleApply} className="bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-sm">
-              <div className="mb-8 flex items-center gap-3 border-b border-gray-100 dark:border-white/5 pb-4">
-                <FileText className="text-[#f59e0b]" size={20} />
-                <h2 className="text-xl font-bold">Publisher Application</h2>
-              </div>
-              
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Proposed Podcast Name</label>
-                  <input 
-                    required
-                    type="text" 
-                    value={podcastName}
-                    onChange={e => setPodcastName(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all"
-                    placeholder="e.g., Tech Law Today"
-                  />
+            ) : (
+              <form onSubmit={handleApply} className="bg-white/70 dark:bg-[#18181b]/60 backdrop-blur-2xl border border-gray-200/50 dark:border-white/10 rounded-[2rem] p-8 md:p-10 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#f59e0b] to-[#ea580c] opacity-80" />
+                
+                <div className="mb-10 flex items-center gap-3">
+                  <FileText className="text-[#f59e0b]" size={24} />
+                  <h2 className="text-2xl font-bold">Publisher Application</h2>
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Primary Topic / Audience</label>
-                  <input 
-                    required
-                    type="text" 
-                    value={podcastTopic}
-                    onChange={e => setPodcastTopic(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all"
-                    placeholder="e.g., IP Strategy for Startups"
-                  />
+                <div className="space-y-8">
+                  <div className="group">
+                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 group-focus-within:text-[#f59e0b] transition-colors">Proposed Podcast Name</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={podcastName}
+                      onChange={e => setPodcastName(e.target.value)}
+                      className="w-full bg-gray-50/50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-4 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all placeholder-gray-400 dark:placeholder-gray-600 font-medium"
+                      placeholder="e.g., Tech Law Today"
+                    />
+                  </div>
+                  
+                  <div className="group">
+                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 group-focus-within:text-[#f59e0b] transition-colors">Primary Topic / Audience</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={podcastTopic}
+                      onChange={e => setPodcastTopic(e.target.value)}
+                      className="w-full bg-gray-50/50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-4 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all placeholder-gray-400 dark:placeholder-gray-600 font-medium"
+                      placeholder="e.g., IP Strategy for Startups"
+                    />
+                  </div>
+                  
+                  <div className="group">
+                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 group-focus-within:text-[#f59e0b] transition-colors">Why do you want to publish on WIPA?</label>
+                    <textarea 
+                      required
+                      rows={5}
+                      value={podcastDesc}
+                      onChange={e => setPodcastDesc(e.target.value)}
+                      className="w-full bg-gray-50/50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-2xl px-5 py-4 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all resize-none placeholder-gray-400 dark:placeholder-gray-600 font-medium"
+                      placeholder="Tell us about your background and the content you plan to share..."
+                    ></textarea>
+                  </div>
+                  
+                  <button 
+                    disabled={isSubmitting}
+                    type="submit" 
+                    className="w-full mt-4 flex items-center justify-center gap-3 bg-gradient-to-r from-[#f59e0b] to-[#ea580c] hover:from-[#ea580c] hover:to-[#c2410c] disabled:opacity-50 text-white py-4 md:py-5 rounded-2xl font-black text-lg shadow-[0_10px_30px_rgba(245,158,11,0.3)] hover:shadow-[0_15px_40px_rgba(245,158,11,0.4)] hover:-translate-y-1 transition-all duration-300"
+                  >
+                    {isSubmitting ? (
+                      <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <>
+                        <Send size={20} /> Submit Application
+                      </>
+                    )}
+                  </button>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Why do you want to publish on WIPA?</label>
-                  <textarea 
-                    required
-                    rows={4}
-                    value={podcastDesc}
-                    onChange={e => setPodcastDesc(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all resize-none"
-                    placeholder="Tell us about your background and the content you plan to share..."
-                  ></textarea>
-                </div>
-                
-                <button 
-                  disabled={isSubmitting}
-                  type="submit" 
-                  className="w-full mt-4 flex items-center justify-center gap-2 bg-[#f59e0b] hover:bg-[#d97706] disabled:opacity-50 text-white py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
-                >
-                  {isSubmitting ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  ) : (
-                    <>
-                      <Send size={18} /> Submit Application
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          )}
+              </form>
+            )}
+          </div>
         </div>
       </div>
     );
