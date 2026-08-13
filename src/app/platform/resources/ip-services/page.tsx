@@ -21,54 +21,42 @@ const CONTENT_TYPES = [
   "Strategy"
 ];
 
-const MOCK_SERVICES = [
+const MOCK_COMPANIES = [
   {
-    id: 1,
-    title: "Global Trademark Registration & Management",
-    type: "Service",
-    topic: "Trademarks",
-    subcategory: "trademark",
-    expert: "WIPA Legal Team",
-    organisation: "WIPA",
-    featured: true,
-    date: "Available",
-    size: "Book Now"
+    id: "wipa-legal",
+    title: "WIPA Legal Team",
+    type: "Enterprise IP Solutions",
+    subcategory: "all",
+    location: "Global",
+    sponsored: true,
+    description: "Premier intellectual property services focusing on comprehensive global trademark registration and patent drafting."
   },
   {
-    id: 2,
-    title: "Comprehensive Patent Drafting and Filing",
-    type: "Filing",
-    topic: "Patents",
-    subcategory: "patent",
-    expert: "WIPA Engineering",
-    organisation: "WIPA Legal",
-    featured: true,
-    date: "Available",
-    size: "Consultation"
-  },
-  {
-    id: 3,
-    title: "IP Portfolio Audit & Strategy Review",
-    type: "Audit",
-    topic: "Consulting",
-    subcategory: "consulting",
-    expert: "Senior Strategists",
-    organisation: "WIPA Partners",
-    featured: false,
-    date: "Consultation",
-    size: "Schedule"
-  },
-  {
-    id: 4,
-    title: "Copyright Protection for Digital Assets",
-    type: "Service",
-    topic: "Copyrights",
+    id: "tech-protect-llp",
+    title: "TechProtect LLP",
+    type: "Digital IP Specialists",
     subcategory: "copyright",
-    expert: "Digital Rights Team",
-    organisation: "WIPA Tech",
-    featured: false,
-    date: "Available",
-    size: "Book Now"
+    location: "San Francisco, CA",
+    sponsored: false,
+    description: "Specializing in copyright protection for digital assets, software patents, and AI-generated content licensing."
+  },
+  {
+    id: "innovate-partners",
+    title: "Innovate Partners",
+    type: "Consulting & Strategy",
+    subcategory: "consulting",
+    location: "London, UK",
+    sponsored: false,
+    description: "Strategic IP consulting firm helping startups and enterprises maximize the valuation of their intellectual property assets."
+  },
+  {
+    id: "global-marks",
+    title: "GlobalMarks Inc.",
+    type: "Trademark Agency",
+    subcategory: "trademark",
+    location: "New York, NY",
+    sponsored: false,
+    description: "Filing and protecting your brand identity across 150+ international jurisdictions with seamless tracking."
   }
 ];
 
@@ -77,10 +65,10 @@ export default function IPServicesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
 
-  const filteredResources = MOCK_SERVICES.filter(r => {
-    const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredResources = MOCK_COMPANIES.filter(r => {
+    const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
-    const matchesType = typeFilter === 'All Types' || r.type === typeFilter;
+    const matchesType = typeFilter === 'All Types' || r.type.includes(typeFilter) || typeFilter === 'All Types';
     
     return matchesSearch && matchesSub && matchesType;
   });
@@ -173,46 +161,47 @@ export default function IPServicesPage() {
         {/* Ice Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredResources.map(resource => (
-            <div 
+            <Link 
+              href={`/platform/resources/ip-services/${resource.id}`}
               key={resource.id} 
-              className="group relative bg-white dark:bg-slate-900/40 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-sky-500/50 dark:hover:border-sky-500/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-sky-500/10 flex flex-col h-full"
+              className={`group relative bg-white dark:bg-slate-900/40 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-sky-500/50 dark:hover:border-sky-500/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-sky-500/10 flex flex-col h-full ${resource.sponsored ? 'md:col-span-2 bg-gradient-to-br from-white to-sky-50 dark:from-slate-900 dark:to-sky-950/30 border-sky-200 dark:border-sky-800' : ''}`}
             >
               {/* Top Accent */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
               <div className="p-6 flex-1 flex flex-col">
                 <div className="flex justify-between items-start mb-6">
-                  <div className={`p-3 rounded-2xl ${resource.featured ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-sky-100 dark:group-hover:bg-sky-900/50 group-hover:text-sky-600 dark:group-hover:text-sky-400'} transition-colors duration-300`}>
-                    {resource.type === 'Audit' ? (
-                       <FileText size={24} />
-                    ) : resource.type === 'Consulting' ? (
-                       <Users size={24} />
-                    ) : (
-                       <Shield size={24} />
-                    )}
+                  <div className={`p-3 rounded-2xl ${resource.sponsored ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-sky-100 dark:group-hover:bg-sky-900/50 group-hover:text-sky-600 dark:group-hover:text-sky-400'} transition-colors duration-300`}>
+                    <Building size={24} />
                   </div>
-                  <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{resource.date}</span>
+                  {resource.sponsored && (
+                    <span className="text-[10px] font-black text-amber-500 bg-amber-500/10 px-3 py-1 rounded-full uppercase tracking-widest border border-amber-500/20">Sponsored</span>
+                  )}
                 </div>
                 
-                <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight mb-3 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                <h3 className={`font-black text-slate-900 dark:text-white leading-tight mb-3 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors ${resource.sponsored ? 'text-2xl md:text-3xl' : 'text-xl'}`}>
                   {resource.title}
                 </h3>
                 
-                <div className="flex items-center gap-2 mb-6 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <Building size={14} className="text-slate-400" /> {resource.organisation}
+                <div className="flex items-center gap-2 mb-4 text-sm font-medium text-slate-500 dark:text-slate-400">
+                  <Briefcase size={14} className="text-sky-500" /> {resource.type}
                 </div>
+
+                <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm md:text-base leading-relaxed line-clamp-3">
+                  {resource.description}
+                </p>
                 
                 <div className="mt-auto pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Type</span>
-                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{resource.type}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Location</span>
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{resource.location}</span>
                   </div>
                   <button className="h-10 px-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:bg-sky-500 group-hover:text-white transition-all duration-300 shadow-sm gap-2">
-                    {resource.size} <ChevronRight size={16} />
+                    View Profile <ChevronRight size={16} />
                   </button>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
 
           {filteredResources.length === 0 && (
