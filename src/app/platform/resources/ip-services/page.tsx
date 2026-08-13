@@ -30,7 +30,7 @@ const MOCK_COMPANIES = [
     location: "Global",
     sponsored: true,
     logo: "https://cdn.prod.website-files.com/64c4a14aa0442cfa0e0c62e9/6593a22b139e1daa37dd5974_PSS_Pfront_BLUE%20(1).svg",
-    description: "PSS Solutions provides premier intellectual property services, focusing on comprehensive global trademark registration and patent drafting."
+    description: "PSS is the only fully independent IP focused consulting and advisory group in the sector. Impartial, honest, clear."
   },
   {
     id: "tech-protect-llp",
