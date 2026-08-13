@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Building, Briefcase, FileCheck, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { Search, Building, ChevronRight, FileText, Download, Shield, Book, Briefcase, ChevronDown, FolderOpen, Video, Users, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 const MOCK_SUBCATEGORIES = [
-  { id: 'all', name: 'All Services' },
-  { id: 'trademark', name: 'Trademarks' },
-  { id: 'patent', name: 'Patents' },
-  { id: 'copyright', name: 'Copyrights' },
-  { id: 'consulting', name: 'Consulting' }
+  { id: 'all', name: 'All Services', icon: FolderOpen },
+  { id: 'trademark', name: 'Trademarks', icon: Shield },
+  { id: 'patent', name: 'Patents', icon: FileText },
+  { id: 'copyright', name: 'Copyrights', icon: Book },
+  { id: 'consulting', name: 'Consulting', icon: Briefcase }
 ];
 
 const CONTENT_TYPES = [
@@ -29,9 +29,10 @@ const MOCK_SERVICES = [
     topic: "Trademarks",
     subcategory: "trademark",
     expert: "WIPA Legal Team",
-    time: "Available",
+    organisation: "WIPA",
     featured: true,
-    image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=2071&auto=format&fit=crop"
+    date: "Available",
+    size: "Book Now"
   },
   {
     id: 2,
@@ -39,10 +40,11 @@ const MOCK_SERVICES = [
     type: "Filing",
     topic: "Patents",
     subcategory: "patent",
-    expert: "WIPA Engineering & Legal",
-    time: "Available",
+    expert: "WIPA Engineering",
+    organisation: "WIPA Legal",
     featured: true,
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070&auto=format&fit=crop"
+    date: "Available",
+    size: "Consultation"
   },
   {
     id: 3,
@@ -50,10 +52,11 @@ const MOCK_SERVICES = [
     type: "Audit",
     topic: "Consulting",
     subcategory: "consulting",
-    expert: "Senior IP Strategists",
-    time: "Consultation",
+    expert: "Senior Strategists",
+    organisation: "WIPA Partners",
     featured: false,
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop"
+    date: "Consultation",
+    size: "Schedule"
   },
   {
     id: 4,
@@ -61,10 +64,11 @@ const MOCK_SERVICES = [
     type: "Service",
     topic: "Copyrights",
     subcategory: "copyright",
-    expert: "WIPA Digital Rights Team",
-    time: "Available",
+    expert: "Digital Rights Team",
+    organisation: "WIPA Tech",
     featured: false,
-    image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=2112&auto=format&fit=crop"
+    date: "Available",
+    size: "Book Now"
   }
 ];
 
@@ -72,205 +76,155 @@ export default function IPServicesPage() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const filteredResources = MOCK_SERVICES.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;
+    
     return matchesSearch && matchesSub && matchesType;
   });
 
-  const mainFeatures = filteredResources.filter(r => r.featured);
-  const otherResources = filteredResources.filter(r => !r.featured);
-
   return (
-    <div className="min-h-screen bg-white dark:bg-[#121212] text-gray-900 dark:text-white font-sans selection:bg-[#1dd1a1]/30 flex flex-col pb-24">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-20">
       
-      {/* Header Area */}
-      <div className="bg-gradient-to-br from-white to-gray-50 dark:from-[#121212] dark:to-[#18181b] border-b border-gray-200 dark:border-white/5 pt-8 pb-16 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-[#1dd1a1]/5 blur-[100px] rounded-full transform translate-x-1/2 -translate-y-1/2"></div>
+      {/* Cinematic Hero Header (Ice Blue Theme) */}
+      <div className="relative min-h-[350px] md:min-h-[450px] w-full flex flex-col justify-center pb-12 pt-8 border-b border-slate-200 dark:border-white/10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-white to-slate-100 dark:from-[#082f49] dark:via-[#020617] dark:to-black z-0 transition-colors duration-300"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-300/30 dark:bg-sky-600/20 rounded-full blur-[150px] pointer-events-none z-0 mix-blend-screen"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[400px] bg-cyan-300/20 dark:bg-cyan-900/30 rounded-full blur-[120px] pointer-events-none z-0 mix-blend-screen"></div>
         
-        <div className="w-full max-w-[1200px] mx-auto px-6 relative z-10">
-          <Link href="/platform/resources" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#1dd1a1] font-bold text-sm mb-8 transition-colors">
-            <ArrowLeft size={16} />
-            Back to Resource Library
-          </Link>
-          
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-[#1dd1a1]/10 flex items-center justify-center">
-                  <Building size={20} className="text-[#1dd1a1]" />
-                </div>
-                <span className="text-[#1dd1a1] font-black tracking-widest uppercase text-sm">Services & Consulting</span>
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight mb-6">
-                Expert IP <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1dd1a1] to-[#0abde3]">Services</span>
-              </h1>
-              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
-                Explore our specialized IP services, consulting, and management solutions tailored for your business needs.
-              </p>
-            </div>
-            
-            <div className="w-full md:w-auto flex-shrink-0">
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                  <Search className="w-5 h-5 text-gray-400 dark:text-gray-500 group-focus-within:text-[#1dd1a1] transition-colors" />
-                </div>
-                <input 
-                  type="text" 
-                  placeholder="Search services..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full md:w-80 bg-white dark:bg-[#1e1e20] border border-gray-200 dark:border-white/10 focus:border-[#1dd1a1] rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 outline-none transition-all shadow-sm focus:shadow-md"
-                />
-              </div>
-            </div>
-          </div>
+        {/* Ice crystals overlay pattern */}
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-0 pointer-events-none"></div>
+
+        <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 relative z-10 flex flex-col items-center justify-center h-full mt-8 md:mt-12">
+           <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-400 text-xs font-bold uppercase tracking-widest mb-6 shadow-lg shadow-sky-500/10 backdrop-blur-md">
+             <Shield size={14} /> Enterprise IP Solutions
+           </div>
+           
+           <div className="max-w-5xl mx-auto text-center flex flex-col items-center">
+             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none mb-6 text-transparent bg-clip-text bg-gradient-to-br from-slate-900 via-sky-700 to-cyan-500 dark:from-white dark:via-sky-200 dark:to-cyan-400">
+               IP Services
+             </h1>
+             <p className="text-lg md:text-xl lg:text-2xl font-medium text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed mx-auto">
+               Access expert consulting, trademark registration, patent filing, and comprehensive IP audits.
+             </p>
+             
+             {/* Search & Dropdown */}
+             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-2xl mt-12">
+               <div className="relative group w-full">
+                 <div className="absolute inset-0 bg-sky-500 rounded-full blur-md opacity-0 group-focus-within:opacity-20 transition duration-500"></div>
+                 <div className="relative flex items-center bg-white/80 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-full overflow-hidden backdrop-blur-xl shadow-xl dark:shadow-none transition-all">
+                   <Search size={16} className="text-slate-400 dark:text-slate-500 ml-4 shrink-0" />
+                   <input 
+                     type="text" 
+                     placeholder="Search services..." 
+                     value={searchQuery}
+                     onChange={(e) => setSearchQuery(e.target.value)}
+                     className="w-full bg-transparent py-3.5 pl-3 pr-4 text-sm font-bold text-slate-900 dark:text-white focus:outline-none placeholder-slate-500 dark:placeholder-slate-400"
+                   />
+                 </div>
+               </div>
+               
+               <div className="relative w-full sm:w-48 shrink-0">
+                  <select 
+                     value={typeFilter}
+                     onChange={(e) => setTypeFilter(e.target.value)}
+                     className="appearance-none w-full bg-white/80 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-full px-6 py-3.5 pr-12 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 cursor-pointer backdrop-blur-xl shadow-xl dark:shadow-none transition-all"
+                   >
+                     {CONTENT_TYPES.map(type => (
+                       <option key={type} value={type} className="dark:bg-slate-900">{type}</option>
+                     ))}
+                   </select>
+                   <ChevronDown size={14} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none" />
+               </div>
+             </div>
+
+           </div>
         </div>
       </div>
 
-      <div className="flex-1 w-full max-w-[1200px] mx-auto px-6 pt-12">
+      {/* Main Content Area */}
+      <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 py-12 relative z-10">
         
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-            {MOCK_SUBCATEGORIES.map((sub) => (
-              <button
-                key={sub.id}
-                onClick={() => setActiveSub(sub.id)}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-all whitespace-nowrap border ${
-                  activeSub === sub.id
-                    ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white shadow-md'
-                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50 dark:bg-transparent dark:text-gray-400 dark:border-white/10 dark:hover:bg-white/5'
-                }`}
-              >
-                {sub.name}
-              </button>
-            ))}
-          </div>
-          
-          <div className="relative">
-            <button 
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full md:w-auto bg-white dark:bg-transparent border border-gray-200 dark:border-white/10 rounded-full px-5 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-white/20 flex items-center justify-between md:justify-start gap-3 transition-all"
-            >
-              {typeFilter}
-              <ChevronDown size={16} className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {isDropdownOpen && (
-              <div className="absolute top-full right-0 mt-2 w-full md:w-48 bg-white dark:bg-[#1e1e20] border border-gray-100 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden z-20">
-                {CONTENT_TYPES.map(type => (
-                  <button
-                    key={type}
-                    onClick={() => {
-                      setTypeFilter(type);
-                      setIsDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-5 py-3 text-sm font-medium transition-colors ${
-                      typeFilter === type 
-                        ? 'text-[#1dd1a1] bg-gray-50 dark:bg-white/5' 
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5'
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+        {/* Navigation & Filters (Horizontal) */}
+        <div className="mb-12">
+           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-4 w-full">
+             {MOCK_SUBCATEGORIES.map(sub => {
+               const Icon = sub.icon;
+               return (
+                 <button
+                   key={sub.id}
+                   onClick={() => setActiveSub(sub.id)}
+                   className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold transition-all duration-300 ${
+                     activeSub === sub.id 
+                       ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30 scale-105' 
+                       : 'bg-white dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/5'
+                   }`}
+                 >
+                   <Icon size={16} className={activeSub === sub.id ? 'text-white' : 'text-slate-400 dark:text-slate-500'} />
+                   {sub.name}
+                 </button>
+               )
+             })}
+           </div>
         </div>
 
-        {/* Featured Services (Top Grid) */}
-        {mainFeatures.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-8 flex items-center gap-3">
-              <CheckCircle2 className="text-[#1dd1a1]" size={24} /> Recommended Services
-            </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {mainFeatures.map((resource) => (
-                <Link href={`/platform/resources/ip-services/${resource.id}`} key={resource.id} className="group flex flex-col md:flex-row bg-white dark:bg-[#18181b] rounded-3xl overflow-hidden border border-gray-200 dark:border-white/5 shadow-sm hover:shadow-xl transition-all duration-300">
-                  <div className="w-full md:w-2/5 aspect-[4/3] md:aspect-auto relative overflow-hidden">
-                    <img src={resource.image} alt={resource.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:hidden" />
-                    <div className="absolute top-4 left-4 md:hidden">
-                      <span className="bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border border-white/20">
-                        {resource.type}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="w-full md:w-3/5 p-6 md:p-8 flex flex-col justify-between">
-                    <div>
-                      <div className="hidden md:flex items-center gap-3 mb-4">
-                        <span className="bg-[#1dd1a1]/10 text-[#1dd1a1] text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">
-                          {resource.type}
-                        </span>
-                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{resource.topic}</span>
-                      </div>
-                      <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-3 line-clamp-2 leading-tight group-hover:text-[#1dd1a1] transition-colors">{resource.title}</h3>
-                      <p className="text-gray-500 dark:text-gray-400 font-medium text-sm mb-6 flex items-center gap-2">
-                        <Briefcase size={16} /> By {resource.expert}
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center justify-between border-t border-gray-100 dark:border-white/5 pt-5 mt-auto">
-                      <span className="text-sm font-bold text-gray-500 dark:text-gray-400">{resource.time}</span>
-                      <span className="text-sm font-bold text-[#1dd1a1] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                        Explore <span className="text-lg leading-none">&rarr;</span>
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Ice Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredResources.map(resource => (
+            <div 
+              key={resource.id} 
+              className="group relative bg-white dark:bg-slate-900/40 rounded-3xl border border-slate-200 dark:border-white/10 overflow-hidden hover:border-sky-500/50 dark:hover:border-sky-500/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-sky-500/10 flex flex-col h-full"
+            >
+              {/* Top Accent */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-        {/* Regular Services Grid */}
-        {otherResources.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-8 flex items-center gap-3">
-              <FileCheck className="text-[#1dd1a1]" size={24} /> All Services
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {otherResources.map((resource) => (
-                <Link href={`/platform/resources/ip-services/${resource.id}`} key={resource.id} className="group bg-white dark:bg-[#18181b] rounded-3xl overflow-hidden border border-gray-200 dark:border-white/5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
-                  <div className="w-full aspect-video relative overflow-hidden">
-                    <img src={resource.image} alt={resource.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
-                    <div className="absolute top-4 left-4">
-                      <span className="bg-black/40 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border border-white/20">
-                        {resource.type}
-                      </span>
-                    </div>
+              <div className="p-6 flex-1 flex flex-col">
+                <div className="flex justify-between items-start mb-6">
+                  <div className={`p-3 rounded-2xl ${resource.featured ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 group-hover:bg-sky-100 dark:group-hover:bg-sky-900/50 group-hover:text-sky-600 dark:group-hover:text-sky-400'} transition-colors duration-300`}>
+                    {resource.type === 'Audit' ? (
+                       <FileText size={24} />
+                    ) : resource.type === 'Consulting' ? (
+                       <Users size={24} />
+                    ) : (
+                       <Shield size={24} />
+                    )}
                   </div>
-                  
-                  <div className="p-6 flex flex-col flex-1">
-                    <span className="text-xs font-bold text-[#1dd1a1] uppercase tracking-wider mb-2 block">{resource.topic}</span>
-                    <h3 className="text-lg font-black text-gray-900 dark:text-white mb-3 line-clamp-2 leading-snug group-hover:text-[#1dd1a1] transition-colors">{resource.title}</h3>
-                    
-                    <div className="mt-auto pt-5 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
-                      <p className="text-gray-500 dark:text-gray-400 font-medium text-xs flex items-center gap-1.5 truncate pr-4">
-                        <Briefcase size={14} className="shrink-0" /> <span className="truncate">{resource.expert}</span>
-                      </p>
-                      <span className="text-xs font-bold text-gray-400 dark:text-gray-500 shrink-0">{resource.time}</span>
-                    </div>
+                  <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{resource.date}</span>
+                </div>
+                
+                <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight mb-3 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                  {resource.title}
+                </h3>
+                
+                <div className="flex items-center gap-2 mb-6 text-sm font-medium text-slate-500 dark:text-slate-400">
+                  <Building size={14} className="text-slate-400" /> {resource.organisation}
+                </div>
+                
+                <div className="mt-auto pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Type</span>
+                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{resource.type}</span>
                   </div>
-                </Link>
-              ))}
+                  <button className="h-10 px-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:bg-sky-500 group-hover:text-white transition-all duration-300 shadow-sm gap-2">
+                    {resource.size} <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          ))}
 
-        {filteredResources.length === 0 && (
-          <div className="py-24 text-center bg-white dark:bg-[#18181b] rounded-3xl border border-gray-200 dark:border-white/5 border-dashed mb-12">
-            <Building size={48} className="mx-auto text-gray-300 dark:text-white/10 mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No services found</h3>
-            <p className="text-gray-500 dark:text-gray-400 font-medium text-sm">Try adjusting your search criteria or changing categories.</p>
-          </div>
-        )}
+          {filteredResources.length === 0 && (
+            <div className="col-span-full py-24 flex flex-col items-center justify-center text-center">
+              <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800/50 rounded-full flex items-center justify-center mb-6 border border-slate-200 dark:border-white/5">
+                <Search size={32} className="text-slate-400 dark:text-slate-500" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2">No services found</h3>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">Try adjusting your filters or search terms.</p>
+            </div>
+          )}
+        </div>
 
       </div>
     </div>
