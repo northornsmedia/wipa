@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
-import { useIdleTimeout } from '@/hooks/useIdleTimeout';
 import OrbitingCirclesGlobe from '@/components/ui/orbiting-circles-02';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -12,9 +11,6 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
   const hasSeenAnimation = typeof window !== 'undefined' ? sessionStorage.getItem('hasSeenAuthAnimation') === 'true' : false;
-
-  // Initialize the idle timeout
-  useIdleTimeout(15 * 60 * 1000); // 15 minutes
 
   useEffect(() => {
     setMounted(true);

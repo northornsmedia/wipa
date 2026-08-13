@@ -315,90 +315,185 @@ export default function PodcastUploadPage() {
              </div>
            </div>
         ) : (
-          <form onSubmit={handleUpload} className="bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/10 rounded-3xl p-8 shadow-xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              
-              {/* Left Column */}
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Episode Title</label>
-                  <input 
-                    required
-                    type="text" 
-                    value={podcastName}
-                    onChange={e => setPodcastName(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all"
-                    placeholder="Season X, Episode Y - Title"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Category / Topic</label>
-                  <select 
-                    required
-                    value={podcastTopic}
-                    onChange={e => setPodcastTopic(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all appearance-none"
-                  >
-                    <option value="" disabled>Select a topic...</option>
-                    <option value="Trademarks">Trademarks</option>
-                    <option value="Patents">Patents</option>
-                    <option value="Copyright">Copyright</option>
-                    <option value="Leadership">Leadership</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Episode Description</label>
-                  <textarea 
-                    required
-                    rows={6}
-                    value={podcastDesc}
-                    onChange={e => setPodcastDesc(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all resize-none"
-                    placeholder="Show notes and episode description..."
-                  ></textarea>
-                </div>
-              </div>
-              
-              {/* Right Column */}
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Audio File (MP3/WAV)</label>
-                  <div className="border-2 border-dashed border-gray-300 dark:border-white/20 rounded-2xl h-32 flex flex-col items-center justify-center text-gray-500 hover:border-[#f59e0b] hover:bg-[#f59e0b]/5 transition-all cursor-pointer">
-                    <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                    <span className="text-sm font-medium">Click to browse or drag file here</span>
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Cover Artwork (Optional)</label>
-                  <div className="border-2 border-dashed border-gray-300 dark:border-white/20 rounded-2xl h-48 flex flex-col items-center justify-center text-gray-500 hover:border-[#f59e0b] hover:bg-[#f59e0b]/5 transition-all cursor-pointer">
-                    <User className="w-10 h-10 mb-2 text-gray-400" />
-                    <span className="text-sm font-medium">Upload thumbnail (1:1 ratio)</span>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
+          <form onSubmit={handleUpload} className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-6">
             
-            <div className="mt-10 pt-6 border-t border-gray-100 dark:border-white/5 flex justify-end gap-4">
-              <Link href="/platform/resources/podcasts-conversations" className="px-6 py-3 rounded-xl font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                Cancel
-              </Link>
-              <button 
-                disabled={isSubmitting}
-                type="submit" 
-                className="flex items-center gap-2 bg-[#f59e0b] hover:bg-[#d97706] disabled:opacity-50 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
-              >
-                {isSubmitting ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                ) : (
-                  <>
-                    <Upload size={18} /> Publish Episode
-                  </>
-                )}
-              </button>
+            {/* Left Column */}
+            <div className="flex-1 flex flex-col gap-6">
+              
+              {/* Core Details Panel */}
+              <div className="bg-[#121212] border border-[#222] rounded-xl p-6 shadow-xl">
+                <h3 className="font-semibold text-lg mb-4 text-white">Core Details</h3>
+                
+                <div className="flex flex-col gap-5">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-gray-400">Episode Title</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={podcastName}
+                      onChange={e => setPodcastName(e.target.value)}
+                      placeholder="e.g. The IP Innovators Series: AI and the Future of Copyright"
+                      className="bg-black border border-[#333] rounded-md p-3 text-sm focus:outline-none focus:border-[#f59e0b] w-full text-white"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-gray-400">Description / Show Notes</label>
+                    <textarea 
+                      required
+                      value={podcastDesc}
+                      onChange={e => setPodcastDesc(e.target.value)}
+                      placeholder="Enter a brief description for this episode..."
+                      rows={4}
+                      className="bg-black border border-[#333] rounded-md p-3 text-sm focus:outline-none focus:border-[#f59e0b] w-full resize-y text-white"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm text-gray-400">Content Type</label>
+                      <select className="bg-black border border-[#333] rounded-md p-3 text-sm focus:outline-none focus:border-[#f59e0b] w-full text-white appearance-none">
+                        <option>Audio Interview</option>
+                        <option>Solo Episode</option>
+                        <option>Panel Discussion</option>
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm text-gray-400">Subcategory Hub</label>
+                      <select className="bg-black border border-[#333] rounded-md p-3 text-sm focus:outline-none focus:border-[#f59e0b] w-full text-white appearance-none">
+                        <option>Podcasts</option>
+                        <option>Webinars</option>
+                        <option>Events</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2 w-full md:w-[calc(50%-10px)]">
+                    <label className="text-sm text-gray-400">Album Category</label>
+                    <select className="bg-black border border-[#333] rounded-md p-3 text-sm focus:outline-none focus:border-[#f59e0b] w-full text-white appearance-none">
+                      <option>No Category</option>
+                      <option>Season 1</option>
+                      <option>Specials</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Personnel & Timing Panel */}
+              <div className="bg-[#121212] border border-[#222] rounded-xl p-6 shadow-xl">
+                <h3 className="font-semibold text-lg mb-4 text-white">Personnel & Timing</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-gray-400">Host Name</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. WIPA Media"
+                      className="bg-black border border-[#333] rounded-md p-3 text-sm focus:outline-none focus:border-[#f59e0b] w-full text-white"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-gray-400">Guest Name(s)</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Dr. Elena Rostova"
+                      className="bg-black border border-[#333] rounded-md p-3 text-sm focus:outline-none focus:border-[#f59e0b] w-full text-white"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-gray-400">Topic Tag</label>
+                    <select 
+                      value={podcastTopic}
+                      onChange={e => setPodcastTopic(e.target.value)}
+                      className="bg-black border border-[#333] rounded-md p-3 text-sm focus:outline-none focus:border-[#f59e0b] w-full text-white appearance-none"
+                    >
+                      <option>AI in IP</option>
+                      <option>Trademarks</option>
+                      <option>Patents</option>
+                      <option>Copyright</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-gray-400">Duration (MM:SS)</label>
+                    <input 
+                      type="text" 
+                      placeholder="45:00"
+                      className="bg-black border border-[#333] rounded-md p-3 text-sm focus:outline-none focus:border-[#f59e0b] w-full text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="pt-4 flex justify-start gap-4">
+                <Link href="/platform/resources/podcasts-conversations" className="px-6 py-3 rounded-xl font-bold text-gray-400 hover:text-white hover:bg-[#333] transition-colors">
+                  Cancel
+                </Link>
+                <button 
+                  disabled={isSubmitting}
+                  type="submit" 
+                  className="flex items-center gap-2 bg-[#f59e0b] hover:bg-[#d97706] disabled:opacity-50 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+                >
+                  {isSubmitting ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <Upload size={18} /> Publish Episode
+                    </>
+                  )}
+                </button>
+              </div>
+
+            </div>
+
+            {/* Right Column */}
+            <div className="w-full lg:w-[400px] flex flex-col gap-6">
+              
+              {/* Media Uploads Panel */}
+              <div className="bg-[#121212] border border-[#222] rounded-xl p-6 shadow-xl">
+                <h3 className="font-semibold text-lg mb-4 text-white">Media Uploads</h3>
+                
+                <div className="flex flex-col gap-6">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-gray-400">Cover Image</label>
+                    <div className="border border-dashed border-[#333] rounded-md flex flex-col items-center justify-center h-[180px] bg-black hover:bg-[#0a0a0a] hover:border-[#f59e0b] transition-all cursor-pointer">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 mb-2">
+                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                      </svg>
+                      <span className="text-sm text-gray-500">Click to upload or drag image here</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm text-gray-400">Audio File (MP3)</label>
+                    <div className="border border-dashed border-[#333] rounded-md flex flex-col items-center justify-center h-[160px] bg-black hover:bg-[#0a0a0a] hover:border-[#f59e0b] transition-all cursor-pointer">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 mb-2">
+                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 17 4-4 4 4"/>
+                      </svg>
+                      <span className="text-sm text-gray-500">Upload audio file</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Visibility Options Panel */}
+              <div className="bg-[#121212] border border-[#222] rounded-xl p-6 shadow-xl">
+                <h3 className="font-semibold text-lg mb-4 text-white">Visibility Options</h3>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-sm text-white">Featured Episode</span>
+                    <span className="text-xs text-gray-500">Display this prominently in the hero banner.</span>
+                  </div>
+                  
+                  <button 
+                    type="button"
+                    className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none bg-[#333]"
+                  >
+                    <span className="inline-block h-4 w-4 transform rounded-full bg-black transition-transform translate-x-1" />
+                  </button>
+                </div>
+              </div>
+              
             </div>
           </form>
         )}

@@ -20,6 +20,7 @@ import {
   BellOff,
   ArrowUpRight,
   Circle,
+  Globe,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -111,7 +112,7 @@ export default function Sidebar() {
             <Heart size={18} /> Liked Threads
           </Link>
           <Link href="/platform/network" className={navLinkClass('/platform/network')}>
-            <Users size={18} /> My Network
+            <Globe size={18} /> My Network
           </Link>
           <Link href="/platform/members" className={navLinkClass('/platform/members')}>
             <Users size={18} /> Members
