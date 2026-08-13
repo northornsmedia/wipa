@@ -93,15 +93,91 @@ export default function PodcastsHubPage() {
 
       <div className="flex-1 w-full max-w-[1200px] mx-auto px-6 pt-8">
         
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-32">
-            <Loader2 size={48} className="animate-spin text-[#f59e0b] mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Loading Episodes...</h3>
+        {/* Filter Badges (Spotify style) */}
+        <div className="flex gap-3 overflow-x-auto no-scrollbar mb-10 pb-2">
+          {MOCK_PODCASTS_SUBCATEGORIES.map(sub => (
+            <button
+              key={sub.id}
+              onClick={() => setActiveSub(sub.id)}
+              className={`px-5 py-2 rounded-full font-bold text-sm transition-all whitespace-nowrap border ${
+                activeSub === sub.id
+                  ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white'
+                  : 'bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10 dark:border-white/10'
+              }`}
+            >
+              {sub.name}
+            </button>
+          ))}
+          
+          {activeSub === 'all' && (
+            <div className="relative ml-auto hidden sm:block">
+              <button 
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="bg-transparent border border-gray-300 dark:border-white/20 rounded-full px-5 py-2 text-sm font-bold text-gray-700 dark:text-white/70 hover:border-gray-400 dark:hover:border-white/40 flex items-center gap-2 transition-all"
+              >
+                {typeFilter}
+                <ChevronDown size={14} className={isDropdownOpen ? 'rotate-180' : ''} />
+              </button>
+              
+              {isDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-[#282828] border border-gray-100 dark:border-white/5 rounded-xl shadow-xl overflow-hidden z-20">
+                  {CONTENT_TYPES.map(type => (
+                    <button
+                      key={type}
+                      onClick={() => {
+                        setTypeFilter(type);
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors ${
+                        typeFilter === type 
+                          ? 'text-[#f59e0b] bg-gray-50 dark:bg-white/5' 
+                          : 'text-gray-700 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {activeSub === 'categories' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
+            {/* Mock Category 1 */}
+            <div className="bg-gray-50 dark:bg-[#181818] border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group shadow-sm">
+              <div className="h-48 bg-gradient-to-br from-indigo-500 to-purple-600 relative overflow-hidden flex items-end p-5">
+                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                 <h3 className="relative z-10 text-2xl font-black text-white drop-shadow-md">Leadership & Career</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-sm font-medium text-gray-500 dark:text-white/60">Conversations with industry leaders and experts.</p>
+              </div>
+            </div>
+
+            {/* Mock Category 2 */}
+            <div className="bg-gray-50 dark:bg-[#181818] border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group shadow-sm">
+              <div className="h-48 bg-gradient-to-br from-rose-500 to-orange-500 relative overflow-hidden flex items-end p-5">
+                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                 <h3 className="relative z-10 text-2xl font-black text-white drop-shadow-md">Diversity in IP</h3>
+              </div>
+              <div className="p-5">
+                <p className="text-sm font-medium text-gray-500 dark:text-white/60">Exploring DEI initiatives across the patent world.</p>
+              </div>
+            </div>
           </div>
-        ) : mainFeature && (
-          <div className="relative rounded-3xl overflow-hidden mb-12 shadow-sm border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-[#181818]">
-            {/* Blurred background effect */}
-            <div className="absolute inset-0 opacity-20 dark:opacity-30">
+        ) : (
+          <>
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-32">
+                <Loader2 size={48} className="animate-spin text-[#f59e0b] mb-4" />
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Loading Episodes...</h3>
+              </div>
+            ) : mainFeature && (
+              <div className="relative rounded-3xl overflow-hidden mb-12 shadow-sm border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-[#181818]">
+                {/* Blurred background effect */}
+                <div className="absolute inset-0 opacity-20 dark:opacity-30">
               <img src={mainFeature.image} alt="Background blur" className="w-full h-full object-cover blur-3xl scale-110" />
             </div>
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-[#181818]" />
@@ -151,55 +227,7 @@ export default function PodcastsHubPage() {
               </div>
             </div>
           </div>
-        )}
-
-        {/* Filter Badges (Spotify style) */}
-        <div className="flex gap-3 overflow-x-auto no-scrollbar mb-10 pb-2">
-          {MOCK_PODCASTS_SUBCATEGORIES.map(sub => (
-            <button
-              key={sub.id}
-              onClick={() => setActiveSub(sub.id)}
-              className={`px-5 py-2 rounded-full font-bold text-sm transition-all whitespace-nowrap border ${
-                activeSub === sub.id
-                  ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white'
-                  : 'bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10 dark:border-white/10'
-              }`}
-            >
-              {sub.name}
-            </button>
-          ))}
-          
-          <div className="relative ml-auto hidden sm:block">
-            <button 
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="bg-transparent border border-gray-300 dark:border-white/20 rounded-full px-5 py-2 text-sm font-bold text-gray-700 dark:text-white/70 hover:border-gray-400 dark:hover:border-white/40 flex items-center gap-2 transition-all"
-            >
-              {typeFilter}
-              <ChevronDown size={14} className={isDropdownOpen ? 'rotate-180' : ''} />
-            </button>
-            
-            {isDropdownOpen && (
-              <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-[#282828] border border-gray-100 dark:border-white/5 rounded-xl shadow-xl overflow-hidden z-20">
-                {CONTENT_TYPES.map(type => (
-                  <button
-                    key={type}
-                    onClick={() => {
-                      setTypeFilter(type);
-                      setIsDropdownOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors ${
-                      typeFilter === type 
-                        ? 'text-[#f59e0b] bg-gray-50 dark:bg-white/5' 
-                        : 'text-gray-700 dark:text-white/70 hover:bg-gray-100 dark:hover:bg-white/10'
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+          )}
 
         {/* Tracklist layout for all episodes */}
         <div className="mb-12">
@@ -279,6 +307,8 @@ export default function PodcastsHubPage() {
             )}
           </div>
         </div>
+        </>
+        )}
 
       </div>
 
