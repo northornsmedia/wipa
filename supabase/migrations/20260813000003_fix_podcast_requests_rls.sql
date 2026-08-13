@@ -1,10 +1,11 @@
--- Drop the restrictive SELECT policy
-DROP POLICY IF EXISTS "Users can view their own podcast requests." ON public.podcast_requests;
+-- Drop any public policies we may have created previously
+DROP POLICY IF EXISTS "Admin can view all podcast requests" ON public.podcast_requests;
+DROP POLICY IF EXISTS "Admin can update all podcast requests" ON public.podcast_requests;
+DROP POLICY IF EXISTS "Authenticated users can view podcast requests" ON public.podcast_requests;
+DROP POLICY IF EXISTS "Authenticated users can update podcast requests" ON public.podcast_requests;
 
--- Create a more permissive policy for admins/authenticated users
--- (In a production environment, you might want to check for an admin role here, 
--- but this allows the admin panel to read the requests)
-CREATE POLICY "Authenticated users can view podcast requests"
+-- Ensure the restrictive SELECT policy exists (this is the default secure state)
+DROP POLICY IF EXISTS "Users can view their own podcast requests." ON public.podcast_requests;
+CREATE POLICY "Users can view their own podcast requests."
   ON public.podcast_requests FOR SELECT
-  TO authenticated
-  USING ( true );
+  USING ( auth.uid() = user_id );
