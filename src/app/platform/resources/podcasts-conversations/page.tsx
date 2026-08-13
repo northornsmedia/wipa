@@ -72,7 +72,9 @@ export default function PodcastsHubPage() {
   });
 
   const mainFeature = filteredResources.find(r => r.featured) || filteredResources[0];
-  const otherResources = filteredResources.filter(r => r.id !== mainFeature?.id);
+  const otherResources = selectedCategory 
+    ? filteredResources 
+    : filteredResources.filter(r => r.id !== mainFeature?.id);
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#121212] text-gray-900 dark:text-white font-sans selection:bg-[#f59e0b]/30 flex flex-col pb-24">
