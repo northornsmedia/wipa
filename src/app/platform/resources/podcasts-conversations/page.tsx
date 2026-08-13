@@ -45,7 +45,8 @@ export default function PodcastsHubPage() {
           time: dbItem.duration,
           featured: dbItem.is_featured,
           image: dbItem.cover_image_url,
-          media: dbItem.media_file_url
+          media: dbItem.media_file_url,
+          category: dbItem.category
         }));
         setPodcasts(formattedData);
       }
