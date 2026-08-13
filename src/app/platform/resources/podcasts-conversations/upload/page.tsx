@@ -192,9 +192,20 @@ export default function PodcastUploadPage() {
                  <p className="text-gray-600 dark:text-gray-400 mb-10 text-lg relative z-10">
                    We're sorry, but your publisher application did not match our current platform guidelines. You may reach out to support for more details.
                  </p>
-                 <Link href="/platform/resources/podcasts-conversations" className="relative z-10 bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/10 px-8 py-4 rounded-full font-bold hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                   Return to Podcasts
-                 </Link>
+                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
+                   <Link href="/platform/resources/podcasts-conversations" className="bg-[#181818] border border-[#27272a] text-white px-8 py-4 rounded-full font-bold hover:bg-[#27272a] transition-all duration-300">
+                     Return to Podcasts
+                   </Link>
+                   <button 
+                     onClick={() => {
+                       setRequestStatus('none');
+                       setSubmitSuccess(false);
+                     }}
+                     className="bg-white text-black border border-white px-8 py-4 rounded-full font-bold hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:-translate-y-1 transition-all duration-300"
+                   >
+                     Submit New Application
+                   </button>
+                 </div>
                </div>
             ) : (
               <form onSubmit={handleApply} className="bg-white/70 dark:bg-[#18181b]/60 backdrop-blur-2xl border border-gray-200/50 dark:border-white/10 rounded-[2rem] p-8 md:p-10 shadow-2xl relative overflow-hidden">
