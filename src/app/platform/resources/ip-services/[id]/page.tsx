@@ -64,6 +64,9 @@ const MOCK_COMPANIES = [
 export default function CompanyProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const company = MOCK_COMPANIES.find(c => c.id === resolvedParams.id) || MOCK_COMPANIES[0];
+  const [activeTab, setActiveTab] = React.useState('Overview');
+
+  const TABS = ['Overview', 'Videos', 'Articles', 'Webinars', 'Events'];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden pb-20">
@@ -103,70 +106,103 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
         </div>
       </div>
 
+      <div className="border-b border-slate-200 dark:border-white/10 bg-white/50 dark:bg-[#020617]/50 backdrop-blur-md sticky top-0 z-40">
+        <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6">
+          <div className="flex items-center gap-8 md:gap-12 overflow-x-auto no-scrollbar py-6">
+            {TABS.map(tab => (
+              <button 
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`text-2xl md:text-3xl font-black whitespace-nowrap transition-colors duration-300 tracking-tight ${activeTab === tab ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400'}`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 py-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-12">
             
-            {/* Quote Banner */}
-            {company.quote && (
-              <div className="relative p-8 md:p-10 rounded-[2rem] bg-gradient-to-br from-sky-500 to-cyan-500 text-white overflow-hidden shadow-2xl shadow-sky-500/20 group">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-                <Quote size={80} className="absolute -top-4 -left-4 text-white/10 rotate-180 group-hover:scale-110 transition-transform duration-700" />
-                <h3 className="text-2xl md:text-3xl font-black leading-snug relative z-10 mb-6 italic tracking-tight text-white/95">
-                  "{company.quote}"
-                </h3>
+            {activeTab === 'Overview' && (
+              <>
+                {/* Quote Banner */}
+                {company.quote && (
+                  <div className="relative p-8 md:p-10 rounded-[2rem] bg-gradient-to-br from-sky-500 to-cyan-500 text-white overflow-hidden shadow-2xl shadow-sky-500/20 group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                    <Quote size={80} className="absolute -top-4 -left-4 text-white/10 rotate-180 group-hover:scale-110 transition-transform duration-700" />
+                    <h3 className="text-2xl md:text-3xl font-black leading-snug relative z-10 mb-6 italic tracking-tight text-white/95">
+                      "{company.quote}"
+                    </h3>
+                  </div>
+                )}
+
+                <section>
+                  <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <FileText className="text-sky-500" size={28} /> Our Philosophy
+                  </h2>
+                  <div className="p-8 rounded-3xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 shadow-lg text-slate-700 dark:text-slate-300 text-lg md:text-xl font-medium leading-relaxed">
+                    {company.description}
+                  </div>
+                </section>
+
+                {company.services && (
+                  <section>
+                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                      <Shield className="text-sky-500" size={28} /> Areas of Expertise
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {company.services.map((service, idx) => (
+                        <div key={idx} className="p-6 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-white/10 hover:border-sky-500 dark:hover:border-sky-500 hover:shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1 transition-all duration-300 flex items-center gap-4 group cursor-default">
+                          <div className="w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center shrink-0 group-hover:bg-sky-500 transition-colors duration-300">
+                            <CheckCircle2 size={20} className="text-sky-500 group-hover:text-white transition-colors duration-300" />
+                          </div>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-lg">{service}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {company.team && (
+                  <section>
+                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                      <Users className="text-sky-500" size={28} /> Key Operations Experts
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {company.team.map((member: any, idx) => (
+                        <div key={idx} className="p-6 rounded-2xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 flex items-center gap-5 hover:shadow-lg transition-shadow">
+                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-xl font-black text-slate-500 dark:text-slate-300 shadow-inner">
+                            {member.initials}
+                          </div>
+                          <div>
+                            <h4 className="font-black text-lg text-slate-900 dark:text-white">{member.name}</h4>
+                            <p className="text-sm font-medium text-sky-600 dark:text-sky-400">{member.role}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </>
+            )}
+
+            {activeTab !== 'Overview' && (
+              <div className="py-20 flex flex-col items-center justify-center text-center bg-white/30 dark:bg-slate-900/20 rounded-[2rem] border border-slate-200 dark:border-white/5 border-dashed">
+                <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800/50 rounded-full flex items-center justify-center mb-6">
+                  <FileText size={32} className="text-slate-400 dark:text-slate-500" />
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">No {activeTab} Yet</h3>
+                <p className="text-slate-500 dark:text-slate-400 font-medium text-lg max-w-sm">
+                  {company.name} hasn't uploaded any {activeTab.toLowerCase()} to their profile at this time.
+                </p>
               </div>
             )}
-
-            <section>
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                <FileText className="text-sky-500" size={28} /> Our Philosophy
-              </h2>
-              <div className="p-8 rounded-3xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 shadow-lg text-slate-700 dark:text-slate-300 text-lg md:text-xl font-medium leading-relaxed">
-                {company.description}
-              </div>
-            </section>
-
-            {company.services && (
-              <section>
-                <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                  <Shield className="text-sky-500" size={28} /> Areas of Expertise
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {company.services.map((service, idx) => (
-                    <div key={idx} className="p-6 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-white/10 hover:border-sky-500 dark:hover:border-sky-500 hover:shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1 transition-all duration-300 flex items-center gap-4 group cursor-default">
-                      <div className="w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center shrink-0 group-hover:bg-sky-500 transition-colors duration-300">
-                        <CheckCircle2 size={20} className="text-sky-500 group-hover:text-white transition-colors duration-300" />
-                      </div>
-                      <span className="font-bold text-slate-800 dark:text-slate-200 text-lg">{service}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {company.team && (
-              <section>
-                <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                  <Users className="text-sky-500" size={28} /> Key Operations Experts
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {company.team.map((member: any, idx) => (
-                    <div key={idx} className="p-6 rounded-2xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 flex items-center gap-5 hover:shadow-lg transition-shadow">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-xl font-black text-slate-500 dark:text-slate-300 shadow-inner">
-                        {member.initials}
-                      </div>
-                      <div>
-                        <h4 className="font-black text-lg text-slate-900 dark:text-white">{member.name}</h4>
-                        <p className="text-sm font-medium text-sky-600 dark:text-sky-400">{member.role}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
+            
           </div>
 
           {/* Sidebar */}
