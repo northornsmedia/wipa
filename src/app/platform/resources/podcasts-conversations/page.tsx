@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ArrowLeft, Search, Mic, Play, Pause, ChevronDown, ListMusic, Headphones, PlayCircle, Clock, Volume2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Search, Mic, Play, Pause, ChevronDown, ListMusic, Headphones, PlayCircle, Clock, Volume2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 const MOCK_PODCASTS_SUBCATEGORIES = [
   { id: 'all', name: 'All Episodes' },
@@ -22,81 +23,6 @@ const CONTENT_TYPES = [
   "Expert Discussion"
 ];
 
-const MOCK_PODCASTS_RESOURCES = [
-  {
-    id: 1,
-    title: "The IP Innovators Series: AI and the Future of Copyright",
-    type: "Podcast Episode",
-    topic: "AI in IP",
-    subcategory: "podcasts",
-    host: "WIPA Media",
-    guest: "Dr. Elena Rostova",
-    time: "45:00",
-    featured: true,
-    image: "/resourceimg1.jpg"
-  },
-  {
-    id: 2,
-    title: "Leadership Conversation: Rebuilding a Global IP Team",
-    type: "Video Interview",
-    topic: "Leadership",
-    subcategory: "video",
-    host: "Sarah Jenkins",
-    guest: "Michael Chang, GC",
-    time: "32:15",
-    featured: true,
-    image: "/resourceimg2.jpg"
-  },
-  {
-    id: 3,
-    title: "Expert Discussion: Navigating the UPC",
-    type: "Expert Discussion",
-    topic: "Litigation",
-    subcategory: "expert",
-    host: "European IP Desk",
-    guest: "Panel of 3 Experts",
-    time: "60:00",
-    featured: false,
-    image: "/resource3.jpg"
-  },
-  {
-    id: 4,
-    title: "Member Conversation: My Journey to Partner",
-    type: "Member Conversation",
-    topic: "Career Growth",
-    subcategory: "member",
-    host: "Mentorship Committee",
-    guest: "Jessica Reynolds",
-    time: "25:40",
-    featured: false,
-    image: "/resourceimg1.jpg"
-  },
-  {
-    id: 5,
-    title: "Audio Interview: Trademark Distinctiveness in Web3",
-    type: "Audio Interview",
-    topic: "Trademarks",
-    subcategory: "podcasts",
-    host: "The Legal Edge",
-    guest: "Alex Thorne",
-    time: "20:00",
-    featured: false,
-    image: "/resourceimg2.jpg"
-  },
-  {
-    id: 6,
-    title: "Leadership Conversation: Diversity in Patent Law",
-    type: "Leadership Conversation",
-    topic: "Diversity & Inclusion",
-    subcategory: "expert",
-    host: "WIPA DEI Board",
-    guest: "Hon. Judge Smith",
-    time: "40:55",
-    featured: false,
-    image: "/resource3.jpg"
-  }
-];
-
 export default function PodcastsHubPage() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -104,7 +30,33 @@ export default function PodcastsHubPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [playingId, setPlayingId] = useState<number | null>(null); // Paused by default
 
-  const filteredResources = MOCK_PODCASTS_RESOURCES.filter(r => {
+  const [podcasts, setPodcasts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPodcasts() {
+      const { data, error } = await supabase.from('podcasts').select('*').order('created_at', { ascending: false });
+      if (!error && data) {
+        const formattedData = data.map(dbItem => ({
+          id: dbItem.id,
+          title: dbItem.title,
+          type: dbItem.content_type,
+          topic: dbItem.topic_tag || dbItem.custom_topic,
+          subcategory: dbItem.subcategory,
+          host: dbItem.host_name,
+          guest: dbItem.guest_names,
+          time: dbItem.duration,
+          featured: dbItem.is_featured,
+          image: dbItem.cover_image_url
+        }));
+        setPodcasts(formattedData);
+      }
+      setLoading(false);
+    }
+    fetchPodcasts();
+  }, []);
+
+  const filteredResources = podcasts.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;
@@ -143,8 +95,12 @@ export default function PodcastsHubPage() {
 
       <div className="flex-1 w-full max-w-[1200px] mx-auto px-6 pt-8">
         
-        {/* Dynamic Hero Section */}
-        {mainFeature && (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-32">
+            <Loader2 size={48} className="animate-spin text-[#f59e0b] mb-4" />
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Loading Episodes...</h3>
+          </div>
+        ) : mainFeature && (
           <div className="relative rounded-3xl overflow-hidden mb-12 shadow-sm border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-[#181818]">
             {/* Blurred background effect */}
             <div className="absolute inset-0 opacity-20 dark:opacity-30">
