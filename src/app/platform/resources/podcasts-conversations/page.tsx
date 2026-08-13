@@ -22,6 +22,7 @@ const CONTENT_TYPES = [
 
 export default function PodcastsHubPage() {
   const [activeSub, setActiveSub] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -57,10 +58,10 @@ export default function PodcastsHubPage() {
 
   const filteredResources = podcasts.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;
+    const matchesCat = selectedCategory ? r.category === selectedCategory : true;
     
-    return matchesSearch && matchesSub && matchesType;
+    return matchesSearch && matchesType && matchesCat;
   });
 
   const mainFeature = filteredResources.find(r => r.featured) || filteredResources[0];
@@ -99,9 +100,12 @@ export default function PodcastsHubPage() {
           {MOCK_PODCASTS_SUBCATEGORIES.map(sub => (
             <button
               key={sub.id}
-              onClick={() => setActiveSub(sub.id)}
+              onClick={() => {
+                setActiveSub(sub.id);
+                if (sub.id === 'all') setSelectedCategory('');
+              }}
               className={`px-5 py-2 rounded-full font-bold text-sm transition-all whitespace-nowrap border ${
-                activeSub === sub.id
+                activeSub === sub.id && !selectedCategory
                   ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white'
                   : 'bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10 dark:border-white/10'
               }`}
@@ -147,7 +151,10 @@ export default function PodcastsHubPage() {
         {activeSub === 'categories' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
             {/* Mock Category 1 */}
-            <div className="bg-gray-50 dark:bg-[#181818] border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group shadow-sm">
+            <div 
+              onClick={() => { setSelectedCategory('Leadership & Career'); setActiveSub('all'); }}
+              className="bg-gray-50 dark:bg-[#181818] border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group shadow-sm"
+            >
               <div className="h-48 bg-gradient-to-br from-indigo-500 to-purple-600 relative overflow-hidden flex items-end p-5">
                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                  <h3 className="relative z-10 text-2xl font-black text-white drop-shadow-md">Leadership & Career</h3>
@@ -158,7 +165,10 @@ export default function PodcastsHubPage() {
             </div>
 
             {/* Mock Category 2 */}
-            <div className="bg-gray-50 dark:bg-[#181818] border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group shadow-sm">
+            <div 
+              onClick={() => { setSelectedCategory('Diversity in IP'); setActiveSub('all'); }}
+              className="bg-gray-50 dark:bg-[#181818] border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform cursor-pointer group shadow-sm"
+            >
               <div className="h-48 bg-gradient-to-br from-rose-500 to-orange-500 relative overflow-hidden flex items-end p-5">
                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                  <h3 className="relative z-10 text-2xl font-black text-white drop-shadow-md">Diversity in IP</h3>
@@ -175,7 +185,7 @@ export default function PodcastsHubPage() {
                 <Loader2 size={48} className="animate-spin text-[#f59e0b] mb-4" />
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">Loading Episodes...</h3>
               </div>
-            ) : mainFeature && (
+            ) : mainFeature && !selectedCategory && (
               <div className="relative rounded-3xl overflow-hidden mb-12 shadow-sm border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-[#181818]">
                 {/* Blurred background effect */}
                 <div className="absolute inset-0 opacity-20 dark:opacity-30">
@@ -233,6 +243,15 @@ export default function PodcastsHubPage() {
         {/* Tracklist layout for all episodes */}
         <div className="mb-12">
           
+          {selectedCategory && (
+            <div className="flex flex-col gap-2 mb-8 mt-4">
+              <button onClick={() => { setSelectedCategory(''); setActiveSub('categories'); }} className="w-fit text-gray-500 dark:text-white/50 hover:text-[#f59e0b] dark:hover:text-[#f59e0b] flex items-center gap-1 text-sm font-bold transition-colors">
+                <ArrowLeft size={16} /> Back to Albums
+              </button>
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">{selectedCategory}</h2>
+            </div>
+          )}
+
           {/* Table Header */}
           <div className="flex items-center px-4 py-2 border-b border-gray-200 dark:border-white/10 mb-4 text-xs font-bold text-gray-500 dark:text-white/40 uppercase tracking-widest">
             <div className="w-12 text-center">#</div>
