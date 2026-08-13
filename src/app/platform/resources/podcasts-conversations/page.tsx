@@ -7,10 +7,7 @@ import { supabase } from '@/lib/supabase';
 
 const MOCK_PODCASTS_SUBCATEGORIES = [
   { id: 'all', name: 'All Episodes' },
-  { id: 'podcasts', name: 'Podcasts' },
-  { id: 'video', name: 'Video Interviews' },
-  { id: 'expert', name: 'Expert Discussions' },
-  { id: 'member', name: 'Member Spotlight' }
+  { id: 'categories', name: 'All Categories' }
 ];
 
 const CONTENT_TYPES = [
