@@ -35,7 +35,18 @@ const MOCK_CATEGORIES = [
     description: "Spotlighting achievements and topics relevant to women in IP.",
     latestItems: [
       { title: "Top 50 Women in IP 2026", type: "Report", time: "4 hours ago" },
-      { title: "Overcoming Gender Bias", type: "Article", time: "2 days ago" }
+      { title: "Diversity in IP", type: "Episode", time: "5 days ago" }
+    ]
+  },
+  {
+    id: 12,
+    title: "IP Services",
+    icon: Building,
+    color: "#1dd1a1",
+    description: "Explore our specialized IP services and consulting.",
+    latestItems: [
+      { title: "Trademark Registration", type: "Service", time: "Available" },
+      { title: "Patent Filing", type: "Service", time: "Available" }
     ]
   },
   {
@@ -379,7 +390,7 @@ export default function ResourcesPage() {
             const Icon = resource.icon;
             return (
               <Link 
-                href={resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/resources/womens-ip-world` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : `/platform/resources/wellness/${resource.id}`}
+                href={resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/resources/womens-ip-world` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : resource.id === 12 ? `/platform/resources/ip-services` : `/platform/resources/wellness/${resource.id}`}
                 key={resource.id}
                 className="relative bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.15)] transition-all duration-500 group cursor-pointer overflow-hidden block z-10"
               >

@@ -149,6 +149,7 @@ export default function Sidebar() {
                 <Link href="/platform/resources/in-house-counsel" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/in-house-counsel') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>In-House Counsel</Link>
                 <Link href="/platform/resources/podcasts-conversations" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/podcasts-conversations') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Podcasts & Convos</Link>
                 <Link href="/platform/resources/wellness" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/wellness') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Wellness & Wellbeing</Link>
+                <Link href="/platform/resources/ip-services" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/ip-services') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>IP Services</Link>
               </div>
             </div>
           </div>
