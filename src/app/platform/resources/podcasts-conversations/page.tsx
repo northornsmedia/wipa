@@ -47,7 +47,8 @@ export default function PodcastsHubPage() {
           guest: dbItem.guest_names,
           time: dbItem.duration,
           featured: dbItem.is_featured,
-          image: dbItem.cover_image_url
+          image: dbItem.cover_image_url,
+          media: dbItem.media_file_url
         }));
         setPodcasts(formattedData);
       }
@@ -283,6 +284,16 @@ export default function PodcastsHubPage() {
         </div>
 
       </div>
+
+      {/* Hidden Audio Player */}
+      {playingId && podcasts.find(p => p.id === playingId)?.media && (
+        <audio 
+          src={podcasts.find(p => p.id === playingId)?.media} 
+          autoPlay 
+          onEnded={() => setPlayingId(null)}
+          className="hidden"
+        />
+      )}
     </div>
   );
 }
