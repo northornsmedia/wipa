@@ -282,11 +282,12 @@ export default function PodcastsHubPage() {
 
           {/* Table Header */}
           <div className="flex items-center px-4 py-2 border-b border-gray-200 dark:border-white/10 mb-4 text-xs font-bold text-gray-500 dark:text-white/40 uppercase tracking-widest">
-            <div className="w-12 text-center">#</div>
-            <div className="flex-1">Title</div>
-            <div className="w-48 hidden md:block">Topic</div>
-            <div className="w-48 hidden lg:block">Type</div>
-            <div className="w-24 text-right flex justify-end"><Clock size={14} /></div>
+            <div className="w-12 text-center shrink-0">#</div>
+            <div className="flex-1 min-w-0">Title</div>
+            <div className="w-40 hidden md:block shrink-0">Topic</div>
+            <div className="w-36 hidden lg:block shrink-0">Type</div>
+            <div className="w-40 hidden lg:block shrink-0">Album</div>
+            <div className="w-24 text-right flex justify-end shrink-0"><Clock size={14} /></div>
           </div>
 
           <div className="flex flex-col">
@@ -329,13 +330,22 @@ export default function PodcastsHubPage() {
                   </div>
 
                   {/* Topic */}
-                  <div className="w-48 hidden md:block shrink-0">
-                    <span className="text-sm font-medium text-gray-600 dark:text-white/60">{resource.topic}</span>
+                  <div className="w-40 hidden md:block shrink-0">
+                    <span className="text-sm font-medium text-gray-600 dark:text-white/60 truncate block">{resource.topic}</span>
                   </div>
 
                   {/* Type */}
-                  <div className="w-48 hidden lg:block shrink-0">
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-white/40">{resource.type}</span>
+                  <div className="w-36 hidden lg:block shrink-0">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-white/40 truncate block">{resource.type}</span>
+                  </div>
+
+                  {/* Album */}
+                  <div className="w-40 hidden lg:block shrink-0 pr-4">
+                    {resource.category ? (
+                      <span className="text-xs font-bold text-[#f59e0b] bg-[#f59e0b]/10 px-2 py-1 rounded-md truncate max-w-full inline-block">{resource.category}</span>
+                    ) : (
+                      <span className="text-sm text-gray-400 dark:text-white/30 italic">None</span>
+                    )}
                   </div>
 
                   {/* Duration */}
