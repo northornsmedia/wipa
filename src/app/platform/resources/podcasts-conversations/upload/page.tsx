@@ -54,15 +54,30 @@ export default function PodcastUploadPage() {
 
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+    
     setIsSubmitting(true);
     
     try {
-      // Simulate API call to submit application
-      // In reality, this would insert into a podcast_applications table
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const { error } = await supabase
+        .from('podcast_requests')
+        .insert({
+          user_id: user.id,
+          podcast_name: podcastName,
+          topic: podcastTopic,
+          description: podcastDesc
+        });
+
+      if (error) {
+        console.error("Error submitting application:", error);
+        alert("There was an issue submitting your application. Please try again.");
+        return;
+      }
+
       setSubmitSuccess(true);
     } catch (err) {
-      console.error(err);
+      console.error("Unexpected error:", err);
+      alert("An unexpected error occurred.");
     } finally {
       setIsSubmitting(false);
     }
