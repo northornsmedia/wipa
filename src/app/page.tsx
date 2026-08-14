@@ -19,6 +19,9 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
+    // Clear the TTS played flag so it plays again when navigating to the platform
+    sessionStorage.removeItem('wipa_tts_played');
+
     // Verify active session securely with the server
     supabase.auth.getUser().then(({ data: { user: authUser }, error }) => {
       if (error || !authUser) {

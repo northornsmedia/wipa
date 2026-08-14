@@ -239,6 +239,19 @@ export default function Sidebar() {
         </div>
       </div>
       
+      <div className="px-5 mb-4">
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-[#5a32fa]/10 to-[#b892ff]/10 dark:from-[#5a32fa]/20 dark:to-[#b892ff]/20 border border-[#5a32fa]/20 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-2 opacity-10">
+            <Mail size={40} />
+          </div>
+          <h3 className="text-sm font-bold text-[#5a32fa] dark:text-[#b892ff] mb-1">Need Help?</h3>
+          <p className="text-[11px] text-gray-600 dark:text-gray-300 mb-3 leading-relaxed relative z-10">Reach out to the WIPA team for support or inquiries.</p>
+          <button className="flex items-center justify-center gap-2 w-full py-2 bg-white dark:bg-[#0f172a] text-[#5a32fa] dark:text-white text-xs font-bold rounded-xl hover:shadow-md transition-all border border-transparent hover:border-[#5a32fa]/20 relative z-10">
+            <Mail size={14} /> Contact WIPA
+          </button>
+        </div>
+      </div>
+      
         <div className="px-4 py-4 border-t border-gray-100 dark:border-white/10">
           <div className="flex items-center gap-3">
             {user?.avatar_url ? (

@@ -3,6 +3,7 @@ import AuthGuard from "@/components/AuthGuard";
 import MobileBottomBar from "@/components/MobileBottomBar";
 import Sidebar from "@/components/Sidebar";
 import ThemeWrapper from "@/components/ThemeWrapper";
+import WelcomeBackSplash from "@/components/WelcomeBackSplash";
 
 export default function PlatformLayout({
   children,
@@ -24,6 +25,7 @@ export default function PlatformLayout({
             </div>
           </div>
         </AuthGuard>
+        <WelcomeBackSplash />
       </div>
     </ThemeWrapper>
   );

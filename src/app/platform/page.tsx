@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import { useAppStore } from '@/store/useAppStore';
 import { 
@@ -525,7 +525,7 @@ export default function PlatformPage() {
                   <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-10 text-center border border-gray-100 dark:border-white/10">
                     <p className="text-gray-500 dark:text-gray-400 font-medium">No posts yet. Be the first to share something!</p>
                   </div>
-                ) : feedPosts.map((post) => {
+                ) : feedPosts.map((post, index) => {
                   const isLiked = dbLikedPostIds.has(post.id);
                   const author = post.author || {};
                   const authorName = author.full_name || 'Anonymous User';
@@ -536,7 +536,8 @@ export default function PlatformPage() {
                     : 'Unknown';
                     
                   return (
-                    <div key={post.id} className="bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-xl rounded-[2rem] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-white dark:border-white/5 transition-all duration-300 hover:shadow-[0_10px_40px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 group/post relative overflow-hidden">
+                    <React.Fragment key={post.id}>
+                    <div className="bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-xl rounded-[2rem] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-white dark:border-white/5 transition-all duration-300 hover:shadow-[0_10px_40px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 group/post relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent dark:from-white/5 opacity-0 group-hover/post:opacity-100 transition-opacity duration-300 pointer-events-none" />
                       <div className="flex items-start justify-between mb-4 relative z-10">
                         <div className="flex items-center gap-3">
@@ -661,6 +662,16 @@ export default function PlatformPage() {
                       </div>
                       
                     </div>
+                    {/* Sponsored Content Placement after every 4 cards */}
+                    {(index + 1) % 4 === 0 && (
+                      <div className="w-full rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white/50 dark:bg-[#0f172a]/50 relative h-32 flex items-center justify-center group shrink-0">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/5 to-[#b892ff]/5 dark:from-[#5a32fa]/10 dark:to-[#b892ff]/10 flex flex-col items-center justify-center text-[#5a32fa] dark:text-[#b892ff] transition-opacity">
+                          <span className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-60">Sponsored Content</span>
+                          <span className="font-black text-xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</span>
+                        </div>
+                      </div>
+                    )}
+                    </React.Fragment>
                   );
                 })}
               </div>

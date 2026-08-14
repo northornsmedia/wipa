@@ -5,7 +5,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { 
   BadgeCheck, LayoutGrid, User, Users, Mail, UserPlus, UsersRound, MessageSquare, FileText, Briefcase, GraduationCap,
   MapPin, Link as LinkIcon, Calendar, Edit3, Settings, Camera, ThumbsUp
-, BookOpen, X, Share2, Download, Copy
+, BookOpen, X, Share2, Download, Copy, PlayCircle
 , Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, Loader2, Star, Folder, Lightbulb, HelpCircle, Headphones, Award} from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
@@ -38,6 +38,8 @@ export default function ProfilePage() {
   const [featureForm, setFeatureForm] = useState({ title: '', customTitle: '', description: '', type: 'feature' });
   const [supportForm, setSupportForm] = useState({ subject: '', customSubject: '', message: '' });
   const [editForm, setEditForm] = useState(profileData);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
 
   useEffect(() => {
@@ -274,11 +276,16 @@ export default function ProfilePage() {
             <div className="px-6 md:px-12 pb-10 relative flex flex-col md:flex-row gap-6 md:gap-8">
               {/* Giant Avatar */}
               <div className="-mt-16 md:-mt-20 relative z-10 flex-shrink-0">
-                <div 
-                  className="w-28 h-28 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-[#ff90e8] to-[#5a32fa] text-white flex items-center justify-center text-5xl md:text-7xl font-bold border border-gray-200 dark:border-white/20 shadow-md rotate-3 hover:rotate-0 transition-transform duration-300 relative overflow-hidden"
-                  style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}
-                >
-                  {!profileData.avatarUrl && profileData.name.charAt(0).toUpperCase()}
+                <div className="p-1 rounded-[1.2rem] bg-gradient-to-tr from-yellow-400 via-pink-500 to-[#5a32fa] animate-gradient cursor-pointer hover:scale-105 transition-transform duration-300 shadow-xl" onClick={() => setIsVideoModalOpen(true)}>
+                  <div 
+                    className="w-28 h-28 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-[#ff90e8] to-[#5a32fa] text-white flex items-center justify-center text-5xl md:text-7xl font-bold border-4 border-white dark:border-[#0f172a] shadow-inner relative overflow-hidden group"
+                    style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                  >
+                    {!profileData.avatarUrl && profileData.name.charAt(0).toUpperCase()}
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <PlayCircle size={40} className="text-white drop-shadow-md" />
+                    </div>
+                  </div>
                 </div>
               </div>
               
@@ -498,6 +505,30 @@ export default function ProfilePage() {
           {/* RIGHT SIDEBAR */}
           <aside className="w-[300px] hidden xl:flex flex-col shrink-0 space-y-6 pt-6 sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto no-scrollbar pb-10">
             
+            {/* REFER A FRIEND WIDGET */}
+            <div className="shrink-0 bg-gradient-to-br from-[#ff90e8]/10 to-[#5a32fa]/10 dark:from-[#ff90e8]/20 dark:to-[#5a32fa]/20 rounded-3xl border border-[#ff90e8]/20 shadow-sm p-6 relative overflow-hidden group">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#ff90e8] blur-[50px] opacity-20 rounded-full pointer-events-none transition-opacity group-hover:opacity-40"></div>
+              <h3 className="font-bold text-[#5a32fa] dark:text-[#ff90e8] text-lg mb-2 flex items-center gap-2">
+                <Share2 size={20} /> Refer a Friend
+              </h3>
+              <p className="text-[13px] text-gray-700 dark:text-gray-300 mb-4 font-medium leading-relaxed">
+                Invite colleagues and you both get a <span className="font-bold text-[#ff90e8] dark:text-[#ff90e8]">10% Annual WIP Benefit</span> when they join!
+              </p>
+              
+              <div className="bg-white dark:bg-[#0f172a] rounded-[14px] p-1 flex items-center border border-gray-200 dark:border-white/10 shadow-inner">
+                <div className="px-3 text-sm font-black text-gray-900 dark:text-white tracking-wider flex-1 truncate">
+                  WIP-{user?.member_id?.substring(0,6) || '88X9A2'}
+                </div>
+                <button 
+                  onClick={() => alert('Referral code copied to clipboard!')}
+                  className="bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-gray-700 dark:text-gray-200 p-2 rounded-xl transition-colors"
+                  title="Copy Code"
+                >
+                  <Copy size={16} />
+                </button>
+              </div>
+            </div>
+
             {/* SUPPORT & FEEDBACK WIDGET */}
             <div className="shrink-0 bg-[#0a0a0a] rounded-3xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-6 pb-8 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-40 h-40 bg-[#5a32fa] blur-[70px] opacity-20 -mr-10 -mt-10 rounded-full pointer-events-none"></div>
@@ -1050,6 +1081,27 @@ export default function ProfilePage() {
                 Send Message
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Intro Video Modal */}
+      {isVideoModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-lg bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 aspect-[9/16]">
+            <button 
+              onClick={() => setIsVideoModalOpen(false)}
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-md transition-colors"
+            >
+              <X size={20} />
+            </button>
+            <video 
+              src="https://www.w3schools.com/html/mov_bbb.mp4" 
+              className="w-full h-full object-cover"
+              controls
+              autoPlay
+              playsInline
+            />
           </div>
         </div>
       )}
