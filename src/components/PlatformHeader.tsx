@@ -1,19 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, Home, UsersRound, Globe, Briefcase, Calendar, Star, Bell, X, BookOpen
+  Search, Home, UsersRound, Globe, Briefcase, Calendar, Star, Bell, X, BookOpen, Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { searchProfiles } from '@/app/actions/profiles';
+import LexIQChatCard from './LexIQChatCard';
+import SiriWave from '@/components/ui/siri-wave';
+
+const SiriWaveIcon = (props: any) => (
+  <SiriWave variant="wave" size={props.size || 48} className={props.className} />
+);
 
 const navItems = [
   { name: 'Home', icon: Home, path: '/platform' },
   { name: 'My Network', icon: Globe, path: '/platform/network' },
   { name: 'Groups', icon: UsersRound, path: '/platform/groups' },
+  { name: 'Ask LexIQ', icon: SiriWaveIcon, path: '#lexiq', special: true },
   { name: 'Events', icon: Calendar, path: '/platform/events' },
   { name: 'Resources', icon: BookOpen, path: '/platform/resources' },
   { name: 'Jobs', icon: Briefcase, path: '/platform/jobs' },
@@ -37,6 +45,38 @@ export default function PlatformHeader() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dbResults, setDbResults] = useState<any[]>([]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
+  const isLexIQOpen = useAppStore((state) => state.isLexIQOpen);
+  const setIsLexIQOpen = useAppStore((state) => state.setIsLexIQOpen);
+  const [flyingBox, setFlyingBox] = useState<DOMRect | null>(null);
+  const lexiqRef = useRef<HTMLDivElement>(null);
+
+  const handleLexIQClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (isLexIQOpen) {
+      setIsLexIQOpen(false);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    setFlyingBox(rect);
+    setTimeout(() => {
+      setFlyingBox(null);
+      setIsLexIQOpen(true);
+    }, 550);
+  };
+
+  // Intercept LexIQ-generated anchor clicks and use Next.js router (keeps LexIQ open)
+  useEffect(() => {
+    const container = lexiqRef.current;
+    if (!container) return;
+    const handleClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest('a');
+      if (target && target.href && target.href.startsWith(window.location.origin)) {
+        e.preventDefault();
+        router.push(target.getAttribute('href')!);
+      }
+    };
+    container.addEventListener('click', handleClick);
+    return () => container.removeEventListener('click', handleClick);
+  }, [isLexIQOpen, router]);
 
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -168,8 +208,33 @@ export default function PlatformHeader() {
             
             <nav className="hidden md:flex items-center gap-1 bg-white/60 dark:bg-[#020617]/40 backdrop-blur-xl rounded-2xl px-2 py-2 border border-gray-200/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
               {navItems.map((item) => {
-                const isActive = item.path === '/platform' ? pathname === '/platform' : pathname.startsWith(item.path);
+                const isActive = item.path === '/platform' ? pathname === '/platform' : (item.path.startsWith('/') && pathname.startsWith(item.path));
                 const Icon = item.icon;
+                
+                if (item.special) {
+                  return (
+                    <button 
+                      key={item.name} 
+                      onClick={handleLexIQClick}
+                      className={`group relative flex flex-col items-center justify-center h-[52px] rounded-xl transition-all duration-500 ease-out overflow-hidden text-gray-500 dark:text-gray-400 hover:text-[#ff90e8] ${
+                        flyingBox || isLexIQOpen ? "opacity-0 pointer-events-none w-0 mx-0" : "opacity-100 w-[72px] mx-1"
+                      }`}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/10 dark:from-[#5a32fa]/20 dark:to-[#ff90e8]/20 rounded-xl opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out border border-[#ff90e8]/20" />
+                      
+                      <Icon 
+                        size={20} 
+                        strokeWidth={2} 
+                        className="relative z-10 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2.5 group-hover:scale-125 group-hover:rotate-[8deg] group-hover:drop-shadow-lg text-[#5a32fa] dark:text-[#ff90e8]" 
+                      />
+                      
+                      <span className="text-[9px] font-bold tracking-wider absolute bottom-1.5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] whitespace-nowrap opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 text-[#5a32fa] dark:text-[#ff90e8]">
+                        {item.name}
+                      </span>
+                    </button>
+                  );
+                }
+
                 return (
                   <Link prefetch={false} 
                     key={item.name} 
@@ -524,6 +589,51 @@ export default function PlatformHeader() {
         >
           <X size={20} />
         </button>
+      </div>
+
+      {/* Flying Box Animation */}
+      <AnimatePresence>
+        {flyingBox && (
+          <motion.div
+            initial={{ 
+              position: 'fixed', 
+              left: flyingBox.left, 
+              top: flyingBox.top, 
+              width: flyingBox.width, 
+              height: flyingBox.height,
+              borderRadius: 12,
+              backgroundColor: 'rgba(90, 50, 250, 0.1)',
+              border: '1px solid rgba(255, 144, 232, 0.2)',
+              opacity: 1,
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 10px 30px rgba(90, 50, 250, 0.3)'
+            }}
+            animate={{ 
+              left: typeof window !== 'undefined' ? window.innerWidth - 60 : 0, 
+              top: typeof window !== 'undefined' ? window.innerHeight - 80 : 0,
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              scale: 0.5,
+              opacity: 0,
+              backgroundColor: 'rgba(255, 144, 232, 1)'
+            }}
+            transition={{ 
+              duration: 0.6, 
+              ease: [0.34, 1.56, 0.64, 1]
+            }}
+          >
+             <SiriWave variant="wave" size={32} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* LexIQ Chat Card Modal */}
+      <div ref={lexiqRef}>
+        <LexIQChatCard isOpen={isLexIQOpen} onClose={() => setIsLexIQOpen(false)} />
       </div>
     </>
   );

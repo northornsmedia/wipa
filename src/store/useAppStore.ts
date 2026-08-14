@@ -131,6 +131,10 @@ interface AppState {
   toggleDarkMode: () => void;
   isMenuOpen: boolean;
   toggleMenu: () => void;
+  isLexIQOpen: boolean;
+  setIsLexIQOpen: (open: boolean) => void;
+  lexiqMessages: { role: string; content: string }[];
+  setLexiqMessages: (messages: { role: string; content: string }[]) => void;
   user: { name: string; email: string; id?: string; avatar_url?: string; cover_url?: string; member_id?: string } | null;
   setUser: (user: { name: string; email: string; id?: string; avatar_url?: string; cover_url?: string; member_id?: string } | null) => void;
   posts: Post[];
@@ -145,6 +149,10 @@ export const useAppStore = create<AppState>()(
       toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
       isMenuOpen: false,
       toggleMenu: () => set((state) => ({ isMenuOpen: !state.isMenuOpen })),
+      isLexIQOpen: false,
+      setIsLexIQOpen: (open) => set({ isLexIQOpen: open }),
+      lexiqMessages: [{ role: 'ai', content: 'Hello! I am LexIQ, your IP assistant. How can I help you today?' }],
+      setLexiqMessages: (lexiqMessages) => set({ lexiqMessages }),
       user: null,
       setUser: (user) => set({ user }),
       posts: DUMMY_POSTS,

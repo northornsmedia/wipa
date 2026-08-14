@@ -95,7 +95,7 @@ export default function AIPage() {
       <iframe 
         src="/api/proxy-ai"
         className="w-full h-full border-none"
-        title="WIPA AI Platform"
+        title="LexIQ"
         allow="microphone; camera; display-capture"
       />
     </div>

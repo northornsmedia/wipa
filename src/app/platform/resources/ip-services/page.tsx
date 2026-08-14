@@ -34,9 +34,42 @@ const IP_SERVICES_DATA = [
   }
 ];
 
+import { SparklesCore } from '@/components/animations/SparklesCore';
+
 export default function IPServicesPage() {
+  const [showIntro, setShowIntro] = React.useState(true);
+  const [fadeOut, setFadeOut] = React.useState(false);
+
+  React.useEffect(() => {
+    const timer1 = setTimeout(() => setFadeOut(true), 3500);
+    const timer2 = setTimeout(() => setShowIntro(false), 4000);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-20">
+    <div className="relative min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-20">
+      
+      {showIntro && (
+        <div className={`absolute inset-0 z-[100] bg-[#020617] flex flex-col items-center justify-center transition-opacity duration-500 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
+          <div className="absolute inset-0 w-full h-full">
+            <SparklesCore
+              id="tsparticlesfullpage"
+              background="transparent"
+              minSize={0.6}
+              maxSize={1.4}
+              particleDensity={100}
+              className="w-full h-full"
+              particleColor="#FFFFFF"
+            />
+          </div>
+          <h1 className="md:text-4xl text-2xl lg:text-6xl font-black text-center text-white relative z-20 tracking-tight">
+            Page Sponsored by PSS Solutions
+          </h1>
+        </div>
+      )}
       
       {/* Top Hero Section */}
       <div className="relative w-full border-b border-slate-200 dark:border-white/10 overflow-hidden bg-white dark:bg-[#0b1120]">
@@ -146,7 +179,6 @@ export default function IPServicesPage() {
 
         </div>
       </div>
-
     </div>
   );
 }
