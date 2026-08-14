@@ -3,6 +3,7 @@
 import React from 'react';
 import { ArrowLeft, BookOpen, Star, TrendingUp, Target, ListChecks, FileText, ChevronRight, Briefcase, Award } from 'lucide-react';
 import Link from 'next/link';
+import DOMPurify from 'dompurify';
 
 export default function CareerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -121,7 +122,7 @@ export default function CareerDetailPage({ params }: { params: Promise<{ id: str
         <div className="bg-white dark:bg-[#1e293b] rounded-[2rem] p-8 md:p-12 shadow-sm border border-gray-200 dark:border-white/10 mb-12">
           <div 
             className="prose prose-lg dark:prose-invert prose-p:text-gray-600 dark:prose-p:text-gray-300 max-w-none"
-            dangerouslySetInnerHTML={{ __html: resource.content }}
+            dangerouslySetInnerHTML={{ __html: typeof window !== 'undefined' ? DOMPurify.sanitize(resource.content) : resource.content }}
           />
         </div>
 

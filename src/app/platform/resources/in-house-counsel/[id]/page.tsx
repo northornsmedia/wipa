@@ -3,6 +3,7 @@
 import React from 'react';
 import { ArrowLeft, Building, Target, CheckCircle, FileText, Download, PlayCircle, Users, Briefcase, Info } from 'lucide-react';
 import Link from 'next/link';
+import DOMPurify from 'dompurify';
 
 export default function InHouseCounselDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -120,7 +121,7 @@ export default function InHouseCounselDetailPage({ params }: { params: Promise<{
               
               <div 
                 className="prose prose-lg dark:prose-invert prose-p:text-gray-600 dark:prose-p:text-gray-300 max-w-none mb-10"
-                dangerouslySetInnerHTML={{ __html: resource.content }}
+                dangerouslySetInnerHTML={{ __html: typeof window !== 'undefined' ? DOMPurify.sanitize(resource.content) : resource.content }}
               />
 
               <div className="bg-gray-50 dark:bg-[#0f172a] rounded-2xl p-8 border border-gray-100 dark:border-white/5">

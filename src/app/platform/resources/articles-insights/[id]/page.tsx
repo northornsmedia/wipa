@@ -3,6 +3,7 @@
 import React from 'react';
 import { ArrowLeft, BookOpen, Download, FileText, User, ChevronRight, Tag, Share2, Bookmark, Clock, Calendar } from 'lucide-react';
 import Link from 'next/link';
+import DOMPurify from 'dompurify';
 
 export default function ArticleDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -101,7 +102,7 @@ export default function ArticleDetailPage({ params }: { params: Promise<{ id: st
         <div className="bg-white dark:bg-[#1e293b] rounded-[2rem] p-8 md:p-12 shadow-sm border border-gray-100 dark:border-white/10 mb-12">
           <div 
             className="prose prose-lg dark:prose-invert prose-p:text-gray-600 dark:prose-p:text-gray-300 max-w-none"
-            dangerouslySetInnerHTML={{ __html: article.content }}
+            dangerouslySetInnerHTML={{ __html: typeof window !== 'undefined' ? DOMPurify.sanitize(article.content) : article.content }}
           />
           
           {/* Tags */}

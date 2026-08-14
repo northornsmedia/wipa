@@ -3,6 +3,7 @@
 import React from 'react';
 import { ArrowLeft, Globe, Calendar, Link as LinkIcon, FileText, ChevronRight, Scale, AlertCircle, Share2, Bookmark } from 'lucide-react';
 import Link from 'next/link';
+import DOMPurify from 'dompurify';
 
 export default function IPNewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -114,7 +115,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
           </h2>
           <div 
             className="prose prose-lg dark:prose-invert prose-p:text-gray-600 dark:prose-p:text-gray-300 max-w-none"
-            dangerouslySetInnerHTML={{ __html: newsItem.fullText }}
+            dangerouslySetInnerHTML={{ __html: typeof window !== 'undefined' ? DOMPurify.sanitize(newsItem.fullText) : newsItem.fullText }}
           />
         </div>
 
