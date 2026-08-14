@@ -175,7 +175,6 @@ export default function OnboardingPage() {
         .update({
           full_name: formData.fullName,
           avatar_url: finalAvatarUrl,
-          mobile_number: formData.mobileNumber,
           country: formData.location,
           practice_area: formData.practiceAreas,
           linkedin_url: formData.linkedinUrl,
@@ -183,12 +182,24 @@ export default function OnboardingPage() {
           bio: formData.bio,
           membership_tier: selectedTier,
           verification_status: verificationStatus,
-          verification_document_url: finalDocUrl,
           onboarding_completed: true
         })
         .eq('id', user.id);
 
       if (updateError) throw updateError;
+
+      // Save PII to private_profiles
+      if (formData.mobileNumber || finalDocUrl) {
+        const { error: privateError } = await supabase
+          .from('private_profiles')
+          .upsert({
+            user_id: user.id,
+            mobile_number: formData.mobileNumber || null,
+            verification_document_url: finalDocUrl || null
+          });
+        
+        if (privateError) throw privateError;
+      }
 
       // 4. Redirect
       router.push('/platform');
