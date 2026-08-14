@@ -37,6 +37,7 @@ export default function PlatformPage() {
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const [isUpdatingPost, setIsUpdatingPost] = useState(false);
+  const [isIpWisdomModalOpen, setIsIpWisdomModalOpen] = useState(false);
   
   const fetchFeed = useCallback(async () => {
     setIsLoadingFeed(true);
@@ -273,8 +274,36 @@ export default function PlatformPage() {
                    <div className="absolute -top-[50%] -right-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_20s_linear_infinite]"></div>
                    <div className="absolute -bottom-[50%] -left-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#00d26a] to-[#00b8ff] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_25s_linear_infinite_reverse]"></div>
                    
-                   {/* Glassmorphic Grain Overlay */}
+                {/* Glassmorphic Grain Overlay */}
                    <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] z-0 mix-blend-overlay"></div>
+                </div>
+                
+                {/* IP Wisdom Card - Top Right (9:16 Thumbnail) */}
+                <div 
+                  onClick={() => setIsIpWisdomModalOpen(true)}
+                  className="hidden sm:block absolute top-6 right-6 sm:top-8 sm:right-8 z-20 w-[120px] aspect-[9/16] rounded-[1.5rem] overflow-hidden cursor-pointer group shadow-[0_8px_20px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-white/40 dark:border-white/10 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.3)] hover:border-[#ff90e8]/50"
+                >
+                  {/* Thumbnail Image */}
+                  <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80&w=400&h=700" alt="IP Wisdom Insight" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  
+                  {/* Sleek Gradient Overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-[#0a0a0a]/90"></div>
+                  <div className="absolute inset-0 bg-[#5a32fa]/10 mix-blend-overlay group-hover:bg-[#5a32fa]/0 transition-colors duration-500"></div>
+                  
+                  {/* Glowing Play Button */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-[0_4px_20px_rgba(0,0,0,0.2)] group-hover:bg-white/30 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] group-hover:scale-110 transition-all duration-300">
+                      <PlayCircle className="text-white relative z-10" size={26} strokeWidth={1.5} />
+                    </div>
+                  </div>
+                  
+                  {/* Text Container at bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 flex flex-col items-center">
+                    <span className="bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest mb-1.5 shadow-sm transform group-hover:-translate-y-0.5 transition-transform duration-300">
+                      IP Wisdom
+                    </span>
+                    <p className="text-[14px] font-black text-white leading-tight drop-shadow-md text-center group-hover:text-[#ff90e8] transition-colors">Daily Insight</p>
+                  </div>
                 </div>
                 
                 <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start gap-4">
@@ -907,6 +936,34 @@ export default function PlatformPage() {
           </div>
         </div>
       )}
+
+      {/* IP Wisdom Video Modal */}
+      {isIpWisdomModalOpen && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300"
+          onClick={() => setIsIpWisdomModalOpen(false)}
+        >
+          <div 
+            className="relative w-full max-w-[400px] h-[80vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 animate-in zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setIsIpWisdomModalOpen(false)}
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-md transition-colors"
+            >
+              <X size={20} />
+            </button>
+            <video 
+              src="https://www.w3schools.com/html/mov_bbb.mp4" 
+              className="w-full h-full object-cover"
+              controls
+              autoPlay
+              onEnded={() => setIsIpWisdomModalOpen(false)}
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

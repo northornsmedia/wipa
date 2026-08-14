@@ -6,7 +6,7 @@ import {
   BadgeCheck, LayoutGrid, User, Users, Mail, UserPlus, UsersRound, MessageSquare, FileText, Briefcase, GraduationCap,
   MapPin, Link as LinkIcon, Calendar, Edit3, Settings, Camera, ThumbsUp
 , BookOpen, X, Share2, Download, Copy, PlayCircle
-, Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, Loader2, Star, Folder, Lightbulb, HelpCircle, Headphones, Award} from 'lucide-react';
+, Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, Loader2, Star, Folder, Lightbulb, HelpCircle, Headphones, Award, Gift} from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -527,6 +527,24 @@ export default function ProfilePage() {
                   <Copy size={16} />
                 </button>
               </div>
+            </div>
+
+            {/* GIFT A MEMBERSHIP WIDGET */}
+            <div className="shrink-0 bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] rounded-3xl shadow-[0_8px_30px_rgba(90,50,250,0.2)] p-6 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white blur-[50px] opacity-20 rounded-full pointer-events-none transition-opacity group-hover:opacity-40"></div>
+              <h3 className="font-bold text-white text-lg mb-2 flex items-center gap-2 relative z-10">
+                <Gift size={20} /> Gift a Membership
+              </h3>
+              <p className="text-[13px] text-white/90 mb-5 font-medium leading-relaxed relative z-10">
+                Give the gift of innovation. Empower a peer with full WIPA access and networking opportunities.
+              </p>
+              
+              <Link 
+                href="/platform/gift"
+                className="relative z-10 w-full bg-white text-[#5a32fa] font-bold text-sm py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm"
+              >
+                Buy a Gift Card
+              </Link>
             </div>
 
             {/* SUPPORT & FEEDBACK WIDGET */}
