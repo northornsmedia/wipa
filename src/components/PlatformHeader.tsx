@@ -29,7 +29,9 @@ const mockSearchData = [
 export default function PlatformHeader() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isDarkMode, toggleDarkMode } = useAppStore();
+  const user = useAppStore((state) => state.user);
+  const isDarkMode = useAppStore((state) => state.isDarkMode);
+  const toggleDarkMode = useAppStore((state) => state.toggleDarkMode);
   
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -158,7 +160,7 @@ export default function PlatformHeader() {
         ) : (
           <>
             <div className="flex items-center gap-2">
-              <Link href="/platform">
+              <Link prefetch={false} href="/platform">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/WIPA-Logo.png" alt="WIPA Logo" className="h-10 w-auto object-contain" />
               </Link>
@@ -169,7 +171,7 @@ export default function PlatformHeader() {
                 const isActive = item.path === '/platform' ? pathname === '/platform' : pathname.startsWith(item.path);
                 const Icon = item.icon;
                 return (
-                  <Link 
+                  <Link prefetch={false} 
                     key={item.name} 
                     href={item.path} 
                     className={`group relative flex flex-col items-center justify-center w-[72px] h-[52px] rounded-xl transition-all duration-500 ease-out overflow-hidden ${
@@ -417,7 +419,7 @@ export default function PlatformHeader() {
               <button onClick={() => setIsSearchOpen(true)} className="hidden sm:block">
                 <Search size={20} className="cursor-pointer hover:text-gray-900 dark:text-white transition-colors" />
               </button>
-              <Link href="/platform/notifications" className="relative cursor-pointer hover:text-gray-900 dark:text-white transition-colors">
+              <Link prefetch={false} href="/platform/notifications" className="relative cursor-pointer hover:text-gray-900 dark:text-white transition-colors">
                 <Bell size={20} />
                 {unreadNotificationsCount > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-[3px] bg-red-500 border-2 border-white rounded-full flex items-center justify-center text-[8px] text-white font-bold">
@@ -425,7 +427,7 @@ export default function PlatformHeader() {
                   </span>
                 )}
               </Link>
-              <Link href="/platform/profile" className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
+              <Link prefetch={false} href="/platform/profile" className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
                 {user?.avatar_url ? (
                   <img src={user.avatar_url} alt={user?.name || 'User'} className="w-8 h-8 rounded-full object-cover" />
                 ) : (

@@ -69,7 +69,7 @@ export default function OnboardingPage() {
     };
     
     checkAuth();
-  }, [user, setUser, router]);
+  }, [user, setUser]);
 
   // Step 1 State
   const [formData, setFormData] = useState({

@@ -6,7 +6,7 @@ import { useAppStore } from '@/store/useAppStore';
 import OrbitingCirclesGlobe from '@/components/ui/orbiting-circles-02';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { user } = useAppStore();
+  const user = useAppStore((state) => state.user);
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
@@ -73,7 +73,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     if (user !== undefined) {
       checkOnboarding();
     }
-  }, [user, router]);
+  }, [user]);
 
   // Prevent flash of protected content while checking or redirecting
   if (!mounted || !user || isCheckingOnboarding) {

@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 
 export default function WelcomeBackSplash() {
   const [showSplash, setShowSplash] = useState(false);
-  const { user } = useAppStore();
+  const user = useAppStore((state) => state.user);
   const pathname = usePathname();
 
   useEffect(() => {
