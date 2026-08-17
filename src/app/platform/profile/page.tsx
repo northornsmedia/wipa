@@ -8,12 +8,15 @@ import {
   Share2, Copy, PlayCircle, Hash, ArrowUpRight, CheckCircle2, Loader2, Star,
   Folder, Lightbulb, HelpCircle, Headphones, Award, Gift, Sparkles, Plus,
   Image as ImageIcon, Video, Send, MoreHorizontal, Eye, TrendingUp, Search,
-  Globe2, ShieldCheck, Check, Heart, MessageCircle, Repeat2, Bookmark, X
+  Globe2, ShieldCheck, Check, Heart, MessageCircle, Repeat2, Bookmark, X,
+  Trash2, UploadCloud, Play, Volume2
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+
+const DEFAULT_MOCK_VIDEO = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
 
 export default function ProfilePage() {
   const { user, setUser } = useAppStore();
@@ -34,6 +37,7 @@ export default function ProfilePage() {
     practiceAreas: 'Patent Prosecution, Trademark Law, IP Litigation, Tech Licensing, AI Regulation',
     skills: 'Patent Drafting, Trademark Portfolio, Cross-Border Licensing, Trade Secrets, IP Audit',
     avatarUrl: user?.avatar_url || '',
+    introVideoUrl: DEFAULT_MOCK_VIDEO,
     memberId: user?.member_id || 'WIP-884920',
     verificationStatus: 'verified',
     isWipaRecommended: true,
@@ -42,11 +46,10 @@ export default function ProfilePage() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
-  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [editForm, setEditForm] = useState(profileData);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
+  const [editForm, setEditForm] = useState(profileData);
   const [stats, setStats] = useState({ connections: 142, followers: 890, posts: 14, profileViews: 328, postImpressions: '4.2k' });
 
   // Post composer state
@@ -76,8 +79,10 @@ export default function ProfilePage() {
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
+  
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '' });
   const [passwordStatus, setPasswordStatus] = useState({ type: '', message: '' });
@@ -106,6 +111,7 @@ export default function ProfilePage() {
           practiceAreas: data.practice_area || profileData.practiceAreas,
           skills: data.skills || profileData.skills,
           avatarUrl: data.avatar_url || profileData.avatarUrl,
+          introVideoUrl: data.intro_video_url || DEFAULT_MOCK_VIDEO,
           memberId: data.member_id || profileData.memberId,
           verificationStatus: data.verification_status || 'verified',
           isWipaRecommended: data.is_wipa_recommended ?? true,
@@ -164,6 +170,43 @@ export default function ProfilePage() {
     }
   };
 
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && user?.id) {
+      setIsUploadingVideo(true);
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}-intro.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from('feed-media').upload(fileName, file, { upsert: true });
+        
+        let finalVideoUrl = URL.createObjectURL(file);
+        if (!uploadError) {
+          const { data } = supabase.storage.from('feed-media').getPublicUrl(fileName);
+          finalVideoUrl = data.publicUrl;
+        }
+
+        await supabase.from('profiles').update({ intro_video_url: finalVideoUrl }).eq('id', user.id);
+        setProfileData(prev => ({ ...prev, introVideoUrl: finalVideoUrl }));
+        setEditForm(prev => ({ ...prev, introVideoUrl: finalVideoUrl }));
+        alert('Introduction video story updated successfully! 🎬');
+      } catch (err) {
+        console.error('Error uploading video:', err);
+      } finally {
+        setIsUploadingVideo(false);
+      }
+    }
+  };
+
+  const handleRemoveVideo = async () => {
+    if (!confirm('Are you sure you want to remove your introduction story video?')) return;
+    if (user?.id) {
+      await supabase.from('profiles').update({ intro_video_url: null }).eq('id', user.id);
+    }
+    setProfileData(prev => ({ ...prev, introVideoUrl: '' }));
+    setEditForm(prev => ({ ...prev, introVideoUrl: '' }));
+    setIsVideoModalOpen(false);
+  };
+
   const handleSaveProfile = async () => {
     if (!user?.id) return;
     setIsSaving(true);
@@ -179,7 +222,8 @@ export default function ProfilePage() {
         linkedin_url: editForm.linkedin,
         website_url: editForm.website,
         practice_area: editForm.practiceAreas,
-        skills: editForm.skills
+        skills: editForm.skills,
+        intro_video_url: editForm.introVideoUrl
       }).eq('id', user.id);
 
       setProfileData(editForm);
@@ -258,31 +302,69 @@ export default function ProfilePage() {
           <div className="px-4 sm:px-8 pb-6 sm:pb-8 relative">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 -mt-16 sm:-mt-24 mb-4">
               
-              {/* Avatar + Status */}
+              {/* Avatar + Rainbow Gradient Story Ring */}
               <div className="relative group self-start">
-                <div className="w-28 h-28 sm:w-40 sm:h-40 rounded-full bg-white dark:bg-[#151c2c] p-1.5 shadow-xl relative">
-                  <div 
-                    className="w-full h-full rounded-full bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] flex items-center justify-center text-white text-4xl sm:text-6xl font-bold overflow-hidden cursor-pointer"
-                    style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}
-                    onClick={() => avatarInputRef.current?.click()}
-                  >
-                    {!profileData.avatarUrl && profileData.name.charAt(0).toUpperCase()}
+                
+                {/* Glowing Story Gradient Ring */}
+                <div 
+                  className="p-[4px] rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-[#5a32fa] animate-gradient cursor-pointer hover:scale-105 transition-all shadow-xl relative"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  title="Click to watch Introduction Story Video"
+                >
+                  <div className="w-28 h-28 sm:w-40 sm:h-40 rounded-full bg-white dark:bg-[#151c2c] p-1">
+                    <div 
+                      className="w-full h-full rounded-full bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] flex items-center justify-center text-white text-4xl sm:text-6xl font-bold overflow-hidden relative"
+                      style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                    >
+                      {!profileData.avatarUrl && profileData.name.charAt(0).toUpperCase()}
+
+                      {/* Play Story Overlay Icon on Hover */}
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <PlayCircle size={44} className="text-white drop-shadow-lg" />
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Camera Upload Badge */}
-                  <button 
-                    onClick={() => avatarInputRef.current?.click()}
-                    className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 p-2 bg-[#5a32fa] hover:bg-[#4a24db] text-white rounded-full shadow-lg border-2 border-white dark:border-[#151c2c] transition-transform hover:scale-110"
-                    title="Change Profile Photo"
-                  >
-                    <Camera size={16} />
-                  </button>
-                  <input type="file" ref={avatarInputRef} onChange={handleAvatarUpload} accept="image/*" className="hidden" />
+                  {/* Pulsing "Story Video" Badge */}
+                  <div className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-[#5a32fa] text-white p-1.5 rounded-full shadow-md border-2 border-white dark:border-[#151c2c] flex items-center justify-center">
+                    <Play size={12} className="fill-white" />
+                  </div>
                 </div>
+
+                {/* Camera Upload Badge for Photo */}
+                <button 
+                  onClick={(e) => { e.stopPropagation(); avatarInputRef.current?.click(); }}
+                  className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 p-2 bg-[#5a32fa] hover:bg-[#4a24db] text-white rounded-full shadow-lg border-2 border-white dark:border-[#151c2c] transition-transform hover:scale-110 z-10"
+                  title="Change Profile Photo"
+                >
+                  <Camera size={15} />
+                </button>
+                <input type="file" ref={avatarInputRef} onChange={handleAvatarUpload} accept="image/*" className="hidden" />
+                <input type="file" ref={videoInputRef} onChange={handleVideoUpload} accept="video/*" className="hidden" />
               </div>
 
-              {/* Action Buttons (LinkedIn/FB style) */}
+              {/* Action Buttons (LinkedIn/FB style + Video Intro Actions) */}
               <div className="flex flex-wrap items-center gap-2.5 pt-2 md:pt-0">
+                
+                {/* Watch Story Video Button */}
+                <button 
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="px-4 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-[#5a32fa] hover:from-pink-600 hover:to-[#4a24db] text-white font-semibold text-sm flex items-center gap-2 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
+                >
+                  <Play size={16} className="fill-white" /> Watch Story
+                </button>
+
+                {/* Upload / Change Video Button */}
+                <button 
+                  onClick={() => videoInputRef.current?.click()}
+                  disabled={isUploadingVideo}
+                  className="px-4 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold text-sm flex items-center gap-2 transition-all"
+                  title="Upload or Change Intro Video"
+                >
+                  {isUploadingVideo ? <Loader2 size={16} className="animate-spin" /> : <Video size={16} className="text-[#5a32fa] dark:text-[#ff90e8]" />}
+                  <span>{isUploadingVideo ? 'Uploading...' : profileData.introVideoUrl ? 'Change Story' : 'Add Story'}</span>
+                </button>
+
                 <button 
                   onClick={() => { setEditForm(profileData); setIsEditModalOpen(true); }}
                   className="px-5 py-2.5 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-semibold text-sm flex items-center gap-2 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
@@ -434,9 +516,12 @@ export default function ProfilePage() {
                         <ImageIcon size={18} className="text-blue-500" />
                         <span className="hidden sm:inline">Photo</span>
                       </button>
-                      <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors">
+                      <button 
+                        onClick={() => videoInputRef.current?.click()}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors"
+                      >
                         <Video size={18} className="text-emerald-500" />
-                        <span className="hidden sm:inline">Video</span>
+                        <span className="hidden sm:inline">Story Video</span>
                       </button>
                       <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors">
                         <Calendar size={18} className="text-amber-500" />
@@ -806,6 +891,94 @@ export default function ProfilePage() {
 
       </div>
 
+      {/* ================= FULL-SCREEN INTRODUCTION STORY VIDEO MODAL ================= */}
+      {isVideoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div className="bg-[#0f172a] text-white w-full max-w-lg rounded-3xl border border-gray-800 shadow-2xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
+            
+            {/* Story Top Header Bar */}
+            <div className="p-4 bg-black/40 backdrop-blur-md flex items-center justify-between z-10 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm overflow-hidden"
+                  style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover' }}
+                >
+                  {!profileData.avatarUrl && profileData.name.charAt(0)}
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-white flex items-center gap-1.5">
+                    {profileData.name} <BadgeCheck size={14} className="text-[#00d26a]" />
+                  </h4>
+                  <p className="text-xs text-white/70">Introduction Story Video</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => videoInputRef.current?.click()}
+                  className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                  title="Upload New Video"
+                >
+                  <UploadCloud size={14} /> Change
+                </button>
+
+                {profileData.introVideoUrl && (
+                  <button 
+                    onClick={handleRemoveVideo}
+                    className="p-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-semibold transition-colors"
+                    title="Remove Video"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                )}
+
+                <button 
+                  onClick={() => setIsVideoModalOpen(false)}
+                  className="p-2 text-white/70 hover:text-white rounded-xl hover:bg-white/10 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Video Player Container */}
+            <div className="w-full bg-black flex items-center justify-center min-h-[380px] max-h-[70vh] relative">
+              {profileData.introVideoUrl ? (
+                <video 
+                  src={profileData.introVideoUrl}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="w-full h-full object-contain max-h-[65vh]"
+                />
+              ) : (
+                <div className="text-center p-8 space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mx-auto text-[#5a32fa]">
+                    <Video size={32} />
+                  </div>
+                  <h3 className="text-lg font-bold">No Story Video Uploaded</h3>
+                  <p className="text-xs text-gray-400 max-w-xs mx-auto">
+                    Record a 30-second introduction to introduce yourself, your firm, and your IP expertise to the global WIPA community!
+                  </p>
+                  <button 
+                    onClick={() => videoInputRef.current?.click()}
+                    className="px-5 py-2.5 bg-[#5a32fa] hover:bg-[#4a24db] text-white rounded-xl font-bold text-sm shadow-md"
+                  >
+                    Upload Video Intro
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Story Bottom Bar */}
+            <div className="p-4 bg-gray-900/90 text-center text-xs text-gray-400 border-t border-white/5">
+              <span>🌟 Click anywhere or press Esc to close • WIPA Video Introductions</span>
+            </div>
+
+          </div>
+        </div>
+      )}
+
       {/* ================= EDIT PROFILE MODAL ================= */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -836,6 +1009,30 @@ export default function ProfilePage() {
                   onChange={(e) => setEditForm({...editForm, role: e.target.value})}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent focus:border-[#5a32fa] outline-none"
                 />
+              </div>
+
+              {/* Story Video Introduction Field */}
+              <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 space-y-2">
+                <label className="block font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Video size={16} className="text-[#5a32fa]" /> Story / Intro Video URL
+                </label>
+                <input 
+                  type="text" 
+                  value={editForm.introVideoUrl || ''} 
+                  placeholder="https://example.com/intro-video.mp4"
+                  onChange={(e) => setEditForm({...editForm, introVideoUrl: e.target.value})}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none font-mono text-xs"
+                />
+                <div className="flex items-center justify-between text-xs pt-1">
+                  <span className="text-gray-500">Supported formats: MP4, WebM</span>
+                  <button 
+                    type="button"
+                    onClick={() => videoInputRef.current?.click()}
+                    className="text-[#5a32fa] dark:text-[#ff90e8] font-bold hover:underline"
+                  >
+                    Upload from device
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
