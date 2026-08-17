@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
-const DEFAULT_MOCK_VIDEO = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+const DEFAULT_MOCK_VIDEO = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
 
 export default function ProfilePage() {
   const { user, setUser } = useAppStore();
@@ -997,12 +997,19 @@ export default function ProfilePage() {
             <div className="w-full bg-black flex items-center justify-center min-h-[380px] max-h-[70vh] relative">
               {profileData.introVideoUrl ? (
                 <video 
-                  src={profileData.introVideoUrl}
+                  key={profileData.introVideoUrl}
                   controls
                   autoPlay
                   playsInline
+                  preload="auto"
                   className="w-full h-full object-contain max-h-[65vh]"
-                />
+                  onError={(e) => {
+                    e.currentTarget.src = DEFAULT_MOCK_VIDEO;
+                  }}
+                >
+                  <source src={profileData.introVideoUrl} type="video/mp4" />
+                  Your browser does not support HTML video.
+                </video>
               ) : (
                 <div className="text-center p-8 space-y-4">
                   <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mx-auto text-[#5a32fa]">

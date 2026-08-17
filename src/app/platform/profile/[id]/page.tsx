@@ -13,7 +13,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-const DEFAULT_MOCK_VIDEO = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+const DEFAULT_MOCK_VIDEO = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
 
 export default function PublicProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
@@ -658,12 +658,19 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
 
             <div className="w-full bg-black flex items-center justify-center min-h-[380px] max-h-[70vh] relative">
               <video 
-                src={profileData.introVideoUrl}
+                key={profileData.introVideoUrl}
                 controls
                 autoPlay
                 playsInline
+                preload="auto"
                 className="w-full h-full object-contain max-h-[65vh]"
-              />
+                onError={(e) => {
+                  e.currentTarget.src = DEFAULT_MOCK_VIDEO;
+                }}
+              >
+                <source src={profileData.introVideoUrl || DEFAULT_MOCK_VIDEO} type="video/mp4" />
+                Your browser does not support HTML video.
+              </video>
             </div>
 
             <div className="p-4 bg-gray-900/90 text-center text-xs text-gray-400 border-t border-white/5">
