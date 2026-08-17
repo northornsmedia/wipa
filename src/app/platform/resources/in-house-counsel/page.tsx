@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Search, Building, ChevronRight, FileText, Download, Users, Video, Book, Briefcase, ChevronDown, FolderOpen, MoreHorizontal, Shield, Sparkles, Scale } from 'lucide-react';
 import Link from 'next/link';
 
@@ -101,12 +101,58 @@ const MOCK_INHOUSE_RESOURCES = [
   }
 ];
 
+import { supabase } from '@/lib/supabase';
+
 export default function InHouseCounselHubPage() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
+  const [dbResources, setDbResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredResources = MOCK_INHOUSE_RESOURCES.filter(r => {
+  useEffect(() => {
+    async function fetchLiveInHouse() {
+      try {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*')
+          .eq('category', 'in-house-counsel')
+          .order('created_at', { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          const mapped = data.map((d: any) => ({
+            id: d.id,
+            title: d.title,
+            type: d.resource_type || "Corporate Playbook",
+            topic: d.tags?.[0] || "In-House Counsel",
+            subcategory: d.subcategory || "operations",
+            contributor: d.author_name || "WIPA Corporate Counsel",
+            organisation: d.organization || d.author_title || "Official",
+            featured: d.is_featured || false,
+            date: new Date(d.created_at || Date.now()).toLocaleDateString(),
+            size: d.read_time || "Read",
+            image: d.cover_image_url || "/resourceimg1.jpg",
+            is_splash_sponsored: d.is_splash_sponsored,
+            splash_tagline: d.splash_tagline,
+            splash_cta_text: d.splash_cta_text,
+            splash_cta_url: d.splash_cta_url,
+          }));
+          setDbResources(mapped);
+        } else {
+          setDbResources(MOCK_INHOUSE_RESOURCES);
+        }
+      } catch (err) {
+        setDbResources(MOCK_INHOUSE_RESOURCES);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchLiveInHouse();
+  }, []);
+
+  const resourcesList = dbResources.length > 0 ? dbResources : MOCK_INHOUSE_RESOURCES;
+
+  const filteredResources = resourcesList.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;

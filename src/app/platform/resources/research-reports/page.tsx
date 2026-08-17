@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Search, Download, ChevronRight, FileText, BarChart2, BookOpen, Clock, Users, Building, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
@@ -94,12 +94,56 @@ const MOCK_RESEARCH_RESOURCES = [
   }
 ];
 
+import { supabase } from '@/lib/supabase';
+
 export default function ResearchReportsHubPage() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
+  const [dbResources, setDbResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredResources = MOCK_RESEARCH_RESOURCES.filter(r => {
+  useEffect(() => {
+    async function fetchLiveReports() {
+      try {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*')
+          .eq('category', 'research-reports')
+          .order('created_at', { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          const mapped = data.map((d: any) => ({
+            id: d.id,
+            title: d.title,
+            type: d.resource_type || "Research Report",
+            topic: d.tags?.[0] || "Industry Data",
+            subcategory: d.subcategory || "wipa",
+            author: d.author_name || "WIPA Analytics",
+            time: d.read_time || "30 Pages (PDF)",
+            featured: d.is_featured || false,
+            image: d.cover_image_url || "/resourceimg2.jpg",
+            is_splash_sponsored: d.is_splash_sponsored,
+            splash_tagline: d.splash_tagline,
+            splash_cta_text: d.splash_cta_text,
+            splash_cta_url: d.splash_cta_url,
+          }));
+          setDbResources(mapped);
+        } else {
+          setDbResources(MOCK_RESEARCH_RESOURCES);
+        }
+      } catch (err) {
+        setDbResources(MOCK_RESEARCH_RESOURCES);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchLiveReports();
+  }, []);
+
+  const resourcesList = dbResources.length > 0 ? dbResources : MOCK_RESEARCH_RESOURCES;
+
+  const filteredResources = resourcesList.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;

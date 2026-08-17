@@ -151,13 +151,24 @@ export default function WellnessHubPage() {
       const { data } = await supabase
         .from('resources')
         .select('*')
-        .ilike('category', '%Wellness%');
+        .or('category.eq.wellness,category.ilike.%wellness%')
+        .order('created_at', { ascending: false });
+
       if (data && data.length > 0) {
         setResources(data.map(d => ({
-          ...d,
-          expert: "Expert",
-          time: new Date(d.created_at).toLocaleDateString(),
-          image: d.url || "/resourceimg2.jpg"
+          id: d.id,
+          title: d.title,
+          type: d.resource_type || "Wellness Guide",
+          topic: d.tags?.[0] || "Mental Health & Resilience",
+          subcategory: d.subcategory || "mental-health",
+          expert: d.author_name || "WIPA Wellness Institute",
+          time: d.read_time || "6 min read",
+          featured: d.is_featured || false,
+          image: d.cover_image_url || "/wellbeing.jpg",
+          is_splash_sponsored: d.is_splash_sponsored,
+          splash_tagline: d.splash_tagline,
+          splash_cta_text: d.splash_cta_text,
+          splash_cta_url: d.splash_cta_url,
         })));
       }
     }

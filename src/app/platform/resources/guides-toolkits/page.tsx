@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Search, Command, ChevronRight, FileCode, CheckSquare, DownloadCloud, Box, LayoutTemplate, Zap, Folder, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
@@ -93,13 +93,57 @@ const MOCK_GUIDES_RESOURCES = [
   }
 ];
 
+import { supabase } from '@/lib/supabase';
+
 export default function GuidesToolkitsHubPage() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // For mobile
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [dbResources, setDbResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredResources = MOCK_GUIDES_RESOURCES.filter(r => {
+  useEffect(() => {
+    async function fetchLiveGuides() {
+      try {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*')
+          .eq('category', 'guides-toolkits')
+          .order('created_at', { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          const mapped = data.map((d: any) => ({
+            id: d.id,
+            title: d.title,
+            type: d.resource_type || "Toolkit",
+            topic: d.tags?.[0] || "IP Practice",
+            subcategory: d.subcategory || "due-diligence",
+            author: d.author_name || "WIPA Practice Guides",
+            time: d.read_time || "Downloadable Pack",
+            featured: d.is_featured || false,
+            image: d.cover_image_url || "/resourceimg1.jpg",
+            is_splash_sponsored: d.is_splash_sponsored,
+            splash_tagline: d.splash_tagline,
+            splash_cta_text: d.splash_cta_text,
+            splash_cta_url: d.splash_cta_url,
+          }));
+          setDbResources(mapped);
+        } else {
+          setDbResources(MOCK_GUIDES_RESOURCES);
+        }
+      } catch (err) {
+        setDbResources(MOCK_GUIDES_RESOURCES);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchLiveGuides();
+  }, []);
+
+  const resourcesList = dbResources.length > 0 ? dbResources : MOCK_GUIDES_RESOURCES;
+
+  const filteredResources = resourcesList.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;

@@ -1,6 +1,5 @@
 'use client';
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Search, TrendingUp, ChevronDown, Star, Activity, Coffee, Users, Video, Mic, FileText, Briefcase, PlayCircle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
@@ -95,12 +94,56 @@ const MOCK_CAREER_RESOURCES = [
   }
 ];
 
+import { supabase } from '@/lib/supabase';
+
 export default function CareerLeadershipHubPage() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
+  const [dbResources, setDbResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredResources = MOCK_CAREER_RESOURCES.filter(r => {
+  useEffect(() => {
+    async function fetchLiveCareer() {
+      try {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*')
+          .eq('category', 'career-leadership')
+          .order('created_at', { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          const mapped = data.map((d: any) => ({
+            id: d.id,
+            title: d.title,
+            type: d.resource_type || "Leadership Guide",
+            topic: d.tags?.[0] || "Career Growth",
+            subcategory: d.subcategory || "leadership",
+            expert: d.author_name ? `${d.author_name}${d.author_title ? ', ' + d.author_title : ''}` : "WIPA Leadership Council",
+            time: d.read_time || "10 min read",
+            featured: d.is_featured || false,
+            image: d.cover_image_url || "/resourceimg2.jpg",
+            is_splash_sponsored: d.is_splash_sponsored,
+            splash_tagline: d.splash_tagline,
+            splash_cta_text: d.splash_cta_text,
+            splash_cta_url: d.splash_cta_url,
+          }));
+          setDbResources(mapped);
+        } else {
+          setDbResources(MOCK_CAREER_RESOURCES);
+        }
+      } catch (err) {
+        setDbResources(MOCK_CAREER_RESOURCES);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchLiveCareer();
+  }, []);
+
+  const resourcesList = dbResources.length > 0 ? dbResources : MOCK_CAREER_RESOURCES;
+
+  const filteredResources = resourcesList.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;

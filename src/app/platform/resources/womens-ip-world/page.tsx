@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Search, Filter, Star, Sparkles, TrendingUp, Users, BookOpen, Award } from 'lucide-react';
 import Link from 'next/link';
 
@@ -75,11 +75,56 @@ const MOCK_WIPW_RESOURCES = [
   }
 ];
 
+import { supabase } from '@/lib/supabase';
+
 export default function WomensIPWorldHubPage() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [dbResources, setDbResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredResources = MOCK_WIPW_RESOURCES.filter(r => {
+  useEffect(() => {
+    async function fetchLiveWIPW() {
+      try {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*')
+          .eq('category', 'womens-ip-world')
+          .order('created_at', { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          const mapped = data.map((d: any, index: number) => ({
+            id: d.id,
+            title: d.title,
+            type: d.resource_type || "Publication",
+            topic: d.tags?.[0] || "Annual Edition",
+            subcategory: d.subcategory || "annual-edition",
+            expert: d.author_name || "Women's IP World Editorial Board",
+            time: d.read_time || "Magazine & PDF",
+            featured: d.is_featured || false,
+            image: d.cover_image_url || "/Womens-IP-World-Award.webp",
+            span: index === 0 ? "col-span-12 md:col-span-8 row-span-2" : "col-span-12 md:col-span-4 row-span-1",
+            is_splash_sponsored: d.is_splash_sponsored,
+            splash_tagline: d.splash_tagline,
+            splash_cta_text: d.splash_cta_text,
+            splash_cta_url: d.splash_cta_url,
+          }));
+          setDbResources(mapped);
+        } else {
+          setDbResources(MOCK_WIPW_RESOURCES);
+        }
+      } catch (err) {
+        setDbResources(MOCK_WIPW_RESOURCES);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchLiveWIPW();
+  }, []);
+
+  const resourcesList = dbResources.length > 0 ? dbResources : MOCK_WIPW_RESOURCES;
+
+  const filteredResources = resourcesList.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     return matchesSearch && matchesSub;
