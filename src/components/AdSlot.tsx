@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ExternalLink, Sparkles, X, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -14,6 +14,8 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
   const [ad, setAd] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDismissed, setIsDismissed] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const impressionRecorded = useRef<boolean>(false);
 
   useEffect(() => {
     async function loadActiveAd() {
@@ -38,10 +40,10 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
               cta_label: slotData.cta_text || "Learn More",
               target_url: slotData.target_url,
               badge_text: slotData.badge_text || "Sponsored",
-              is_placement_table: true
+              is_placement_table: true,
+              impressions_count: slotData.impressions_count || 0,
+              clicks_count: slotData.clicks_count || 0
             });
-            // Increment impression count
-            supabase.from("ad_placements").update({ impressions_count: (slotData.impressions_count || 0) + 1 }).eq("id", slotData.id).then();
             return;
           }
         }
@@ -59,7 +61,6 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
 
           if (!error && data) {
             setAd(data);
-            supabase.from("ad_campaigns").update({ impressions_count: (data.impressions_count || 0) + 1 }).eq("id", data.id).then();
           }
         }
       } catch (err) {
@@ -71,15 +72,68 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
     loadActiveAd();
   }, [placement, slotId]);
 
-  const handleAdClick = (e: React.MouseEvent) => {
+  // Viewable Impression Tracking via IntersectionObserver
+  useEffect(() => {
+    if (!ad || impressionRecorded.current || typeof window === "undefined") return;
+
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && !impressionRecorded.current) {
+          impressionRecorded.current = true;
+          
+          let sessionId = sessionStorage.getItem("wipa_telemetry_sid") || `sess_${Date.now()}`;
+          const trackKey = `ad_imp_${slotId || ad.id}_${sessionId}`;
+          if (!sessionStorage.getItem(trackKey)) {
+            sessionStorage.setItem(trackKey, "1");
+
+            fetch("/api/ad-tracking", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                slot_id: slotId || null,
+                campaign_id: ad.is_placement_table ? null : ad.id,
+                event_type: "impression",
+                session_id: sessionId,
+                page_route: window.location.pathname
+              })
+            }).catch(() => {});
+          }
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [ad, slotId]);
+
+  const handleAdClick = () => {
     if (!ad) return;
+
     try {
-      if (ad.is_placement_table) {
-        supabase.from("ad_placements").update({ clicks_count: (ad.clicks_count || 0) + 1 }).eq("id", ad.id).then();
-      } else {
-        supabase.from("ad_campaigns").update({ clicks_count: (ad.clicks_count || 0) + 1 }).eq("id", ad.id).then();
-      }
-      supabase.from("sponsored_clicks").insert({ resource_id: ad.id, source: `ad_slot_${slotId || placement}` }).then();
+      let sessionId = typeof window !== "undefined" ? sessionStorage.getItem("wipa_telemetry_sid") || "" : "";
+      
+      fetch("/api/ad-tracking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slot_id: slotId || null,
+          campaign_id: ad.is_placement_table ? null : ad.id,
+          event_type: "click",
+          session_id: sessionId,
+          page_route: typeof window !== "undefined" ? window.location.pathname : "/platform"
+        })
+      }).catch(() => {});
+
+      supabase.from("sponsored_clicks").insert({ 
+        resource_id: ad.id, 
+        source: `ad_slot_${slotId || placement}` 
+      }).then();
     } catch (e) {}
   };
 
@@ -104,8 +158,10 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
   // 1. IN-FEED NATIVE POST AD
   if (placement === "feed_native") {
     return (
-      <div className={`bg-gradient-to-br from-purple-50/80 via-white to-indigo-50/60 dark:from-[#130b24]/90 dark:via-[#0f172a]/90 dark:to-[#1a0f30]/90 backdrop-blur-xl rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.25)] border border-amber-400/40 dark:border-amber-400/30 relative overflow-hidden transition-all duration-300 hover:shadow-xl ${className}`}>
-        
+      <div 
+        ref={containerRef}
+        className={`bg-gradient-to-br from-purple-50/80 via-white to-indigo-50/60 dark:from-[#130b24]/90 dark:via-[#0f172a]/90 dark:to-[#1a0f30]/90 backdrop-blur-xl rounded-[2rem] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.25)] border border-amber-400/40 dark:border-amber-400/30 relative overflow-hidden transition-all duration-300 hover:shadow-xl ${className}`}
+      >
         {/* Top Header */}
         <div className="flex items-center justify-between mb-3 relative z-10">
           <div className="flex items-center gap-3">
@@ -162,73 +218,71 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
             <img 
               src={ad.banner_image_url} 
               alt={ad.headline} 
-              className="w-full max-h-[360px] object-cover group-hover/img:scale-[1.02] transition-transform duration-500" 
+              className="w-full h-full object-cover group-hover/img:scale-[1.02] transition-transform duration-500" 
             />
           </a>
         )}
 
-        {/* Footer CTA */}
-        <div className="pt-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-between relative z-10">
-          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium truncate max-w-[200px]">
-            {(ad.target_url || '').replace(/^https?:\/\//, '')}
-          </span>
+        {/* Action CTA */}
+        <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-white/5 relative z-10">
+          <span className="text-xs font-bold text-gray-400">Promoted Partner Content</span>
           <a
             href={ad.target_url || "#"}
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleAdClick}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-[#b892ff] text-white text-xs font-bold shadow-lg shadow-[#5a32fa]/25 hover:shadow-xl hover:scale-105 transition-all flex items-center gap-1.5"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white text-xs font-black shadow-md shadow-purple-500/20 hover:opacity-90 hover:scale-[1.02] transition-all"
           >
             <span>{ad.cta_label || "Learn More"}</span>
-            <ArrowUpRight size={14} />
+            <ExternalLink size={13} />
           </a>
         </div>
-
       </div>
     );
   }
 
-  // 2. SIDEBAR BANNER AD (Generic or Specific slotId)
+  // 2. SIDEBAR BANNER CARD
   return (
-    <div className={`w-full rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] group relative ${className}`}>
+    <div 
+      ref={containerRef}
+      className={`rounded-3xl overflow-hidden shadow-sm border border-amber-400/30 dark:border-amber-400/20 bg-gradient-to-br from-amber-500/5 via-purple-500/5 to-transparent relative group ${className}`}
+    >
       {ad.banner_image_url && (
         <a
           href={ad.target_url || "#"}
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleAdClick}
-          className="block h-44 w-full overflow-hidden bg-black relative"
+          className="block w-full h-36 bg-black overflow-hidden relative"
         >
           <img 
             src={ad.banner_image_url} 
-            alt={ad.headline || ""} 
+            alt={ad.headline} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3">
-            <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-400 text-black uppercase tracking-wider">
-              {ad.badge_text || "Sponsored"}
-            </span>
+          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-black/70 backdrop-blur-md text-amber-300 border border-amber-400/40">
+            {ad.badge_text || "Sponsored"}
           </div>
         </a>
       )}
 
-      <div className="p-5 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{ad.company_name || "Featured Partner"}</span>
-          <ExternalLink size={12} className="text-gray-400" />
-        </div>
-        <h4 className="text-sm font-black text-gray-900 dark:text-white leading-snug">{ad.headline}</h4>
+      <div className="p-4 space-y-2">
+        <h4 className="text-xs font-black text-gray-900 dark:text-white leading-snug line-clamp-2">
+          {ad.headline}
+        </h4>
         {ad.description && (
-          <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{ad.description}</p>
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+            {ad.description}
+          </p>
         )}
         <a
           href={ad.target_url || "#"}
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleAdClick}
-          className="w-full py-2.5 rounded-xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white text-xs font-bold shadow-md shadow-[#5a32fa]/30 transition-all flex items-center justify-center gap-1.5 mt-2"
+          className="inline-flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-xl bg-white/10 hover:bg-[#5a32fa] text-gray-900 dark:text-white hover:text-white text-xs font-bold transition-all border border-white/10"
         >
-          <span>{ad.cta_label || "Explore"}</span>
+          <span>{ad.cta_label || "Learn More"}</span>
           <ArrowUpRight size={14} />
         </a>
       </div>
