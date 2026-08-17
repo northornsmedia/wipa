@@ -30,54 +30,68 @@ export default function EventsPage() {
   }, []);
 
   useEffect(() => {
-    if (!user?.id) return;
-    
     const fetchEvents = async () => {
       setIsLoading(true);
-      const { data: eventsData } = await supabase
-        .from('events')
-        .select('*, organizer:profiles(full_name, is_wipa_recommended)')
-        .order('event_date', { ascending: true });
-        
-      const { data: myRegistrations } = await supabase
-        .from('event_registrations')
-        .select('event_id')
-        .eq('user_id', user.id);
-        
-      const registeredIds = new Set(myRegistrations?.map(r => r.event_id) || []);
-      
-      if (eventsData) {
-        const formatted = eventsData.map((e: any) => {
-          const date = new Date(e.event_date);
-          const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-          const day = date.getDate().toString();
-          let time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-          if (e.end_date) {
-            const endDate = new Date(e.end_date);
-            time += ' - ' + endDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-          }
-          
-          return {
-            id: e.id,
-            title: e.title,
-            type: e.is_virtual ? 'Online Event' : 'In-Person',
-            location: e.location || 'TBA',
-            time,
-            month,
-            day,
-            attendees: e.max_attendees || 0,
-            isRegistered: registeredIds.has(e.id),
-            description: e.description,
-            organizerName: e.organizer?.full_name || 'WIPA Admin',
-            organizerIsWipaRecommended: e.organizer?.is_wipa_recommended,
-            event_date: e.event_date
-          };
-        });
-        setEvents(formatted);
+      try {
+        const { data: eventsData, error } = await supabase
+          .from('events')
+          .select('*')
+          .order('event_date', { ascending: true });
+
+        if (error) {
+          console.error("Error fetching events:", error.message);
+        }
+
+        let registeredIds = new Set<string>();
+        if (user?.id) {
+          const { data: myRegistrations } = await supabase
+            .from('event_registrations')
+            .select('event_id')
+            .eq('user_id', user.id);
+          registeredIds = new Set(myRegistrations?.map(r => r.event_id) || []);
+        }
+
+        if (eventsData) {
+          const colors = ['#5a32fa', '#ff90e8', '#00d26a', '#ffb800', '#00c6ff'];
+          const formatted = eventsData.map((e: any, idx: number) => {
+            const date = new Date(e.event_date);
+            const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+            const day = date.getDate().toString();
+            let time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            if (e.end_date) {
+              const endDate = new Date(e.end_date);
+              time += ' - ' + endDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            }
+
+            return {
+              id: e.id,
+              title: e.title,
+              category: e.category || 'Event',
+              type: e.is_virtual ? 'Online Event' : (e.location ? e.location : 'In-Person Summit'),
+              location: e.location || (e.is_virtual ? 'Virtual (Online)' : 'Global Venue'),
+              time,
+              month,
+              day,
+              price: e.price || 0,
+              attendees: e.max_attendees || 500,
+              isRegistered: registeredIds.has(e.id) || (user?.id && e.organizer_id === user.id),
+              description: e.description || '',
+              cover_image_url: e.cover_image_url,
+              color: colors[idx % colors.length],
+              organizerName: 'WIPA Global Community',
+              organizerIsWipaRecommended: true,
+              event_date: e.event_date
+            };
+          });
+          setEvents(formatted);
+        }
+      } catch (err) {
+        console.error("Fetch events error:", err);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
-    
+
     fetchEvents();
   }, [user?.id]);
   
@@ -208,18 +222,36 @@ export default function EventsPage() {
 
           <div className="space-y-6 pb-24">
             {events.filter(event => {
+              const evtDate = new Date(event.event_date);
+              const isPast = evtDate < new Date();
               if (activeTab === 'My Events') return event.isRegistered;
-              if (activeTab === 'Past') return false; // In a real app, compare dates
+              if (activeTab === 'Past') return isPast;
               return true; // Upcoming
             }).length === 0 ? (
               <div className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm p-12 text-center flex flex-col items-center">
-                <Calendar size={48} className="text-gray-300 mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No {activeTab.toLowerCase()} events found</h3>
-                <p className="text-gray-500 dark:text-gray-400 font-medium">Check back later or explore other tabs.</p>
+                <Calendar size={48} className="text-gray-300 dark:text-gray-600 mb-4" />
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  {activeTab === 'My Events' ? "No Registered Events Yet" : `No ${activeTab.toLowerCase()} events found`}
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 font-medium max-w-md mx-auto mb-6">
+                  {activeTab === 'My Events' 
+                    ? "You haven't registered for any summits or masterclasses yet. Explore our upcoming global schedule below!"
+                    : "Check back later or explore other categories."}
+                </p>
+                {activeTab === 'My Events' && (
+                  <button
+                    onClick={() => setActiveTab('Upcoming')}
+                    className="px-6 py-2.5 rounded-xl bg-[#5a32fa] text-white font-bold text-xs shadow-md shadow-[#5a32fa]/20 hover:opacity-90 transition-all"
+                  >
+                    Browse Upcoming Events
+                  </button>
+                )}
               </div>
             ) : events.filter(event => {
+              const evtDate = new Date(event.event_date);
+              const isPast = evtDate < new Date();
               if (activeTab === 'My Events') return event.isRegistered;
-              if (activeTab === 'Past') return false; 
+              if (activeTab === 'Past') return isPast;
               return true; 
             }).map((event, index) => (
               <Fragment key={event.id}>
