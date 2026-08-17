@@ -10,8 +10,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
 
 export const metadata: Metadata = {
-  title: "Connect",
-  description: "A premium platform to connect.",
+  title: "WIPA | Women's IP Alliance",
+  description: "Global community and professional platform empowering women leaders in intellectual property, patent prosecution, and legal innovation.",
 };
 
 import Script from 'next/script';
