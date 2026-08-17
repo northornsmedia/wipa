@@ -253,17 +253,50 @@ export default function ProfilePage() {
     }
   };
 
+  const [attachedMedia, setAttachedMedia] = useState<{
+    file: File;
+    previewUrl: string;
+    type: 'image' | 'video' | 'doc';
+    name: string;
+    size?: string;
+  } | null>(null);
+  const postImageInputRef = useRef<HTMLInputElement>(null);
+  const postVideoInputRef = useRef<HTMLInputElement>(null);
+  const postDocInputRef = useRef<HTMLInputElement>(null);
+
   const handleCreatePost = async () => {
-    if (!newPostText.trim() || !user?.id) return;
+    if ((!newPostText.trim() && !attachedMedia) || !user?.id) return;
     setIsPublishing(true);
     try {
+      let mediaUrls: string[] = [];
+      let mediaType = attachedMedia?.type || null;
+      let docName = attachedMedia?.name || null;
+
+      if (attachedMedia?.file) {
+        const fileExt = attachedMedia.file.name.split('.').pop();
+        const safeName = attachedMedia.file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const fileName = `${user.id}/${Date.now()}-${safeName}`;
+        const { error: uploadErr } = await supabase.storage
+          .from('feed-media')
+          .upload(fileName, attachedMedia.file, { upsert: true });
+
+        if (!uploadErr) {
+          const { data: urlData } = supabase.storage.from('feed-media').getPublicUrl(fileName);
+          if (urlData?.publicUrl) {
+            mediaUrls = [urlData.publicUrl];
+          }
+        }
+      }
+
       const { data, error } = await supabase
         .from('feed_posts')
         .insert({
           author_id: user.id,
           content: newPostText.trim(),
           privacy: 'Anyone',
-          media_urls: []
+          media_urls: mediaUrls,
+          media_type: mediaType,
+          document_name: docName
         })
         .select(`
           *,
@@ -274,6 +307,7 @@ export default function ProfilePage() {
       if (!error && data) {
         setUserPosts(prev => [data, ...prev]);
         setNewPostText('');
+        setAttachedMedia(null);
         setStats(prev => ({ ...prev, posts: prev.posts + 1 }));
       } else if (error) {
         console.error("Error inserting post to DB:", error);
@@ -547,31 +581,124 @@ export default function ProfilePage() {
                     />
                   </div>
 
+                  {/* Attachment Preview Box */}
+                  {attachedMedia && (
+                    <div className="mb-3">
+                      {attachedMedia.type === 'image' && (
+                        <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 max-h-56 shadow-sm">
+                          <img src={attachedMedia.previewUrl} alt="Preview" className="w-full h-full object-cover max-h-56" />
+                          <button 
+                            type="button"
+                            onClick={() => setAttachedMedia(null)} 
+                            className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-black/75 hover:bg-black text-white transition-all shadow-md"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      )}
+
+                      {attachedMedia.type === 'video' && (
+                        <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-black max-h-56 shadow-sm">
+                          <video src={attachedMedia.previewUrl} controls className="w-full max-h-52 object-contain" />
+                          <button 
+                            type="button"
+                            onClick={() => setAttachedMedia(null)} 
+                            className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-black/75 hover:bg-black text-white transition-all shadow-md z-10"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      )}
+
+                      {attachedMedia.type === 'doc' && (
+                        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 shadow-sm">
+                          <div className="flex items-center gap-3 overflow-hidden">
+                            <div className="w-10 h-10 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                              <FileText size={20} />
+                            </div>
+                            <div className="overflow-hidden">
+                              <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{attachedMedia.name}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{attachedMedia.size || 'Document / PDF'}</p>
+                            </div>
+                          </div>
+                          <button 
+                            type="button"
+                            onClick={() => setAttachedMedia(null)} 
+                            className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-lg transition-colors"
+                          >
+                            <X size={18} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <input 
+                    type="file" 
+                    ref={postImageInputRef} 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) setAttachedMedia({ file: f, previewUrl: URL.createObjectURL(f), type: 'image', name: f.name });
+                    }} 
+                  />
+                  <input 
+                    type="file" 
+                    ref={postVideoInputRef} 
+                    accept="video/*" 
+                    className="hidden" 
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) setAttachedMedia({ file: f, previewUrl: URL.createObjectURL(f), type: 'video', name: f.name });
+                    }} 
+                  />
+                  <input 
+                    type="file" 
+                    ref={postDocInputRef} 
+                    accept=".pdf,.doc,.docx,.txt" 
+                    className="hidden" 
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) setAttachedMedia({ file: f, previewUrl: '', type: 'doc', name: f.name, size: (f.size/1024).toFixed(1) + ' KB' });
+                    }} 
+                  />
+
                   <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800/80">
                     <div className="flex items-center gap-1 sm:gap-2">
-                      <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors">
+                      <button 
+                        type="button"
+                        onClick={() => postImageInputRef.current?.click()}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors"
+                      >
                         <ImageIcon size={18} className="text-blue-500" />
                         <span className="hidden sm:inline">Photo</span>
                       </button>
                       <button 
-                        onClick={() => videoInputRef.current?.click()}
+                        type="button"
+                        onClick={() => postVideoInputRef.current?.click()}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors"
                       >
                         <Video size={18} className="text-emerald-500" />
-                        <span className="hidden sm:inline">Story Video</span>
+                        <span className="hidden sm:inline">Video</span>
                       </button>
-                      <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors">
-                        <Calendar size={18} className="text-amber-500" />
-                        <span className="hidden sm:inline">Event</span>
+                      <button 
+                        type="button"
+                        onClick={() => postDocInputRef.current?.click()}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors"
+                      >
+                        <FileText size={18} className="text-[#5a32fa] dark:text-[#ff90e8]" />
+                        <span className="hidden sm:inline">Document / PDF</span>
                       </button>
                     </div>
 
                     <button 
                       onClick={handleCreatePost}
-                      disabled={!newPostText.trim()}
-                      className="px-4 py-1.5 bg-[#5a32fa] hover:bg-[#4a24db] disabled:opacity-40 text-white text-xs sm:text-sm font-bold rounded-full transition-all flex items-center gap-1.5"
+                      disabled={(!newPostText.trim() && !attachedMedia) || isPublishing}
+                      className="px-5 py-1.5 bg-[#5a32fa] hover:bg-[#4a24db] disabled:opacity-40 text-white text-xs sm:text-sm font-bold rounded-full transition-all flex items-center gap-1.5 shadow-sm"
                     >
-                      <Send size={14} /> Post
+                      {isPublishing ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                      <span>{isPublishing ? 'Posting...' : 'Post'}</span>
                     </button>
                   </div>
                 </div>
@@ -625,9 +752,67 @@ export default function ProfilePage() {
                           </div>
 
                           {/* Content */}
-                          <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed mb-3 whitespace-pre-wrap">
-                            {post.content}
-                          </p>
+                          {post.content && (
+                            <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed mb-3 whitespace-pre-wrap">
+                              {post.content}
+                            </p>
+                          )}
+
+                          {/* Post Media Attachments (Images, Videos, Documents/PDFs) */}
+                          {post.media_urls && post.media_urls.length > 0 && post.media_urls.map((url: string, mIdx: number) => {
+                            const isVideo = post.media_type === 'video' || url.match(/\.(mp4|webm|mov|ogg)$/i);
+                            const isDoc = post.media_type === 'doc' || url.match(/\.(pdf|doc|docx|txt)$/i);
+
+                            if (isVideo) {
+                              return (
+                                <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-black border border-gray-100 dark:border-white/10 shadow-sm max-h-[440px]">
+                                  <video 
+                                    src={url} 
+                                    controls 
+                                    playsInline 
+                                    preload="metadata"
+                                    className="w-full max-h-[420px] object-contain mx-auto" 
+                                  />
+                                </div>
+                              );
+                            }
+
+                            if (isDoc) {
+                              return (
+                                <a 
+                                  key={mIdx}
+                                  href={url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center justify-between p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all mb-4 group/doc shadow-sm"
+                                >
+                                  <div className="flex items-center gap-3.5 overflow-hidden">
+                                    <div className="w-11 h-11 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
+                                      <FileText size={22} />
+                                    </div>
+                                    <div className="overflow-hidden">
+                                      <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover/doc:text-[#5a32fa] transition-colors">
+                                        {post.document_name || 'Legal Document / PDF'}
+                                      </h4>
+                                      <p className="text-xs text-gray-500 dark:text-gray-400">Click to view & download document</p>
+                                    </div>
+                                  </div>
+                                  <ArrowUpRight size={18} className="text-gray-400 group-hover/doc:text-[#5a32fa] group-hover/doc:translate-x-0.5 group-hover/doc:-translate-y-0.5 transition-transform shrink-0" />
+                                </a>
+                              );
+                            }
+
+                            return (
+                              <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden border border-gray-100 dark:border-white/10 shadow-sm max-h-[480px]">
+                                <img 
+                                  src={url} 
+                                  alt="Post attachment" 
+                                  className="w-full h-full max-h-[460px] object-cover hover:opacity-95 transition-opacity cursor-pointer"
+                                  onClick={() => window.open(url, '_blank')}
+                                />
+                              </div>
+                            );
+                          })}
 
                           {/* Reaction Counters */}
                           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 pb-2 border-b border-gray-100 dark:border-gray-800">
