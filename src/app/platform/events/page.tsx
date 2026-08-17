@@ -36,6 +36,7 @@ export default function EventsPage() {
         const { data: eventsData, error } = await supabase
           .from('events')
           .select('*')
+          .order('display_order', { ascending: true })
           .order('event_date', { ascending: true });
 
         if (error) {

@@ -146,9 +146,24 @@ const ITEMS: GalleryItem[] = [
     flag: "https://flagcdn.com/w40/ch.png",
     bio: (
       <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed max-w-3xl">
-        <p className="font-semibold text-lg text-[#5a32fa] dark:text-[#ff90e8]">CEO, PSS Solutions</p>
+        <p className="font-semibold text-lg text-[#5a32fa] dark:text-[#ff90e8]">Founder & CEO, PSS Solutions</p>
         <p>
-          Nadine Stuttle is the CEO of PSS Solutions and serves as the Inaugural Chair for Europe at the Women's IP Alliance.
+          Nadine Stuttle is the Founder and CEO of PSS Solutions, a specialist IP operations consultancy supporting organisations through complex operational, technology and business transformation. With more than 25 years of experience across intellectual property, legal operations and technology, Nadine has built an international career working with leading corporations, IP owners and professional services organisations across Europe, North America and Asia.
+        </p>
+        <p>
+          Throughout her career, Nadine has been at the forefront of operational excellence and digital transformation within the IP sector. She specialises in designing and leading large-scale transformation programmes that bring together people, processes, technology and strategy to deliver sustainable improvements in performance.
+        </p>
+        <p>
+          Before founding PSS Solutions, Nadine held senior leadership positions including Managing Director at Duff & Phelps, now Kroll, and Managing Director at Yerra Solutions, now part of Elevate Services. Earlier in her career, she served as an IP Project Manager at Syngenta Crop Protection, giving her valuable in-house experience alongside her extensive consulting background.
+        </p>
+        <p>
+          At PSS Solutions, Nadine works closely with clients to modernise operating models, optimise processes, implement technology platforms and strengthen governance. She is recognised for her pragmatic, hands-on approach and her ability to translate ambitious transformation strategies into measurable and lasting outcomes.
+        </p>
+        <p>
+          Nadine also advises the private equity market on mergers and acquisitions across the legal, IP and technology sectors, providing operational and technology due diligence, integration planning and post-merger transformation support.
+        </p>
+        <p>
+          A respected industry thought leader, Nadine is equally passionate about mentoring professionals and developing future leaders within the IP and legal operations community.
         </p>
       </div>
     ),
