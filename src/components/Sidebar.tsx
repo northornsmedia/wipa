@@ -51,6 +51,7 @@ export default function Sidebar() {
 
   const [isOpen, setIsOpen] = useState(true);
   const [unreadChatsCount, setUnreadChatsCount] = useState(0);
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
 
   // Fetch initial unread count and listen for changes
   useEffect(() => {
@@ -70,6 +71,18 @@ export default function Sidebar() {
     };
 
     fetchUnreadCount();
+
+    const fetchUpcomingEvents = async () => {
+      const { data } = await supabase
+        .from('calendar_events')
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('start_at', new Date().toISOString())
+        .order('start_at', { ascending: true })
+        .limit(2);
+      if (data) setUpcomingEvents(data);
+    };
+    fetchUpcomingEvents();
 
     const channel = supabase.channel(`sidebar-messages-${user.id}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
@@ -161,6 +174,9 @@ export default function Sidebar() {
           </div>
           <Link prefetch={false} href="/platform/events" className={navLinkClass('/platform/events')}>
             <Calendar size={18} /> Events
+          </Link>
+          <Link prefetch={false} href="/platform/calendar" className={navLinkClass('/platform/calendar')}>
+            <Calendar size={18} /> My Calendar
           </Link>
           <Link prefetch={false} href="/platform/jobs" className={navLinkClass('/platform/jobs')}>
             <Briefcase size={18} /> Jobs Board
@@ -254,18 +270,21 @@ export default function Sidebar() {
 
       <div className="mt-auto px-7 mb-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-gray-900 dark:text-white">Complete Your Intro</h3>
-          <div className="w-4 h-4 rounded-full border-2 border-[#00d26a] border-t-transparent animate-spin-slow"></div>
+          <h3 className="text-sm font-bold text-gray-900 dark:text-white">Upcoming Events</h3>
         </div>
         <div className="space-y-3">
-          <div className="flex items-start gap-3">
-            <Circle size={16} className="text-gray-300 mt-0.5 shrink-0" />
-            <a href="#" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white underline decoration-gray-300 underline-offset-4">Watch intro video</a>
-          </div>
-          <div className="flex items-start gap-3">
-            <CheckCircle2 size={16} className="text-gray-900 dark:text-white mt-0.5 shrink-0" />
-            <span className="text-sm text-gray-900 dark:text-white font-medium">React to a post</span>
-          </div>
+          {upcomingEvents.length > 0 ? (
+            upcomingEvents.map(ev => (
+              <div key={ev.id} className="flex items-start gap-3">
+                <Circle size={16} className="text-[#5a32fa] mt-0.5 shrink-0 fill-[#5a32fa]/10" />
+                <Link prefetch={false} href="/platform/calendar" className="text-sm text-gray-700 dark:text-gray-300 hover:text-[#5a32fa] dark:hover:text-[#b892ff] font-medium leading-tight line-clamp-2">
+                  {ev.title}
+                </Link>
+              </div>
+            ))
+          ) : (
+            <div className="text-xs text-gray-400">No upcoming events.</div>
+          )}
         </div>
       </div>
       
