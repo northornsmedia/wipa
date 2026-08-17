@@ -29,15 +29,15 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
 # SECTION I: DATABASE & AUTH FOUNDATION (SUPABASE)
 
 ### 1.1 — Supabase Client Setup & Session Management
-- [ ] 1. Standardize Supabase client initialization in `WIPA/src/lib/supabase.ts` with browser-safe public credentials and server actions client using `SUPABASE_SERVICE_ROLE_KEY`.
-- [ ] 2. Create `WIPA/src/lib/supabase-server.ts` for server components and API routes requiring elevated service-role privileges with strict admin guards.
-- [ ] 3. Create `WIPA/src/lib/supabase-browser.ts` singleton client to prevent multiple GoTrue client instances during client navigation.
-- [ ] 4. Standardize Supabase client initialization in `wipa-admin/src/lib/supabase.ts` and `wipa-admin/src/lib/supabase-server.ts` with admin role enforcement.
-- [ ] 5. Implement global auth listener in `WIPA/src/components/AuthGuard.tsx` binding `supabase.auth.onAuthStateChange` to Zustand `useAppStore` user state.
-- [ ] 6. Implement admin auth guard in `wipa-admin/src/components/AdminAuthGuard.tsx` verifying `is_admin === true` or redirecting to `/login`.
+- [x] 1. Standardize Supabase client initialization in `WIPA/src/lib/supabase.ts` with browser-safe public credentials and server actions client using `SUPABASE_SERVICE_ROLE_KEY`.
+- [x] 2. Create `WIPA/src/lib/supabase-server.ts` for server components and API routes requiring elevated service-role privileges with strict admin guards.
+- [x] 3. Create `WIPA/src/lib/supabase-browser.ts` singleton client to prevent multiple GoTrue client instances during client navigation.
+- [x] 4. Standardize Supabase client initialization in `wipa-admin/src/lib/supabase.ts` and `wipa-admin/src/lib/supabase-server.ts` with admin role enforcement.
+- [x] 5. Implement global auth listener in `WIPA/src/components/AuthGuard.tsx` binding `supabase.auth.onAuthStateChange` to Zustand `useAppStore` user state.
+- [x] 6. Implement admin auth guard in `wipa-admin/src/components/AdminAuthGuard.tsx` verifying `is_admin === true` or redirecting to `/login`.
 
 ### 1.2 — Core Profiles Schema & Trigger Architecture
-- [ ] 7. Ensure `profiles` table schema contains all required fields:
+- [x] 7. Ensure `profiles` table schema contains all required fields:
   - `id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE`
   - `email TEXT NOT NULL`
   - `full_name TEXT NOT NULL`
@@ -67,8 +67,8 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
   - `onboarding_completed BOOLEAN DEFAULT false`
   - `created_at TIMESTAMPTZ DEFAULT NOW()`
   - `updated_at TIMESTAMPTZ DEFAULT NOW()`
-- [ ] 8. Verify and apply `on_auth_user_created` trigger in Supabase to automatically insert a row in `profiles` upon `auth.users` creation.
-- [ ] 9. Configure Supabase Storage Buckets with RLS policies:
+- [x] 8. Verify and apply `on_auth_user_created` trigger in Supabase to automatically insert a row in `profiles` upon `auth.users` creation.
+- [x] 9. Configure Supabase Storage Buckets with RLS policies:
   - `avatars` (public read, authenticated user write for own folder)
   - `covers` (public read, authenticated user write for own folder)
   - `verifications` (admin-only read, authenticated user upload)
@@ -311,27 +311,27 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
 # SECTION XIII: DEDICATED ADMIN PORTAL (`wipa-admin`) — PAGES, FORMS & SUBCATEGORIES
 
 ### 13.1 — Admin Console Core, Shell & Navigation (`wipa-admin`)
-- [ ] 115. `wipa-admin/src/app/login/page.tsx` — Secure Admin Authentication validating `is_admin === true` in `profiles` table.
-- [ ] 116. `wipa-admin/src/components/AdminSidebar.tsx` — Collapsible navigation with active route highlights, badge counts for pending verifications and claims, and dark mode toggle.
-- [ ] 117. `wipa-admin/src/app/dashboard/page.tsx` (or `/page.tsx`) — Real-time analytics dashboard with metric cards (Total Users, Pending Verifications, Active Firms, Job Postings, Resource Views, Active Sponsorships).
+- [x] 115. `wipa-admin/src/app/login/page.tsx` — Secure Admin Authentication validating `is_admin === true` in `profiles` table.
+- [x] 116. `wipa-admin/src/components/AdminSidebar.tsx` — Collapsible navigation with active route highlights, badge counts for pending verifications and claims, and dark mode toggle.
+- [x] 117. `wipa-admin/src/app/dashboard/page.tsx` (or `/page.tsx`) — Real-time analytics dashboard with metric cards (Total Users, Pending Verifications, Active Firms, Job Postings, Resource Views, Active Sponsorships).
 
 ### 13.2 — Users & Credential Verification Console (`wipa-admin/src/app/users`)
-- [ ] 118. `wipa-admin/src/app/users/page.tsx` — Master Member Management Console:
+- [x] 118. `wipa-admin/src/app/users/page.tsx` — Master Member Management Console:
   - Member table: Avatar, Name, Email, Country, Practice Area, Tier, Status, Recommended badge, Join Date.
   - Search by Name/Email, filter by Country, Tier ('free'|'pro'|'enterprise'|'vip'), and Verification Status.
-- [ ] 119. **User Verification Review Drawer (`wipa-admin/src/components/UserVerificationDrawer.tsx`)**:
+- [x] 119. **User Verification Review Drawer (`wipa-admin/src/components/UserVerificationDrawer.tsx`)**:
   - Embedded PDF/Image document viewer for `profiles.verification_document_url`.
   - Member metadata overview (license number, practice jurisdiction, company).
   - "Approve Verification" button → sets `verification_status = 'verified'`, `is_verified = true`, awards 250 XP, and fires celebratory notification.
   - "Reject Verification" button with custom rejection reason form → sets `verification_status = 'rejected'` and notifies user.
-- [ ] 120. **User Profile Edit Modal (`wipa-admin/src/components/EditUserModal.tsx`)**:
+- [x] 120. **User Profile Edit Modal (`wipa-admin/src/components/EditUserModal.tsx`)**:
   - Edit full name, email, company, title, practice area, country.
   - Tier selector dropdown (Free, Pro, Enterprise, VIP).
   - Toggle "Recommended by WIPA" (`is_wipa_recommended`) with admin timestamp.
   - Reset password trigger and Ban/Suspend account toggle.
 
 ### 13.3 — Universal Content Management & Subcategory Builder (`wipa-admin/src/app/content`)
-- [ ] 121. `wipa-admin/src/app/content/page.tsx` — Universal Resource Publisher with subcategory tabs:
+- [x] 121. `wipa-admin/src/app/content/page.tsx` — Universal Resource Publisher with subcategory tabs:
   - Tab 1: **Webinars & Learning** (`webinars`)
   - Tab 2: **Education & Dev** (`education`)
   - Tab 3: **Women's IP World** (`womens-ip-world`)
@@ -343,26 +343,26 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
   - Tab 9: **In-House Counsel** (`in-house-counsel`)
   - Tab 10: **Podcasts & Conversations** (`podcasts-conversations`)
   - Tab 11: **Wellness & Wellbeing** (`wellness`)
-- [ ] 122. **Resource Creator & Editor Form (`wipa-admin/src/components/ResourceFormModal.tsx`)**:
+- [x] 122. **Resource Creator & Editor Form (`wipa-admin/src/components/ResourceFormModal.tsx`)**:
   - Basic Info: Title, Slug (auto-generated from title), Category dropdown, Subcategory input.
   - Author details: Author Name, Author Title, Organization, Author Avatar URL.
   - Content details: Summary/Excerpt, Full Rich-Text/Markdown Content editor.
   - Media & Files: Cover image file uploader (saving to Supabase `resource-media` bucket), Downloadable attachment uploader (PDF/DOCX/ZIP), External video/audio URL (YouTube, Vimeo, Spotify).
   - Metadata: Read time / Duration, Tags input (multi-chip array), Featured toggle, Premium-only toggle.
-- [ ] 123. **"Splash Sponsored" Configurator Modal (`wipa-admin/src/components/SplashConfigModal.tsx`)**:
+- [x] 123. **"Splash Sponsored" Configurator Modal (`wipa-admin/src/components/SplashConfigModal.tsx`)**:
   - Toggle `is_splash_sponsored` active/inactive.
   - Tagline input (e.g. "Trusted IP Management Software for Global Teams").
   - CTA Button Text input (e.g. "Book a Demo") and Destination URL.
   - Banner Background Color picker (Hex / Tailwind gradient preset).
   - Expiration Date & Time picker (`splash_expires_at`).
   - Real-time Click Analytics view: displays total clicks recorded in `sponsored_clicks` table.
-- [ ] 124. Content Actions: Publish/Unpublish toggle, Duplicate article, and Delete resource confirmation modal.
+- [x] 124. Content Actions: Publish/Unpublish toggle, Duplicate article, and Delete resource confirmation modal.
 
 ### 13.4 — Event Management & Attendee Roster Console (`wipa-admin/src/app/events`)
-- [ ] 125. `wipa-admin/src/app/events/page.tsx` — Master Event Console:
+- [x] 125. `wipa-admin/src/app/events/page.tsx` — Master Event Console:
   - Events data table: Cover Thumbnail, Event Title, Date & Time, Virtual/In-Person, Category, Registered Count / Capacity, Status.
   - Search by title, filter by Upcoming vs Past and Virtual vs In-Person.
-- [ ] 126. **Event Creation & Edit Wizard Form (`wipa-admin/src/components/EventFormModal.tsx`)**:
+- [x] 126. **Event Creation & Edit Wizard Form (`wipa-admin/src/components/EventFormModal.tsx`)**:
   - Title, Slug, Category (Webinar, Networking, Workshop, Summit, Masterclass).
   - Date & Time pickers (Start Date, End Date, Timezone).
   - Format: Virtual toggle (Meeting URL, Platform selector: Meetn / Zoom / Teams) or Physical Location (Venue address, City, Country).
@@ -370,18 +370,18 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
   - Cover Banner Image uploader (saving to `resource-media` bucket).
   - Ticketing: Free vs Paid toggle, Price, Maximum Attendee limit (`max_attendees`).
   - Featured Event toggle and Published status toggle.
-- [ ] 127. **Attendee Roster & Check-In Drawer (`wipa-admin/src/components/AttendeeRosterDrawer.tsx`)**:
+- [x] 127. **Attendee Roster & Check-In Drawer (`wipa-admin/src/components/AttendeeRosterDrawer.tsx`)**:
   - List of all registered members from `event_registrations` joined with `profiles`.
   - Check-in status toggle (Registered, Attended, No-Show).
   - "Export to CSV" button generating roster spreadsheet.
-- [ ] 128. **Post-Event Archiving & Recording Uploader**:
+- [x] 128. **Post-Event Archiving & Recording Uploader**:
   - Upload event recording URL and transcript to auto-publish into the Webinars resource library.
 
 ### 13.5 — IP Firms Directory & Claims Console (`wipa-admin/src/app/firms`)
-- [ ] 129. `wipa-admin/src/app/firms/page.tsx` — IP Firms Directory Console:
+- [x] 129. `wipa-admin/src/app/firms/page.tsx` — IP Firms Directory Console:
   - Firms table: Logo, Firm Name, Headquarters, Specializations, Verified status, Featured status, Claimed status.
   - Search by firm name, filter by Specialization and Country.
-- [ ] 130. **Firm Creation & Edit Modal (`wipa-admin/src/components/FirmFormModal.tsx`)**:
+- [x] 130. **Firm Creation & Edit Modal (`wipa-admin/src/components/FirmFormModal.tsx`)**:
   - Firm Name, Slug, Logo uploader, Cover banner uploader.
   - Description / Firm Overview rich-text.
   - Website URL, LinkedIn URL, Contact Email, Phone number.
@@ -390,7 +390,7 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
   - Jurisdictions multi-select chips (US, Europe, UK, Asia, Latin America, Global).
   - Dynamic Offices Array builder: Add multiple office locations `{ city, country, address, phone }`.
   - Toggles: "Verified Firm" (`is_verified`) and "Featured Firm" (`is_featured`).
-- [ ] 131. `wipa-admin/src/app/firms/claims/page.tsx` — Firm Claim Requests Queue:
+- [x] 131. `wipa-admin/src/app/firms/claims/page.tsx` — Firm Claim Requests Queue:
   - Table of pending claim requests from `firm_claim_requests` table.
   - **Claim Inspection Modal (`wipa-admin/src/components/ClaimInspectionModal.tsx`)**:
     - View claimant profile, claimed firm details, claimant role at firm, work email domain, and uploaded proof document / LinkedIn link.
@@ -398,7 +398,7 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
     - "Reject Claim" button with feedback text → sets `firm_claim_requests.status = 'rejected'`.
 
 ### 13.6 — Business Profiles Console (`wipa-admin/src/app/business`)
-- [ ] 132. `wipa-admin/src/app/business/page.tsx` — Business Profiles Management:
+- [x] 132. `wipa-admin/src/app/business/page.tsx` — Business Profiles Management:
   - Table of all registered companies from `business_profiles`.
   - Shows Logo, Name, Type (Startup, Law Firm, Tech Company), Owner name, HQ, Verification status.
   - **Business Profile Edit Modal (`wipa-admin/src/components/BusinessFormModal.tsx`)**:
@@ -407,37 +407,37 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
     - Manage business team members roster.
 
 ### 13.7 — Jobs Board Moderation Console (`wipa-admin/src/app/jobs`)
-- [ ] 133. `wipa-admin/src/app/jobs/page.tsx` — Jobs Board Console:
+- [x] 133. `wipa-admin/src/app/jobs/page.tsx` — Jobs Board Console:
   - Jobs table: Job Title, Company Name, Location, Remote/Onsite, Job Type, Applicants Count, Active/Expired status.
   - Filter by Active, Expired, Remote, and Job Type.
-- [ ] 134. **Job Posting Creator & Editor Form (`wipa-admin/src/components/JobFormModal.tsx`)**:
+- [x] 134. **Job Posting Creator & Editor Form (`wipa-admin/src/components/JobFormModal.tsx`)**:
   - Title, Slug, Company selector (or custom company name & logo).
   - Location (City/Country or "Remote"), Job Type (Full-time, Part-time, Contract, Internship), Experience Level.
   - Salary Range (Min, Max, Currency).
   - Detailed Description rich-text, Requirements array builder, Benefits array builder.
   - Application Method: External URL or In-Platform Application Email.
   - Expiration date picker and "Featured Job" toggle.
-- [ ] 135. **Job Applicants Review Drawer (`wipa-admin/src/components/JobApplicantsDrawer.tsx`)**:
+- [x] 135. **Job Applicants Review Drawer (`wipa-admin/src/components/JobApplicantsDrawer.tsx`)**:
   - View applicant profiles from `job_applications` table.
   - View uploaded resumes (`resume_url`), cover letters, and submission timestamps.
   - Update applicant status (Submitted, Reviewing, Interview, Rejected, Accepted).
 
 ### 13.8 — Sponsorships & Banner Ad Console (`wipa-admin/src/app/sponsorships`)
-- [ ] 136. `wipa-admin/src/app/sponsorships/page.tsx` — Master Sponsorships Manager:
+- [x] 136. `wipa-admin/src/app/sponsorships/page.tsx` — Master Sponsorships Manager:
   - View all active Splash Sponsored listings, Featured Event sponsors, and Spotlight Firm campaigns.
   - Real-time Analytics Table: Sponsor Name, Campaign Placement, Start Date, End Date, Total Views, Total Clicks, Click-Through Rate (CTR).
   - "New Sponsorship Campaign" form linking sponsor to any resource, event, or directory category.
 
 ### 13.9 — Community Forums & Discussion Moderation (`wipa-admin/src/app/forums`)
-- [ ] 137. `wipa-admin/src/app/forums/page.tsx` — Forum Categories & Moderation Console:
+- [x] 137. `wipa-admin/src/app/forums/page.tsx` — Forum Categories & Moderation Console:
   - Manage Forum Categories (Create, Edit icon/name/description, Reorder, Delete).
   - Moderate flagged posts and replies.
   - Actions: Pin Topic (`is_pinned`), Lock Topic (`is_locked`), or Delete spam threads.
 
 ### 13.10 — IP Quiz Builder & Gamification Console (`wipa-admin/src/app/quizzes`)
-- [ ] 138. `wipa-admin/src/app/quizzes/page.tsx` — Quizzes & Gamification Manager:
+- [x] 138. `wipa-admin/src/app/quizzes/page.tsx` — Quizzes & Gamification Manager:
   - Catalog of IP Quizzes with difficulty badges, total attempts, average score, and XP rewards.
-- [ ] 139. **Interactive Quiz Builder Form (`wipa-admin/src/components/QuizBuilderModal.tsx`)**:
+- [x] 139. **Interactive Quiz Builder Form (`wipa-admin/src/components/QuizBuilderModal.tsx`)**:
   - Quiz Title, Slug, Category, Difficulty ('Beginner'|'Intermediate'|'Advanced'), Description, XP Reward amount, Time Limit in seconds, Passing Score percentage.
   - Dynamic Question Builder:
     - Add Question text, Explanation for answer.
@@ -446,12 +446,12 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
   - Publish / Draft toggle.
 
 ### 13.11 — Platform Telemetry, Analytics & System Settings (`wipa-admin`)
-- [ ] 140. `wipa-admin/src/app/analytics/page.tsx` — Platform Telemetry & Growth Visualizer:
+- [x] 140. `wipa-admin/src/app/analytics/page.tsx` — Platform Telemetry & Growth Visualizer:
   - Member registration growth curve (Weekly, Monthly, Annual).
   - Geographic distribution map of members across Switzerland, US, UK, India, Peru, etc.
   - Top 10 most viewed resources and articles.
   - LexIQ AI assistant usage statistics: Total queries, model distribution (Gemini vs OpenRouter), top queried topics.
-- [ ] 141. `wipa-admin/src/app/settings/page.tsx` — Platform Configuration & Admin Roles:
+- [x] 141. `wipa-admin/src/app/settings/page.tsx` — Platform Configuration & Admin Roles:
   - Manage admin user permissions (Grant/Revoke `is_admin` role).
   - System health check (Supabase connection, Storage bucket capacity, AI API key status).
 
@@ -460,8 +460,8 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
 # SECTION XIV: SYSTEM INTEGRATION, WIRING & DEPLOYMENT
 
 ### 14.1 — Dual Repository Coordination
-- [ ] 142. Verify both `WIPA` and `wipa-admin` point to the identical Supabase project (`bepavczocyvaegkfxtvd.supabase.co`).
-- [ ] 143. Standardize environment variable keys across both repositories (`.env.local`):
+- [x] 142. Verify both `WIPA` and `wipa-admin` point to the identical Supabase project (`bepavczocyvaegkfxtvd.supabase.co`).
+- [x] 143. Standardize environment variable keys across both repositories (`.env.local`):
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   - `SUPABASE_SERVICE_ROLE_KEY`
@@ -469,8 +469,8 @@ The WIPA ecosystem consists of two coordinated applications connected to a singl
   - `OPENROUTER_NEMOTRON_KEY`
   - `OPENROUTER_DOTS_KEY`
   - `GEMINI_API_KEY`
-- [ ] 144. Run end-to-end TypeScript compilation and Next.js production builds across both `WIPA` and `wipa-admin` ensuring 0 compilation errors.
-- [ ] 145. Verify Vercel deployment pipeline triggers smoothly for both repositories upon GitHub push.
+- [x] 144. Run end-to-end TypeScript compilation and Next.js production builds across both `WIPA` and `wipa-admin` ensuring 0 compilation errors.
+- [x] 145. Verify Vercel deployment pipeline triggers smoothly for both repositories upon GitHub push.
 
 ---
 *(End of Master Blueprint. Fully expanded with every admin page, subcategory, form, modal, and drawer).*
