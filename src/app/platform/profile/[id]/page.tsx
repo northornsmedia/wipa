@@ -7,7 +7,8 @@ import { useAppStore } from '@/store/useAppStore';
 import { 
   BadgeCheck, MapPin, Link as LinkIcon, Users, Mail, MessageSquare, Briefcase, GraduationCap,
   Hash, ThumbsUp, Share2, Send, UserPlus, X, PlayCircle, Star, Copy, Globe2,
-  CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, ArrowLeft, Loader2
+  CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, ArrowLeft, Loader2,
+  FileText, ArrowUpRight
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
@@ -446,9 +447,67 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                         </div>
 
                         {/* Content */}
-                        <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed mb-3 whitespace-pre-wrap">
-                          {post.content}
-                        </p>
+                        {post.content && (
+                          <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed mb-3 whitespace-pre-wrap">
+                            {post.content}
+                          </p>
+                        )}
+
+                        {/* Post Media Attachments (Images, Videos, Documents/PDFs) */}
+                        {post.media_urls && post.media_urls.length > 0 && post.media_urls.map((url: string, mIdx: number) => {
+                          const isVideo = post.media_type === 'video' || url.match(/\.(mp4|webm|mov|ogg)$/i);
+                          const isDoc = post.media_type === 'doc' || url.match(/\.(pdf|doc|docx|txt)$/i);
+
+                          if (isVideo) {
+                            return (
+                              <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-black border border-gray-100 dark:border-gray-800 shadow-sm max-h-[440px]">
+                                <video 
+                                  src={url} 
+                                  controls 
+                                  playsInline 
+                                  preload="metadata"
+                                  className="w-full max-h-[420px] object-contain mx-auto" 
+                                />
+                              </div>
+                            );
+                          }
+
+                          if (isDoc) {
+                            return (
+                              <a 
+                                key={mIdx}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all mb-4 group/doc shadow-sm"
+                              >
+                                <div className="flex items-center gap-3.5 overflow-hidden">
+                                  <div className="w-11 h-11 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
+                                    <FileText size={22} />
+                                  </div>
+                                  <div className="overflow-hidden">
+                                    <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover/doc:text-[#5a32fa] transition-colors">
+                                      {post.document_name || 'Legal Document / PDF'}
+                                    </h4>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Click to view & download document</p>
+                                  </div>
+                                </div>
+                                <ArrowUpRight size={18} className="text-gray-400 group-hover/doc:text-[#5a32fa] group-hover/doc:translate-x-0.5 group-hover/doc:-translate-y-0.5 transition-transform shrink-0" />
+                              </a>
+                            );
+                          }
+
+                          return (
+                            <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm max-h-[480px]">
+                              <img 
+                                src={url} 
+                                alt="Post attachment" 
+                                className="w-full h-full max-h-[460px] object-cover hover:opacity-95 transition-opacity cursor-pointer"
+                                onClick={() => window.open(url, '_blank')}
+                              />
+                            </div>
+                          );
+                        })}
 
                         {/* Reaction Counters */}
                         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 pb-2 border-b border-gray-100 dark:border-gray-800">

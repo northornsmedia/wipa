@@ -9,7 +9,7 @@ import {
   Folder, Lightbulb, HelpCircle, Headphones, Award, Gift, Sparkles, Plus,
   Image as ImageIcon, Video, Send, MoreHorizontal, Eye, TrendingUp, Search,
   Globe2, ShieldCheck, Check, Heart, MessageCircle, Repeat2, Bookmark, X,
-  Trash2, UploadCloud, Play, Volume2
+  Trash2, UploadCloud, Play, Volume2, FileText
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
