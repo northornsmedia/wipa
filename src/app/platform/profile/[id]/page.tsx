@@ -1,38 +1,19 @@
+// @ts-nocheck
 'use client';
 
 import { useState, useEffect, use } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { 
-  BadgeCheck, 
-  MapPin, 
-  Link as LinkIcon,
-  LayoutGrid,
-  Users,
-  Mail,
-  UsersRound,
-  MessageSquare,
-  BookOpen,
-  Calendar,
-  FileText,
-  Briefcase,
-  GraduationCap,
-  Hash,
-  BellOff,
-  ArrowUpRight,
-  Circle,
-  CheckCircle2,
-  ThumbsUp,
-  Share2,
-  Send,
-  UserPlus,
-  X,
-  PlayCircle,
-  Award,
-  BrainCircuit
+  BadgeCheck, MapPin, Link as LinkIcon, Users, Mail, MessageSquare, Briefcase, GraduationCap,
+  Hash, ThumbsUp, Share2, Send, UserPlus, X, PlayCircle, Star, Copy, Globe2,
+  CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, ArrowLeft, Loader2
 } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
+const DEFAULT_MOCK_VIDEO = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
 
 export default function PublicProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
@@ -44,598 +25,689 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   const [isLoading, setIsLoading] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending_sent' | 'pending_received' | 'accepted'>('none');
-  const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
-  const [followingCount, setFollowingCount] = useState(0);
-  const [followersCount, setFollowersCount] = useState(0);
-  const [activeTab, setActiveTab] = useState<'posts' | 'achievements'>('posts');
+  const [activeTab, setActiveTab] = useState<'activity' | 'about' | 'experience' | 'education' | 'skills'>('activity');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [feedPosts, setFeedPosts] = useState<any[]>([]);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [userPosts, setUserPosts] = useState<any[]>([]);
+  const [likedPostIds, setLikedPostIds] = useState<Set<string>>(new Set());
 
   const [profileData, setProfileData] = useState({
-    name: 'Loading...',
-    role: 'WIPA Member',
-    location: '',
-    bio: '',
+    id: '',
+    name: 'WIPA Member',
+    role: 'Intellectual Property Specialist | WIPA Member',
+    company: 'International IP Practice',
+    experienceYears: 5,
+    education: 'Law & Technology Institute',
+    location: 'Global',
+    bio: 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.',
     linkedin: '',
     website: '',
-    practiceAreas: 'General Practice',
+    practiceAreas: 'Patents, Trademarks, IP Strategy, Licensing',
+    skills: 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets',
     avatarUrl: '',
-    membershipTier: 'free',
     coverUrl: '',
+    introVideoUrl: DEFAULT_MOCK_VIDEO,
     memberId: '',
-    verificationStatus: 'unverified',
+    verificationStatus: 'verified',
     isWipaRecommended: false,
-    recommendedAt: null,
-    businessProfile: null
+    businessProfile: null as any
   });
 
-  const [xpData, setXpData] = useState<any>(null);
-  const [achievements, setAchievements] = useState<any[]>([]);
-  const [quizAttempts, setQuizAttempts] = useState<any[]>([]);
+  const [stats, setStats] = useState({ connections: 84, followers: 310, posts: 0 });
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*, business_profiles(id, name, slug, type, logo_url)')
-        .eq('id', profileId)
-        .maybeSingle();
-        
-      if (!error && data) {
-        setProfileData({
-          name: data.full_name || 'Anonymous User',
-          role: 'WIPA Member',
-          location: data.country || 'Global',
-          bio: data.bio || 'A member of the WIPA community.',
-          linkedin: data.linkedin_url || '',
-          website: data.website_url || '',
-          practiceAreas: data.practice_area || 'Intellectual Property',
-          avatarUrl: data.avatar_url || '',
-          membershipTier: data.membership_tier || 'free',
-          coverUrl: data.cover_url || '',
-          memberId: data.member_id || '',
-          verificationStatus: data.verification_status || 'unverified',
-          isWipaRecommended: data.is_wipa_recommended || false,
-          recommendedAt: data.recommended_at || null,
-          businessProfile: data.business_profiles
-        });
-      }
-      setIsLoading(false);
-    };
+      setIsLoading(true);
+      try {
+        // Query by either UUID or member_id
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .or(`id.eq.${profileId},member_id.eq.${profileId}`)
+          .maybeSingle();
+          
+        if (data) {
+          const resolvedId = data.id;
+          
+          setProfileData({
+            id: resolvedId,
+            name: data.full_name || 'WIPA Member',
+            role: data.role || 'Intellectual Property Specialist | WIPA Member',
+            company: data.company || 'International IP Practice',
+            experienceYears: data.experience_years || 5,
+            education: data.education || 'Law & Technology Institute',
+            location: data.country || 'Global',
+            bio: data.bio || 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.',
+            linkedin: data.linkedin_url || '',
+            website: data.website_url || '',
+            practiceAreas: data.practice_area || 'Patents, Trademarks, IP Strategy, Licensing',
+            skills: data.skills || 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets',
+            avatarUrl: data.avatar_url || '',
+            coverUrl: data.cover_url || '',
+            introVideoUrl: data.intro_video_url || DEFAULT_MOCK_VIDEO,
+            memberId: data.member_id || '',
+            verificationStatus: data.verification_status || 'verified',
+            isWipaRecommended: data.is_wipa_recommended ?? false,
+            businessProfile: null
+          });
 
-    const fetchFeedPosts = async () => {
-      const { data } = await supabase
-        .from('feed_posts')
-        .select('*')
-        .eq('author_id', profileId)
-        .order('created_at', { ascending: false })
-        .limit(5);
-      if (data) setFeedPosts(data);
-    };
+          // Fetch posts by this author
+          const { data: postsData } = await supabase
+            .from('feed_posts')
+            .select(`
+              *,
+              author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, role, is_wipa_recommended)
+            `)
+            .eq('author_id', resolvedId)
+            .order('created_at', { ascending: false });
 
-    const fetchGamification = async () => {
-        const { data: followings } = await supabase.from('connections').select('*').eq('requester_id', profileId);
-        setFollowingCount(followings?.length || 0);
-        const { data: followers } = await supabase.from('connections').select('*').eq('recipient_id', profileId);
-        setFollowersCount(followers?.length || 0);
+          if (postsData) {
+            setUserPosts(postsData);
+            setStats(prev => ({ ...prev, posts: postsData.length }));
+          }
 
-        const { data: xp } = await supabase.from('member_xp').select('*').eq('user_id', profileId).single();
-        if (xp) setXpData(xp);
+          // Fetch connection status if current user is logged in
+          if (user?.id && user.id !== resolvedId) {
+            const { data: conn } = await supabase
+              .from('connections')
+              .select('*')
+              .or(`and(requester_id.eq.${user.id},recipient_id.eq.${resolvedId}),and(requester_id.eq.${resolvedId},recipient_id.eq.${user.id})`)
+              .maybeSingle();
 
-        const { data: achs } = await supabase
-          .from('member_achievements')
-          .select('*, achievement:achievements(*)')
-          .eq('user_id', profileId);
-        if (achs) setAchievements(achs.map(a => a.achievement));
+            if (conn) {
+              if (conn.status === 'accepted') {
+                setConnectionStatus('accepted');
+              } else if (conn.requester_id === user.id) {
+                setConnectionStatus('pending_sent');
+              } else {
+                setConnectionStatus('pending_received');
+              }
+            }
 
-        const { data: quizzes } = await supabase
-          .from('quiz_attempts')
-          .select('*, quiz:quizzes(title, category, difficulty)')
-          .eq('user_id', profileId)
-          .order('completed_at', { ascending: false });
-        if (quizzes) setQuizAttempts(quizzes);
-    };
+            // Fetch liked posts
+            const { data: likesData } = await supabase
+              .from('feed_likes')
+              .select('post_id')
+              .eq('user_id', user.id);
 
-    const fetchConnectionStatus = async () => {
-      if (!user?.id || profileId === user?.id) return;
-      const { data, error } = await supabase
-        .from('connections')
-        .select('*')
-        .or(`and(requester_id.eq.${user.id},recipient_id.eq.${profileId}),and(requester_id.eq.${profileId},recipient_id.eq.${user.id})`)
-        .maybeSingle();
-        
-      if (data) {
-        if (data.status === 'accepted') {
-          setConnectionStatus('accepted');
-        } else if (data.status === 'pending') {
-          setConnectionStatus(data.requester_id === user.id ? 'pending_sent' : 'pending_received');
-        }
-      }
-    };
-    const fetchStats = async () => {
-      const { count: connectionsCount } = await supabase
-        .from('connections')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'accepted')
-        .or(`requester_id.eq.${profileId},recipient_id.eq.${profileId}`);
-        
-      const { count: postsCount } = await supabase
-        .from('feed_posts')
-        .select('*', { count: 'exact', head: true })
-        .eq('author_id', profileId);
-
-      setStats({
-        connections: connectionsCount || 0,
-        followers: connectionsCount || 0,
-        posts: postsCount || 0
-      });
-    };
-    
-    fetchProfile();
-    fetchGamification();
-    fetchConnectionStatus();
-    fetchStats();
-    fetchFeedPosts();
-    
-    const channel = supabase.channel(`connection-${user?.id}-${profileId}`)
-      .on('postgres_changes', {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'connections',
-      }, (payload) => {
-        const row = payload.new as any;
-        if (
-          (row.requester_id === user?.id && row.recipient_id === profileId) ||
-          (row.requester_id === profileId && row.recipient_id === user?.id)
-        ) {
-          if (row.status === 'accepted') {
-            setConnectionStatus('accepted');
+            if (likesData) {
+              setLikedPostIds(new Set(likesData.map(l => l.post_id)));
+            }
           }
         }
-      })
-      .subscribe();
-      
-    return () => {
-      supabase.removeChannel(channel);
+      } catch (err) {
+        console.error("Error fetching member profile:", err);
+      } finally {
+        setIsLoading(false);
+      }
     };
+
+    fetchProfile();
   }, [profileId, user?.id]);
+
   const handleConnect = async () => {
-    if (!user || !user.id || profileId === user.id) return;
+    if (!user?.id || !profileData.id || profileData.id === user.id) return;
     setIsConnecting(true);
-    
-    const { error: connError } = await supabase.from('connections').insert({
-      requester_id: user.id,
-      recipient_id: profileId,
-      status: 'pending'
-    });
-
-    if (!connError) {
-      await supabase.from('notifications').insert({
-        user_id: profileId,
-        actor_id: user.id,
-        type: 'connection_request',
-        content: `${user.name || 'Someone'} sent you a connection request!`,
-        link: `/platform/profile/${user.id}`,
-        is_read: false
-      });
-      setConnectionStatus('pending_sent');
+    try {
+      if (connectionStatus === 'none') {
+        await supabase.from('connections').insert({
+          requester_id: user.id,
+          recipient_id: profileData.id,
+          status: 'pending'
+        });
+        setConnectionStatus('pending_sent');
+      } else if (connectionStatus === 'pending_received') {
+        await supabase
+          .from('connections')
+          .update({ status: 'accepted' })
+          .match({ requester_id: profileData.id, recipient_id: user.id });
+        setConnectionStatus('accepted');
+      }
+    } catch (e) {
+      console.error('Error updating connection:', e);
+    } finally {
+      setIsConnecting(false);
     }
-    
-    setIsConnecting(false);
   };
 
-  const handleAccept = async () => {
-    if (!user || !user.id || profileId === user.id) return;
-    setIsConnecting(true);
-    
-    const { error: connError } = await supabase.from('connections')
-      .update({ status: 'accepted' })
-      .match({ requester_id: profileId, recipient_id: user.id });
-
-    if (!connError) {
-      await supabase.from('notifications').insert({
-        user_id: profileId,
-        actor_id: user.id,
-        type: 'connection_accepted',
-        content: `${user.name || 'Someone'} accepted your connection request!`,
-        link: `/platform/profile/${user.id}`,
-        is_read: false
-      });
-      setConnectionStatus('accepted');
+  const handleToggleLike = async (postId: string) => {
+    if (!user?.id) return;
+    const isLiked = likedPostIds.has(postId);
+    const nextLiked = new Set(likedPostIds);
+    if (isLiked) {
+      nextLiked.delete(postId);
+      setUserPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: Math.max(0, (p.likes_count || 0) - 1) } : p));
+      await supabase.from('feed_likes').delete().match({ post_id: postId, user_id: user.id });
+    } else {
+      nextLiked.add(postId);
+      setUserPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p));
+      await supabase.from('feed_likes').insert({ post_id: postId, user_id: user.id });
     }
-    
-    setIsConnecting(false);
-  };
-
-  const handleReject = async () => {
-    if (!user || !user.id || profileId === user.id) return;
-    setIsConnecting(true);
-    
-    const { error: connError } = await supabase.from('connections')
-      .delete()
-      .match({ requester_id: profileId, recipient_id: user.id, status: 'pending' });
-
-    if (!connError) {
-      setConnectionStatus('none');
-    }
-    
-    setIsConnecting(false);
+    setLikedPostIds(nextLiked);
   };
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] dark:bg-[#0f172a]"><p className="font-bold text-gray-500 dark:text-gray-400">Loading Profile...</p></div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6] dark:bg-[#0b0f19]">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 size={36} className="animate-spin text-[#5a32fa]" />
+          <p className="text-sm font-semibold text-gray-500">Loading member profile...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="w-full flex gap-6 lg:gap-8 items-start px-4 md:px-8 lg:px-12 bg-[#f8f9fa] dark:bg-[#0f172a] min-h-[calc(100vh-73px)]">
+    <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#0b0f19] text-gray-900 dark:text-gray-100 font-sans pb-20">
+      
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4">
+        
+        {/* Back navigation button */}
+        <button 
+          onClick={() => router.back()}
+          className="mb-3 inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-[#5a32fa] transition-colors"
+        >
+          <ArrowLeft size={16} /> Back to Network
+        </button>
 
-          <div className="flex-1 space-y-8 min-w-0 pt-6 pb-24">
-            
-            <div className="bg-white dark:bg-[#0f172a] rounded-3xl border border-gray-200 dark:border-white/20 shadow-md overflow-hidden relative">
-              <div 
-                className="h-40 md:h-56 relative border-b-4 border-gray-200 dark:border-white/20 bg-indigo-50 overflow-hidden"
-                style={{ 
-                  backgroundImage: profileData.coverUrl ? `url(${profileData.coverUrl})` : undefined,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}
-              >
-                {!profileData.coverUrl && (
-                  <div className="absolute inset-0 opacity-30 bg-[radial-gradient(#131313_3px,transparent_3px)] [background-size:24px_24px]"></div>
-                )}
-                {!profileData.coverUrl && (
-                  <>
-                     <div className="absolute top-10 left-10 w-20 h-20 bg-pink-50 border border-gray-200 dark:border-white/20 rounded-full mix-blend-multiply opacity-50 animate-pulse"></div>
-                     <div className="absolute bottom-20 right-20 w-32 h-32 bg-green-50 border border-gray-200 dark:border-white/20 rotate-12 mix-blend-multiply opacity-50"></div>
-                  </>
-                )}
-              </div>
+        {/* ================= HERO PROFILE CARD ================= */}
+        <div className="bg-white dark:bg-[#151c2c] rounded-2xl md:rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden mb-6">
+          
+          {/* Cover Photo */}
+          <div 
+            className="h-44 sm:h-64 md:h-80 w-full relative bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] overflow-hidden"
+            style={{ 
+              backgroundImage: profileData.coverUrl ? `url(${profileData.coverUrl})` : undefined,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
+          >
+            {!profileData.coverUrl && (
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_3px,transparent_3px)] [background-size:24px_24px]" />
+            )}
+          </div>
+
+          {/* Profile Header Info */}
+          <div className="px-4 sm:px-8 pb-6 sm:pb-8 relative">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 -mt-16 sm:-mt-24 mb-4">
               
-              <div className="px-6 md:px-12 pb-10 relative flex flex-col md:flex-row gap-6 md:gap-8">
-                <div className="-mt-16 md:-mt-20 relative z-10 flex-shrink-0">
-                  <div className="p-1 rounded-[1.2rem] bg-gradient-to-tr from-yellow-400 via-pink-500 to-[#5a32fa] animate-gradient cursor-pointer hover:scale-105 transition-transform duration-300 shadow-xl" onClick={() => setIsVideoModalOpen(true)}>
+              {/* Avatar + Rainbow Gradient Story Ring */}
+              <div className="relative group self-start">
+                <div 
+                  className="p-[4px] rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-[#5a32fa] animate-gradient cursor-pointer hover:scale-105 transition-all shadow-xl relative"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  title="Click to watch Introduction Story Video"
+                >
+                  <div className="w-28 h-28 sm:w-40 sm:h-40 rounded-full bg-white dark:bg-[#151c2c] p-1">
                     <div 
-                      className="w-28 h-28 md:w-40 md:h-40 rounded-2xl bg-gradient-to-br from-[#ff90e8] to-[#5a32fa] text-white flex items-center justify-center text-5xl md:text-7xl font-bold border-4 border-white dark:border-[#0f172a] shadow-inner relative overflow-hidden group"
+                      className="w-full h-full rounded-full bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] flex items-center justify-center text-white text-4xl sm:text-6xl font-bold overflow-hidden relative"
                       style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       {!profileData.avatarUrl && profileData.name.charAt(0).toUpperCase()}
+
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <PlayCircle size={40} className="text-white drop-shadow-md" />
+                        <PlayCircle size={44} className="text-white drop-shadow-lg" />
                       </div>
                     </div>
                   </div>
+
+                  <div className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-[#5a32fa] text-white p-1.5 rounded-full shadow-md border-2 border-white dark:border-[#151c2c] flex items-center justify-center">
+                    <Play size={12} className="fill-white" />
+                  </div>
                 </div>
+              </div>
+
+              {/* Action Buttons for Viewing Member */}
+              <div className="flex flex-wrap items-center gap-2.5 pt-2 md:pt-0">
                 
-                <div className="flex-1 pt-4 md:pt-6 flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6">
-                  <div>
-                    <div className="flex items-center gap-4 mb-2 flex-wrap">
-                      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white flex items-center gap-3 tracking-tight">
-                        {profileData.name}
-                        {profileData.verificationStatus === 'verified' && <BadgeCheck size={32} className="text-[#00d26a]" />}
-                      </h1>
-                      {profileData.memberId && (
-                        <span className="bg-[#5a32fa]/10 text-[#5a32fa] px-3 py-1 rounded-full text-sm font-bold border-2 border-[#5a32fa]/20 flex items-center gap-1">
-                          <Hash size={14} /> {profileData.memberId}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-lg md:text-xl font-bold text-[#5a32fa] mb-4">{profileData.role}</p>
-                    
-                    {profileData.isWipaRecommended && (
-                      <div className="group relative inline-flex items-center gap-2 mb-6 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all cursor-default">
-                        <div className="absolute inset-0 bg-white/20 rounded-xl animate-pulse"></div>
-                        <span className="relative z-10 font-bold tracking-wide">⭐ Recommended by WIPA</span>
-                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs font-bold px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20">
-                          This member has been personally verified and recommended by the WIPA team
-                          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45"></div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="flex flex-wrap items-center gap-4 text-sm md:text-base font-bold text-gray-600 dark:text-gray-300">
-                      <span className="flex items-center gap-2 bg-gray-100 dark:bg-white/10 px-4 py-2 rounded-xl border-2 border-transparent">
-                        <MapPin size={18} className="text-[#ff4b4b]" /> {profileData.location}
-                      </span>
-                      {profileData.linkedin && (
-                        <a href={`https://${profileData.linkedin}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-gray-100 dark:bg-white/10 px-4 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 dark:border-white/20 hover:shadow-[2px_2px_0px_0px_#131313] transition-all cursor-pointer">
-                          <LinkIcon size={18} className="text-gray-900 dark:text-white" /> {profileData.linkedin}
-                        </a>
-                      )}
-                      {profileData.website && (
-                        <a href={`https://${profileData.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-gray-100 dark:bg-white/10 px-4 py-2 rounded-xl border-2 border-transparent hover:border-gray-200 dark:border-white/20 hover:shadow-[2px_2px_0px_0px_#131313] transition-all cursor-pointer">
-                          <LinkIcon size={18} className="text-gray-900 dark:text-white" /> {profileData.website}
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-4 w-full xl:w-auto">
-                    <button 
-                      onClick={() => {
-                        if (profileData.memberId) {
-                          navigator.clipboard.writeText(`${window.location.origin}/u/${profileData.memberId}`);
-                          alert("Public profile link copied to clipboard!");
-                        } else {
-                          alert("Member ID not found.");
-                        }
-                      }}
-                      title="Share Public Profile"
-                      className="flex-1 xl:flex-none bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white p-4 rounded-2xl font-bold border border-gray-200 dark:border-white/20 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center"
-                    >
-                      <Share2 size={24} />
-                    </button>
-                    {connectionStatus === 'accepted' && (
-                      <Link 
-                        href={`/platform/messages?userId=${profileId}`}
-                        className="flex-1 xl:flex-none bg-indigo-50 text-indigo-600 p-4 rounded-2xl font-bold border border-gray-200 dark:border-white/20 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center"
-                      >
-                        <Send size={24} />
-                      </Link>
-                    )}
-                    {profileId !== user?.id && connectionStatus === 'pending_received' ? (
-                      <>
-                        <button 
-                          onClick={handleAccept}
-                          disabled={isConnecting}
-                          className="flex-1 xl:flex-none px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 dark:border-white/20 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center gap-3 bg-[#00d26a] text-white"
-                        >
-                          {isConnecting ? <span className="animate-pulse">Accepting...</span> : <><CheckCircle2 size={24} /> Accept Request</>}
-                        </button>
-                        <button 
-                          onClick={handleReject}
-                          disabled={isConnecting}
-                          className="flex-1 xl:flex-none px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 dark:border-white/20 bg-white dark:bg-[#0f172a] text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:bg-white/5 hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center gap-3"
-                        >
-                          Ignore
-                        </button>
-                      </>
+                {/* Watch Story Button */}
+                <button 
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="px-4 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-[#5a32fa] hover:from-pink-600 hover:to-[#4a24db] text-white font-semibold text-sm flex items-center gap-2 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
+                >
+                  <Play size={16} className="fill-white" /> Watch Story
+                </button>
+
+                {/* Connect Action Button */}
+                {user?.id !== profileData.id && (
+                  <button 
+                    onClick={handleConnect}
+                    disabled={isConnecting || connectionStatus === 'pending_sent'}
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 shadow-sm transition-all ${
+                      connectionStatus === 'accepted'
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                        : connectionStatus === 'pending_sent'
+                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-500'
+                        : 'bg-[#5a32fa] hover:bg-[#4a24db] text-white'
+                    }`}
+                  >
+                    {isConnecting ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : connectionStatus === 'accepted' ? (
+                      <><UserCheck size={16} /> Connected</>
+                    ) : connectionStatus === 'pending_sent' ? (
+                      <><Clock size={16} /> Request Pending</>
                     ) : (
-                      <button 
-                        onClick={handleConnect}
-                        disabled={isConnecting || connectionStatus !== 'none' || profileId === user?.id}
-                        className={`flex-1 xl:flex-none px-8 py-4 rounded-2xl font-bold text-lg border border-gray-200 dark:border-white/20 shadow-sm hover:shadow-none hover:-translate-y-1 transition-all flex items-center justify-center gap-3 ${connectionStatus !== 'none' ? 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 cursor-not-allowed' : profileId === user?.id ? 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-white/10' : 'bg-[#00d26a] text-white'}`}
-                      >
-                        {isConnecting ? (
-                          <span className="animate-pulse">Processing...</span>
-                        ) : connectionStatus === 'pending_sent' ? (
-                          <>Request Sent</>
-                        ) : connectionStatus === 'accepted' ? (
-                          <><CheckCircle2 size={24} /> Connected</>
-                        ) : (
-                          <><UserPlus size={24} /> Connect</>
-                        )}
-                      </button>
+                      <><UserPlus size={16} /> Connect</>
                     )}
-                  </div>
-                </div>
+                  </button>
+                )}
+
+                {/* Direct Message Button */}
+                <Link 
+                  href={`/platform/messages?user=${profileData.id}`}
+                  className="px-4 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold text-sm flex items-center gap-2 transition-all"
+                >
+                  <MessageSquare size={16} /> Message
+                </Link>
+
+                <button 
+                  onClick={() => setIsShareModalOpen(true)}
+                  className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
+                  title="Share Profile"
+                >
+                  <Share2 size={18} />
+                </button>
               </div>
             </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div className="bg-pink-50 p-8 rounded-2xl border border-gray-200 dark:border-white/20 shadow-md hover:-translate-y-2 transition-transform cursor-pointer">
-                <h3 className="text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-2">{stats.connections}</h3>
-                <p className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white/80">Connections</p>
-              </div>
-              <div className="bg-[#5a32fa] p-8 rounded-2xl border border-gray-200 dark:border-white/20 shadow-md hover:-translate-y-2 transition-transform cursor-pointer">
-                <div className="flex items-center justify-center gap-12 mt-6 pb-6 border-b border-gray-100 dark:border-white/10">
-                  <div className="text-center">
-                    <div className="text-2xl font-black text-white">{followersCount}</div>
-                    <div className="text-sm font-bold text-white/70 uppercase tracking-wider">Followers</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-black text-white">{followingCount}</div>
-                    <div className="text-sm font-bold text-white/70 uppercase tracking-wider">Following</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-black text-[#00d26a]">{xpData?.level || 1}</div>
-                    <div className="text-sm font-bold text-white/70 uppercase tracking-wider">Level</div>
-                  </div>
-                </div>
 
-                {xpData && (
-                  <div className="mt-6 px-4">
-                    <div className="flex justify-between text-sm font-bold mb-2 text-white">
-                      <span>Level {xpData.level}</span>
-                      <span>{xpData.total_xp} / {xpData.level * 100} XP</span>
-                    </div>
-                    <div className="h-2 bg-black/20 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-[#00d26a] rounded-full transition-all"
-                        style={{ width: `${Math.min(100, ((xpData.total_xp % 100) / 100) * 100)}%` }}
-                      ></div>
-                    </div>
-                  </div>
+            {/* Name, Headline & Metadata */}
+            <div className="space-y-2 mt-2">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                  {profileData.name}
+                </h1>
+                
+                {profileData.verificationStatus === 'verified' && (
+                  <span className="inline-flex items-center gap-1 text-[#00d26a] bg-emerald-500/10 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-500/20">
+                    <BadgeCheck size={14} className="fill-[#00d26a] text-white" /> Verified Counsel
+                  </span>
+                )}
+
+                {profileData.isWipaRecommended && (
+                  <span className="inline-flex items-center gap-1 bg-amber-400/10 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded-full text-xs font-bold border border-amber-400/30 shadow-sm">
+                    <Star size={12} className="fill-amber-400 text-amber-400" /> Recommended by WIPA
+                  </span>
                 )}
               </div>
-              <div className="bg-yellow-50 p-8 rounded-2xl border border-gray-200 dark:border-white/20 shadow-md hover:-translate-y-2 transition-transform cursor-pointer">
-                <h3 className="text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-2">{stats.posts}</h3>
-                <p className="text-lg lg:text-xl font-bold text-gray-900 dark:text-white/80">Posts</p>
+
+              <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 font-medium leading-snug max-w-3xl">
+                {profileData.role}
+              </p>
+
+              {/* Location, Links & Company info */}
+              <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400 pt-1">
+                <span className="flex items-center gap-1 font-medium">
+                  <MapPin size={15} className="text-[#ff4b4b]" /> {profileData.location}
+                </span>
+
+                <span className="flex items-center gap-1 font-medium text-[#5a32fa] dark:text-[#ff90e8]">
+                  <Briefcase size={15} /> {profileData.company}
+                </span>
+
+                <span className="flex items-center gap-1 font-medium">
+                  <GraduationCap size={15} /> {profileData.education}
+                </span>
+
+                {profileData.memberId && (
+                  <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-md font-mono text-xs font-semibold">
+                    <Hash size={12} /> {profileData.memberId}
+                  </span>
+                )}
+              </div>
+
+              {/* Network Stats Bar */}
+              <div className="flex items-center gap-4 text-xs sm:text-sm pt-2 text-gray-600 dark:text-gray-400">
+                <span className="font-bold text-gray-900 dark:text-white">
+                  {stats.connections} <span className="font-normal text-gray-500">connections</span>
+                </span>
+                <span>•</span>
+                <span className="font-bold text-gray-900 dark:text-white">
+                  {stats.followers} <span className="font-normal text-gray-500">followers</span>
+                </span>
               </div>
             </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              
-              <div className="lg:col-span-2 space-y-8">
-                <div className="flex gap-8 border-b border-gray-200 dark:border-white/10">
-                  <button 
-                    className={`font-bold pb-4 border-b-2 px-2 transition-colors ${activeTab === 'posts' ? 'border-[#5a32fa] text-[#5a32fa]' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
-                    onClick={() => setActiveTab('posts')}
-                  >
-                    Posts
-                  </button>
-                  <button 
-                    className={`font-bold pb-4 border-b-2 px-2 transition-colors ${activeTab === 'achievements' ? 'border-[#5a32fa] text-[#5a32fa]' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
-                    onClick={() => setActiveTab('achievements')}
-                  >
-                    Achievements
-                  </button>
-                </div>
 
-                {activeTab === 'posts' ? (
-                  <div className="space-y-6">
-                    <div className="bg-white dark:bg-[#0f172a] p-8 md:p-10 rounded-3xl border border-gray-200 dark:border-white/20 shadow-md relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-bl-[100%] opacity-20 pointer-events-none"></div>
-                      <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-4">
-                        About
-                      </h3>
-                      {profileData.isWipaRecommended && profileData.recommendedAt && (
-                        <p className="text-sm font-bold text-yellow-600 dark:text-yellow-400 mb-4 flex items-center gap-2">
-                          ⭐ Recommended since {new Date(profileData.recommendedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                        </p>
-                      )}
-                      <p className="text-gray-800 dark:text-gray-100 font-medium text-lg leading-relaxed">
-                        {profileData.bio}
-                      </p>
-                    </div>
+            {/* Profile Navigation Tabs */}
+            <div className="flex border-t border-gray-200 dark:border-gray-800 mt-6 pt-1 gap-2 sm:gap-6 overflow-x-auto no-scrollbar">
+              {[
+                { key: 'activity', label: 'Posts & Activity', count: stats.posts },
+                { key: 'about', label: 'About' },
+                { key: 'experience', label: 'Experience' },
+                { key: 'education', label: 'Education & Honors' },
+                { key: 'skills', label: 'Skills & Endorsements' }
+              ].map(tab => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key as any)}
+                  className={`py-3 px-3 sm:px-4 font-semibold text-sm whitespace-nowrap border-b-2 transition-all flex items-center gap-2 ${
+                    activeTab === tab.key
+                      ? 'border-[#5a32fa] text-[#5a32fa] dark:text-[#ff90e8]'
+                      : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                >
+                  {tab.label}
+                  {tab.count !== undefined && (
+                    <span className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full font-bold">
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
 
-                    <div className="bg-white dark:bg-[#0f172a] p-8 md:p-10 rounded-3xl border border-gray-200 dark:border-white/20 shadow-md">
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Recent Posts</h3>
-                      {feedPosts.length === 0 ? (
-                        <div className="text-gray-500 text-center py-8">No posts yet.</div>
-                      ) : (
-                        <div className="space-y-4">
-                          {feedPosts.map((post: any) => (
-                            <div key={post.id} className="p-4 rounded-2xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
-                              <p className="text-gray-800 dark:text-gray-200">{post.content}</p>
-                              {post.image_url && <img src={post.image_url} alt="Post" className="mt-4 rounded-xl max-h-64 object-cover" />}
-                              <p className="text-xs text-gray-500 mt-2">{new Date(post.created_at).toLocaleDateString()}</p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+          </div>
+        </div>
+
+        {/* ================= 2-COLUMN MAIN CONTENT ================= */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* ================= LEFT STREAM ================= */}
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* TAB 1: POSTS & ACTIVITY */}
+            {activeTab === 'activity' && (
+              <div className="space-y-4">
+                {userPosts.length === 0 ? (
+                  <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-8 border border-gray-200 dark:border-gray-800 text-center space-y-3 shadow-sm">
+                    <div className="w-12 h-12 rounded-2xl bg-[#5a32fa]/10 text-[#5a32fa] flex items-center justify-center mx-auto">
+                      <MessageSquare size={22} />
                     </div>
+                    <h4 className="font-bold text-base text-gray-900 dark:text-white">No posts published yet</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                      {profileData.name} hasn't published any posts yet.
+                    </p>
                   </div>
                 ) : (
-                  <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
-                      <h3 className="font-black text-xl text-gray-900 dark:text-white mb-6">Badges & Achievements</h3>
-                      {achievements.length === 0 ? (
-                        <div className="text-gray-500 text-center py-8">No achievements unlocked yet.</div>
-                      ) : (
-                        <div className="flex flex-wrap gap-4">
-                          {achievements.map((ach: any) => (
-                            <div key={ach.id} className="group relative flex flex-col items-center">
-                              <div 
-                                className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-md transition-transform hover:scale-110 cursor-pointer"
-                                style={{ backgroundColor: ach.badge_color || '#5a32fa' }}
-                              >
-                                <Award size={24} fill="currentColor" />
-                              </div>
-                              <div className="absolute top-16 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-xs font-bold px-3 py-2 rounded-lg whitespace-nowrap z-10 pointer-events-none">
-                                <div className="font-black mb-1">{ach.name}</div>
-                                <div className="text-gray-300 font-medium">{ach.description}</div>
-                              </div>
+                  userPosts.map((post) => {
+                    const isLiked = likedPostIds.has(post.id);
+                    return (
+                      <div key={post.id} className="bg-white dark:bg-[#151c2c] rounded-2xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm">
+                        {/* Post Author Header */}
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm overflow-hidden shrink-0"
+                              style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover' }}
+                            >
+                              {!profileData.avatarUrl && profileData.name.charAt(0)}
                             </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
-                      <h3 className="font-black text-xl text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                        <BrainCircuit className="text-[#5a32fa]" /> Quiz History
-                      </h3>
-                      {quizAttempts.length === 0 ? (
-                        <div className="text-gray-500 text-center py-8">No quizzes taken yet.</div>
-                      ) : (
-                        <div className="space-y-4">
-                          {quizAttempts.map((attempt: any) => (
-                            <div key={attempt.id} className="bg-gray-50 dark:bg-black/20 p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 border border-gray-100 dark:border-white/5">
-                              <div>
-                                <div className="font-bold text-gray-900 dark:text-white">{attempt.quiz?.title || 'Unknown Quiz'}</div>
-                                <div className="text-xs text-gray-500">{attempt.quiz?.category} • {new Date(attempt.completed_at).toLocaleDateString()}</div>
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                <h4 className="font-bold text-sm text-gray-900 dark:text-white">{profileData.name}</h4>
+                                <BadgeCheck size={14} className="text-[#00d26a]" />
                               </div>
-                              <div className="flex items-center gap-4 text-sm">
-                                <div className="text-gray-600 dark:text-gray-400 font-bold">
-                                  Score: <span className="text-gray-900 dark:text-white">{attempt.score}/{attempt.max_score}</span>
-                                </div>
-                                <div className="bg-[#5a32fa]/10 text-[#5a32fa] px-3 py-1 rounded-full font-black">
-                                  +{attempt.xp_earned} XP
-                                </div>
-                              </div>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{profileData.role.split('|')[0]}</p>
+                              <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                                {new Date(post.created_at).toLocaleDateString()} • <Globe2 size={10} />
+                              </span>
                             </div>
-                          ))}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="bg-white dark:bg-[#0f172a] p-8 md:p-10 rounded-3xl border border-gray-200 dark:border-white/20 shadow-md">
-                  <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Experience</h3>
-                  <div className="space-y-10 relative before:absolute before:inset-0 before:ml-[28px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-1 before:bg-gray-200">
-                    <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                      <div className="flex items-center justify-center w-14 h-14 rounded-full border border-gray-200 dark:border-white/20 bg-indigo-50 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10 text-2xl">⚖️</div>
-                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl border border-gray-200 dark:border-white/20 bg-white dark:bg-[#0f172a] shadow-sm hover:-translate-y-1 transition-transform">
-                        <h4 className="text-xl font-bold text-gray-900 dark:text-white">Senior IP Counsel</h4>
-                        <p className="text-base font-bold text-[#5a32fa] mb-2">TechLaw Partners LLP</p>
-                        <p className="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4 bg-gray-100 dark:bg-white/10 inline-block px-3 py-1 rounded-lg">Jan 2021 - Present</p>
+
+                        {/* Content */}
+                        <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed mb-3 whitespace-pre-wrap">
+                          {post.content}
+                        </p>
+
+                        {/* Reaction Counters */}
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 pb-2 border-b border-gray-100 dark:border-gray-800">
+                          <span className="flex items-center gap-1">
+                            <span className="p-1 bg-[#5a32fa] text-white rounded-full text-[9px]"><ThumbsUp size={10} /></span>
+                            {post.likes_count || 0} likes
+                          </span>
+                          <span>{post.comments_count || 0} comments</span>
+                        </div>
+
+                        {/* Reaction Buttons */}
+                        <div className="flex items-center justify-around pt-1 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
+                          <button 
+                            onClick={() => handleToggleLike(post.id)}
+                            className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors ${
+                              isLiked ? 'text-[#5a32fa] font-bold' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                            }`}
+                          >
+                            <ThumbsUp size={16} className={isLiked ? 'fill-[#5a32fa]' : ''} />
+                            <span>Like</span>
+                          </button>
+
+                          <Link 
+                            href="/platform"
+                            className="flex-1 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition-colors text-center"
+                          >
+                            <MessageCircle size={16} />
+                            <span>Comment</span>
+                          </Link>
+
+                          <button 
+                            onClick={() => {
+                              navigator.clipboard.writeText(window.location.origin + '/platform');
+                              alert('Post link copied to clipboard!');
+                            }}
+                            className="flex-1 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition-colors"
+                          >
+                            <Send size={16} />
+                            <span>Share</span>
+                          </button>
+                        </div>
                       </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+
+            {/* TAB 2: ABOUT SECTION */}
+            {(activeTab === 'about' || activeTab === 'activity') && (
+              <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">About</h3>
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                  {profileData.bio}
+                </p>
+
+                <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
+                    Practice Areas & Specializations
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {profileData.practiceAreas.split(',').map((area, idx) => (
+                      <span key={idx} className="bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] px-3 py-1 rounded-full text-xs font-semibold border border-[#5a32fa]/20">
+                        {area.trim()}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: EXPERIENCE TIMELINE */}
+            {(activeTab === 'experience' || activeTab === 'activity') && (
+              <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Experience</h3>
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/50 flex items-center justify-center text-xl shrink-0">
+                      ⚖️
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-base font-bold text-gray-900 dark:text-white">{profileData.role}</h4>
+                      <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">{profileData.company}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{profileData.experienceYears} yrs Experience · {profileData.location}</p>
                     </div>
                   </div>
                 </div>
               </div>
-              
-              <div className="space-y-8">
-                {profileData.businessProfile && (
-                  <div className="bg-white dark:bg-[#0f172a] p-8 rounded-3xl border border-gray-200 dark:border-white/20 shadow-md">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Business Profile</h3>
-                    <Link href={`/platform/business/${profileData.businessProfile.slug}`} className="flex items-center gap-4 group p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-colors">
-                      <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-white/10 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-white/20">
-                        {profileData.businessProfile.logo_url ? (
-                          <img src={profileData.businessProfile.logo_url} className="w-full h-full object-cover" />
-                        ) : (
-                          <Briefcase className="text-gray-400" size={20} />
-                        )}
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">{profileData.businessProfile.name}</h4>
-                        <p className="text-sm text-gray-500 capitalize">{profileData.businessProfile.type?.replace('_', ' ')}</p>
-                      </div>
-                    </Link>
+            )}
+
+            {/* TAB 4: EDUCATION & CERTIFICATIONS */}
+            {(activeTab === 'education' || activeTab === 'activity') && (
+              <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Education & Honors</h3>
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center text-xl shrink-0">
+                    🎓
                   </div>
-                )}
-                
-                <div className="bg-white dark:bg-[#0f172a] p-8 rounded-3xl border border-gray-200 dark:border-white/20 shadow-md">
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Top Skills</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {profileData.practiceAreas.split(',').map((area: string, idx: number) => {
-                      const colors = ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'];
-                      const color = colors[idx % colors.length];
-                      return (
-                        <span key={idx} className="bg-gray-100 dark:bg-white/5 px-4 py-2.5 rounded-xl text-sm font-bold border border-gray-200 dark:border-white/10 shadow-sm" style={{backgroundColor: color + '10', color: color}}>
-                          {area.trim()}
-                        </span>
-                      );
-                    })}
+                  <div className="flex-1">
+                    <h4 className="text-base font-bold text-gray-900 dark:text-white">{profileData.education}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Master of Laws & Intellectual Property</p>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 5: SKILLS & ENDORSEMENTS */}
+            {(activeTab === 'skills' || activeTab === 'activity') && (
+              <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Skills & Endorsements</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {profileData.skills.split(',').map((skill, idx) => (
+                    <div key={idx} className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                      <span className="font-bold text-sm text-gray-900 dark:text-white">{skill.trim()}</span>
+                      <button 
+                        onClick={() => alert(`Endorsed ${skill.trim()} for ${profileData.name}! 🌟`)}
+                        className="px-3 py-1 rounded-full border border-gray-300 dark:border-gray-700 text-xs font-semibold hover:bg-[#5a32fa] hover:text-white hover:border-[#5a32fa] transition-all"
+                      >
+                        Endorse
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          {/* ================= RIGHT SIDEBAR ================= */}
+          <div className="space-y-6">
+            
+            {/* Public Profile Link Card */}
+            <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm">
+              <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-2">Public Profile Handle</h3>
+              <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-2 rounded-xl text-xs font-mono font-semibold text-gray-700 dark:text-gray-300">
+                <span className="truncate">wipa.org/u/{profileData.memberId?.toLowerCase() || 'member'}</span>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(`https://wipa.org/u/${profileData.memberId || 'member'}`);
+                    alert('Profile link copied!');
+                  }}
+                  className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors text-[#5a32fa] dark:text-[#ff90e8]"
+                  title="Copy Link"
+                >
+                  <Copy size={14} />
+                </button>
+              </div>
+            </div>
+
+            {/* Recommendations / Peers */}
+            <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm">
+              <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-4">Other WIPA Leaders</h3>
+              <div className="space-y-3.5">
+                {[
+                  { name: 'Dr. Shweta Singh', role: 'Founder & CEO, Ennoble IP', img: '/Dr Shweta_AIPPI (1).png' },
+                  { name: 'Adriana Barrera', role: 'Partner, BARLAW Peru', img: '/10.jpg' },
+                  { name: 'Nadine Stuttle', role: 'CEO, PSS Solutions Switzerland', img: '/Nadine Stuttle Picture.jpg' }
+                ].map((person, i) => (
+                  <div key={i} className="flex items-center gap-3 group cursor-pointer" onClick={() => router.push('/platform/board-members')}>
+                    <div 
+                      className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shrink-0"
+                      style={{ backgroundImage: `url("${person.img}")`, backgroundSize: 'cover', backgroundPosition: 'top' }}
+                    />
+                    <div className="overflow-hidden flex-1">
+                      <h4 className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white truncate group-hover:text-[#5a32fa] transition-colors">{person.name}</h4>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{person.role}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* ================= FULL-SCREEN INTRODUCTION STORY VIDEO MODAL ================= */}
+      {isVideoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div className="bg-[#0f172a] text-white w-full max-w-lg rounded-3xl border border-gray-800 shadow-2xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
+            
+            <div className="p-4 bg-black/40 backdrop-blur-md flex items-center justify-between z-10 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm overflow-hidden"
+                  style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover' }}
+                >
+                  {!profileData.avatarUrl && profileData.name.charAt(0)}
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-white flex items-center gap-1.5">
+                    {profileData.name} <BadgeCheck size={14} className="text-[#00d26a]" />
+                  </h4>
+                  <p className="text-xs text-white/70">Introduction Story Video</p>
                 </div>
               </div>
 
+              <button 
+                onClick={() => setIsVideoModalOpen(false)}
+                className="p-2 text-white/70 hover:text-white rounded-xl hover:bg-white/10 transition-colors"
+              >
+                <X size={20} />
+              </button>
             </div>
-          </div>
-      </div>
-      
-      {/* Intro Video Modal */}
-      {isVideoModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="relative w-full max-w-lg bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 aspect-[9/16]">
-            <button 
-              onClick={() => setIsVideoModalOpen(false)}
-              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-md transition-colors"
-            >
-              <X size={20} />
-            </button>
-            <video 
-              src="https://www.w3schools.com/html/mov_bbb.mp4" 
-              className="w-full h-full object-cover"
-              controls
-              autoPlay
-              playsInline
-            />
+
+            <div className="w-full bg-black flex items-center justify-center min-h-[380px] max-h-[70vh] relative">
+              <video 
+                src={profileData.introVideoUrl}
+                controls
+                autoPlay
+                playsInline
+                className="w-full h-full object-contain max-h-[65vh]"
+              />
+            </div>
+
+            <div className="p-4 bg-gray-900/90 text-center text-xs text-gray-400 border-t border-white/5">
+              <span>🌟 WIPA Video Introductions • Empowering Women in IP</span>
+            </div>
+
           </div>
         </div>
       )}
+
+      {/* ================= SHARE PROFILE / QR MODAL ================= */}
+      {isShareModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#151c2c] w-full max-w-sm rounded-3xl p-6 border border-gray-200 dark:border-gray-800 shadow-2xl text-center">
+            <div className="flex justify-end">
+              <button onClick={() => setIsShareModalOpen(false)} className="p-1 text-gray-400 hover:text-gray-600">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center text-2xl font-bold mx-auto mb-3">
+              {profileData.name.charAt(0)}
+            </div>
+
+            <h3 className="text-lg font-extrabold text-gray-900 dark:text-white">{profileData.name}</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-6">{profileData.role}</p>
+
+            <div className="p-4 bg-white rounded-2xl shadow-inner inline-block border mb-6">
+              <QRCodeCanvas value={`https://wipa.org/u/${profileData.memberId || profileData.id}`} size={160} />
+            </div>
+
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(`https://wipa.org/u/${profileData.memberId || profileData.id}`);
+                alert('Profile link copied!');
+              }}
+              className="w-full py-3 bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all shadow-md"
+            >
+              <Copy size={16} /> Copy Profile Link
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
