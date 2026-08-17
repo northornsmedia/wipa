@@ -12,6 +12,7 @@ import {
 , Hash, BellOff, ArrowUpRight, CheckCircle2, Circle} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import AdSlot from '@/components/AdSlot';
 
 export default function LikedThreadsPage() {
   const { user, posts, likedPostIds, toggleLike } = useAppStore();
@@ -43,9 +44,9 @@ export default function LikedThreadsPage() {
             </div>
           </div>
 
-          {/* Advertisement Banner */}
-          <div className="w-full mb-8 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative h-32 group cursor-pointer flex items-center justify-center">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity z-0">AD SPACE</div>
+          {/* Dynamic Advertisement Banner */}
+          <div className="w-full mb-8">
+            <AdSlot slotId="feed_sidebar" />
           </div>
 
           {likedPosts.length === 0 ? (

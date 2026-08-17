@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ArrowLeft, Users, Search, Plus, Hash, ShieldCheck, Lock, Globe, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
+import AdSlot from '@/components/AdSlot';
 
 const MOCK_GROUPS = [
   {
@@ -126,11 +127,10 @@ export default function GroupsPage() {
             ))}
           </div>
 
-          {/* Banner Ad */}
-          <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="hidden md:flex flex-1 mx-4 bg-gradient-to-r from-[#5a32fa]/10 to-[#ff90e8]/10 rounded-xl border border-gray-200 dark:border-white/20 items-center justify-center relative overflow-hidden group hover:border-[#ff90e8] transition-colors h-[52px]">
-            <div className="absolute top-1 right-2 text-[8px] font-bold uppercase tracking-wider text-gray-400">Sponsored</div>
-            <span className="font-black text-gray-400 tracking-widest text-sm group-hover:text-[#5a32fa] transition-colors">AD SPACE</span>
-          </a>
+          {/* Dynamic Ad Banner */}
+          <div className="hidden lg:block w-72">
+            <AdSlot slotId="groups_sidebar" />
+          </div>
 
           <div className="relative flex-1 max-w-md ml-auto">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />

@@ -5,12 +5,12 @@ import { ExternalLink, Sparkles, X, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 interface AdSlotProps {
-  placement: "feed_native" | "sidebar_banner" | "header_ticker" | "resource_splash" | "jobs_spotlight";
+  placement?: "feed_native" | "sidebar_banner" | "header_ticker" | "resource_splash" | "jobs_spotlight";
+  slotId?: string; // e.g. 'members_sidebar' | 'network_sidebar' | 'events_sidebar' | 'jobs_sidebar' | 'groups_sidebar' | 'mentorship_sidebar' | 'forums_banner' | 'feed_sidebar'
   className?: string;
-  fallbackGradient?: string;
 }
 
-export default function AdSlot({ placement, className = "" }: AdSlotProps) {
+export default function AdSlot({ placement, slotId, className = "" }: AdSlotProps) {
   const [ad, setAd] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDismissed, setIsDismissed] = useState(false);
@@ -18,19 +18,49 @@ export default function AdSlot({ placement, className = "" }: AdSlotProps) {
   useEffect(() => {
     async function loadActiveAd() {
       try {
-        const { data, error } = await supabase
-          .from("ad_campaigns")
-          .select("*")
-          .eq("slot_placement", placement)
-          .eq("is_active", true)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .single();
+        // 1. Try to load specific placement slot first
+        if (slotId) {
+          const { data: slotData, error: slotError } = await supabase
+            .from("ad_placements")
+            .select("*")
+            .eq("id", slotId)
+            .eq("is_active", true)
+            .single();
 
-        if (!error && data) {
-          setAd(data);
-          // Increment impression count
-          supabase.from("ad_campaigns").update({ impressions_count: (data.impressions_count || 0) + 1 }).eq("id", data.id).then();
+          if (!slotError && slotData) {
+            setAd({
+              id: slotData.id,
+              title: slotData.name,
+              company_name: slotData.badge_text || "Featured Sponsor",
+              banner_image_url: slotData.banner_image_url,
+              headline: slotData.headline,
+              description: slotData.subtext,
+              cta_label: slotData.cta_text || "Learn More",
+              target_url: slotData.target_url,
+              badge_text: slotData.badge_text || "Sponsored",
+              is_placement_table: true
+            });
+            // Increment impression count
+            supabase.from("ad_placements").update({ impressions_count: (slotData.impressions_count || 0) + 1 }).eq("id", slotData.id).then();
+            return;
+          }
+        }
+
+        // 2. Fallback to ad_campaigns by placement
+        if (placement) {
+          const { data, error } = await supabase
+            .from("ad_campaigns")
+            .select("*")
+            .eq("slot_placement", placement)
+            .eq("is_active", true)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .single();
+
+          if (!error && data) {
+            setAd(data);
+            supabase.from("ad_campaigns").update({ impressions_count: (data.impressions_count || 0) + 1 }).eq("id", data.id).then();
+          }
         }
       } catch (err) {
         // Silently catch
@@ -39,19 +69,22 @@ export default function AdSlot({ placement, className = "" }: AdSlotProps) {
       }
     }
     loadActiveAd();
-  }, [placement]);
+  }, [placement, slotId]);
 
   const handleAdClick = (e: React.MouseEvent) => {
     if (!ad) return;
-    // Log click
     try {
-      supabase.from("ad_campaigns").update({ clicks_count: (ad.clicks_count || 0) + 1 }).eq("id", ad.id).then();
-      supabase.from("sponsored_clicks").insert({ resource_id: ad.id, source: `ad_slot_${placement}` }).then();
+      if (ad.is_placement_table) {
+        supabase.from("ad_placements").update({ clicks_count: (ad.clicks_count || 0) + 1 }).eq("id", ad.id).then();
+      } else {
+        supabase.from("ad_campaigns").update({ clicks_count: (ad.clicks_count || 0) + 1 }).eq("id", ad.id).then();
+      }
+      supabase.from("sponsored_clicks").insert({ resource_id: ad.id, source: `ad_slot_${slotId || placement}` }).then();
     } catch (e) {}
   };
 
   if (isDismissed || loading || !ad) {
-    if (placement === "sidebar_banner" && !ad && !loading) {
+    if ((placement === "sidebar_banner" || slotId?.includes("sidebar")) && !ad && !loading) {
       return (
         <div className={`w-full rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-gradient-to-br from-[#5a32fa]/10 to-[#b892ff]/10 p-5 ${className}`}>
           <div className="flex items-center justify-between mb-2">
@@ -95,7 +128,7 @@ export default function AdSlot({ placement, className = "" }: AdSlotProps) {
           </div>
 
           <a 
-            href={ad.target_url} 
+            href={ad.target_url || "#"} 
             target="_blank" 
             rel="noopener noreferrer"
             onClick={handleAdClick}
@@ -120,7 +153,7 @@ export default function AdSlot({ placement, className = "" }: AdSlotProps) {
         {/* Banner Asset */}
         {ad.banner_image_url && (
           <a
-            href={ad.target_url}
+            href={ad.target_url || "#"}
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleAdClick}
@@ -137,10 +170,10 @@ export default function AdSlot({ placement, className = "" }: AdSlotProps) {
         {/* Footer CTA */}
         <div className="pt-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-between relative z-10">
           <span className="text-xs text-gray-500 dark:text-gray-400 font-medium truncate max-w-[200px]">
-            {ad.target_url.replace(/^https?:\/\//, '')}
+            {(ad.target_url || '').replace(/^https?:\/\//, '')}
           </span>
           <a
-            href={ad.target_url}
+            href={ad.target_url || "#"}
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleAdClick}
@@ -155,84 +188,50 @@ export default function AdSlot({ placement, className = "" }: AdSlotProps) {
     );
   }
 
-  // 2. RIGHT SIDEBAR BANNER AD
-  if (placement === "sidebar_banner") {
-    return (
-      <div className={`w-full rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] group relative ${className}`}>
-        {ad.banner_image_url && (
-          <a
-            href={ad.target_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleAdClick}
-            className="block h-44 w-full overflow-hidden bg-black relative"
-          >
-            <img 
-              src={ad.banner_image_url} 
-              alt={ad.headline} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3">
-              <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-400 text-black uppercase tracking-wider">
-                {ad.badge_text || "Sponsored"}
-              </span>
-            </div>
-          </a>
-        )}
-
-        <div className="p-5 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{ad.company_name}</span>
-            <ExternalLink size={12} className="text-gray-400" />
-          </div>
-          <h4 className="text-sm font-black text-gray-900 dark:text-white leading-snug">{ad.headline}</h4>
-          {ad.description && (
-            <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{ad.description}</p>
-          )}
-          <a
-            href={ad.target_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleAdClick}
-            className="w-full py-2.5 rounded-xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white text-xs font-bold shadow-md shadow-[#5a32fa]/30 transition-all flex items-center justify-center gap-1.5 mt-2"
-          >
-            <span>{ad.cta_label || "Explore"}</span>
-            <ArrowUpRight size={14} />
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  // 3. TOP HEADER BROADCAST TICKER
-  if (placement === "header_ticker") {
-    return (
-      <div className="w-full bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] text-white py-2 px-4 shadow-md relative z-40 text-xs font-semibold flex items-center justify-between">
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 w-full px-4 overflow-hidden">
-          <span className="px-2 py-0.5 rounded text-[10px] font-black bg-black/30 uppercase tracking-widest shrink-0">
-            {ad.badge_text || "Featured"}
-          </span>
-          <p className="truncate font-medium">{ad.headline}</p>
-          <a
-            href={ad.target_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleAdClick}
-            className="px-3 py-1 rounded-lg bg-black/40 hover:bg-black/70 text-white text-xs font-bold shrink-0 transition-colors flex items-center gap-1"
-          >
-            <span>{ad.cta_label || "Learn More"}</span>
-            <ArrowUpRight size={12} />
-          </a>
-        </div>
-        <button
-          onClick={() => setIsDismissed(true)}
-          className="p-1 text-white/75 hover:text-white rounded-lg transition-colors shrink-0"
+  // 2. SIDEBAR BANNER AD (Generic or Specific slotId)
+  return (
+    <div className={`w-full rounded-3xl overflow-hidden shadow-lg border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] group relative ${className}`}>
+      {ad.banner_image_url && (
+        <a
+          href={ad.target_url || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleAdClick}
+          className="block h-44 w-full overflow-hidden bg-black relative"
         >
-          <X size={14} />
-        </button>
-      </div>
-    );
-  }
+          <img 
+            src={ad.banner_image_url} 
+            alt={ad.headline || ""} 
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3">
+            <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-400 text-black uppercase tracking-wider">
+              {ad.badge_text || "Sponsored"}
+            </span>
+          </div>
+        </a>
+      )}
 
-  return null;
+      <div className="p-5 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{ad.company_name || "Featured Partner"}</span>
+          <ExternalLink size={12} className="text-gray-400" />
+        </div>
+        <h4 className="text-sm font-black text-gray-900 dark:text-white leading-snug">{ad.headline}</h4>
+        {ad.description && (
+          <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{ad.description}</p>
+        )}
+        <a
+          href={ad.target_url || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleAdClick}
+          className="w-full py-2.5 rounded-xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white text-xs font-bold shadow-md shadow-[#5a32fa]/30 transition-all flex items-center justify-center gap-1.5 mt-2"
+        >
+          <span>{ad.cta_label || "Explore"}</span>
+          <ArrowUpRight size={14} />
+        </a>
+      </div>
+    </div>
+  );
 }

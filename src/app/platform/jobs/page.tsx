@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import AdSlot from '@/components/AdSlot';
 
 
 const INITIAL_MOCK_JOBS = [
@@ -397,14 +398,10 @@ export default function JobsPage() {
             </div>
           </div>
 
-          {/* Horizontal Ad Banner */}
-          <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="block w-full h-24 md:h-32 rounded-3xl overflow-hidden mb-8 shadow-md relative group border border-gray-100 dark:border-white/10">
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
-            <div className="absolute top-2 right-2 md:top-4 md:right-4 z-20 inline-flex items-center px-2 py-1 md:px-3 md:py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider shadow-sm">
-              Sponsored
-            </div>
-          </a>
+          {/* Dynamic Ad Banner */}
+          <div className="mb-8">
+            <AdSlot slotId="jobs_sidebar" />
+          </div>
 
           {/* JOB FEED */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">

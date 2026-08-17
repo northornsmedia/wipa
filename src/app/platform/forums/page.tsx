@@ -5,6 +5,7 @@ import { ArrowLeft, MessageSquare, Search, Plus, Filter, MessageCircle, Clock, T
 import Link from 'next/link';
 
 import { supabase } from '@/lib/supabase';
+import AdSlot from '@/components/AdSlot';
 
 export default function ForumsPage() {
   const [forums, setForums] = useState<any[]>([]);
@@ -157,18 +158,9 @@ export default function ForumsPage() {
             </div>
           )}
 
-          {/* Ad Space / Featured Banner */}
-          <div className="w-full bg-gradient-to-br from-indigo-900 via-[#1e293b] to-[#1e293b] rounded-3xl overflow-hidden shadow-xl border border-indigo-500/20 relative h-32 md:h-40 mb-4 group cursor-pointer">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-[60px] group-hover:bg-indigo-500/30 transition-colors mix-blend-screen" />
-            <div className="absolute inset-0 flex items-center justify-between px-8 md:px-12 relative z-10">
-              <div>
-                <h3 className="text-white font-black text-2xl md:text-3xl tracking-tight mb-2">Master IP Strategy</h3>
-                <p className="text-indigo-200 font-medium text-sm md:text-base">Enroll in the new UNH masterclass cohort today.</p>
-              </div>
-              <div className="hidden md:flex bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 text-white font-bold group-hover:bg-white group-hover:text-indigo-900 transition-colors">
-                Learn More
-              </div>
-            </div>
+          {/* Dynamic Ad Placement Banner */}
+          <div className="mb-6">
+            <AdSlot slotId="forums_banner" />
           </div>
 
           {/* Forums List */}

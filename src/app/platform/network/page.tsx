@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import AdSlot from '@/components/AdSlot';
 
 const COUNTRIES = ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France'];
 const PRACTICE_AREAS = ['Patent Prosecution', 'Trademark Law', 'IP Litigation', 'Tech Licensing', 'Copyright Law', 'Brand Protection'];
@@ -403,9 +404,9 @@ export default function NetworkPage() {
           {/* Right Column Content */}
           <div className="w-full xl:w-[350px] shrink-0 flex flex-col gap-6">
             
-            {/* Advertisement Space */}
-            <div className="w-full rounded-[1.5rem] overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative h-64 group shrink-0 hidden xl:block">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
+            {/* Dynamic Advertisement Space */}
+            <div className="hidden xl:block">
+              <AdSlot slotId="network_sidebar" />
             </div>
 
             {/* Incoming Requests */}

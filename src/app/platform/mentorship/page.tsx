@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import AdSlot from '@/components/AdSlot';
 
 const INITIAL_MENTORS = [
   { id: 1, name: 'Dr. Sarah Jenkins', role: 'Partner, IP Litigation', company: 'Global Law LLP', focus: 'Patent Law, Career Growth', color: '#5a32fa' },
@@ -71,19 +72,10 @@ export default function MentorshipPage() {
             </button>
           </div>
 
-          {/* Horizontal Ad Banner */}
-          <a href="#" className="block w-full h-24 md:h-32 rounded-3xl overflow-hidden mb-10 shadow-md relative group border border-gray-100 dark:border-white/10">
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#5a32fa]/90 to-[#b892ff]/90 flex items-center justify-center text-white opacity-90 group-hover:opacity-100 transition-opacity">
-               <div className="flex flex-col items-center justify-center">
-                 <span className="font-black text-2xl tracking-widest">AD SPACE</span>
-                 <span className="text-sm font-medium opacity-80 mt-1 hidden md:block">Looking to sharpen your IP strategy? Explore the new Executive Masterclass Series.</span>
-               </div>
-            </div>
-            <div className="absolute top-2 right-2 md:top-4 md:right-4 z-20 inline-flex items-center px-2 py-1 md:px-3 md:py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/20 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider shadow-sm">
-              Sponsored
-            </div>
-          </a>
+          {/* Dynamic Ad Banner */}
+          <div className="mb-10">
+            <AdSlot slotId="mentorship_sidebar" />
+          </div>
 
           {activeTab === 'My Mentors' && (
             <div className="space-y-6 pb-24">

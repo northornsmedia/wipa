@@ -7,6 +7,7 @@ import {
   Search, UserPlus, MapPin, Briefcase, Mail, ArrowLeft, UsersRound
 , Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, LayoutGrid, ThumbsUp, MessageSquare, BookOpen, Calendar, FileText, GraduationCap, Users} from 'lucide-react';
 import Link from 'next/link';
+import AdSlot from '@/components/AdSlot';
 
 type Profile = {
   id: string;
@@ -332,14 +333,8 @@ export default function MembersDirectoryPage() {
       <aside className="w-[300px] hidden xl:flex flex-col shrink-0 space-y-6 pt-6 overflow-y-auto no-scrollbar pb-10 pr-4 md:pr-8 lg:pr-12">
         <div className="h-full flex flex-col gap-6">
           
-          {/* AD SPACE */}
-          <a href="https://advitamip.com/" target="_blank" rel="noopener noreferrer" className="rounded-2xl border-2 border-[#ff90e8] shadow-md overflow-hidden relative group hover:-translate-y-1 transition-transform min-h-[200px] block cursor-pointer shrink-0">
-            <div className="absolute top-4 right-4 bg-[#ff90e8] text-white text-[10px] font-bold px-3 py-1.5 rounded-lg z-20 uppercase tracking-wider shadow-sm">
-              Sponsored
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity z-0">AD SPACE</div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </a>
+          {/* DYNAMIC AD SPACE */}
+          <AdSlot slotId="members_sidebar" />
 
           {/* Active Groups */}
           <div className="bg-white dark:bg-[#0f172a] p-4 rounded-2xl border border-gray-200 dark:border-white/20 shadow-sm">
