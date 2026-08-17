@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowLeft, CheckCircle2, MapPin, Globe, LinkedinIcon, Mail, Phone, Star, Building2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MapPin, Globe, Mail, Phone, Star, Building2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function FirmProfilePage({ params }: { params: { slug: string } }) {
@@ -154,7 +154,7 @@ export default function FirmProfilePage({ params }: { params: { slug: string } }
                   )}
                   {firm.linkedin_url && (
                     <a href={firm.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-slate-700 dark:text-slate-300 hover:text-[#5a32fa] font-bold transition-colors">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center"><LinkedinIcon size={18} /></div>
+                      <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center"><Globe size={18} /></div>
                       LinkedIn Profile
                     </a>
                   )}
