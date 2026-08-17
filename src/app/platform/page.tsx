@@ -40,6 +40,7 @@ export default function PlatformPage() {
   const [isIpWisdomModalOpen, setIsIpWisdomModalOpen] = useState(false);
   const [userBusiness, setUserBusiness] = useState<any>(null);
   const [postAsId, setPostAsId] = useState<string>('user'); // 'user' or business.id
+  const [trendingForums, setTrendingForums] = useState<any[]>([]);
   
   const fetchFeed = useCallback(async () => {
     setIsLoadingFeed(true);
@@ -66,6 +67,17 @@ export default function PlatformPage() {
       if (likesData) {
         setDbLikedPostIds(new Set(likesData.map(l => l.post_id)));
       }
+    }
+
+    const { data: trendingData } = await supabase
+      .from('forum_posts')
+      .select('id, title, replies_count, is_trending')
+      .eq('is_trending', true)
+      .order('trending_score', { ascending: false })
+      .limit(3);
+    
+    if (trendingData) {
+      setTrendingForums(trendingData);
     }
     
     setIsLoadingFeed(false);
@@ -782,24 +794,16 @@ export default function PlatformPage() {
 
                 {/* Trending Topics */}
                 <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-sm border border-gray-100 dark:border-white/10 p-5">
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-4">Trending Topics</h3>
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-4">Trending in Forums</h3>
                   <div className="space-y-4">
-                    <div className="group cursor-pointer">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">#AIinIP</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">1,245 discussions</p>
-                    </div>
-                    <div className="group cursor-pointer">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">#PatentLaw</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">856 discussions</p>
-                    </div>
-                    <div className="group cursor-pointer">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">#WomenInTech</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">643 discussions</p>
-                    </div>
-                    <div className="group cursor-pointer">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">#TrademarkUpdates</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">421 discussions</p>
-                    </div>
+                    {trendingForums.length > 0 ? trendingForums.map((post) => (
+                      <Link href={`/platform/forums/post/${post.id}`} key={post.id} className="block group cursor-pointer">
+                        <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors line-clamp-2">{post.title}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{post.replies_count || 0} replies</p>
+                      </Link>
+                    )) : (
+                      <p className="text-sm text-gray-500">No trending topics right now.</p>
+                    )}
                   </div>
                 </div>
 

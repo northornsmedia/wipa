@@ -14,12 +14,28 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
   const [replies, setReplies] = useState<any[]>([]);
   const [replyText, setReplyText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+  const [podcastResource, setPodcastResource] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+      
+      // Track view
+      const viewKey = `forum_view_${params.postId}`;
+      if (!sessionStorage.getItem(viewKey)) {
+        try {
+          await fetch('/api/forums/track-view', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId: params.postId })
+          });
+          sessionStorage.setItem(viewKey, 'true');
+        } catch (e) {
+          console.error('Failed to track view', e);
+        }
+      }
+
       // Fetch post
       const { data: postData } = await supabase
         .from('forum_posts')
@@ -53,6 +69,18 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
           .eq('user_id', user.id)
           .maybeSingle();
         if (likeData) setIsLiked(true);
+      }
+
+      // Check if there is a podcast created from this post
+      const { data: podcastData } = await supabase
+        .from('resources')
+        .select('id, title')
+        .eq('source_forum_post_id', params.postId)
+        .eq('type', 'podcast')
+        .maybeSingle();
+        
+      if (podcastData) {
+        setPodcastResource(podcastData);
       }
 
       // Fetch replies
@@ -137,6 +165,22 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
         </button>
 
         <div className="bg-white dark:bg-[#0f172a] w-full rounded-[2rem] border border-gray-200 dark:border-white/20 shadow-[8px_8px_0px_0px_#131313] flex flex-col mb-8">
+          
+          {podcastResource && (
+            <div className="bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] p-4 text-white font-bold flex flex-col sm:flex-row items-center justify-between rounded-t-[2rem] gap-4">
+              <div className="flex items-center gap-2 text-center sm:text-left">
+                <span className="text-2xl">🎙️</span>
+                <span>This trending discussion became a Podcast: <span className="underline decoration-white/50">{podcastResource.title}</span></span>
+              </div>
+              <Link 
+                href={`/platform/resources/podcasts-conversations/${podcastResource.id}`}
+                className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl transition-colors shrink-0"
+              >
+                Listen Now
+              </Link>
+            </div>
+          )}
+
           <div className="p-8 border-b border-gray-100 dark:border-white/10">
             <span className="bg-[#fbe8d5] text-[#131313] text-xs font-bold px-3 py-1 rounded-lg inline-block mb-4">
               {post.forumCategory}
