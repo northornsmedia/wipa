@@ -133,8 +133,8 @@ interface AppState {
   toggleMenu: () => void;
   isLexIQOpen: boolean;
   setIsLexIQOpen: (open: boolean) => void;
-  lexiqMessages: { role: string; content: string }[];
-  setLexiqMessages: (messages: { role: string; content: string }[]) => void;
+  lexiqMessages: { role: string; content: string; reasoning_details?: any }[];
+  setLexiqMessages: (messages: { role: string; content: string; reasoning_details?: any }[]) => void;
   user: { 
     id?: string; 
     name: string; 
