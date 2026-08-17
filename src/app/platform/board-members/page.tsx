@@ -13,7 +13,7 @@ export default function BoardMembersPage() {
   ];
 
   return (
-    <div className="relative z-0 flex flex-col items-center w-full h-[calc(100vh-80px)] bg-transparent overflow-hidden">
+    <div className="relative z-0 flex flex-col items-center w-full min-h-screen bg-transparent pb-24">
       
       {/* Solid Background Color */}
       <div className="absolute inset-0 -z-30 bg-white dark:bg-[#0a0a0f]" />
@@ -49,7 +49,7 @@ export default function BoardMembersPage() {
         </div>
 
         {/* Roles Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 mb-20 relative z-10">
+        <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 mb-10 relative z-10">
           {roles.map((role) => (
             <div 
               key={role.name}
