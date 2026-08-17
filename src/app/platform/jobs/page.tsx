@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { 
   Briefcase, MapPin, Building2, DollarSign, Bookmark, ArrowRight, X, ExternalLink, ArrowLeft, Star
 } from 'lucide-react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 
 const INITIAL_MOCK_JOBS = [
@@ -219,8 +220,38 @@ export default function JobsPage() {
   const [activeTab, setActiveTab] = useState<'All Jobs' | 'Saved' | 'My Applications'>('All Jobs');
   const [typeFilter, setTypeFilter] = useState<'All Types' | 'Remote' | 'Hybrid' | 'On-site'>('All Types');
   const [locationFilter, setLocationFilter] = useState('');
-  const [jobs, setJobs] = useState(INITIAL_MOCK_JOBS);
+  const [jobs, setJobs] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setIsLoading(true);
+      const { data } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if (data) {
+        setJobs(data.map(j => ({
+          id: j.id,
+          title: j.title,
+          company: j.company,
+          location: j.location || 'Remote',
+          type: j.job_type || 'Remote',
+          salary: j.salary_range || 'Not specified',
+          postedAt: new Date(j.created_at).toLocaleDateString(),
+          isSaved: false, // mock for now
+          hasApplied: false, // mock for now
+          color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
+          logoInitial: j.company.charAt(0).toUpperCase(),
+          description: j.description
+        })));
+      }
+      setIsLoading(false);
+    };
+    fetchJobs();
+  }, [user?.id]);
   
   const [newJob, setNewJob] = useState({
     title: '',
@@ -231,29 +262,48 @@ export default function JobsPage() {
     description: ''
   });
 
-  const handleCreateJob = (e: React.FormEvent) => {
+  const handleCreateJob = async (e: React.FormEvent) => {
     e.preventDefault();
-    const jobToAdd = {
-      id: jobs.length + 1,
-      ...newJob,
-      postedAt: "Just now",
-      isSaved: false,
-      hasApplied: false,
-      color: '#5a32fa',
-      logoInitial: newJob.company.charAt(0).toUpperCase() || 'C'
-    };
+    if (!user?.id) return;
     
-    setJobs([jobToAdd, ...jobs]);
-    setIsModalOpen(false);
-    setNewJob({
-      title: '',
-      company: '',
-      type: 'Remote',
-      location: '',
-      salary: '',
-      description: ''
-    });
-    setActiveTab('All Jobs');
+    const { data: createdJob } = await supabase.from('jobs').insert({
+      title: newJob.title,
+      company: newJob.company,
+      location: newJob.location,
+      job_type: newJob.type,
+      salary_range: newJob.salary,
+      description: newJob.description,
+      posted_by: user.id
+    }).select().single();
+    
+    if (createdJob) {
+      const jobToAdd = {
+        id: createdJob.id,
+        title: createdJob.title,
+        company: createdJob.company,
+        location: createdJob.location || 'Remote',
+        type: createdJob.job_type || 'Remote',
+        salary: createdJob.salary_range || 'Not specified',
+        postedAt: "Just now",
+        isSaved: false,
+        hasApplied: false,
+        color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
+        logoInitial: createdJob.company.charAt(0).toUpperCase() || 'C',
+        description: createdJob.description
+      };
+      
+      setJobs([jobToAdd, ...jobs]);
+      setIsModalOpen(false);
+      setNewJob({
+        title: '',
+        company: '',
+        type: 'Remote',
+        location: '',
+        salary: '',
+        description: ''
+      });
+      setActiveTab('All Jobs');
+    }
   };
 
   const toggleSave = (id: number) => {

@@ -33,6 +33,17 @@ export async function GET(request: Request) {
     }
 
     const appUrl = process.env.NEXT_PUBLIC_SITE_URL || request.headers.get('origin') || 'http://localhost:3000';
+    
+    // Set pending_tier in user_metadata so webhook knows what they bought
+    const { createClient } = require('@supabase/supabase-js');
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+      process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-key'
+    );
+    
+    await supabaseAdmin.auth.admin.updateUserById(userId, {
+      user_metadata: { pending_tier: tier.toLowerCase() }
+    });
 
     // Create a Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({

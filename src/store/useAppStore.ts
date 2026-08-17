@@ -135,8 +135,22 @@ interface AppState {
   setIsLexIQOpen: (open: boolean) => void;
   lexiqMessages: { role: string; content: string }[];
   setLexiqMessages: (messages: { role: string; content: string }[]) => void;
-  user: { name: string; email: string; id?: string; avatar_url?: string; cover_url?: string; member_id?: string } | null;
-  setUser: (user: { name: string; email: string; id?: string; avatar_url?: string; cover_url?: string; member_id?: string } | null) => void;
+  user: { 
+    id?: string; 
+    name: string; 
+    email: string; 
+    avatar_url?: string; 
+    cover_url?: string; 
+    member_id?: string;
+    membership_tier?: string;
+    verification_status?: string;
+    onboarding_completed?: boolean;
+    country?: string;
+    practice_area?: string;
+    industry_sector?: string;
+    bio?: string;
+  } | null;
+  setUser: (user: any | null) => void;
   posts: Post[];
   likedPostIds: number[];
   toggleLike: (postId: number) => void;

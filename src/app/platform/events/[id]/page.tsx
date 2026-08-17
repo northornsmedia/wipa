@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { 
   Calendar, LayoutGrid, Users, Mail, UsersRound, FileText, Briefcase, GraduationCap,
   BadgeCheck, MapPin, Clock, ArrowLeft, ArrowRight, BookOpen, UserPlus, FileUp
 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 // Duplicated for now to avoid needing a separate file for shared state
 const INITIAL_MOCK_EVENTS = [
@@ -69,9 +69,90 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
   const { user } = useAppStore();
   const router = useRouter();
   
-  const eventId = parseInt(params.id);
-  const event = INITIAL_MOCK_EVENTS.find(e => e.id === eventId) || INITIAL_MOCK_EVENTS[0];
-  const [isRegistered, setIsRegistered] = useState(event.isRegistered);
+  const eventId = params.id;
+  const [event, setEvent] = useState<any>(null);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      setIsLoading(true);
+      const { data: eventData } = await supabase
+        .from('events')
+        .select(`
+          *,
+          organizer:profiles(id, full_name, role)
+        `)
+        .eq('id', eventId)
+        .single();
+        
+      if (eventData) {
+        let attendeesCount = 0;
+        const { count } = await supabase
+          .from('event_registrations')
+          .select('*', { count: 'exact', head: true })
+          .eq('event_id', eventId);
+        attendeesCount = count || 0;
+        
+        let userRegistered = false;
+        if (user?.id) {
+          const { data: myReg } = await supabase
+            .from('event_registrations')
+            .select('*')
+            .eq('event_id', eventId)
+            .eq('user_id', user.id)
+            .maybeSingle();
+          if (myReg) userRegistered = true;
+        }
+
+        const date = new Date(eventData.event_date);
+        const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+        const day = date.getDate().toString();
+        let time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        if (eventData.end_date) {
+          const endDate = new Date(eventData.end_date);
+          time += ' - ' + endDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        setEvent({
+          id: eventData.id,
+          title: eventData.title,
+          type: eventData.is_virtual ? 'Online Event' : 'In-Person',
+          location: eventData.location || 'TBA',
+          time,
+          month,
+          day,
+          attendees: attendeesCount,
+          color: eventData.cover_image_url || ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
+          description: eventData.description,
+          organizerName: eventData.organizer?.full_name || 'WIPA Admin',
+          organizerRole: eventData.organizer?.role || 'Event Organizer'
+        });
+        setIsRegistered(userRegistered);
+      }
+      setIsLoading(false);
+    };
+    
+    fetchEvent();
+  }, [eventId, user?.id]);
+  
+  const handleToggleRegistration = async () => {
+    if (!user?.id || !event) return;
+    
+    if (isRegistered) {
+      await supabase.from('event_registrations').delete().match({ event_id: event.id, user_id: user.id });
+      setEvent({ ...event, attendees: event.attendees - 1 });
+      setIsRegistered(false);
+    } else {
+      await supabase.from('event_registrations').insert({ event_id: event.id, user_id: user.id });
+      setEvent({ ...event, attendees: event.attendees + 1 });
+      setIsRegistered(true);
+    }
+  };
+
+  if (isLoading || !event) {
+    return <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex items-center justify-center font-bold text-gray-500">Loading Event...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a]">
@@ -134,7 +215,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                 </div>
 
                 <button 
-                  onClick={() => setIsRegistered(!isRegistered)}
+                  onClick={handleToggleRegistration}
                   className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-black text-base border-2 border-[#131313] transition-all ${
                   isRegistered 
                     ? 'bg-white dark:bg-[#0f172a] text-[#ff4b4b] border-gray-200 dark:border-white/20 hover:border-[#ff4b4b] hover:bg-[#ff4b4b]/10' 
@@ -193,8 +274,8 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-[#131313] text-white flex items-center justify-center font-bold text-xl">W</div>
                   <div>
-                    <h4 className="font-bold">WIPA Admin</h4>
-                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400">Event Organizer</p>
+                    <h4 className="font-bold">{event.organizerName}</h4>
+                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400">{event.organizerRole}</p>
                   </div>
                 </div>
               </div>

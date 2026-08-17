@@ -79,7 +79,14 @@ export default function MembershipsPage() {
             </div>
           </div>
           
-          <button className={`w-full py-4 rounded-xl font-bold text-lg transition-colors border-2 ${currentTier === 'student' ? 'bg-gray-200 text-gray-500 dark:text-gray-400 border-transparent cursor-not-allowed' : 'bg-white dark:bg-[#0f172a] text-gray-700 dark:text-gray-200 border-gray-200 dark:border-white/20 hover:bg-gray-50 dark:bg-white/5'}`}>
+          <button 
+            onClick={() => {
+              if (currentTier !== 'student' && user?.id) {
+                window.location.href = `/api/checkout?tier=student&userId=${user.id}`;
+              }
+            }}
+            disabled={currentTier === 'student'}
+            className={`w-full py-4 rounded-xl font-bold text-lg transition-colors border-2 ${currentTier === 'student' ? 'bg-gray-200 text-gray-500 dark:text-gray-400 border-transparent cursor-not-allowed' : 'bg-white dark:bg-[#0f172a] text-gray-700 dark:text-gray-200 border-gray-200 dark:border-white/20 hover:bg-gray-50 dark:bg-white/5'}`}>
             {currentTier === 'student' ? 'Active' : 'Get Student Tier'}
           </button>
         </div>
@@ -117,7 +124,14 @@ export default function MembershipsPage() {
             </div>
           </div>
           
-          <button className={`w-full py-4 rounded-xl font-bold text-lg transition-colors border-2 ${currentTier === 'startup' ? 'bg-gray-200 text-gray-500 dark:text-gray-400 border-transparent cursor-not-allowed' : 'bg-[#ffc900] text-gray-900 dark:text-white border-[#ffc900] hover:bg-[#e6b500]'}`}>
+          <button 
+            onClick={() => {
+              if (currentTier !== 'startup' && user?.id) {
+                window.location.href = `/api/checkout?tier=startup&userId=${user.id}`;
+              }
+            }}
+            disabled={currentTier === 'startup'}
+            className={`w-full py-4 rounded-xl font-bold text-lg transition-colors border-2 ${currentTier === 'startup' ? 'bg-gray-200 text-gray-500 dark:text-gray-400 border-transparent cursor-not-allowed' : 'bg-[#ffc900] text-gray-900 dark:text-white border-[#ffc900] hover:bg-[#e6b500]'}`}>
             {currentTier === 'startup' ? 'Active' : 'Get Start-Up Tier'}
           </button>
         </div>
@@ -159,7 +173,14 @@ export default function MembershipsPage() {
             </div>
           </div>
           
-          <button className={`w-full py-4 rounded-xl font-bold text-lg transition-colors border-2 ${currentTier === 'ip_professional' ? 'bg-gray-200 text-gray-500 dark:text-gray-400 border-transparent cursor-not-allowed' : 'bg-[#131313] text-white border-[#131313] hover:bg-black'}`}>
+          <button 
+            onClick={() => {
+              if (currentTier !== 'ip_professional' && user?.id) {
+                window.location.href = `/api/checkout?tier=ip_professional&userId=${user.id}`;
+              }
+            }}
+            disabled={currentTier === 'ip_professional'}
+            className={`w-full py-4 rounded-xl font-bold text-lg transition-colors border-2 ${currentTier === 'ip_professional' ? 'bg-gray-200 text-gray-500 dark:text-gray-400 border-transparent cursor-not-allowed' : 'bg-[#131313] text-white border-[#131313] hover:bg-black'}`}>
             {currentTier === 'ip_professional' ? 'Active' : 'Get Professional Tier'}
           </button>
         </div>

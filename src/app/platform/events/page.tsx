@@ -9,68 +9,14 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-const INITIAL_MOCK_EVENTS = [
-  {
-      id: 1,
-      title: "Women in AI & IP Leadership Summit",
-      type: "Conference",
-      location: "London, UK",
-      time: "10:00 AM - 4:00 PM GMT",
-      month: "JUL",
-      day: "22",
-      attendees: 145,
-      isRegistered: true,
-      color: "#ff90e8",
-      description: "Join industry leaders to discuss the intersection of artificial intelligence and intellectual property law."
-    },
-    {
-      id: 2,
-      title: "Global Trademark Trends 2025",
-      type: "Online Webinar",
-      location: "Zoom",
-      time: "03:00 PM - 04:30 PM GMT",
-      month: "AUG",
-      day: "05",
-      attendees: 312,
-      isRegistered: false,
-      color: "#b892ff",
-      description: "A deep dive into emerging trademark challenges in digital marketplaces and the metaverse."
-    },
-    {
-      id: 3,
-      title: "IP Strategy for Start-ups",
-      type: "Meetup",
-      location: "New York, USA",
-      time: "11:00 AM - 1:00 PM EST",
-      month: "AUG",
-      day: "19",
-      attendees: 89,
-      isRegistered: false,
-      color: "#00d26a",
-      description: "Practical advice for founders on securing and protecting intellectual property early."
-    },
-    {
-      id: 4,
-      title: "Blockchain & Smart Contracts Masterclass",
-      type: "Workshop",
-      location: "Berlin, DE",
-      time: "09:00 AM - 5:00 PM CET",
-      month: "SEP",
-      day: "12",
-      attendees: 55,
-      isRegistered: false,
-      color: "#ffc900",
-      description: "Hands-on technical and legal workshop for automating royalty distributions."
-    }
-  ];
-
+import { supabase } from '@/lib/supabase';
 export default function EventsPage() {
   const { user } = useAppStore();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'Upcoming' | 'My Events' | 'Past'>('Upcoming');
-  const [events, setEvents] = useState(INITIAL_MOCK_EVENTS);
+  const [events, setEvents] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -81,6 +27,57 @@ export default function EventsPage() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      const { data: eventsData } = await supabase
+        .from('events')
+        .select('*')
+        .order('event_date', { ascending: true });
+        
+      const { data: myRegistrations } = await supabase
+        .from('event_registrations')
+        .select('event_id')
+        .eq('user_id', user.id);
+        
+      const registeredIds = new Set(myRegistrations?.map(r => r.event_id) || []);
+      
+      if (eventsData) {
+        const formatted = eventsData.map((e: any) => {
+          const date = new Date(e.event_date);
+          const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+          const day = date.getDate().toString();
+          let time = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          if (e.end_date) {
+            const endDate = new Date(e.end_date);
+            time += ' - ' + endDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          }
+          
+          return {
+            id: e.id,
+            title: e.title,
+            type: e.is_virtual ? 'Online Event' : 'In-Person',
+            location: e.location || 'TBA',
+            time,
+            month,
+            day,
+            attendees: e.max_attendees || 0,
+            isRegistered: registeredIds.has(e.id),
+            color: e.cover_image_url || ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
+            description: e.description,
+            event_date: e.event_date
+          };
+        });
+        setEvents(formatted);
+      }
+      setIsLoading(false);
+    };
+    
+    fetchEvents();
+  }, [user?.id]);
   
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -96,33 +93,61 @@ export default function EventsPage() {
     ]
   });
 
-  const handleCreateEvent = (e: React.FormEvent) => {
+  const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
-    const eventToAdd = {
-      id: events.length + 1,
-      ...newEvent,
-      attendees: 1, // Just you initially
-      isRegistered: true, // You're attending since you created it
-      color: '#00d26a' // Default color for new events
-    };
+    if (!user?.id) return;
     
-    setEvents([eventToAdd, ...events]);
-    setIsModalOpen(false);
-    setNewEvent({
-      title: '',
-      type: 'Meetup',
-      location: '',
-      time: '',
-      month: 'AUG',
-      day: '25',
-      description: '',
-      agenda: [
-        { time: '', brief: '' },
-        { time: '', brief: '' }
-      ]
-    });
-    // Switch to upcoming/my events tab
-    setActiveTab('My Events');
+    const eventDate = new Date();
+    eventDate.setMonth(new Date(`${newEvent.month} 1, 2026`).getMonth());
+    eventDate.setDate(parseInt(newEvent.day));
+    
+    const { data: createdEvent, error } = await supabase.from('events').insert({
+      title: newEvent.title,
+      description: newEvent.description,
+      location: newEvent.location,
+      is_virtual: newEvent.type === 'Online Webinar',
+      event_date: eventDate.toISOString(),
+      organizer_id: user.id
+    }).select().single();
+    
+    if (createdEvent) {
+      await supabase.from('event_registrations').insert({
+        event_id: createdEvent.id,
+        user_id: user.id
+      });
+      
+      const newEventFormatted = {
+        id: createdEvent.id,
+        title: createdEvent.title,
+        type: createdEvent.is_virtual ? 'Online Event' : 'In-Person',
+        location: createdEvent.location,
+        time: newEvent.time,
+        month: newEvent.month,
+        day: newEvent.day,
+        attendees: 1,
+        isRegistered: true,
+        color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
+        description: createdEvent.description,
+        event_date: createdEvent.event_date
+      };
+      
+      setEvents([newEventFormatted, ...events]);
+      setIsModalOpen(false);
+      setNewEvent({
+        title: '',
+        type: 'Meetup',
+        location: '',
+        time: '',
+        month: 'AUG',
+        day: '25',
+        description: '',
+        agenda: [
+          { time: '', brief: '' },
+          { time: '', brief: '' }
+        ]
+      });
+      setActiveTab('My Events');
+    }
   };
 
   return (
@@ -257,15 +282,22 @@ export default function EventsPage() {
                     </div>
                     
                     <button 
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.stopPropagation();
+                        if (event.isRegistered) {
+                          await supabase.from('event_registrations').delete().match({ event_id: event.id, user_id: user?.id });
+                          setEvents(events.map(ev => ev.id === event.id ? { ...ev, isRegistered: false, attendees: ev.attendees - 1 } : ev));
+                        } else {
+                          await supabase.from('event_registrations').insert({ event_id: event.id, user_id: user?.id });
+                          setEvents(events.map(ev => ev.id === event.id ? { ...ev, isRegistered: true, attendees: ev.attendees + 1 } : ev));
+                        }
                       }}
                       className={`w-full py-3.5 mt-8 font-black text-[13px] tracking-wide rounded-xl transition-all relative z-20 ${
                       event.isRegistered 
                         ? 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-white/20 hover:scale-105 shadow-sm' 
                         : 'bg-[#131313] dark:bg-white text-white dark:text-[#131313] hover:scale-105 shadow-md dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]'
                     }`}>
-                      {event.isRegistered ? 'MANAGE' : 'REGISTER'}
+                      {event.isRegistered ? 'MANAGE / CANCEL' : 'REGISTER'}
                     </button>
 
                     {/* Fake Barcode */}

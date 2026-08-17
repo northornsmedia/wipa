@@ -73,7 +73,7 @@ export default function LoginPage() {
         console.error("Failed to record device session", err);
       }
 
-      router.push("/");
+      router.push("/platform");
     }
   };
   return (

@@ -119,6 +119,7 @@ export default function NetworkPage() {
   const [network, setNetwork] = useState<any[]>(INITIAL_MOCK_NETWORK);
   const [searchQuery, setSearchQuery] = useState('');
   const [invitations, setInvitations] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
   
   useEffect(() => {
     if (user?.id) {
@@ -171,13 +172,50 @@ export default function NetworkPage() {
               mutualConnections: Math.floor(Math.random() * 50)
             };
           });
+          setNetwork([...formattedNetwork]);
+        }
+      };
+
+      const fetchSuggestions = async () => {
+        const { data: allProfiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, role, avatar_url, country, practice_area')
+          .neq('id', user.id)
+          .limit(10);
           
-          setNetwork([...formattedNetwork, ...INITIAL_MOCK_NETWORK]);
+        if (allProfiles) {
+          // Filter out existing connections and pending requests
+          const { data: myConnections } = await supabase
+            .from('connections')
+            .select('requester_id, recipient_id')
+            .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`);
+            
+          const connectedIds = new Set();
+          if (myConnections) {
+            myConnections.forEach(c => {
+              connectedIds.add(c.requester_id);
+              connectedIds.add(c.recipient_id);
+            });
+          }
+          
+          const filtered = allProfiles
+            .filter(p => !connectedIds.has(p.id))
+            .map(p => ({
+              id: p.id,
+              name: p.full_name || 'Anonymous User',
+              role: p.role || 'WIPA Member',
+              avatarUrl: p.avatar_url,
+              color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
+              initial: (p.full_name || 'A').charAt(0).toUpperCase()
+            }));
+            
+          setSuggestions(filtered.slice(0, 5));
         }
       };
 
       fetchInvitations();
       fetchNetwork();
+      fetchSuggestions();
     }
   }, [user?.id]);
 
@@ -206,6 +244,24 @@ export default function NetworkPage() {
       .eq('id', connectionId);
       
     setInvitations(invitations.filter(i => i.id !== connectionId));
+  };
+  
+  const handleConnect = async (targetId: string) => {
+    if (!user?.id) return;
+    const { error } = await supabase.from('connections').insert({
+      requester_id: user.id,
+      recipient_id: targetId,
+      status: 'pending'
+    });
+    
+    if (!error) {
+      await supabase.from('notifications').insert({
+        user_id: targetId,
+        actor_id: user.id,
+        type: 'connection_request'
+      });
+      setSuggestions(suggestions.filter(s => s.id !== targetId));
+    }
   };
   
   const [selectedCountry, setSelectedCountry] = useState('');
@@ -477,19 +533,25 @@ export default function NetworkPage() {
                 <button className="text-sm font-bold text-[#5a32fa] hover:underline">See all</button>
               </div>
               <div className="space-y-5">
-                {[
-                  { name: 'Alice Wong', role: 'IP Strategist', icon: 'A', color: '#b892ff' },
-                  { name: 'Ben Stokes', role: 'Counsel', icon: 'B', color: '#ffc900' },
-                ].map((person, i) => (
-                  <div key={i} className="flex items-center gap-4 group">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border border-gray-100 dark:border-white/10" style={{ backgroundColor: person.color }}>
-                      {person.icon}
+                {suggestions.length === 0 ? (
+                  <p className="text-sm text-gray-500">No new suggestions at the moment.</p>
+                ) : suggestions.map((person) => (
+                  <div key={person.id} className="flex items-center gap-4 group">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border border-gray-100 dark:border-white/10" style={{ backgroundColor: person.color, color: person.color === '#5a32fa' ? 'white' : '#131313' }}>
+                      {person.avatarUrl ? (
+                        <img src={person.avatarUrl} alt={person.name} className="w-full h-full rounded-full object-cover" />
+                      ) : person.initial}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors cursor-pointer">{person.name}</p>
+                      <Link href={`/platform/profile/${person.id}`}>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors cursor-pointer">{person.name}</p>
+                      </Link>
                       <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{person.role}</p>
                     </div>
-                    <button className="w-10 h-10 rounded-xl border-2 border-gray-200 dark:border-white/20 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:border-[#131313] hover:text-[#131313] hover:bg-gray-50 dark:bg-white/5 transition-colors shrink-0">
+                    <button 
+                      onClick={() => handleConnect(person.id)}
+                      className="w-10 h-10 rounded-xl border-2 border-gray-200 dark:border-white/20 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:border-[#131313] hover:text-[#131313] hover:bg-gray-50 dark:bg-white/5 transition-colors shrink-0"
+                    >
                       <UserPlus size={16} />
                     </button>
                   </div>
