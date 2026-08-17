@@ -34,7 +34,7 @@ export default function ForumThreadListPage({ params }: { params: { forumId: str
           .from('forum_posts')
           .select(`
             *,
-            author:profiles(full_name),
+            author:profiles(full_name, is_wipa_recommended),
             forum_replies(count),
             forum_post_likes(count)
           `)
@@ -46,6 +46,7 @@ export default function ForumThreadListPage({ params }: { params: { forumId: str
             id: p.id,
             title: p.title,
             author: p.author?.full_name || 'Unknown',
+            author_is_wipa_recommended: p.author?.is_wipa_recommended,
             replies: p.forum_replies?.[0]?.count || 0,
             likes: p.forum_post_likes?.[0]?.count || 0,
             lastActivity: new Date(p.created_at).toLocaleDateString(),
@@ -73,7 +74,7 @@ export default function ForumThreadListPage({ params }: { params: { forumId: str
       })
       .select(`
         *,
-        author:profiles(full_name),
+        author:profiles(full_name, is_wipa_recommended),
         forum_replies(count),
         forum_post_likes(count)
       `)
@@ -84,6 +85,7 @@ export default function ForumThreadListPage({ params }: { params: { forumId: str
         id: post.id,
         title: post.title,
         author: post.author?.full_name || 'You',
+        author_is_wipa_recommended: post.author?.is_wipa_recommended,
         replies: 0,
         likes: 0,
         lastActivity: 'Just now',
@@ -169,7 +171,7 @@ export default function ForumThreadListPage({ params }: { params: { forumId: str
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white text-[10px] font-black">
                       {topic.author.charAt(0)}
                     </div>
-                    Started by <span className="font-bold text-gray-900 dark:text-gray-200">{topic.author}</span>
+                    Started by <span className="font-bold text-gray-900 dark:text-gray-200 flex items-center gap-1">{topic.author}{topic.author_is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap ml-1">⭐ WIPA</span>}</span>
                   </div>
                 </div>
 

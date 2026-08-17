@@ -25,7 +25,7 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
         .from('forum_posts')
         .select(`
           *,
-          author:profiles(full_name),
+          author:profiles(full_name, is_wipa_recommended),
           forum:forums(title, category),
           forum_post_likes(count)
         `)
@@ -36,6 +36,7 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
         setPost({
           ...postData,
           authorName: postData.author?.full_name || 'Unknown',
+          author_is_wipa_recommended: postData.author?.is_wipa_recommended,
           forumTitle: postData.forum?.title,
           forumCategory: postData.forum?.category,
           time: new Date(postData.created_at).toLocaleString()
@@ -59,7 +60,7 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
         .from('forum_replies')
         .select(`
           *,
-          author:profiles(full_name)
+          author:profiles(full_name, is_wipa_recommended)
         `)
         .eq('post_id', params.postId)
         .order('created_at', { ascending: true });
@@ -68,6 +69,7 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
         setReplies(repliesData.map((r: any) => ({
           ...r,
           authorName: r.author?.full_name || 'Unknown',
+          author_is_wipa_recommended: r.author?.is_wipa_recommended,
           time: new Date(r.created_at).toLocaleString(),
           color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
           initial: (r.author?.full_name || 'U').charAt(0).toUpperCase()
@@ -90,7 +92,7 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
       })
       .select(`
         *,
-        author:profiles(full_name)
+        author:profiles(full_name, is_wipa_recommended)
       `)
       .single();
 
@@ -98,6 +100,7 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
       setReplies([...replies, {
         ...newReply,
         authorName: newReply.author?.full_name || 'You',
+        author_is_wipa_recommended: newReply.author?.is_wipa_recommended,
         time: new Date(newReply.created_at).toLocaleString(),
         color: '#5a32fa',
         initial: (newReply.author?.full_name || 'Y').charAt(0).toUpperCase()
@@ -144,7 +147,7 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
                 {post.authorName.charAt(0)}
               </div>
               <div>
-                Started by <span className="font-bold text-gray-800 dark:text-gray-100">{post.authorName}</span>
+                Started by <span className="font-bold text-gray-800 dark:text-gray-100 inline-flex items-center gap-1">{post.authorName}{post.author_is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap ml-1">⭐ WIPA</span>}</span>
                 <span className="mx-2">•</span>
                 {post.time}
               </div>
@@ -170,7 +173,7 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-bold text-gray-800 dark:text-gray-100">{reply.authorName}</h4>
+                    <h4 className="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1">{reply.authorName}{reply.author_is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap ml-1">⭐ WIPA</span>}</h4>
                     <span className="text-xs font-medium text-gray-400">{reply.time}</span>
                   </div>
                   <p className="text-gray-700 dark:text-gray-200 text-base leading-relaxed whitespace-pre-wrap">{reply.content}</p>

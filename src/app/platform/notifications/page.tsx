@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { CheckCheck, Eye, Calendar as CalendarIcon, MessageCircle, UserPlus, Trash2 } from 'lucide-react';
+import { CheckCheck, Eye, Calendar as CalendarIcon, MessageCircle, UserPlus, Trash2, Star } from 'lucide-react';
 
 export default function NotificationsPage() {
   const { user } = useAppStore();
@@ -20,6 +20,8 @@ export default function NotificationsPage() {
             type,
             is_read,
             created_at,
+            content,
+            link,
             actor:profiles!actor_id(id, full_name, avatar_url)
           `)
           .eq('user_id', user.id)
@@ -116,13 +118,14 @@ export default function NotificationsPage() {
                 Icon = CheckCheck;
                 iconBg = 'bg-[#5a32fa]';
                 message = notif.content || 'accepted your connection request.';
-              } else if (notif.type === 'comment') {
-                Icon = MessageCircle;
-                iconBg = 'bg-[#ffb000]';
+              } else if (notif.type === 'badge_granted') {
+                Icon = Star;
+                iconBg = 'bg-yellow-500';
+                message = notif.content || 'awarded you the WIPA Recommended badge.';
               }
 
               return (
-                <Link href={`/platform/profile/${actor?.id}`} key={notif.id} className="block">
+                <Link href={notif.link || `/platform/profile/${actor?.id}`} key={notif.id} className="block">
                   <div className={`group p-4 sm:p-5 sm:px-8 border-b border-gray-100 dark:border-white/10 transition-all duration-300 cursor-pointer flex items-start gap-4 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] relative z-0 hover:z-10 ${notif.is_read ? 'bg-white dark:bg-[#0f172a] hover:bg-gray-50 dark:bg-white/5/80' : 'bg-[#fcfaff] hover:bg-[#f6f2ff]'}`}>
                   <div className="relative shrink-0">
                     <div 

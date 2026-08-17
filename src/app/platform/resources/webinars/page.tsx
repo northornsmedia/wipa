@@ -2,9 +2,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Play, Calendar, Clock, ChevronDown, MonitorPlay, Users, Filter, Tv, Eye } from 'lucide-react';
+import { ArrowLeft, Search, Play, Calendar, Clock, ChevronDown, MonitorPlay, Users, Filter, Tv, Eye, Plus, Loader2, Link as LinkIcon, X } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { useAppStore } from '@/store/useAppStore';
 
 const MOCK_WEBINAR_SUBCATEGORIES = [
   { id: 'all', name: 'All Webinars' },
@@ -110,30 +111,110 @@ const MOCK_WEBINAR_RESOURCES = [
 ];
 
 export default function WebinarsHubPage() {
+  const { user } = useAppStore();
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [resources, setResources] = useState<any[]>(MOCK_WEBINAR_RESOURCES);
+  
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '', description: '', scheduled_at: '', duration_minutes: 60, max_attendees: 100, cover_image: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successData, setSuccessData] = useState<any>(null);
+
+  const isAdmin = user && (user as any).is_admin; // Assuming is_admin is attached to user or handled via profile, for demo assume true if user exists. Wait, let's fetch profile.
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   React.useEffect(() => {
-    async function fetchData() {
-      const { data } = await supabase
-        .from('resources')
-        .select('*')
-        .ilike('category', '%Webinar%');
-      if (data && data.length > 0) {
-        setResources(data.map(d => ({
-          ...d,
-          expert: "Expert",
-          time: new Date(d.created_at).toLocaleDateString(),
-          image: d.url || "/resourceimg1.jpg"
-        })));
+    async function fetchUser() {
+      if (user?.id) {
+        const { data } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+        if (data) setUserProfile(data);
       }
     }
-    fetchData();
-  }, []);
+    fetchUser();
+  }, [user?.id]);
 
+  const canHost = userProfile?.is_admin;
+
+  const handleHostWebinar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/meetn/create-room', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          host_user_id: user?.id
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSuccessData(data.data);
+        // Refresh webinars
+        fetchData();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setIsSubmitting(false);
+  };
+
+  async function fetchData() {
+    const { data } = await supabase
+      .from('resources')
+      .select('*')
+      .ilike('category', '%Live Event%'); // We used "Live Event" in API
+      
+    if (data && data.length > 0) {
+      setResources(data.map(d => ({
+        ...d,
+        expert: "Expert", // would normally pull from author_id profile
+        time: d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString() : new Date(d.created_at).toLocaleDateString(),
+        image: d.url || "/resourceimg1.jpg",
+        type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : 'Upcoming Webinar')
+      })));
+    }
+  }
+
+  React.useEffect(() => {
+    fetchData();
+
+    // Subscribe to realtime updates for webinar status changes
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'resources',
+          filter: "category=ilike.%Live Event%"
+        },
+        (payload) => {
+          setResources(current => current.map(r => {
+            if (r.id === payload.new.id) {
+              return {
+                ...r,
+                ...payload.new,
+                type: payload.new.webinar_status === 'live' ? 'Live Now' : (payload.new.webinar_status === 'ended' ? 'Recording' : 'Upcoming Webinar')
+              };
+            }
+            return r;
+          }));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
   const filteredResources = resources.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
@@ -170,6 +251,15 @@ export default function WebinarsHubPage() {
                 className="bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/70 w-48"
               />
             </div>
+            
+            {canHost && (
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-6 py-2.5 rounded-full font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95"
+              >
+                <Plus size={18} /> Host Webinar
+              </button>
+            )}
           </div>
           
           <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row gap-8 items-end justify-between">
@@ -278,7 +368,12 @@ export default function WebinarsHubPage() {
                   </div>
 
                   {/* Badges */}
-                  <div className="absolute top-2 left-2">
+                  <div className="absolute top-2 left-2 flex gap-2 flex-wrap">
+                    {resource.webinar_status === 'live' && (
+                      <span className="bg-red-500 text-white text-[10px] font-black uppercase px-2 py-1 rounded-md shadow-sm animate-pulse flex items-center gap-1">
+                        <Radio size={10} /> LIVE
+                      </span>
+                    )}
                     {resource.type === "Upcoming Webinar" && (
                       <span className="bg-[#ff2a5f] text-white text-[10px] font-bold uppercase px-2 py-1 rounded-md shadow-sm">
                         Upcoming
@@ -322,6 +417,104 @@ export default function WebinarsHubPage() {
         </div>
 
       </div>
+
+      {/* HOST WEBINAR MODAL */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !isSubmitting && !successData && setIsModalOpen(false)}></div>
+          <div className="bg-white dark:bg-[#0f172a] rounded-3xl p-8 w-full max-w-2xl relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto">
+            {!successData && (
+              <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors">
+                <X size={20} />
+              </button>
+            )}
+
+            {successData ? (
+              <div className="text-center py-8">
+                <div className="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Play size={40} className="ml-2" fill="currentColor" />
+                </div>
+                <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4">Webinar Scheduled!</h2>
+                <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">Your webinar has been successfully created. You can share the viewer URL or save your host URL.</p>
+                
+                <div className="space-y-4 mb-8 text-left">
+                  <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10">
+                    <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Host URL (Keep Secret)</div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 bg-white dark:bg-black/40 px-3 py-2 rounded-xl text-sm font-mono truncate border border-gray-200 dark:border-white/10">{successData.host_url}</div>
+                      <button onClick={() => navigator.clipboard.writeText(successData.host_url)} className="bg-[#ff2a5f] text-white px-4 py-2 rounded-xl font-bold text-sm">Copy</button>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10">
+                    <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Public Viewer URL</div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 bg-white dark:bg-black/40 px-3 py-2 rounded-xl text-sm font-mono truncate border border-gray-200 dark:border-white/10">{successData.room_url}</div>
+                      <button onClick={() => navigator.clipboard.writeText(successData.room_url)} className="bg-gray-200 dark:bg-white/20 text-gray-900 dark:text-white px-4 py-2 rounded-xl font-bold text-sm">Copy</button>
+                    </div>
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setSuccessData(null);
+                    setFormData({ title: '', description: '', scheduled_at: '', duration_minutes: 60, max_attendees: 100, cover_image: '' });
+                  }}
+                  className="bg-gray-900 dark:bg-white text-white dark:text-black px-8 py-3 rounded-xl font-bold hover:opacity-90 transition-opacity"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-6">Host a Webinar</h2>
+                <form onSubmit={handleHostWebinar} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Webinar Title</label>
+                    <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" placeholder="e.g. AI in Patent Law" />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                    <textarea rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" placeholder="What will you cover?" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Date & Time</label>
+                      <input type="datetime-local" required value={formData.scheduled_at} onChange={e => setFormData({...formData, scheduled_at: e.target.value})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Duration (mins)</label>
+                      <input type="number" required value={formData.duration_minutes} onChange={e => setFormData({...formData, duration_minutes: Number(e.target.value)})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Max Attendees</label>
+                      <input type="number" required value={formData.max_attendees} onChange={e => setFormData({...formData, max_attendees: Number(e.target.value)})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Cover Image URL (optional)</label>
+                      <input value={formData.cover_image} onChange={e => setFormData({...formData, cover_image: e.target.value})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" placeholder="https://..." />
+                    </div>
+                  </div>
+
+                  <div className="pt-6">
+                    <button type="submit" disabled={isSubmitting} className="w-full bg-[#ff2a5f] hover:bg-[#e02553] text-white px-6 py-4 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors disabled:opacity-70">
+                      {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <MonitorPlay size={20} />}
+                      Schedule Webinar
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

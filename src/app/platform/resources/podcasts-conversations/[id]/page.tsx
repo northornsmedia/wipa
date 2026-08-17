@@ -23,6 +23,12 @@ export default function PodcastDetailPage({ params }: { params: { id: string } }
         .single();
         
       if (podcast) {
+        const { data: hostProfile } = await supabase
+          .from('profiles')
+          .select('is_wipa_recommended')
+          .eq('full_name', podcast.host_name)
+          .maybeSingle();
+
         setEpisode({
           id: podcast.id,
           title: podcast.title,
@@ -31,6 +37,7 @@ export default function PodcastDetailPage({ params }: { params: { id: string } }
           publishedAt: new Date(podcast.created_at).toLocaleDateString(),
           host: {
             name: podcast.host_name || "Unknown",
+            is_wipa_recommended: hostProfile?.is_wipa_recommended,
             role: "Host",
             image: podcast.cover_image_url || "https://i.pravatar.cc/150?img=12"
           },
@@ -101,8 +108,8 @@ export default function PodcastDetailPage({ params }: { params: { id: string } }
                 <img src={episode.guest.image} alt={episode.guest.name} className="w-12 h-12 rounded-full border-2 border-white dark:border-[#1e293b] -ml-4 relative z-0" />
               </div>
               <div>
-                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                  <span className="text-gray-500">Host:</span> {episode.host.name}
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1">
+                  <span className="text-gray-500">Host:</span> {episode.host.name} {episode.host.is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap ml-1">⭐ WIPA</span>}
                 </p>
                 <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mt-0.5">
                   <span className="text-gray-500">Guest:</span> {episode.guest.name}
@@ -134,7 +141,7 @@ export default function PodcastDetailPage({ params }: { params: { id: string } }
             
             <div className="flex-1 w-full text-center md:text-left">
               <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 mb-2 line-clamp-1">{episode.title}</h2>
-              <p className="text-[#f59e0b] font-bold text-sm mb-6">{episode.host.name} ft. {episode.guest.name}</p>
+              <p className="text-[#f59e0b] font-bold text-sm mb-6 flex items-center justify-center md:justify-start gap-1">{episode.host.name} {episode.host.is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>} ft. {episode.guest.name}</p>
               
               {/* Audio Player */}
               <div className="flex items-center gap-4 w-full">

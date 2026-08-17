@@ -30,7 +30,8 @@ export default function ProfilePage() {
     practiceAreas: 'Patent Prosecution, Trademark Law, IP Litigation, Tech Licensing',
     skills: 'Patent Prosecution, Trademark Law',
     avatarUrl: user?.avatar_url || '',
-    memberId: user?.member_id || ''
+    memberId: user?.member_id || '',
+    businessProfile: null as any
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -48,7 +49,7 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*, business_profiles(id, name, slug, type, logo_url)')
         .eq('id', user.id)
         .single();
         
@@ -64,7 +65,8 @@ export default function ProfilePage() {
           practiceAreas: data.practice_area || profileData.practiceAreas,
           skills: data.skills || profileData.skills,
           avatarUrl: data.avatar_url || profileData.avatarUrl,
-          memberId: data.member_id || ''
+          memberId: data.member_id || '',
+          businessProfile: data.business_profiles
         };
         setProfileData(newProfile);
         setEditForm(newProfile);
@@ -479,6 +481,25 @@ export default function ProfilePage() {
                   </div>
                 </div>
               </div>
+
+              {profileData.businessProfile && (
+                <div className="bg-white dark:bg-[#0f172a] p-8 rounded-3xl border border-gray-200 dark:border-white/20 shadow-md">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Business Profile</h3>
+                  <Link href={`/platform/business/${profileData.businessProfile.slug}`} className="flex items-center gap-4 group p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-colors">
+                    <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-white/10 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-white/20">
+                      {profileData.businessProfile.logo_url ? (
+                        <img src={profileData.businessProfile.logo_url} className="w-full h-full object-cover" />
+                      ) : (
+                        <Briefcase className="text-gray-400" size={20} />
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">{profileData.businessProfile.name}</h4>
+                      <p className="text-sm text-gray-500 capitalize">{profileData.businessProfile.type?.replace('_', ' ')}</p>
+                    </div>
+                  </Link>
+                </div>
+              )}
               
               <div className="bg-white dark:bg-[#0f172a] p-8 rounded-3xl border border-gray-200 dark:border-white/20 shadow-md">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Top Skills</h3>

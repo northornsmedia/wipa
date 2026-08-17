@@ -149,6 +149,7 @@ interface AppState {
     practice_area?: string;
     industry_sector?: string;
     bio?: string;
+    business_profile_id?: string;
   } | null;
   setUser: (user: any | null) => void;
   posts: Post[];

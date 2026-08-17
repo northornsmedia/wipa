@@ -15,6 +15,9 @@ type Profile = {
   cover_url?: string;
   role?: string;
   location?: string;
+  is_wipa_recommended?: boolean;
+  type?: 'user' | 'business';
+  slug?: string;
 };
 
 export default function MembersDirectoryPage() {
@@ -24,6 +27,7 @@ export default function MembersDirectoryPage() {
   const [loading, setLoading] = useState(true);
   const [connectionStatuses, setConnectionStatuses] = useState<Record<string, 'pending' | 'accepted' | 'none'>>({});
   const [isConnecting, setIsConnecting] = useState<Record<string, boolean>>({});
+  const [filter, setFilter] = useState<'all' | 'recommended'>('all');
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -39,6 +43,13 @@ export default function MembersDirectoryPage() {
         query = query.neq('full_name', user.name);
       }
 
+      if (filter === 'recommended') {
+        query = query.eq('is_wipa_recommended', true);
+      } else {
+        // Sort recommended members first when showing all
+        query = query.order('is_wipa_recommended', { ascending: false, nullsFirst: false });
+      }
+
       const { data, error } = await query;
       
       if (error) {
@@ -46,7 +57,28 @@ export default function MembersDirectoryPage() {
       }
       
       if (!error && data) {
-        setMembers(data);
+        let combined = data.map(d => ({...d, type: 'user'})) as any[];
+        
+        // Also fetch business profiles matching search
+        if (searchQuery.trim() !== '') {
+          const { data: businessData } = await supabase.from('business_profiles').select('*').ilike('name', `%${searchQuery}%`).limit(10);
+          if (businessData) {
+            const mappedBiz = businessData.map(b => ({
+              id: b.id,
+              full_name: b.name,
+              avatar_url: b.logo_url,
+              cover_url: b.cover_image_url,
+              role: b.type?.replace('_', ' '),
+              location: b.headquarters,
+              is_wipa_recommended: b.is_verified,
+              type: 'business',
+              slug: b.slug
+            }));
+            combined = [...mappedBiz, ...combined];
+          }
+        }
+        
+        setMembers(combined);
         
         // Also fetch connections involving this user
         if (user?.id && data.length > 0) {
@@ -72,7 +104,7 @@ export default function MembersDirectoryPage() {
 
     const delay = setTimeout(fetchMembers, 300);
     return () => clearTimeout(delay);
-  }, [searchQuery, user?.id]);
+  }, [searchQuery, user?.id, filter]);
 
   // Listen for realtime updates to connection statuses globally
   useEffect(() => {
@@ -179,6 +211,22 @@ export default function MembersDirectoryPage() {
               </div>
             </div>
           </div>
+          
+          {/* Filters Tab */}
+          <div className="flex items-center gap-4 border-b border-gray-200 dark:border-white/10 mb-6">
+            <button 
+              onClick={() => setFilter('all')}
+              className={`px-4 py-3 font-bold text-sm border-b-2 transition-colors ${filter === 'all' ? 'border-[#5a32fa] text-[#5a32fa]' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+            >
+              All Members
+            </button>
+            <button 
+              onClick={() => setFilter('recommended')}
+              className={`px-4 py-3 font-bold text-sm border-b-2 flex items-center gap-2 transition-colors ${filter === 'recommended' ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+            >
+              ⭐ WIPA Recommended
+            </button>
+          </div>
 
         {/* Members Grid */}
         {loading ? (
@@ -194,7 +242,7 @@ export default function MembersDirectoryPage() {
                   className="h-24 bg-[#5a32fa]/10 border-b-2 border-gray-200 dark:border-white/20 relative bg-cover bg-center"
                   style={{ backgroundImage: member.cover_url ? `url(${member.cover_url})` : undefined }}
                 >
-                  <Link href={`/platform/profile/${member.id}`}>
+                  <Link href={member.type === 'business' ? `/platform/business/${member.slug}` : `/platform/profile/${member.id}`}>
                     <div 
                       className="absolute -bottom-10 left-6 w-20 h-20 bg-white dark:bg-[#0f172a] rounded-2xl border border-gray-200 dark:border-white/20 shadow-sm flex items-center justify-center font-bold text-2xl overflow-hidden bg-cover bg-center cursor-pointer transition-transform hover:scale-105" 
                       style={{ 
@@ -205,11 +253,20 @@ export default function MembersDirectoryPage() {
                       {!member.avatar_url && (member.full_name ? member.full_name.charAt(0).toUpperCase() : 'U')}
                     </div>
                   </Link>
+                  {member.is_wipa_recommended && (
+                    <div className="absolute -bottom-12 left-20 w-8 h-8 bg-gradient-to-br from-yellow-300 to-yellow-600 rounded-full border-2 border-white dark:border-[#0f172a] flex items-center justify-center shadow-lg z-10" title="WIPA Recommended">
+                      <span className="text-white text-xs drop-shadow-md">⭐</span>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="p-6 pt-12 flex-1 flex flex-col">
-                  <Link href={`/platform/profile/${member.id}`}>
-                    <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-1 line-clamp-1 hover:text-[#5a32fa] transition-colors cursor-pointer">{member.full_name || 'Anonymous User'}</h3>
+                  <Link href={member.type === 'business' ? `/platform/business/${member.slug}` : `/platform/profile/${member.id}`}>
+                    <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-1 line-clamp-1 hover:text-[#5a32fa] transition-colors cursor-pointer flex items-center gap-2">
+                      {member.full_name || 'Anonymous User'}
+                      {member.is_wipa_recommended && <span className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-0.5 rounded-full whitespace-nowrap">⭐ {member.type === 'business' ? 'Verified' : 'WIPA'}</span>}
+                      {member.type === 'business' && <span className="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full whitespace-nowrap uppercase tracking-wider">Business</span>}
+                    </h3>
                   </Link>
                   <p className="text-[#5a32fa] font-bold text-sm mb-4 flex items-center gap-1">
                     <Briefcase size={14} /> {member.role || 'WIPA Member'}
@@ -217,43 +274,45 @@ export default function MembersDirectoryPage() {
                   
                   <div className="flex flex-col gap-2 mb-6 text-sm font-medium text-gray-500 dark:text-gray-400">
                     <span className="flex items-center gap-2"><MapPin size={16} /> {member.location || 'Global'}</span>
-                    <span className="flex items-center gap-2"><Mail size={16} /> Message via platform</span>
+                    {member.type !== 'business' && <span className="flex items-center gap-2"><Mail size={16} /> Message via platform</span>}
                   </div>
                   
-                  <div className="mt-auto flex gap-3">
-                    {connectionStatuses[member.id] === 'accepted' ? (
-                      <Link 
-                        href={`/platform/messages?userId=${member.id}`}
-                        className="flex-1 bg-[#5a32fa] text-white font-bold py-3 px-4 rounded-xl border border-gray-200 dark:border-white/20 hover:bg-[#4a26d2] transition-colors flex items-center justify-center gap-2"
-                      >
-                        <MessageSquare size={18} /> Message
-                      </Link>
-                    ) : connectionStatuses[member.id] === 'pending' ? (
-                      <button 
-                        disabled
-                        className="flex-1 bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 font-bold py-3 px-4 rounded-xl border border-gray-200 dark:border-white/20 flex items-center justify-center gap-2 cursor-not-allowed"
-                      >
-                        <CheckCircle2 size={18} /> Request Sent
-                      </button>
-                    ) : (
-                      <button 
-                        onClick={() => handleConnect(member.id)}
-                        disabled={isConnecting[member.id]}
-                        className="flex-1 bg-[#131313] text-white font-bold py-3 px-4 rounded-xl border border-gray-200 dark:border-white/20 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <UserPlus size={18} /> {isConnecting[member.id] ? 'Connecting...' : 'Connect'}
-                      </button>
-                    )}
-                    
-                    {connectionStatuses[member.id] !== 'accepted' && (
-                      <Link 
-                        href={`/platform/messages?userId=${member.id}`}
-                        className="w-12 flex items-center justify-center bg-[#fbe8d5] text-[#131313] font-bold rounded-xl border border-gray-200 dark:border-white/20 hover:bg-[#f6d5b3] transition-colors shrink-0"
-                      >
-                        <Mail size={18} />
-                      </Link>
-                    )}
-                  </div>
+                  {member.type !== 'business' && (
+                    <div className="mt-auto flex gap-3">
+                      {connectionStatuses[member.id] === 'accepted' ? (
+                        <Link 
+                          href={`/platform/messages?userId=${member.id}`}
+                          className="flex-1 bg-[#5a32fa] text-white font-bold py-3 px-4 rounded-xl border border-gray-200 dark:border-white/20 hover:bg-[#4a26d2] transition-colors flex items-center justify-center gap-2"
+                        >
+                          <MessageSquare size={18} /> Message
+                        </Link>
+                      ) : connectionStatuses[member.id] === 'pending' ? (
+                        <button 
+                          disabled
+                          className="flex-1 bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 font-bold py-3 px-4 rounded-xl border border-gray-200 dark:border-white/20 flex items-center justify-center gap-2 cursor-not-allowed"
+                        >
+                          <CheckCircle2 size={18} /> Request Sent
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => handleConnect(member.id)}
+                          disabled={isConnecting[member.id]}
+                          className="flex-1 bg-[#131313] text-white font-bold py-3 px-4 rounded-xl border border-gray-200 dark:border-white/20 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <UserPlus size={18} /> {isConnecting[member.id] ? 'Connecting...' : 'Connect'}
+                        </button>
+                      )}
+                      
+                      {connectionStatuses[member.id] !== 'accepted' && (
+                        <Link 
+                          href={`/platform/messages?userId=${member.id}`}
+                          className="w-12 flex items-center justify-center bg-[#fbe8d5] text-[#131313] font-bold rounded-xl border border-gray-200 dark:border-white/20 hover:bg-[#f6d5b3] transition-colors shrink-0"
+                        >
+                          <Mail size={18} />
+                        </Link>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               </Fragment>

@@ -32,10 +32,13 @@ export default function PodcastsHubPage() {
 
   useEffect(() => {
     async function fetchPodcasts() {
-      const [podcastsRes, albumsRes] = await Promise.all([
+      const [podcastsRes, albumsRes, recommendedRes] = await Promise.all([
         supabase.from('podcasts').select('*').order('created_at', { ascending: false }),
-        supabase.from('podcast_albums').select('*').order('name', { ascending: true })
+        supabase.from('podcast_albums').select('*').order('name', { ascending: true }),
+        supabase.from('profiles').select('full_name').eq('is_wipa_recommended', true)
       ]);
+
+      const recommendedSet = new Set((recommendedRes.data || []).map(p => p.full_name));
 
       if (!podcastsRes.error && podcastsRes.data) {
         const formattedData = podcastsRes.data.map(dbItem => ({
@@ -45,6 +48,7 @@ export default function PodcastsHubPage() {
           topic: dbItem.topic_tag || dbItem.custom_topic,
           subcategory: dbItem.subcategory,
           host: dbItem.host_name,
+          host_is_wipa_recommended: recommendedSet.has(dbItem.host_name),
           guest: dbItem.guest_names,
           time: dbItem.duration,
           featured: dbItem.is_featured,
@@ -253,7 +257,7 @@ export default function PodcastsHubPage() {
                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#f59e0b] to-yellow-400 flex items-center justify-center text-white text-[10px] font-bold">
                        {mainFeature.host.charAt(0)}
                      </div>
-                     <span className="font-bold text-gray-900 dark:text-white">{mainFeature.host}</span>
+                     <span className="font-bold text-gray-900 dark:text-white flex items-center gap-1">{mainFeature.host}{mainFeature.host_is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap ml-1">⭐ WIPA</span>}</span>
                    </div>
                    <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-white/20"></span>
                    <span>Guest: {mainFeature.guest}</span>
@@ -332,8 +336,8 @@ export default function PodcastsHubPage() {
                       <Link href={`/platform/resources/podcasts-conversations/${resource.id}`} className={`font-bold text-base truncate hover:underline ${isPlaying ? 'text-[#f59e0b]' : 'text-gray-900 dark:text-white'}`}>
                         {resource.title}
                       </Link>
-                      <span className="text-sm text-gray-500 dark:text-white/50 truncate">
-                        {resource.host} • {resource.guest}
+                      <span className="text-sm text-gray-500 dark:text-white/50 truncate flex items-center gap-1">
+                        {resource.host} {resource.host_is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>} • {resource.guest}
                       </span>
                     </div>
                   </div>

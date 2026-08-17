@@ -229,7 +229,10 @@ export default function JobsPage() {
       setIsLoading(true);
       const { data } = await supabase
         .from('jobs')
-        .select('*')
+        .select(`
+          *,
+          poster:profiles(is_wipa_recommended)
+        `)
         .order('created_at', { ascending: false });
         
       if (data) {
@@ -245,6 +248,7 @@ export default function JobsPage() {
           hasApplied: false, // mock for now
           color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
           logoInitial: j.company.charAt(0).toUpperCase(),
+          poster_is_wipa_recommended: j.poster?.is_wipa_recommended,
           description: j.description
         })));
       }
@@ -276,6 +280,8 @@ export default function JobsPage() {
       posted_by: user.id
     }).select().single();
     
+    const { data: userProfile } = await supabase.from('profiles').select('is_wipa_recommended').eq('id', user.id).single();
+    
     if (createdJob) {
       const jobToAdd = {
         id: createdJob.id,
@@ -289,6 +295,7 @@ export default function JobsPage() {
         hasApplied: false,
         color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
         logoInitial: createdJob.company.charAt(0).toUpperCase() || 'C',
+        poster_is_wipa_recommended: userProfile?.is_wipa_recommended,
         description: createdJob.description
       };
       
@@ -488,7 +495,9 @@ export default function JobsPage() {
                   <h3 className="text-[17px] font-bold text-gray-900 dark:text-white mb-1 leading-tight group-hover:text-[#5a32fa] transition-colors line-clamp-2">
                     {job.title}
                   </h3>
-                  <p className="text-gray-900 dark:text-white font-bold mb-3 text-sm line-clamp-1">{job.company}</p>
+                  <p className="text-gray-900 dark:text-white font-bold mb-3 text-sm line-clamp-1 flex items-center gap-1">
+                    {job.company} {job.poster_is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap ml-1">⭐ WIPA</span>}
+                  </p>
                   
                   <p className="text-gray-600 dark:text-gray-300 font-medium text-xs mb-4 leading-relaxed line-clamp-2">
                     {job.description}

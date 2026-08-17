@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { 
   Calendar, LayoutGrid, Users, Mail, UsersRound, FileText, Briefcase, GraduationCap,
-  BadgeCheck, MapPin, Clock, ArrowLeft, ArrowRight, BookOpen, UserPlus, FileUp
+  Calendar, LayoutGrid, Users, Mail, UsersRound, FileText, Briefcase, GraduationCap,
+  BadgeCheck, MapPin, Clock, ArrowLeft, ArrowRight, BookOpen, UserPlus, FileUp, Star
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -71,6 +72,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
   
   const eventId = params.id;
   const [event, setEvent] = useState<any>(null);
+  const [sponsors, setSponsors] = useState<any[]>([]);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -81,7 +83,7 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
         .from('events')
         .select(`
           *,
-          organizer:profiles(id, full_name, role)
+          organizer:profiles(id, full_name, role, is_wipa_recommended)
         `)
         .eq('id', eventId)
         .single();
@@ -126,9 +128,19 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
           color: eventData.cover_image_url || ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
           description: eventData.description,
           organizerName: eventData.organizer?.full_name || 'WIPA Admin',
-          organizerRole: eventData.organizer?.role || 'Event Organizer'
+          organizerRole: eventData.organizer?.role || 'Event Organizer',
+          organizerIsWipaRecommended: eventData.organizer?.is_wipa_recommended
         });
         setIsRegistered(userRegistered);
+        
+        // Fetch sponsors
+        const { data: sponsorData } = await supabase
+          .from('event_sponsorships')
+          .select('*, package:sponsorship_packages(*)')
+          .eq('event_id', eventId)
+          .in('status', ['approved', 'paid']);
+          
+        if (sponsorData) setSponsors(sponsorData);
       }
       setIsLoading(false);
     };
@@ -227,6 +239,32 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
               </div>
             </div>
           </div>
+          
+          {/* Sponsor Banner (If any sponsor has banner_placement) */}
+          {sponsors.some(s => s.package?.banner_placement) && (
+            <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-[2rem] p-1 border border-gray-700 mb-8 overflow-hidden shadow-2xl relative">
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+              <div className="bg-white/5 backdrop-blur-sm rounded-[1.8rem] p-6 flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
+                <div className="flex items-center gap-4">
+                  <div className="bg-yellow-500/20 text-yellow-400 p-2 rounded-xl">
+                    <Star size={24} fill="currentColor" />
+                  </div>
+                  <div>
+                    <div className="text-gray-400 font-bold text-sm tracking-wider uppercase">Premium Sponsor</div>
+                    <div className="text-white font-black text-2xl">{sponsors.find(s => s.package?.banner_placement)?.sponsor_name}</div>
+                  </div>
+                </div>
+                <div className="text-gray-300 font-medium max-w-sm text-center sm:text-left italic">
+                  "{sponsors.find(s => s.package?.banner_placement)?.sponsor_tagline || 'Proudly supporting WIPA'}"
+                </div>
+                {sponsors.find(s => s.package?.banner_placement)?.sponsor_website_url && (
+                  <a href={sponsors.find(s => s.package?.banner_placement)?.sponsor_website_url} target="_blank" rel="noopener noreferrer" className="bg-white text-gray-900 px-6 py-2 rounded-xl font-bold hover:bg-gray-200 transition-colors shrink-0">
+                    Visit Sponsor
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
@@ -266,15 +304,40 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                   </div>
                 </div>
               </div>
+              
+              {sponsors.length > 0 && (
+                <div className="bg-white dark:bg-[#0f172a] rounded-[2rem] border-4 border-[#131313] p-8">
+                  <h2 className="text-xl font-black mb-6">Proudly Sponsored By</h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                    {sponsors.map(sponsor => (
+                      <a key={sponsor.id} href={sponsor.sponsor_website_url} target="_blank" rel="noopener noreferrer" className="bg-gray-50 dark:bg-black/20 rounded-2xl p-4 border-2 border-transparent hover:border-gray-200 dark:hover:border-white/10 flex flex-col items-center justify-center text-center gap-3 transition-colors group">
+                        <div className={`w-16 h-16 rounded-xl flex items-center justify-center font-black text-2xl shadow-sm ${
+                          sponsor.package?.name.includes('Gold') ? 'bg-gradient-to-br from-yellow-300 to-yellow-600 text-white' :
+                          sponsor.package?.name.includes('Silver') ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-white' :
+                          'bg-gradient-to-br from-orange-300 to-orange-700 text-white'
+                        }`}>
+                          {sponsor.sponsor_name.charAt(0)}
+                        </div>
+                        <div>
+                          <div className="font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors">{sponsor.sponsor_name}</div>
+                          <div className="text-xs text-gray-500">{sponsor.package?.name}</div>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-6">
               <div className="bg-white dark:bg-[#0f172a] rounded-2xl border-2 border-[#131313] p-6 shadow-[4px_4px_0px_0px_#131313]">
                 <h3 className="font-black mb-4">Host</h3>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-[#131313] text-white flex items-center justify-center font-bold text-xl">W</div>
+                  <div className="w-12 h-12 rounded-full bg-[#131313] text-white flex items-center justify-center font-bold text-xl">
+                    {event.organizerName.charAt(0)}
+                  </div>
                   <div>
-                    <h4 className="font-bold">{event.organizerName}</h4>
+                    <h4 className="font-bold flex items-center gap-1">{event.organizerName} {event.organizerIsWipaRecommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap ml-1">⭐ WIPA</span>}</h4>
                     <p className="text-xs font-bold text-gray-500 dark:text-gray-400">{event.organizerRole}</p>
                   </div>
                 </div>
@@ -285,6 +348,19 @@ export default function EventDetailsPage({ params }: { params: { id: string } })
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-4">Have questions about registration or accessibility?</p>
                 <button className="w-full bg-white dark:bg-[#0f172a] text-[#5a32fa] font-bold py-2 rounded-xl border-2 border-[#5a32fa] hover:bg-[#5a32fa] hover:text-white transition-colors">
                   Contact Organizer
+                </button>
+              </div>
+
+              {/* Sponsorship Opportunities */}
+              <div className="bg-gradient-to-br from-[#ffc900]/20 to-[#ff90e8]/20 rounded-2xl border-2 border-[#ffc900] p-6 shadow-[4px_4px_0px_0px_#ffc900]">
+                <h3 className="font-black text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                  <Star size={20} className="text-[#ffc900]" fill="currentColor" /> Become a Sponsor
+                </h3>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+                  Boost your brand visibility. Support WIPA and connect with industry leaders.
+                </p>
+                <button onClick={() => router.push(`/platform/events/${eventId}/sponsor`)} className="w-full bg-[#131313] dark:bg-white text-white dark:text-[#131313] font-black py-3 rounded-xl hover:-translate-y-1 hover:shadow-lg transition-all flex justify-center items-center gap-2">
+                  View Packages <ArrowRight size={16} />
                 </button>
               </div>
             </div>

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Mic, MonitorPlay, FileCheck, Presentation } from 'lucide-react';
+import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Building2, Mic, MonitorPlay, FileCheck, Presentation } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
@@ -137,6 +137,16 @@ const MOCK_CATEGORIES = [
     latestItems: [
       { title: "Work-Life Balance for Lawyers", type: "New Webinar", time: "5 hours ago" },
       { title: "Stress Management Techniques", type: "Audio Guide", time: "2 days ago" }
+    ]
+  },
+  {
+    id: 13,
+    title: "IP Firms Directory",
+    icon: Building2,
+    color: "#f59e0b",
+    description: "Search and connect with specialized IP law firms worldwide.",
+    latestItems: [
+      { title: "Browse Top Firms", type: "Directory", time: "Available" }
     ]
   }
 ];
@@ -436,7 +446,7 @@ export default function ResourcesPage() {
             const Icon = resource.icon;
             return (
               <Link 
-                href={resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/resources/womens-ip-world` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : resource.id === 12 ? `/platform/resources/ip-services` : `/platform/resources/wellness/${resource.id}`}
+                href={resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/resources/womens-ip-world` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : resource.id === 12 ? `/platform/resources/ip-services` : resource.id === 13 ? `/platform/resources/ip-firms` : `/platform/resources/wellness/${resource.id}`}
                 key={resource.id}
                 className="relative bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.15)] transition-all duration-500 group cursor-pointer overflow-hidden block z-10"
               >

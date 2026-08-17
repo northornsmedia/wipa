@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Users, Search, Loader2 } from 'lucide-react';
+import { useAppStore } from '@/store/useAppStore';
 
 export default function AdminUsersPage() {
+  const { user: currentUser } = useAppStore();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -81,7 +83,10 @@ export default function AdminUsersPage() {
                           </div>
                         )}
                         <div>
-                          <p className="font-bold text-gray-900 dark:text-white">{user.full_name || 'Unnamed'}</p>
+                          <p className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            {user.full_name || 'Unnamed'}
+                            {user.is_wipa_recommended && <span className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-0.5 rounded-full flex items-center gap-1 font-medium">⭐ WIPA</span>}
+                          </p>
                           <p className="text-xs text-gray-500">{user.email || 'No email'}</p>
                         </div>
                       </div>
@@ -96,19 +101,53 @@ export default function AdminUsersPage() {
                     <td className="p-4 border-b border-gray-100 dark:border-white/5 text-sm text-gray-500">
                       {new Date(user.created_at).toLocaleDateString()}
                     </td>
-                    <td className="p-4 border-b border-gray-100 dark:border-white/5 text-right flex justify-end gap-2">
+                    <td className="p-4 border-b border-gray-100 dark:border-white/5 text-right flex justify-end gap-2 flex-wrap">
                       {!user.is_admin && (
                         <button 
                           onClick={async () => {
                             await supabase.from('profiles').update({ role: 'Verified' }).eq('id', user.id);
                             setUsers(users.map(u => u.id === user.id ? { ...u, role: 'Verified' } : u));
                           }}
-                          className="text-sm font-bold text-[#00d26a] hover:underline"
+                          className="text-sm font-bold text-[#00d26a] hover:underline whitespace-nowrap"
                         >
                           Verify
                         </button>
                       )}
-                      <button className="text-sm font-bold text-[#5a32fa] hover:underline">Edit</button>
+                      
+                      {user.is_wipa_recommended ? (
+                        <button 
+                          onClick={async () => {
+                            await supabase.from('profiles').update({ is_wipa_recommended: false, recommended_at: null, recommended_by: null }).eq('id', user.id);
+                            setUsers(users.map(u => u.id === user.id ? { ...u, is_wipa_recommended: false } : u));
+                          }}
+                          className="text-sm font-bold text-red-500 hover:underline whitespace-nowrap"
+                        >
+                          Revoke ⭐
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={async () => {
+                            await supabase.from('profiles').update({ is_wipa_recommended: true, recommended_at: new Date().toISOString(), recommended_by: currentUser?.id }).eq('id', user.id);
+                            
+                            // Send notification
+                            await supabase.from('notifications').insert({
+                              user_id: user.id,
+                              actor_id: currentUser?.id,
+                              type: 'badge_granted',
+                              content: 'Congratulations! You have been awarded the WIPA Recommended badge.',
+                              link: `/platform/profile/${user.id}`,
+                              is_read: false
+                            });
+
+                            setUsers(users.map(u => u.id === user.id ? { ...u, is_wipa_recommended: true } : u));
+                          }}
+                          className="text-sm font-bold text-yellow-500 hover:underline whitespace-nowrap"
+                        >
+                          Grant ⭐
+                        </button>
+                      )}
+
+                      <button className="text-sm font-bold text-[#5a32fa] hover:underline whitespace-nowrap">Edit</button>
                     </td>
                   </tr>
                 ))

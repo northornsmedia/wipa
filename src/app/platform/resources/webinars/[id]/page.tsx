@@ -1,209 +1,295 @@
 'use client';
 
-import React from 'react';
-import { ArrowLeft, Clock, User, Calendar, Download, ChevronRight, Video, PlayCircle, Users, FileText, CheckCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useAppStore } from '@/store/useAppStore';
+import { ArrowLeft, Play, Calendar, Clock, MonitorPlay, Users, Radio, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
-export default function WebinarDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params);
+export default function WebinarDetailPage({ params }: { params: { id: string } }) {
+  const { user } = useAppStore();
+  const [webinar, setWebinar] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState<string>('scheduled');
+  const [recordings, setRecordings] = useState<any[]>([]);
+  const [registeredCount, setRegisteredCount] = useState(0);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [countdown, setCountdown] = useState<string>('');
 
-  // Mock data for the specific webinar resource
-  const webinar = {
-    id: id,
-    title: "AI in Patent Law: Opportunities and Risks",
-    organisation: "Global IP Forum",
-    speakers: [
-      {
-        name: "Dr. Alan Turing, Esq.",
-        role: "Chief AI Counsel, Tech IP Group",
-        bio: "Dr. Turing brings 15 years of experience intersecting computer science and patent litigation.",
-        image: "https://i.pravatar.cc/150?u=a042581f4e29026704d"
-      },
-      {
-        name: "Sarah Jenkins",
-        role: "Partner, LegalTech Associates",
-        bio: "Sarah specializes in advising startups on building robust IP portfolios using AI tools.",
-        image: "https://i.pravatar.cc/150?u=a042581f4e29026024d"
+  useEffect(() => {
+    async function fetchWebinar() {
+      setLoading(true);
+      const { data } = await supabase
+        .from('resources')
+        .select('*, author:profiles(first_name, last_name, avatar_url, job_title)')
+        .eq('id', params.id)
+        .single();
+        
+      if (data) {
+        setWebinar(data);
+        setStatus(data.webinar_status || 'scheduled');
+        
+        // Fetch registrations
+        const { count } = await supabase.from('event_registrations').select('*', { count: 'exact', head: true }).eq('resource_id', data.id);
+        if (count) setRegisteredCount(count);
+        
+        if (user?.id) {
+          const { data: regData } = await supabase.from('event_registrations').select('*').eq('resource_id', data.id).eq('user_id', user.id).single();
+          if (regData) setIsRegistered(true);
+        }
       }
-    ],
-    time: "Oct 24, 2026 • 10:00 AM EST",
-    duration: "60 minutes",
-    type: "Upcoming Webinar",
-    overview: "As Artificial Intelligence continues to revolutionize industries, its impact on Intellectual Property law is undeniable. This exclusive webinar dives deep into how AI is changing the landscape of patent drafting, prior art searching, and litigation strategies. Join our panel of experts as they discuss the immediate opportunities and the hidden risks of integrating AI into your legal practice.",
-    topics: [
-      "The role of Generative AI in drafting patent claims.",
-      "Navigating copyright issues with AI-generated outputs.",
-      "Ethical considerations and bias in AI tools for legal research.",
-      "Future regulatory landscapes for AI technologies."
-    ],
-    downloads: [
-      { title: "Presentation Slides (PDF)", type: "PDF", size: "2.4 MB" },
-      { title: "AI in IP Resource Guide", type: "Doc", size: "500 KB" }
-    ],
-    isVideoAvailable: false // Set to true if it's a recording
+      setLoading(false);
+    }
+    fetchWebinar();
+  }, [params.id, user?.id]);
+
+  useEffect(() => {
+    if (!webinar?.meetn_room_id || status === 'ended') return;
+
+    const pollStatus = async () => {
+      try {
+        const res = await fetch(`/api/meetn/get-status?room_id=${webinar.meetn_room_id}`);
+        const data = await res.json();
+        if (data.success && data.data.status) {
+          setStatus(data.data.status);
+          if (data.data.status === 'ended' && webinar.id) {
+            // Update DB if it changed
+            await supabase.from('resources').update({ webinar_status: 'ended' }).eq('id', webinar.id);
+            // Fetch recordings
+            const recRes = await fetch(`/api/meetn/recordings?room_id=${webinar.meetn_room_id}`);
+            const recData = await recRes.json();
+            if (recData.success) {
+              setRecordings(recData.data.recordings || []);
+            }
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const interval = setInterval(pollStatus, 30000); // Poll every 30 seconds
+    return () => clearInterval(interval);
+  }, [webinar?.meetn_room_id, status, webinar?.id]);
+
+  useEffect(() => {
+    if (webinar?.scheduled_at && status === 'scheduled') {
+      const timer = setInterval(() => {
+        const now = new Date().getTime();
+        const target = new Date(webinar.scheduled_at).getTime();
+        const diff = target - now;
+        if (diff <= 0) {
+          setCountdown('Starting soon...');
+          clearInterval(timer);
+        } else {
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const secs = Math.floor((diff % (1000 * 60)) / 1000);
+          setCountdown(`${days > 0 ? days + 'd ' : ''}${hours}h ${mins}m ${secs}s`);
+        }
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [webinar?.scheduled_at, status]);
+
+  useEffect(() => {
+    // If initially loaded as ended, fetch recordings immediately
+    if (webinar?.meetn_room_id && status === 'ended' && recordings.length === 0) {
+      fetch(`/api/meetn/recordings?room_id=${webinar.meetn_room_id}`)
+        .then(r => r.json())
+        .then(d => {
+          if (d.success) setRecordings(d.data.recordings || []);
+        });
+    }
+  }, [webinar?.meetn_room_id, status, recordings.length]);
+
+  const handleRegister = async () => {
+    if (!user?.id) return;
+    const { error } = await supabase.from('event_registrations').insert({
+      resource_id: webinar.id,
+      user_id: user.id
+    });
+    if (!error) {
+      setIsRegistered(true);
+      setRegisteredCount(prev => prev + 1);
+    }
   };
 
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0f172a]"><div className="animate-spin w-10 h-10 border-4 border-[#ff2a5f] border-t-transparent rounded-full"></div></div>;
+  }
+
+  if (!webinar) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-[#0f172a] p-4 text-center">
+        <MonitorPlay size={64} className="text-gray-300 dark:text-gray-700 mb-6" />
+        <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Webinar Not Found</h1>
+        <Link href="/platform/resources/webinars" className="bg-[#ff2a5f] text-white px-6 py-3 rounded-xl font-bold mt-4">Back to Webinars</Link>
+      </div>
+    );
+  }
+
+  const isHost = user?.id === webinar.author_id;
+
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] pb-20">
-      
-      {/* Top Navigation & Video/Hero Area */}
-      <div className="bg-gray-900 border-b border-white/10 pt-8 pb-12">
-        <div className="w-full max-w-[1200px] mx-auto p-4 md:p-6 lg:p-8">
-          <Link href="/platform/resources/webinars" className="inline-flex items-center gap-2 text-gray-400 hover:text-[#ff90e8] font-bold text-sm mb-8 transition-colors">
-            <ArrowLeft size={16} />
-            Back to Webinars Hub
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] font-sans pb-24">
+      {/* Hero Section */}
+      <div className="relative w-full h-[60vh] min-h-[500px] flex flex-col justify-between">
+        <div className="absolute inset-0 z-0 bg-black">
+          <img src={webinar.url || "/resourceimg1.jpg"} alt={webinar.title} className="w-full h-full object-cover opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#f8f9fa] via-transparent dark:from-[#0f172a] to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#f8f9fa] via-transparent dark:from-[#0f172a] to-transparent" />
+        </div>
+
+        <div className="relative z-10 p-6">
+          <Link href="/platform/resources/webinars" className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-gray-900 dark:text-white px-4 py-2 rounded-full font-bold text-sm transition-colors border border-gray-900/10 dark:border-white/10">
+            <ArrowLeft size={16} /> Back
           </Link>
-          
-          <div className="flex flex-col lg:flex-row gap-10">
-            {/* Left: Video / Placeholder */}
-            <div className="flex-1">
-              <div className="w-full aspect-video bg-black rounded-3xl border border-white/10 overflow-hidden relative shadow-2xl group flex items-center justify-center">
-                {webinar.isVideoAvailable ? (
-                  <>
-                    <img src="/resourceimg1.jpg" alt="Video thumbnail" className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity" />
-                    <button className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-full bg-[#ff90e8] flex items-center justify-center text-gray-900 shadow-xl group-hover:scale-110 transition-transform">
-                        <PlayCircle size={40} className="ml-1" />
-                      </div>
-                    </button>
-                  </>
-                ) : (
-                  <div className="text-center p-8">
-                    <Calendar size={64} className="text-white/20 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-white mb-2">Upcoming Live Session</h3>
-                    <p className="text-gray-400">{webinar.time}</p>
-                  </div>
-                )}
-              </div>
-            </div>
+        </div>
 
-            {/* Right: Title & CTA */}
-            <div className="w-full lg:w-[400px] flex flex-col justify-center">
-              <div className="flex items-center gap-3 text-sm font-bold text-[#ff90e8] mb-4">
-                <span className="bg-[#ff90e8]/20 px-3 py-1 rounded-full uppercase tracking-wider text-[10px] text-[#ff90e8]">{webinar.type}</span>
-              </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12 w-full pb-12 flex flex-col md:flex-row gap-8 items-end justify-between">
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-3 mb-4">
+              {status === 'scheduled' && <span className="bg-blue-500 text-white text-xs font-black uppercase px-3 py-1 rounded-sm shadow-md flex items-center gap-1.5"><Calendar size={14} /> Scheduled</span>}
+              {status === 'live' && <span className="bg-red-500 text-white text-xs font-black uppercase px-3 py-1 rounded-sm shadow-md flex items-center gap-1.5 animate-pulse"><Radio size={14} /> LIVE NOW 🔴</span>}
+              {status === 'ended' && <span className="bg-gray-500 text-white text-xs font-black uppercase px-3 py-1 rounded-sm shadow-md flex items-center gap-1.5"><Clock size={14} /> Ended</span>}
               
-              <h1 className="text-3xl md:text-4xl font-black text-white mb-4 leading-tight">
-                {webinar.title}
-              </h1>
-
-              <div className="flex items-center gap-2 text-gray-400 mb-8">
-                <Users size={18} className="text-[#ff90e8]" />
-                <span>Hosted by <strong className="text-white">{webinar.organisation}</strong></span>
+              <span className="bg-white/20 backdrop-blur-md text-gray-900 dark:text-white text-xs font-bold uppercase px-3 py-1 rounded-sm border border-gray-900/10 dark:border-white/10 flex items-center gap-1.5">
+                <Users size={14} /> {registeredCount} Registered
+              </span>
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white leading-tight mb-4 drop-shadow-lg">
+              {webinar.title}
+            </h1>
+            
+            {status === 'scheduled' && countdown && (
+              <div className="text-2xl font-black text-[#ff2a5f] drop-shadow-md mb-6 flex items-center gap-3">
+                <Clock size={24} /> Starts in: {countdown}
               </div>
-
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex flex-col">
-                    <span className="text-gray-400 text-sm">Date & Time</span>
-                    <span className="text-white font-bold">{webinar.time}</span>
-                  </div>
-                  <div className="flex flex-col text-right">
-                    <span className="text-gray-400 text-sm">Duration</span>
-                    <span className="text-white font-bold">{webinar.duration}</span>
-                  </div>
-                </div>
-                
-                <button className="w-full bg-[#ff90e8] hover:bg-[#e87bd2] text-gray-900 font-black py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(255,144,232,0.3)] hover:shadow-[0_0_30px_rgba(255,144,232,0.5)] flex items-center justify-center gap-2 group">
-                  {webinar.isVideoAvailable ? 'Watch Now' : 'Register Now'} <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            )}
+            
+            <div className="flex items-center gap-4 mt-8">
+              {status === 'live' && webinar.meetn_room_url && (
+                <a href={webinar.meetn_room_url} target="_blank" rel="noreferrer" className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-8 py-4 rounded-full font-black flex items-center gap-2 transition-transform hover:scale-105 active:scale-95 shadow-xl animate-pulse">
+                  <Play size={20} fill="currentColor" /> JOIN NOW
+                </a>
+              )}
+              
+              {status === 'scheduled' && !isRegistered && !isHost && (
+                <button onClick={handleRegister} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-black flex items-center gap-2 transition-transform hover:scale-105 shadow-xl">
+                  Register for Webinar
                 </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="w-full max-w-[1200px] mx-auto p-4 md:p-6 lg:p-8 pt-12">
-        <div className="flex flex-col lg:flex-row gap-10">
-          
-          {/* Left Column (Content) */}
-          <div className="flex-1">
-            <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-8 border border-gray-200 dark:border-white/10 shadow-sm mb-8">
-              <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-4">Session Overview</h2>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg mb-8">
-                {webinar.overview}
-              </p>
-
-              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <CheckCircle className="text-[#ff90e8]" size={20} /> Key Topics Covered
-              </h3>
-              <ul className="space-y-4 mb-2">
-                {webinar.topics.map((topic, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-[#0f172a] p-4 rounded-xl border border-gray-100 dark:border-white/5">
-                    <span className="w-6 h-6 rounded-full bg-[#ff90e8]/20 text-[#ff90e8] flex items-center justify-center text-xs font-bold shrink-0">{idx + 1}</span>
-                    <span className="font-medium pt-0.5">{topic}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            {/* Speaker Profiles */}
-            <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-              <User className="text-[#ff90e8]" size={24} /> Meet the Speakers
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {webinar.speakers.map((speaker, idx) => (
-                <div key={idx} className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col gap-4">
-                  <div className="flex items-center gap-4">
-                    <img src={speaker.image} alt={speaker.name} className="w-16 h-16 rounded-full object-cover border-2 border-[#ff90e8]" />
-                    <div>
-                      <h4 className="font-bold text-gray-800 dark:text-gray-100 text-lg">{speaker.name}</h4>
-                      <p className="text-[#ff90e8] text-sm font-bold">{speaker.role}</p>
-                    </div>
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{speaker.bio}</p>
+              )}
+              
+              {status === 'scheduled' && isRegistered && !isHost && (
+                <div className="bg-green-500/20 text-green-700 dark:text-green-400 border border-green-500/50 px-8 py-4 rounded-full font-black flex items-center gap-2">
+                  <Calendar size={20} /> Registered
                 </div>
-              ))}
+              )}
+              
+              {isHost && webinar.meetn_host_url && (status === 'scheduled' || status === 'live') && (
+                <a href={webinar.meetn_host_url} target="_blank" rel="noreferrer" className="bg-gray-900 text-white dark:bg-white dark:text-black px-8 py-4 rounded-full font-black flex items-center gap-2 transition-transform hover:scale-105 shadow-xl">
+                  <MonitorPlay size={20} /> Start / Host Webinar
+                </a>
+              )}
             </div>
-          </div>
-
-          {/* Right Column (Sidebar) */}
-          <div className="w-full lg:w-[350px] flex flex-col gap-6">
-            
-            {/* Downloads Card */}
-            <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
-              <h3 className="font-black text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <Download size={20} className="text-[#ff90e8]" /> Session Materials
-              </h3>
-              <p className="text-sm text-gray-500 mb-4">Slides and resources will be available to registered attendees.</p>
-              <div className="space-y-3">
-                {webinar.downloads.map((doc, idx) => (
-                  <a key={idx} href="#" className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0f172a] border border-transparent hover:border-gray-200 dark:hover:border-white/10 transition-colors group">
-                    <div className="flex items-center gap-3">
-                      <FileText size={18} className="text-gray-400 group-hover:text-[#ff90e8] transition-colors" />
-                      <div>
-                        <p className="text-sm font-bold text-gray-800 dark:text-gray-100 group-hover:text-[#ff90e8] transition-colors">{doc.title}</p>
-                        <p className="text-xs text-gray-500">{doc.type} • {doc.size}</p>
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Related Resources */}
-            <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
-              <h3 className="font-black text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <Video size={20} className="text-[#ff90e8]" /> Related Webinars
-              </h3>
-              <div className="space-y-4">
-                <Link href="/platform/resources/webinars/2" className="block group">
-                  <span className="text-[10px] font-black uppercase text-[#0984e3] mb-1 block">Masterclass</span>
-                  <h4 className="text-sm font-bold text-gray-800 dark:text-gray-100 group-hover:text-[#ff90e8] transition-colors line-clamp-2">Mastering IP Litigation Tactics</h4>
-                </Link>
-                <div className="border-t border-gray-100 dark:border-white/5"></div>
-                <Link href="/platform/resources/webinars/3" className="block group">
-                  <span className="text-[10px] font-black uppercase text-[#e84393] mb-1 block">Panel Discussion</span>
-                  <h4 className="text-sm font-bold text-gray-800 dark:text-gray-100 group-hover:text-[#ff90e8] transition-colors line-clamp-2">The Future of Trademarks in the Metaverse</h4>
-                </Link>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
 
+      <div className="max-w-6xl mx-auto px-6 md:px-12 py-12 flex flex-col lg:flex-row gap-12">
+        {/* Main Content */}
+        <div className="flex-1 space-y-12">
+          
+          <section>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6">About this session</h2>
+            <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 text-lg leading-relaxed whitespace-pre-wrap">
+              {webinar.description || "No description provided for this session."}
+            </div>
+          </section>
+
+          {status === 'ended' && (
+            <section className="bg-white dark:bg-[#1e293b] p-8 rounded-3xl border border-gray-200 dark:border-white/10 shadow-sm">
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                <Play className="text-[#ff2a5f]" fill="currentColor" /> Recordings
+              </h2>
+              
+              {recordings.length === 0 ? (
+                <div className="text-gray-500 dark:text-gray-400 italic">No recordings available yet. They will appear here once processed.</div>
+              ) : (
+                <div className="space-y-4">
+                  {recordings.map((rec, i) => (
+                    <a key={rec.id} href={rec.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-4 bg-gray-50 dark:bg-black/20 rounded-2xl border border-gray-200 dark:border-white/5 hover:border-[#ff2a5f] transition-colors group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-[#ff2a5f]/10 text-[#ff2a5f] rounded-full flex items-center justify-center group-hover:bg-[#ff2a5f] group-hover:text-white transition-colors">
+                          <Play size={20} fill="currentColor" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-gray-900 dark:text-white">Session Recording Part {i + 1}</div>
+                          <div className="text-sm text-gray-500">Duration: {Math.floor(rec.duration_seconds / 60)} mins</div>
+                        </div>
+                      </div>
+                      <ExternalLink size={20} className="text-gray-400 group-hover:text-[#ff2a5f]" />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
+        </div>
+
+        {/* Sidebar */}
+        <div className="w-full lg:w-80 shrink-0 space-y-6">
+          <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl border border-gray-200 dark:border-white/10 shadow-sm">
+            <h3 className="font-black text-gray-900 dark:text-white mb-4 uppercase tracking-wider text-sm text-gray-500">Host</h3>
+            
+            {webinar.author ? (
+              <Link href={`/platform/profile/${webinar.author_id}`} className="flex items-center gap-4 group">
+                <img src={webinar.author.avatar_url || `https://ui-avatars.com/api/?name=${webinar.author.first_name}+${webinar.author.last_name}`} alt="Host Avatar" className="w-16 h-16 rounded-2xl object-cover" />
+                <div>
+                  <div className="font-bold text-gray-900 dark:text-white text-lg group-hover:text-[#ff2a5f] transition-colors">
+                    {webinar.author.first_name} {webinar.author.last_name}
+                  </div>
+                  <div className="text-gray-500 text-sm">{webinar.author.job_title}</div>
+                </div>
+              </Link>
+            ) : (
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-gray-200 dark:bg-white/10 flex items-center justify-center text-gray-400">
+                  <Users size={24} />
+                </div>
+                <div className="font-bold text-gray-400">Unknown Host</div>
+              </div>
+            )}
+          </div>
+          
+          <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl border border-gray-200 dark:border-white/10 shadow-sm">
+            <h3 className="font-black text-gray-900 dark:text-white mb-4 uppercase tracking-wider text-sm text-gray-500">Details</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Scheduled For</div>
+                <div className="font-bold text-gray-900 dark:text-white">{new Date(webinar.scheduled_at).toLocaleString()}</div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Duration</div>
+                <div className="font-bold text-gray-900 dark:text-white">{webinar.duration_minutes || 60} minutes</div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Max Attendees</div>
+                <div className="font-bold text-gray-900 dark:text-white">{webinar.max_attendees || 100} slots</div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Platform</div>
+                <div className="font-bold text-gray-900 dark:text-white capitalize">{webinar.webinar_platform || 'meetn'}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

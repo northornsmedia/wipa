@@ -35,7 +35,7 @@ export default function EventsPage() {
       setIsLoading(true);
       const { data: eventsData } = await supabase
         .from('events')
-        .select('*')
+        .select('*, organizer:profiles(full_name, is_wipa_recommended)')
         .order('event_date', { ascending: true });
         
       const { data: myRegistrations } = await supabase
@@ -66,8 +66,9 @@ export default function EventsPage() {
             day,
             attendees: e.max_attendees || 0,
             isRegistered: registeredIds.has(e.id),
-            color: e.cover_image_url || ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
             description: e.description,
+            organizerName: e.organizer?.full_name || 'WIPA Admin',
+            organizerIsWipaRecommended: e.organizer?.is_wipa_recommended,
             event_date: e.event_date
           };
         });
@@ -110,6 +111,8 @@ export default function EventsPage() {
       organizer_id: user.id
     }).select().single();
     
+    const { data: userProfile } = await supabase.from('profiles').select('full_name, is_wipa_recommended').eq('id', user.id).single();
+    
     if (createdEvent) {
       await supabase.from('event_registrations').insert({
         event_id: createdEvent.id,
@@ -126,8 +129,9 @@ export default function EventsPage() {
         day: newEvent.day,
         attendees: 1,
         isRegistered: true,
-        color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
         description: createdEvent.description,
+        organizerName: userProfile?.full_name || 'WIPA Admin',
+        organizerIsWipaRecommended: userProfile?.is_wipa_recommended,
         event_date: createdEvent.event_date
       };
       
@@ -244,9 +248,12 @@ export default function EventsPage() {
                       )}
                     </div>
                     
-                    <h3 className="text-2xl md:text-3xl font-black mb-3 leading-tight text-gray-900 dark:text-white">
+                    <h3 className="text-2xl md:text-3xl font-black mb-1 leading-tight text-gray-900 dark:text-white">
                       {event.title}
                     </h3>
+                    <p className="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-1">
+                      By {event.organizerName} {event.organizerIsWipaRecommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>}
+                    </p>
                     
                     <p className="text-gray-600 dark:text-gray-400 font-medium mb-8 text-sm md:text-base line-clamp-2">
                       {event.description}

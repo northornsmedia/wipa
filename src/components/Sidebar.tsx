@@ -24,7 +24,11 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  Crown
+  Crown,
+  Building2,
+  Plus,
+  BrainCircuit,
+  Trophy
 } from 'lucide-react';
 import { ShinyButton } from './ShinyButton';
 
@@ -151,6 +155,7 @@ export default function Sidebar() {
                 <Link prefetch={false} href="/platform/resources/podcasts-conversations" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/podcasts-conversations') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Podcasts & Convos</Link>
                 <Link prefetch={false} href="/platform/resources/wellness" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/wellness') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Wellness & Wellbeing</Link>
                 <Link prefetch={false} href="/platform/resources/ip-services" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/ip-services') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>IP Services</Link>
+                <Link prefetch={false} href="/platform/resources/ip-firms" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/ip-firms') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>IP Firms</Link>
               </div>
             </div>
           </div>
@@ -159,6 +164,12 @@ export default function Sidebar() {
           </Link>
           <Link prefetch={false} href="/platform/jobs" className={navLinkClass('/platform/jobs')}>
             <Briefcase size={18} /> Jobs Board
+          </Link>
+          <Link prefetch={false} href="/platform/quizzes" className={navLinkClass('/platform/quizzes')}>
+            <BrainCircuit size={18} /> Quizzes & XP
+          </Link>
+          <Link prefetch={false} href="/platform/leaderboard" className={navLinkClass('/platform/leaderboard')}>
+            <Trophy size={18} /> Leaderboard
           </Link>
           <Link prefetch={false} href="/platform/mentorship" className={`justify-between ${navLinkClass('/platform/mentorship')}`}>
             <div className="flex items-center gap-3">
@@ -218,6 +229,25 @@ export default function Sidebar() {
             </div>
             <ArrowUpRight size={14} className="text-gray-400" />
           </Link>
+        </nav>
+      </div>
+
+      <div className="px-4 mb-8">
+        <p className="text-[13px] font-bold text-[#131313] dark:text-gray-400 mb-4 px-3">Business</p>
+        <nav className="space-y-1">
+          {user?.business_profile_id ? (
+            <Link prefetch={false} href="/platform/business" className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors">
+              <div className="flex items-center gap-2">
+                  <Building2 size={16} className="text-gray-400" /> My Business
+              </div>
+            </Link>
+          ) : (
+            <Link prefetch={false} href="/platform/business/create" className="flex items-center justify-between px-3 py-2 text-[#5a32fa] bg-[#5a32fa]/5 hover:bg-[#5a32fa]/10 rounded-xl font-bold text-[13px] transition-colors">
+              <div className="flex items-center gap-2">
+                  <Plus size={16} /> Create Business Profile
+              </div>
+            </Link>
+          )}
         </nav>
       </div>
 

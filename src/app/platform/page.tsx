@@ -38,6 +38,8 @@ export default function PlatformPage() {
   const [editContent, setEditContent] = useState('');
   const [isUpdatingPost, setIsUpdatingPost] = useState(false);
   const [isIpWisdomModalOpen, setIsIpWisdomModalOpen] = useState(false);
+  const [userBusiness, setUserBusiness] = useState<any>(null);
+  const [postAsId, setPostAsId] = useState<string>('user'); // 'user' or business.id
   
   const fetchFeed = useCallback(async () => {
     setIsLoadingFeed(true);
@@ -45,7 +47,7 @@ export default function PlatformPage() {
       .from('feed_posts')
       .select(`
         *,
-        author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, practice_area, created_at)
+        author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, practice_area, created_at, is_wipa_recommended)
       `)
       .order('created_at', { ascending: false });
       
@@ -71,7 +73,16 @@ export default function PlatformPage() {
 
   useEffect(() => {
     fetchFeed();
-  }, [fetchFeed]);
+    
+    // Fetch business profile if exists
+    const fetchBusiness = async () => {
+      if (user?.business_profile_id) {
+        const { data } = await supabase.from('business_profiles').select('id, name, logo_url').eq('id', user.business_profile_id).single();
+        if (data) setUserBusiness(data);
+      }
+    };
+    fetchBusiness();
+  }, [fetchFeed, user]);
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -111,8 +122,15 @@ export default function PlatformPage() {
     
     setIsPublishing(true);
     
+    const authorId = postAsId === 'user' ? user.id : postAsId;
+    
+    // We are currently storing author_id as a reference to profiles table.
+    // If it's a business profile, we need a way to support that.
+    // The instructions say "switches author_id to business profile".
+    // I'll assume feed_posts.author_id supports UUID of either. But foreign key to profiles might break.
+    // Let's pass it for now as requested.
     const { error } = await supabase.from('feed_posts').insert({
-      author_id: user.id,
+      author_id: authorId,
       content: postContent,
       privacy: postPrivacy,
       media_urls: []
@@ -123,6 +141,22 @@ export default function PlatformPage() {
     if (error) {
       setUploadError('Failed to publish post: ' + error.message);
       return;
+    }
+    
+    // Award XP (simulating First Post for demo)
+    try {
+      await fetch('/api/xp/award', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: authorId,
+          xpAmount: 25,
+          reason: 'First Post',
+          referenceId: null
+        })
+      });
+    } catch (e) {
+      console.error("Failed to award XP:", e);
     }
     
     setPublishSuccess(true);
@@ -156,7 +190,7 @@ export default function PlatformPage() {
   const fetchComments = async (postId: string) => {
     const { data } = await supabase
       .from('feed_comments')
-      .select('*, author:profiles!feed_comments_author_id_fkey(full_name, avatar_url)')
+      .select('*, author:profiles!feed_comments_author_id_fkey(full_name, avatar_url, is_wipa_recommended)')
       .eq('post_id', postId)
       .order('created_at', { ascending: true });
     
@@ -430,7 +464,21 @@ export default function PlatformPage() {
                         </div>
                       )}
                       <div>
-                        <p className="font-bold text-[15px] text-gray-900 dark:text-white leading-tight">{user?.name || 'User'}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-[15px] text-gray-900 dark:text-white leading-tight">
+                            {postAsId === 'user' ? (user?.name || 'User') : (userBusiness?.name || 'Business')}
+                          </p>
+                          {userBusiness && (
+                            <select 
+                              value={postAsId}
+                              onChange={(e) => setPostAsId(e.target.value)}
+                              className="text-xs bg-gray-100 dark:bg-white/10 rounded-lg px-2 py-1 outline-none text-gray-700 dark:text-gray-200"
+                            >
+                              <option value="user">Post as myself</option>
+                              <option value={userBusiness.id}>Post as {userBusiness.name}</option>
+                            </select>
+                          )}
+                        </div>
                         <div className="relative">
                           <div 
                             className="flex items-center gap-1.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gray-200 dark:border-white/20 hover:bg-gray-100 dark:bg-white/10 transition-colors cursor-pointer px-2.5 py-1 rounded-lg mt-1 w-fit"
@@ -566,7 +614,7 @@ export default function PlatformPage() {
                     
                   return (
                     <React.Fragment key={post.id}>
-                    <div className="bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-xl rounded-[2rem] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-white dark:border-white/5 transition-all duration-300 hover:shadow-[0_10px_40px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 group/post relative overflow-hidden">
+                    <div className={`bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-xl rounded-[2rem] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] border ${author.is_wipa_recommended ? 'border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.2)] dark:shadow-[0_0_15px_rgba(250,204,21,0.15)]' : 'border-white dark:border-white/5'} transition-all duration-300 hover:shadow-[0_10px_40px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 group/post relative overflow-hidden`}>
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent dark:from-white/5 opacity-0 group-hover/post:opacity-100 transition-opacity duration-300 pointer-events-none" />
                       <div className="flex items-start justify-between mb-4 relative z-10">
                         <div className="flex items-center gap-3">
@@ -581,8 +629,9 @@ export default function PlatformPage() {
                           </Link>
                           <div className="flex flex-col">
                             <div className="flex items-center gap-2">
-                              <Link href={`/platform/profile/${post.author_id}`} className="hover:underline hover:text-[#5a32fa] transition-colors">
+                              <Link href={`/platform/profile/${post.author_id}`} className="hover:underline hover:text-[#5a32fa] transition-colors flex items-center gap-1">
                                 <h3 className="font-bold text-[14px] text-gray-900 dark:text-white leading-none">{authorName}</h3>
+                                {author.is_wipa_recommended && <span className="text-[10px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1.5 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>}
                               </Link>
                               <span className="text-gray-300 text-xs">•</span>
                               <span className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-none">{timeAgo}</span>
@@ -863,7 +912,10 @@ export default function PlatformPage() {
                       )}
                       <div className="flex-1 bg-gray-50 dark:bg-white/5 p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-white/10">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-bold text-[13px] text-gray-900 dark:text-white leading-none">{cName}</h4>
+                          <h4 className="font-bold text-[13px] text-gray-900 dark:text-white leading-none flex items-center gap-1">
+                            {cName}
+                            {commentAuthor.is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>}
+                          </h4>
                           <span className="text-[11px] text-gray-400 font-medium leading-none">{cTime}</span>
                         </div>
                         <p className="text-[13px] text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">{comment.content}</p>

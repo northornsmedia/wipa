@@ -35,12 +35,45 @@ const IP_SERVICES_DATA = [
 ];
 
 import { SparklesCore } from '@/components/animations/SparklesCore';
+import SplashSponsoredBanner from '@/components/SplashSponsoredBanner';
+import { supabase } from '@/lib/supabase';
 
 export default function IPServicesPage() {
   const [showIntro, setShowIntro] = React.useState(true);
   const [fadeOut, setFadeOut] = React.useState(false);
+  const [ipServices, setIpServices] = React.useState<any[]>([]);
+  const [splashServices, setSplashServices] = React.useState<any[]>([]);
 
   React.useEffect(() => {
+    const fetchServices = async () => {
+      const { data } = await supabase
+        .from('resources')
+        .select('*')
+        .eq('type', 'ip_services');
+
+      if (data) {
+        const now = new Date();
+        const splash = [];
+        const normal = [];
+
+        data.forEach(item => {
+          // Check if splash sponsored and not expired
+          if (
+            item.is_splash_sponsored && 
+            item.splash_expires_at && 
+            new Date(item.splash_expires_at) > now
+          ) {
+            splash.push(item);
+          }
+          normal.push(item);
+        });
+
+        setSplashServices(splash);
+        setIpServices(normal);
+      }
+    };
+    
+    fetchServices();
     const timer1 = setTimeout(() => setFadeOut(true), 3500);
     const timer2 = setTimeout(() => setShowIntro(false), 4000);
     return () => {
@@ -129,43 +162,68 @@ export default function IPServicesPage() {
 
       {/* Services Grid */}
       <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-16">
+        
+        {/* Splash Banners */}
+        {splashServices.length > 0 && (
+          <div className="mb-16">
+            {splashServices.map(service => (
+              <SplashSponsoredBanner 
+                key={`splash-${service.id}`}
+                id={service.id}
+                title={service.title}
+                logoUrl={service.url}
+                tagline={service.splash_tagline || ''}
+                ctaText={service.splash_cta_text || 'Learn More'}
+                ctaUrl={service.splash_cta_url || '#'}
+                bgColor={service.splash_background_color || '#0ea5e9'}
+              />
+            ))}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           
-          {IP_SERVICES_DATA.map(service => (
+          {ipServices.map(service => (
             <Link 
               key={service.id}
               href={`/platform/resources/ip-services/${service.id}`}
               className="group relative bg-white dark:bg-[#0B1221] rounded-[2rem] border border-slate-200 dark:border-white/5 overflow-hidden flex flex-col h-[420px] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:hover:shadow-[0_20px_60px_-15px_rgba(14,165,233,0.15)] dark:hover:border-white/10"
             >
               {/* Branded Abstract Glow */}
-              <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl ${service.bgGradient} blur-[70px] rounded-full pointer-events-none opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700`}></div>
+              <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/20 to-cyan-500/20 blur-[70px] rounded-full pointer-events-none opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700`}></div>
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.02] dark:opacity-[0.1] mix-blend-overlay"></div>
               
               <div className="relative z-10 p-8 md:p-10 flex flex-col h-full">
                 
                 <div className="flex justify-between items-start mb-auto">
                   <div className="w-16 h-16 rounded-[1.25rem] bg-slate-50 dark:bg-white/5 backdrop-blur-md shadow-lg border border-slate-100 dark:border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 relative overflow-hidden">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${service.bgGradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`}></div>
-                    {service.logo ? (
-                      <img src={service.logo} alt={service.companyName} className="max-w-[40px] max-h-[40px] object-contain relative z-10 drop-shadow-sm" />
+                    <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-20 transition-opacity duration-500`}></div>
+                    {service.url ? (
+                      <img src={service.url} alt={service.title} className="max-w-[40px] max-h-[40px] object-contain relative z-10 drop-shadow-sm" />
                     ) : (
-                      <service.icon size={28} className="text-slate-400 dark:text-slate-300 relative z-10" />
+                      <Building2 size={28} className="text-slate-400 dark:text-slate-300 relative z-10" />
                     )}
                   </div>
+                  
+                  {service.is_splash_sponsored && new Date(service.splash_expires_at) > new Date() && (
+                    <span className="bg-gradient-to-r from-yellow-400 to-[#f59e0b] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md flex items-center gap-1">
+                      <Sparkles size={10} /> Sponsored
+                    </span>
+                  )}
                 </div>
 
                 <div className="mt-8 relative z-10">
-                  <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-sky-500 transition-colors drop-shadow-sm">
-                    {service.companyName}
+                  <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-sky-500 transition-colors drop-shadow-sm line-clamp-1">
+                    {service.title}
                   </h3>
                   <div className="inline-block px-3 py-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full mb-6">
                     <p className="text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-[0.2em]">
-                      {service.serviceName}
+                      {service.category || 'Tech Operations'}
                     </p>
                   </div>
                   
                   <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8 line-clamp-3">
-                    {service.subline}
+                    {service.description}
                   </p>
                   
                   <div className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white group-hover:text-sky-500 transition-colors uppercase tracking-widest mt-auto w-max">
