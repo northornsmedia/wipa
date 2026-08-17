@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowLeft, CheckCircle2, MapPin, Globe, Linkedin, Mail, Phone, Users, Building2, Briefcase, Monitor, MoreHorizontal, Link as LinkIcon } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MapPin, Globe, LinkedinIcon, Mail, Phone, Users, Building2, Briefcase, Monitor, MoreHorizontal, Link as LinkIcon, Edit, Upload, Trash2, X, Plus, Clock, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import ThemeWrapper from '@/components/ThemeWrapper';
 import Header from '@/components/Header';
@@ -110,7 +110,7 @@ export default function PublicBusinessProfilePage({ params }: { params: { slug: 
                     <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{business.name}</h1>
                     {business.is_verified && <CheckCircle2 size={24} className="text-blue-500" />}
                     <span className="flex items-center gap-1.5 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                      <TypeIcon size={12} /> {TYPE_LABELS[business.type] || business.type}
+                            <LinkedinIcon size={16} /> {TYPE_LABELS[business.type] || business.type}
                     </span>
                   </div>
                   {business.tagline && (

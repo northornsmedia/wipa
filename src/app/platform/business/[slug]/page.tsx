@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowLeft, CheckCircle2, MapPin, Globe, Linkedin, Mail, Phone, Users, Building2, Briefcase, Monitor, MoreHorizontal, Link as LinkIcon, Edit2, UserPlus, Star, Loader2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MapPin, Globe, Linkedin as LinkedinIcon, Mail, Phone, Users, Building2, Briefcase, Monitor, MoreHorizontal, Link as LinkIcon, Edit2, UserPlus, Star, Loader2, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const TYPE_ICONS: Record<string, any> = {
@@ -250,7 +250,7 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
                   )}
                   {business.linkedin_url && (
                     <a href={business.linkedin_url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-4 text-slate-700 dark:text-slate-300 hover:text-[#5a32fa] group transition-colors">
-                      <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-[#5a32fa]/10"><Linkedin size={20} /></div>
+                      <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-[#5a32fa]/10"><LinkedinIcon size={20} /></div>
                       <div>
                         <div className="font-bold text-sm text-slate-400 mb-1">LinkedIn</div>
                         <div className="font-bold break-all">{business.linkedin_url}</div>
