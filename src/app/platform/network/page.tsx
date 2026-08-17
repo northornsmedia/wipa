@@ -14,112 +14,16 @@ const COUNTRIES = ['United States', 'United Kingdom', 'Canada', 'Australia', 'Ge
 const PRACTICE_AREAS = ['Patent Prosecution', 'Trademark Law', 'IP Litigation', 'Tech Licensing', 'Copyright Law', 'Brand Protection'];
 const INDUSTRIES = ['Technology', 'Pharmaceuticals', 'Manufacturing', 'Entertainment', 'Automotive', 'Academia'];
 
-const INITIAL_MOCK_NETWORK = [
-  {
-    id: 1,
-    name: "Sarah Jenkins",
-    role: "Senior Patent Counsel at Innovatech",
-    mutualConnections: 12,
-    avatarColor: "#5a32fa",
-    initial: "S",
-    isConnection: true,
-    isFollowing: true,
-  },
-  {
-    id: 2,
-    name: "David Chen",
-    role: "Partner at IP Law Group",
-    mutualConnections: 45,
-    avatarColor: "#ff90e8",
-    initial: "D",
-    isConnection: true,
-    isFollowing: false,
-  },
-  {
-    id: 3,
-    name: "Elena Rodriguez",
-    role: "Trademark Examiner at USPTO",
-    mutualConnections: 3,
-    avatarColor: "#00d26a",
-    initial: "E",
-    isConnection: false,
-    isFollowing: true,
-  },
-  {
-    id: 4,
-    name: "Michael Chang",
-    role: "IP Litigation Associate",
-    mutualConnections: 8,
-    avatarColor: "#ffc900",
-    initial: "M",
-    isConnection: true,
-    isFollowing: true,
-  },
-  {
-    id: 5,
-    name: "Jessica Alcott",
-    role: "VP, Intellectual Property at BioMed",
-    mutualConnections: 24,
-    avatarColor: "#b892ff",
-    initial: "J",
-    isConnection: false,
-    isFollowing: true,
-  },
-  {
-    id: 6,
-    name: "Robert Downey",
-    role: "Tech Transfer Officer",
-    mutualConnections: 1,
-    avatarColor: "#ff90e8",
-    initial: "R",
-    isConnection: true,
-    isFollowing: true,
-  },
-  { id: 7, name: "Chris Evans", role: "IP Counsel", mutualConnections: 14, avatarColor: "#00d26a", initial: "C", isConnection: true, isFollowing: true },
-  { id: 8, name: "Scarlett Johansson", role: "Trademark Attorney", mutualConnections: 21, avatarColor: "#5a32fa", initial: "S", isConnection: true, isFollowing: true },
-  { id: 9, name: "Mark Ruffalo", role: "Patent Agent", mutualConnections: 5, avatarColor: "#ffc900", initial: "M", isConnection: false, isFollowing: true },
-  { id: 10, name: "Jeremy Renner", role: "Litigation Partner", mutualConnections: 11, avatarColor: "#ff4b4b", initial: "J", isConnection: true, isFollowing: false },
-  { id: 11, name: "Paul Rudd", role: "Tech Transfer Specialist", mutualConnections: 2, avatarColor: "#b892ff", initial: "P", isConnection: false, isFollowing: true },
-  { id: 12, name: "Brie Larson", role: "Senior IP Counsel", mutualConnections: 33, avatarColor: "#131313", initial: "B", isConnection: true, isFollowing: true },
-  { id: 13, name: "Tom Hiddleston", role: "Copyright Lawyer", mutualConnections: 8, avatarColor: "#ff90e8", initial: "T", isConnection: true, isFollowing: true },
-  { id: 14, name: "Chadwick Boseman", role: "Chief IP Officer", mutualConnections: 45, avatarColor: "#00d26a", initial: "C", isConnection: false, isFollowing: false },
-  { id: 15, name: "Benedict Cumberbatch", role: "Patent Examiner", mutualConnections: 1, avatarColor: "#5a32fa", initial: "B", isConnection: true, isFollowing: true },
-  { id: 16, name: "Elizabeth Olsen", role: "IP Strategist", mutualConnections: 17, avatarColor: "#ffc900", initial: "E", isConnection: true, isFollowing: false },
-  { id: 17, name: "Anthony Mackie", role: "Trademark Paralegal", mutualConnections: 6, avatarColor: "#ff4b4b", initial: "A", isConnection: false, isFollowing: true },
-  { id: 18, name: "Sebastian Stan", role: "IP Consultant", mutualConnections: 12, avatarColor: "#b892ff", initial: "S", isConnection: true, isFollowing: true },
-  { id: 19, name: "Don Cheadle", role: "Managing Partner", mutualConnections: 28, avatarColor: "#131313", initial: "D", isConnection: true, isFollowing: true },
-  { id: 20, name: "Paul Bettany", role: "Tech Transfer Lead", mutualConnections: 4, avatarColor: "#ff90e8", initial: "P", isConnection: false, isFollowing: false },
-  { id: 21, name: "Samuel L. Jackson", role: "Director of IP", mutualConnections: 55, avatarColor: "#00d26a", initial: "S", isConnection: true, isFollowing: true },
-  { id: 22, name: "Cobie Smulders", role: "IP Associate", mutualConnections: 9, avatarColor: "#5a32fa", initial: "C", isConnection: true, isFollowing: false },
-  { id: 23, name: "Gwyneth Paltrow", role: "Brand Protection Manager", mutualConnections: 15, avatarColor: "#ffc900", initial: "G", isConnection: false, isFollowing: true },
-  { id: 24, name: "Jon Favreau", role: "IP Portfolio Manager", mutualConnections: 22, avatarColor: "#ff4b4b", initial: "J", isConnection: true, isFollowing: true },
-  { id: 25, name: "Hayley Atwell", role: "Trademark Counsel", mutualConnections: 7, avatarColor: "#b892ff", initial: "H", isConnection: true, isFollowing: true },
-  { id: 26, name: "Natalie Portman", role: "Patent Attorney", mutualConnections: 19, avatarColor: "#131313", initial: "N", isConnection: false, isFollowing: true },
-  { id: 27, name: "Tom Hardy", role: "IP Specialist", mutualConnections: 3, avatarColor: "#ff90e8", initial: "T", isConnection: true, isFollowing: false },
-  { id: 28, name: "Chris Pratt", role: "Licensing Executive", mutualConnections: 14, avatarColor: "#00d26a", initial: "C", isConnection: true, isFollowing: true },
-  { id: 29, name: "Zoe Saldana", role: "Senior Patent Agent", mutualConnections: 26, avatarColor: "#5a32fa", initial: "Z", isConnection: false, isFollowing: false },
-  { id: 30, name: "Dave Bautista", role: "IP Analyst", mutualConnections: 2, avatarColor: "#ffc900", initial: "D", isConnection: true, isFollowing: true },
-  { id: 31, name: "Bradley Cooper", role: "Director of Licensing", mutualConnections: 31, avatarColor: "#ff4b4b", initial: "B", isConnection: true, isFollowing: true },
-  { id: 32, name: "Vin Diesel", role: "Patent Engineer", mutualConnections: 5, avatarColor: "#b892ff", initial: "V", isConnection: false, isFollowing: true },
-  { id: 33, name: "Karen Gillan", role: "Trademark Assistant", mutualConnections: 8, avatarColor: "#131313", initial: "K", isConnection: true, isFollowing: false },
-  { id: 34, name: "Pom Klementieff", role: "IP Coordinator", mutualConnections: 11, avatarColor: "#ff90e8", initial: "P", isConnection: true, isFollowing: true },
-  { id: 35, name: "Michael Douglas", role: "Senior Partner, IP", mutualConnections: 42, avatarColor: "#00d26a", initial: "M", isConnection: false, isFollowing: false },
-  { id: 36, name: "Michelle Pfeiffer", role: "Chief Patent Counsel", mutualConnections: 38, avatarColor: "#5a32fa", initial: "M", isConnection: true, isFollowing: true }
-].map((person, i) => ({
-  ...person,
-  country: COUNTRIES[i % COUNTRIES.length],
-  practiceArea: PRACTICE_AREAS[i % PRACTICE_AREAS.length],
-  industrySector: INDUSTRIES[(i * 2) % INDUSTRIES.length]
-}));
-
 export default function NetworkPage() {
   const { user } = useAppStore();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'Connections' | 'Followers' | 'Following'>('Connections');
-  const [network, setNetwork] = useState<any[]>(INITIAL_MOCK_NETWORK);
+  const [network, setNetwork] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [invitations, setInvitations] = useState<any[]>([]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   
   useEffect(() => {
     if (user?.id) {
@@ -130,7 +34,7 @@ export default function NetworkPage() {
             id,
             requester_id,
             status,
-            requester:profiles!requester_id(id, full_name)
+            requester:profiles!requester_id(id, full_name, avatar_url)
           `)
           .eq('recipient_id', user.id)
           .eq('status', 'pending');
@@ -145,13 +49,15 @@ export default function NetworkPage() {
           .from('connections')
           .select(`
             id,
-            requester:profiles!requester_id(id, full_name),
-            recipient:profiles!recipient_id(id, full_name)
+            requester:profiles!requester_id(id, full_name, avatar_url, country, practice_area),
+            recipient:profiles!recipient_id(id, full_name, avatar_url, country, practice_area)
           `)
           .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-          .eq('status', 'accepted');
+          .eq('status', 'accepted')
+          .range((page - 1) * 20, page * 20 - 1);
 
         if (acceptedConnections) {
+          if (acceptedConnections.length < 20) setHasMore(false);
           const formattedNetwork = acceptedConnections.map(conn => {
             const req: any = Array.isArray(conn.requester) ? conn.requester[0] : conn.requester;
             const rec: any = Array.isArray(conn.recipient) ? conn.recipient[0] : conn.recipient;
@@ -166,13 +72,15 @@ export default function NetworkPage() {
               initial: otherPerson.full_name?.charAt(0).toUpperCase() || 'U',
               isConnection: true,
               isFollowing: true,
-              country: COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)],
-              practiceArea: PRACTICE_AREAS[Math.floor(Math.random() * PRACTICE_AREAS.length)],
+              country: otherPerson.country || COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)],
+              practiceArea: otherPerson.practice_area || PRACTICE_AREAS[Math.floor(Math.random() * PRACTICE_AREAS.length)],
               industrySector: INDUSTRIES[Math.floor(Math.random() * INDUSTRIES.length)],
               mutualConnections: Math.floor(Math.random() * 50)
             };
           });
-          setNetwork([...formattedNetwork]);
+          setNetwork(prev => page === 1 ? formattedNetwork : [...prev, ...formattedNetwork]);
+        } else {
+          setHasMore(false);
         }
       };
 
@@ -217,7 +125,7 @@ export default function NetworkPage() {
       fetchNetwork();
       fetchSuggestions();
     }
-  }, [user?.id]);
+  }, [user?.id, page]);
 
   const handleAccept = async (connectionId: string) => {
     await supabase
@@ -478,6 +386,17 @@ export default function NetworkPage() {
               </div>
             ))}
           </div>
+
+          {hasMore && network.length > 0 && (
+            <div className="flex justify-center mt-8 pb-24">
+              <button 
+                onClick={() => setPage(p => p + 1)}
+                className="px-6 py-3 bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white border border-gray-200 dark:border-white/20 rounded-xl font-bold hover:bg-gray-50 transition-colors"
+              >
+                Load More
+              </button>
+            </div>
+          )}
           
           </div>
           
@@ -493,20 +412,14 @@ export default function NetworkPage() {
             <div className="bg-white dark:bg-[#0f172a] p-6 rounded-[1.5rem] border border-gray-100 dark:border-white/10 shadow-sm flex flex-col max-h-[500px]">
               <div className="flex justify-between items-center mb-6 shrink-0">
                 <h3 className="font-bold text-lg text-gray-900 dark:text-white">Invitations</h3>
-                <span className="bg-[#5a32fa] text-white text-xs font-bold px-2 py-1 rounded-md border border-gray-100 dark:border-white/10">7</span>
+                <span className="bg-[#5a32fa] text-white text-xs font-bold px-2 py-1 rounded-md border border-gray-100 dark:border-white/10">{invitations.length}</span>
               </div>
               <div className="space-y-4 overflow-y-auto no-scrollbar pr-2 -mr-2">
-                {[
-                  { id: 1, name: 'Tom Holland', role: 'Patent Examiner', icon: 'T', color: '#00d26a' },
-                  { id: 2, name: 'Zendaya Coleman', role: 'IP Counsel', icon: 'Z', color: '#5a32fa' },
-                  { id: 3, name: 'Jacob Batalon', role: 'Paralegal', icon: 'J', color: '#ffc900' },
-                  { id: 4, name: 'Marisa Tomei', role: 'Senior Partner', icon: 'M', color: '#ff4b4b' },
-                  { id: 5, name: 'Jon Favreau', role: 'Head of Patents', icon: 'J', color: '#b892ff' },
-                  { id: 6, name: 'Tony Stark', role: 'Inventor / CEO', icon: 'T', color: '#131313' },
-                  { id: 7, name: 'Bruce Banner', role: 'Research Scientist', icon: 'B', color: '#00d26a' },
-                ].map((inv) => (
-                  <div key={inv.id} className="flex gap-4">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white border border-gray-100 dark:border-white/10 shrink-0 text-xl" style={{ backgroundColor: inv.color }}>
+                {invitations.length === 0 ? (
+                  <p className="text-sm text-gray-500">No pending invitations.</p>
+                ) : invitations.map((inv: any) => (
+                  <div key={inv.id} className="flex gap-4 items-start group">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border border-gray-100 dark:border-white/10 shrink-0" style={{ backgroundColor: inv.color, color: inv.color === '#5a32fa' ? 'white' : '#131313' }}>
                       {inv.icon}
                     </div>
                     <div className="flex-1">

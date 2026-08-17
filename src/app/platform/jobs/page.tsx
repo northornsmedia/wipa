@@ -313,13 +313,23 @@ export default function JobsPage() {
     }
   };
 
-  const toggleSave = (id: number) => {
+  const toggleSave = async (id: number) => {
+    if (!user?.id) return;
+    const job = jobs.find(j => j.id === id);
+    if (!job) return;
+    if (job.isSaved) {
+      await supabase.from('saved_jobs').delete().match({ job_id: id, user_id: user.id });
+    } else {
+      await supabase.from('saved_jobs').insert({ job_id: id, user_id: user.id });
+    }
     setJobs(jobs.map(job => 
       job.id === id ? { ...job, isSaved: !job.isSaved } : job
     ));
   };
 
-  const handleApply = (id: number) => {
+  const handleApply = async (id: number) => {
+    if (!user?.id) return;
+    await supabase.from('job_applications').insert({ job_id: id, applicant_id: user.id, status: 'pending' });
     setJobs(jobs.map(job => 
       job.id === id ? { ...job, hasApplied: true } : job
     ));

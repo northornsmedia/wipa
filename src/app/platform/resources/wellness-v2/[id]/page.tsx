@@ -121,8 +121,9 @@ const DETAILS_DB = {
   }
 };
 
-export default function WellnessDetail({ params }: { params: { id: string } }) {
-  const resource = DETAILS_DB[params.id as keyof typeof DETAILS_DB];
+export default function WellnessDetail({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = React.use(params);
+  const resource = DETAILS_DB[resolvedParams.id as keyof typeof DETAILS_DB];
 
   if (!resource) {
     return (

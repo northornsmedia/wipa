@@ -361,6 +361,16 @@ export const PromptInput = React.forwardRef<HTMLDivElement, PromptInputProps>(
       valueRef.current = value;
     }, [value]);
 
+    // Auto-focus when re-enabled after submitting
+    useEffect(() => {
+      if (!disabled && expanded && !isRecording) {
+        const timer = setTimeout(() => {
+          textareaRef.current?.focus();
+        }, 50);
+        return () => clearTimeout(timer);
+      }
+    }, [disabled, expanded, isRecording]);
+
     const updateFades = () => {
       const el = textareaRef.current;
       if (!el) return;

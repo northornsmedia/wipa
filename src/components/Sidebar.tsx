@@ -24,6 +24,7 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Crown,
   Building2,
   Plus,
@@ -52,6 +53,7 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const [unreadChatsCount, setUnreadChatsCount] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [isResourcesExpanded, setIsResourcesExpanded] = useState(false);
 
   // Fetch initial unread count and listen for changes
   useEffect(() => {
@@ -151,10 +153,19 @@ export default function Sidebar() {
             <MessageCircle size={18} /> Discussion Forums
           </Link>
           <div className="flex flex-col">
-            <Link prefetch={false} href="/platform/resources" className={navLinkClass('/platform/resources')}>
-              <BookOpen size={18} /> Resource Library
-            </Link>
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${pathname.startsWith('/platform/resources') ? 'max-h-[400px] opacity-100 mt-1 mb-2' : 'max-h-0 opacity-0'}`}>
+            <div className="flex items-center group relative">
+              <Link prefetch={false} href="/platform/resources" className={`flex-1 ${navLinkClass('/platform/resources')} pr-10`}>
+                <BookOpen size={18} /> Resource Library
+              </Link>
+              <button 
+                onClick={(e) => { e.preventDefault(); setIsResourcesExpanded(!isResourcesExpanded); }}
+                className="absolute right-2 p-1.5 rounded-lg text-gray-400 hover:text-[#5a32fa] hover:bg-[#5a32fa]/10 transition-colors"
+                aria-label="Toggle Resource Library Submenu"
+              >
+                <ChevronDown size={14} className={`transition-transform duration-300 ${isResourcesExpanded ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+            <div className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isResourcesExpanded ? 'max-h-[500px] opacity-100 mt-1 mb-2' : 'max-h-0 opacity-0'}`}>
               <div className="pl-[2.75rem] flex flex-col space-y-1.5 border-l-2 border-gray-100 dark:border-white/5 ml-[1.1rem]">
                 <Link prefetch={false} href="/platform/resources/webinars" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/webinars') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Webinars & Learning</Link>
                 <Link prefetch={false} href="/platform/resources/education" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/education') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Education & Dev</Link>

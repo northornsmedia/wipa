@@ -7,6 +7,7 @@ import { PromptInput } from './ui/ai-chat-input';
 import LoadingState from './ui/loading-state';
 import { useAppStore } from '@/store/useAppStore';
 import SiriWave from '@/components/ui/siri-wave';
+import { useRouter } from 'next/navigation';
 
 interface LexIQChatCardProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface LexIQChatCardProps {
 }
 
 export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
+  const router = useRouter();
   const [message, setMessage] = useState('');
   const messages = useAppStore((state) => state.lexiqMessages);
   const setMessages = useAppStore((state) => state.setLexiqMessages);
@@ -40,10 +42,14 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
     
     setIsTyping(false);
     
+    if (res.action?.action === 'navigate') {
+      router.push(res.action.path);
+    }
+
     if (res.error) {
       setMessages([...newMessages, { role: 'ai', content: res.error }]);
     } else if (res.text) {
-      setMessages([...newMessages, { role: 'ai', content: res.text }]);
+      setMessages([...newMessages, { role: 'ai', content: res.text, reasoning_details: res.reasoning_details }]);
     }
   };
 
@@ -107,7 +113,19 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
                     : 'bg-white/30 text-gray-900 border-white/40 rounded-tl-sm shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] font-medium'
                 }`}>
                   {msg.role === 'ai' ? (
-                    <div dangerouslySetInnerHTML={{ __html: msg.content }} />
+                    <>
+                      {msg.reasoning_details && (
+                        <details className="mb-2 border border-black/10 rounded-md bg-white/40 cursor-pointer text-xs">
+                          <summary className="px-3 py-2 font-medium text-gray-600 select-none">
+                            Thought Process
+                          </summary>
+                          <div className="px-3 pb-2 text-gray-700 border-t border-black/10 pt-2 whitespace-pre-wrap font-mono">
+                            {typeof msg.reasoning_details === 'string' ? msg.reasoning_details : JSON.stringify(msg.reasoning_details, null, 2)}
+                          </div>
+                        </details>
+                      )}
+                      <div dangerouslySetInnerHTML={{ __html: msg.content }} />
+                    </>
                   ) : (
                     msg.content
                   )}
@@ -133,7 +151,7 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
               onSubmit={handleSend}
               placeholder="Ask LexIQ..."
               disabled={isTyping}
-              models={["LexIQ Fast", "LexIQ Advanced", "LexIQ Beta"]}
+              models={["LexIQ Super", "LexIQ Gemini", "LexIQ Fast", "LexIQ Advanced", "LexIQ Beta"]}
             />
             <p className="text-[10px] text-white/50 text-center mt-2 font-medium tracking-wide">
               For legal news and information LexIQ can make mistakes*

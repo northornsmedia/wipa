@@ -32,7 +32,7 @@ export default function BoardMembersPage() {
         <div className="absolute left-1/4 right-0 top-[10%] m-auto h-[250px] w-[250px] rounded-full bg-blue-500 opacity-20 dark:opacity-10 blur-[100px]" />
       </div>
 
-      <div className="max-w-6xl w-full px-6 pt-8 pb-12">
+      <div className="w-full px-6 pt-8 pb-12">
         {/* Header Section */}
         <div className="text-center w-full mx-auto mb-8 relative z-10">
           <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white tracking-tighter mb-6 leading-[1.1]">

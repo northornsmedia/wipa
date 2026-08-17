@@ -136,6 +136,22 @@ const ITEMS: GalleryItem[] = [
         </p>
       </div>
     ),
+  },
+  {
+    id: "member-4",
+    title: "Nadine Stuttle",
+    subtitle: "Inaugural Chair - Europe",
+    image: "/Nadine Stuttle Picture.jpg",
+    color: "#f3e8ff",
+    flag: "https://flagcdn.com/w40/ch.png",
+    bio: (
+      <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed max-w-3xl">
+        <p className="font-semibold text-lg text-[#5a32fa] dark:text-[#ff90e8]">CEO, PSS Solutions</p>
+        <p>
+          Nadine Stuttle is the CEO of PSS Solutions and serves as the Inaugural Chair for Europe at the Women's IP Alliance.
+        </p>
+      </div>
+    ),
   }
 ];
 
@@ -163,7 +179,7 @@ export function FluidExpandingGrid({
   }, [activeItem]);
 
   return (
-    <div className={cn("w-full max-w-7xl mx-auto pt-0 pb-12 px-6", className)}>
+    <div className={cn("w-full mx-auto pt-0 pb-12 px-6", className)}>
       {/* Unexpanded Grid */}
       <div className="w-full mx-auto flex flex-wrap justify-center gap-6 pb-8">
         {items.map((item) => (
@@ -171,7 +187,7 @@ export function FluidExpandingGrid({
             key={item.id}
             layoutId={`card-${item.id}`}
             onClick={() => setActiveItem(item)}
-            className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-lg w-full md:w-[calc(33.333%-16px)] h-[380px]"
+            className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-lg w-full md:w-[calc(25%-18px)] h-[380px]"
             whileHover={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
