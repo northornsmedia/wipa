@@ -66,6 +66,7 @@ export default function ProfilePage() {
           skills: data.skills || profileData.skills,
           avatarUrl: data.avatar_url || profileData.avatarUrl,
           memberId: data.member_id || '',
+          verificationStatus: data.verification_status || 'unverified',
           businessProfile: data.business_profiles
         };
         setProfileData(newProfile);
@@ -294,7 +295,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-4 mb-2 flex-wrap">
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white flex items-center gap-3 tracking-tight">
                       {profileData.name}
-                      <BadgeCheck size={32} className="text-[#00d26a]" />
+                      {profileData.verificationStatus === 'verified' && <BadgeCheck size={32} className="text-[#00d26a]" />}
                     </h1>
                     {profileData.memberId && (
                       <span className="bg-[#5a32fa]/10 text-[#5a32fa] px-3 py-1 rounded-full text-sm font-bold border-2 border-[#5a32fa]/20 flex items-center gap-1">

@@ -57,6 +57,12 @@ export default function OnboardingPage() {
       
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (authUser) {
+        const { data: profile } = await supabase.from('profiles').select('onboarding_completed').eq('id', authUser.id).single();
+        if (profile?.onboarding_completed) {
+          router.push('/platform');
+          return;
+        }
+
         setUser({
           id: authUser.id,
           email: authUser.email || '',

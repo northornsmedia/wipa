@@ -49,6 +49,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   const [followersCount, setFollowersCount] = useState(0);
   const [activeTab, setActiveTab] = useState<'posts' | 'achievements'>('posts');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [feedPosts, setFeedPosts] = useState<any[]>([]);
 
   const [profileData, setProfileData] = useState({
     name: 'Loading...',
@@ -62,6 +63,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     membershipTier: 'free',
     coverUrl: '',
     memberId: '',
+    verificationStatus: 'unverified',
     isWipaRecommended: false,
     recommendedAt: null,
     businessProfile: null
@@ -92,12 +94,23 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
           membershipTier: data.membership_tier || 'free',
           coverUrl: data.cover_url || '',
           memberId: data.member_id || '',
+          verificationStatus: data.verification_status || 'unverified',
           isWipaRecommended: data.is_wipa_recommended || false,
           recommendedAt: data.recommended_at || null,
           businessProfile: data.business_profiles
         });
       }
       setIsLoading(false);
+    };
+
+    const fetchFeedPosts = async () => {
+      const { data } = await supabase
+        .from('feed_posts')
+        .select('*')
+        .eq('author_id', profileId)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      if (data) setFeedPosts(data);
     };
 
     const fetchGamification = async () => {
@@ -162,6 +175,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     fetchGamification();
     fetchConnectionStatus();
     fetchStats();
+    fetchFeedPosts();
     
     const channel = supabase.channel(`connection-${user?.id}-${profileId}`)
       .on('postgres_changes', {
@@ -298,7 +312,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                     <div className="flex items-center gap-4 mb-2 flex-wrap">
                       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white flex items-center gap-3 tracking-tight">
                         {profileData.name}
-                        <BadgeCheck size={32} className="text-[#00d26a]" />
+                        {profileData.verificationStatus === 'verified' && <BadgeCheck size={32} className="text-[#00d26a]" />}
                       </h1>
                       {profileData.memberId && (
                         <span className="bg-[#5a32fa]/10 text-[#5a32fa] px-3 py-1 rounded-full text-sm font-bold border-2 border-[#5a32fa]/20 flex items-center gap-1">
@@ -459,19 +473,38 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                 </div>
 
                 {activeTab === 'posts' ? (
-                  <div className="bg-white dark:bg-[#0f172a] p-8 md:p-10 rounded-3xl border border-gray-200 dark:border-white/20 shadow-md relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-bl-[100%] opacity-20 pointer-events-none"></div>
-                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-4">
-                      About
-                    </h3>
-                    {profileData.isWipaRecommended && profileData.recommendedAt && (
-                      <p className="text-sm font-bold text-yellow-600 dark:text-yellow-400 mb-4 flex items-center gap-2">
-                        ⭐ Recommended since {new Date(profileData.recommendedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  <div className="space-y-6">
+                    <div className="bg-white dark:bg-[#0f172a] p-8 md:p-10 rounded-3xl border border-gray-200 dark:border-white/20 shadow-md relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-bl-[100%] opacity-20 pointer-events-none"></div>
+                      <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-4">
+                        About
+                      </h3>
+                      {profileData.isWipaRecommended && profileData.recommendedAt && (
+                        <p className="text-sm font-bold text-yellow-600 dark:text-yellow-400 mb-4 flex items-center gap-2">
+                          ⭐ Recommended since {new Date(profileData.recommendedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                        </p>
+                      )}
+                      <p className="text-gray-800 dark:text-gray-100 font-medium text-lg leading-relaxed">
+                        {profileData.bio}
                       </p>
-                    )}
-                    <p className="text-gray-800 dark:text-gray-100 font-medium text-lg leading-relaxed">
-                      {profileData.bio}
-                    </p>
+                    </div>
+
+                    <div className="bg-white dark:bg-[#0f172a] p-8 md:p-10 rounded-3xl border border-gray-200 dark:border-white/20 shadow-md">
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Recent Posts</h3>
+                      {feedPosts.length === 0 ? (
+                        <div className="text-gray-500 text-center py-8">No posts yet.</div>
+                      ) : (
+                        <div className="space-y-4">
+                          {feedPosts.map((post: any) => (
+                            <div key={post.id} className="p-4 rounded-2xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
+                              <p className="text-gray-800 dark:text-gray-200">{post.content}</p>
+                              {post.image_url && <img src={post.image_url} alt="Post" className="mt-4 rounded-xl max-h-64 object-cover" />}
+                              <p className="text-xs text-gray-500 mt-2">{new Date(post.created_at).toLocaleDateString()}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
