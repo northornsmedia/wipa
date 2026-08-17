@@ -72,15 +72,17 @@ export async function generateLexIQResponse(history: any[], selectedModel?: stri
     // OpenRouter Integrations
     // ----------------------------------------------------
     let openRouterModel = "nvidia/nemotron-3.5-lightning:free"; 
-    let apiKey = process.env.OPENROUTER_API_KEY;
+    let apiKey = process.env.OPENROUTER_NEMOTRON_KEY || process.env.OPENROUTER_API_KEY;
 
     if (selectedModel === "LexIQ Super") {
       openRouterModel = "openai/gpt-4o-mini";
       apiKey = "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"; // Old OpenRouter key
     } else if (selectedModel === "LexIQ Advanced") {
       openRouterModel = "google/gemma-4-31b-it:free";
+      apiKey = process.env.OPENROUTER_GEMMA_KEY || process.env.OPENROUTER_API_KEY;
     } else if (selectedModel === "LexIQ Beta") {
       openRouterModel = "dots-studio/dots-3-note-preview:free";
+      apiKey = process.env.OPENROUTER_DOTS_KEY || process.env.OPENROUTER_API_KEY;
     }
 
     const orMessages = [
