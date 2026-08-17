@@ -115,13 +115,54 @@ const MOCK_WELLNESS_RESOURCES = [
   }
 ];
 
+import { supabase } from "@/lib/supabase";
+
 export default function WellnessHubPageV2() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [dbResources, setDbResources] = useState<any[]>([]);
 
-  const filteredResources = MOCK_WELLNESS_RESOURCES.filter(r => {
+  useEffect(() => {
+    async function fetchLiveWellness() {
+      try {
+        const { data, error } = await supabase
+          .from("resources")
+          .select("*")
+          .eq("category", "wellness")
+          .order("created_at", { ascending: false });
+        if (!error && data && data.length > 0) {
+          const mapped = data.map((d: any) => ({
+            id: d.id,
+            title: d.title,
+            type: d.resource_type || "Guide",
+            topic: d.tags?.[0] || "Wellbeing",
+            subcategory: d.subcategory || "mental-health",
+            expert: d.author_name || "Wellness Expert",
+            time: d.read_time || "Read Now",
+            featured: d.is_featured || false,
+            image: d.cover_image_url || "/wellbeing.jpg",
+            tags: d.tags || [],
+            is_splash_sponsored: d.is_splash_sponsored,
+            splash_tagline: d.splash_tagline,
+            splash_cta_text: d.splash_cta_text,
+            splash_cta_url: d.splash_cta_url,
+          }));
+          setDbResources(mapped);
+        } else {
+          setDbResources(MOCK_WELLNESS_RESOURCES);
+        }
+      } catch (err) {
+        setDbResources(MOCK_WELLNESS_RESOURCES);
+      }
+    }
+    fetchLiveWellness();
+  }, []);
+
+  const resourcesToFilter = dbResources.length > 0 ? dbResources : MOCK_WELLNESS_RESOURCES;
+
+  const filteredResources = resourcesToFilter.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;

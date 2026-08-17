@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Search, Bookmark, ChevronRight, PenTool, TrendingUp, Clock, BookOpen, Hash } from 'lucide-react';
 import Link from 'next/link';
 
@@ -93,13 +93,56 @@ const MOCK_ARTICLE_RESOURCES = [
   }
 ];
 
+import { supabase } from "@/lib/supabase";
+
 export default function ArticlesInsightsHubPage() {
   const [activeSub, setActiveSub] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dbResources, setDbResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredResources = MOCK_ARTICLE_RESOURCES.filter(r => {
+  useEffect(() => {
+    async function fetchLiveArticles() {
+      try {
+        const { data, error } = await supabase
+          .from("resources")
+          .select("*")
+          .eq("category", "articles-insights")
+          .order("created_at", { ascending: false });
+        if (!error && data && data.length > 0) {
+          const mapped = data.map((d: any) => ({
+            id: d.id,
+            title: d.title,
+            type: d.resource_type || "Expert Article",
+            topic: d.tags?.[0] || "Intellectual Property",
+            subcategory: d.subcategory || "thought-leadership",
+            author: d.author_name || "WIPA Contributor",
+            time: d.read_time || "6 min read",
+            featured: d.is_featured || false,
+            image: d.cover_image_url || "/resourceimg1.jpg",
+            is_splash_sponsored: d.is_splash_sponsored,
+            splash_tagline: d.splash_tagline,
+            splash_cta_text: d.splash_cta_text,
+            splash_cta_url: d.splash_cta_url,
+          }));
+          setDbResources(mapped);
+        } else {
+          setDbResources(MOCK_ARTICLE_RESOURCES);
+        }
+      } catch (err) {
+        setDbResources(MOCK_ARTICLE_RESOURCES);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchLiveArticles();
+  }, []);
+
+  const allResources = dbResources.length > 0 ? dbResources : MOCK_ARTICLE_RESOURCES;
+
+  const filteredResources = allResources.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;

@@ -169,15 +169,16 @@ export default function WebinarsHubPage() {
     const { data } = await supabase
       .from('resources')
       .select('*')
-      .ilike('category', '%Live Event%'); // We used "Live Event" in API
+      .or('category.eq.webinars,category.ilike.%Live Event%')
+      .order('created_at', { ascending: false });
       
     if (data && data.length > 0) {
       setResources(data.map(d => ({
         ...d,
-        expert: "Expert", // would normally pull from author_id profile
-        time: d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString() : new Date(d.created_at).toLocaleDateString(),
-        image: d.url || "/resourceimg1.jpg",
-        type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : 'Upcoming Webinar')
+        expert: d.author_name || "Expert",
+        time: d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString() : (d.read_time || "45:00"),
+        image: d.cover_image_url || d.url || "/resourceimg1.jpg",
+        type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : (d.resource_type || 'Upcoming Webinar'))
       })));
     }
   }
