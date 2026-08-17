@@ -54,26 +54,10 @@ export default function ProfilePage() {
 
   // Post composer state
   const [newPostText, setNewPostText] = useState('');
-  const [userPosts, setUserPosts] = useState<any[]>([
-    {
-      id: 'post-1',
-      content: 'Honoured to share our latest research on navigating AI patent eligibility under USPTO 101 guidelines. Key takeaway: precise algorithmic workflow disclosure makes all the difference! 🚀💡',
-      created_at: '2 hours ago',
-      likes_count: 24,
-      comments_count: 7,
-      isLiked: false,
-      tags: ['#AIPatents', '#IntellectualProperty', '#WIPA']
-    },
-    {
-      id: 'post-2',
-      content: 'Looking forward to meeting fellow WIPA leaders at the upcoming Global IP Strategy Summit next month in Geneva! Who else is attending in person?',
-      created_at: '2 days ago',
-      likes_count: 48,
-      comments_count: 12,
-      isLiked: true,
-      tags: ['#WIPASummit', '#WomenInIP', '#Networking']
-    }
-  ]);
+  const [userPosts, setUserPosts] = useState<any[]>([]);
+  const [likedPostIds, setLikedPostIds] = useState<Set<string>>(new Set());
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(null);
@@ -86,6 +70,38 @@ export default function ProfilePage() {
 
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '' });
   const [passwordStatus, setPasswordStatus] = useState({ type: '', message: '' });
+
+  const fetchUserPosts = async (userId: string) => {
+    setIsLoadingPosts(true);
+    try {
+      const { data, error } = await supabase
+        .from('feed_posts')
+        .select(`
+          *,
+          author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, role, is_wipa_recommended)
+        `)
+        .eq('author_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        setUserPosts(data);
+        setStats(prev => ({ ...prev, posts: data.length }));
+      }
+
+      const { data: likesData } = await supabase
+        .from('feed_likes')
+        .select('post_id')
+        .eq('user_id', userId);
+
+      if (likesData) {
+        setLikedPostIds(new Set(likesData.map(l => l.post_id)));
+      }
+    } catch (err) {
+      console.error("Error fetching user posts:", err);
+    } finally {
+      setIsLoadingPosts(false);
+    }
+  };
 
   useEffect(() => {
     if (!user?.id) return;
@@ -123,6 +139,7 @@ export default function ProfilePage() {
     };
     
     fetchProfile();
+    fetchUserPosts(user.id);
   }, [user?.id]);
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -236,32 +253,52 @@ export default function ProfilePage() {
     }
   };
 
-  const handleCreatePost = () => {
-    if (!newPostText.trim()) return;
-    const newPost = {
-      id: `post-${Date.now()}`,
-      content: newPostText,
-      created_at: 'Just now',
-      likes_count: 0,
-      comments_count: 0,
-      isLiked: false,
-      tags: ['#WIPANetwork']
-    };
-    setUserPosts([newPost, ...userPosts]);
-    setNewPostText('');
+  const handleCreatePost = async () => {
+    if (!newPostText.trim() || !user?.id) return;
+    setIsPublishing(true);
+    try {
+      const { data, error } = await supabase
+        .from('feed_posts')
+        .insert({
+          author_id: user.id,
+          content: newPostText.trim(),
+          privacy: 'Anyone',
+          media_urls: []
+        })
+        .select(`
+          *,
+          author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, role, is_wipa_recommended)
+        `)
+        .single();
+
+      if (!error && data) {
+        setUserPosts(prev => [data, ...prev]);
+        setNewPostText('');
+        setStats(prev => ({ ...prev, posts: prev.posts + 1 }));
+      } else if (error) {
+        console.error("Error inserting post to DB:", error);
+      }
+    } catch (e) {
+      console.error("Error creating post:", e);
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
-  const handleToggleLike = (postId: string) => {
-    setUserPosts(userPosts.map(p => {
-      if (p.id === postId) {
-        return {
-          ...p,
-          isLiked: !p.isLiked,
-          likes_count: p.isLiked ? p.likes_count - 1 : p.likes_count + 1
-        };
-      }
-      return p;
-    }));
+  const handleToggleLike = async (postId: string) => {
+    if (!user?.id) return;
+    const isLiked = likedPostIds.has(postId);
+    const nextLiked = new Set(likedPostIds);
+    if (isLiked) {
+      nextLiked.delete(postId);
+      setUserPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: Math.max(0, (p.likes_count || 0) - 1) } : p));
+      await supabase.from('feed_likes').delete().match({ post_id: postId, user_id: user.id });
+    } else {
+      nextLiked.add(postId);
+      setUserPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p));
+      await supabase.from('feed_likes').insert({ post_id: postId, user_id: user.id });
+    }
+    setLikedPostIds(nextLiked);
   };
 
   return (
@@ -541,86 +578,101 @@ export default function ProfilePage() {
 
                 {/* User's Post Feed */}
                 <div className="space-y-4">
-                  {userPosts.map((post) => (
-                    <div key={post.id} className="bg-white dark:bg-[#151c2c] rounded-2xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm">
-                      {/* Post Author Header */}
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div 
-                            className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm overflow-hidden shrink-0"
-                            style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover' }}
-                          >
-                            {!profileData.avatarUrl && profileData.name.charAt(0)}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <h4 className="font-bold text-sm text-gray-900 dark:text-white">{profileData.name}</h4>
-                              <BadgeCheck size={14} className="text-[#00d26a]" />
+                  {isLoadingPosts ? (
+                    <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-8 border border-gray-200 dark:border-gray-800 flex items-center justify-center text-gray-500 gap-2">
+                      <Loader2 size={20} className="animate-spin text-[#5a32fa]" />
+                      <span className="text-sm font-medium">Loading your activity...</span>
+                    </div>
+                  ) : userPosts.length === 0 ? (
+                    <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-8 border border-gray-200 dark:border-gray-800 text-center space-y-3 shadow-sm">
+                      <div className="w-12 h-12 rounded-2xl bg-[#5a32fa]/10 text-[#5a32fa] flex items-center justify-center mx-auto">
+                        <MessageSquare size={22} />
+                      </div>
+                      <h4 className="font-bold text-base text-gray-900 dark:text-white">No posts published yet</h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                        Share your thoughts, IP case analysis, or an update with the global WIPA community using the composer above!
+                      </p>
+                    </div>
+                  ) : (
+                    userPosts.map((post) => {
+                      const isLiked = likedPostIds.has(post.id);
+                      return (
+                        <div key={post.id} className="bg-white dark:bg-[#151c2c] rounded-2xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm">
+                          {/* Post Author Header */}
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <div 
+                                className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm overflow-hidden shrink-0"
+                                style={{ backgroundImage: (post.author?.avatar_url || profileData.avatarUrl) ? `url(${post.author?.avatar_url || profileData.avatarUrl})` : undefined, backgroundSize: 'cover' }}
+                              >
+                                {!(post.author?.avatar_url || profileData.avatarUrl) && (post.author?.full_name || profileData.name).charAt(0)}
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-1.5">
+                                  <h4 className="font-bold text-sm text-gray-900 dark:text-white">{post.author?.full_name || profileData.name}</h4>
+                                  <BadgeCheck size={14} className="text-[#00d26a]" />
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{post.author?.role || profileData.role.split('|')[0]}</p>
+                                <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                                  {new Date(post.created_at).toLocaleDateString()} • <Globe2 size={10} />
+                                </span>
+                              </div>
                             </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{profileData.role.split('|')[0]}</p>
-                            <span className="text-[11px] text-gray-400 flex items-center gap-1">
-                              {post.created_at} • <Globe2 size={10} />
+
+                            <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+                              <MoreHorizontal size={18} />
+                            </button>
+                          </div>
+
+                          {/* Content */}
+                          <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed mb-3 whitespace-pre-wrap">
+                            {post.content}
+                          </p>
+
+                          {/* Reaction Counters */}
+                          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 pb-2 border-b border-gray-100 dark:border-gray-800">
+                            <span className="flex items-center gap-1">
+                              <span className="p-1 bg-[#5a32fa] text-white rounded-full text-[9px]"><ThumbsUp size={10} /></span>
+                              {post.likes_count || 0} likes
                             </span>
+                            <span>{post.comments_count || 0} comments</span>
+                          </div>
+
+                          {/* Reaction Buttons */}
+                          <div className="flex items-center justify-around pt-1 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
+                            <button 
+                              onClick={() => handleToggleLike(post.id)}
+                              className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors ${
+                                isLiked ? 'text-[#5a32fa] font-bold' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                              }`}
+                            >
+                              <ThumbsUp size={16} className={isLiked ? 'fill-[#5a32fa]' : ''} />
+                              <span>Like</span>
+                            </button>
+
+                            <button 
+                              onClick={() => router.push('/platform')}
+                              className="flex-1 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition-colors"
+                            >
+                              <MessageCircle size={16} />
+                              <span>Comment</span>
+                            </button>
+
+                            <button 
+                              onClick={() => {
+                                navigator.clipboard.writeText(window.location.origin + '/platform');
+                                alert('Post link copied to clipboard!');
+                              }}
+                              className="flex-1 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition-colors"
+                            >
+                              <Send size={16} />
+                              <span>Share</span>
+                            </button>
                           </div>
                         </div>
-
-                        <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                          <MoreHorizontal size={18} />
-                        </button>
-                      </div>
-
-                      {/* Content */}
-                      <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed mb-3">
-                        {post.content}
-                      </p>
-
-                      {/* Hashtags */}
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {post.tags?.map((tag: string, idx: number) => (
-                          <span key={idx} className="text-xs font-semibold text-[#5a32fa] dark:text-[#ff90e8] hover:underline cursor-pointer">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Reaction Counters */}
-                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 pb-2 border-b border-gray-100 dark:border-gray-800">
-                        <span className="flex items-center gap-1">
-                          <span className="p-1 bg-[#5a32fa] text-white rounded-full text-[9px]"><ThumbsUp size={10} /></span>
-                          {post.likes_count} likes
-                        </span>
-                        <span>{post.comments_count} comments</span>
-                      </div>
-
-                      {/* Reaction Buttons */}
-                      <div className="flex items-center justify-around pt-1 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
-                        <button 
-                          onClick={() => handleToggleLike(post.id)}
-                          className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors ${
-                            post.isLiked ? 'text-[#5a32fa] font-bold' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                          }`}
-                        >
-                          <ThumbsUp size={16} className={post.isLiked ? 'fill-[#5a32fa]' : ''} />
-                          <span>Like</span>
-                        </button>
-
-                        <button className="flex-1 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition-colors">
-                          <MessageCircle size={16} />
-                          <span>Comment</span>
-                        </button>
-
-                        <button className="flex-1 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition-colors">
-                          <Repeat2 size={16} />
-                          <span>Repost</span>
-                        </button>
-
-                        <button className="flex-1 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition-colors">
-                          <Send size={16} />
-                          <span>Send</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    })
+                  )}
                 </div>
               </>
             )}
