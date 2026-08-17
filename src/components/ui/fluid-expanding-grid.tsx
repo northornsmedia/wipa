@@ -187,7 +187,7 @@ export function FluidExpandingGrid({
             key={item.id}
             layoutId={`card-${item.id}`}
             onClick={() => setActiveItem(item)}
-            className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-lg w-full md:w-[calc(25%-18px)] h-[380px]"
+            className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-xl w-full md:w-[calc(25%-18px)] h-[480px] min-h-[480px]"
             whileHover={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
@@ -200,23 +200,23 @@ export function FluidExpandingGrid({
                 alt={item.title}
                 className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
             </motion.div>
 
             <motion.div 
               layoutId={`content-${item.id}`}
-              className="absolute inset-0 p-8 flex flex-col justify-end text-white z-10"
+              className="absolute inset-0 p-6 flex flex-col justify-end text-white z-10"
             >
               <motion.h3 
                 layoutId={`title-${item.id}`}
-                className="text-2xl md:text-3xl font-bold mb-2 tracking-tight flex items-center gap-3"
+                className="text-xl md:text-2xl font-bold mb-1.5 tracking-tight flex items-center gap-2.5"
               >
-                {item.flag && <img src={item.flag} alt="flag" className="w-8 h-6 object-cover rounded-sm shadow-sm" />}
-                {item.title}
+                {item.flag && <img src={item.flag} alt="flag" className="w-6 h-4.5 object-cover rounded-sm shadow-sm shrink-0" />}
+                <span className="truncate">{item.title}</span>
               </motion.h3>
               <motion.p 
                 layoutId={`subtitle-${item.id}`}
-                className="text-white/80 font-medium"
+                className="text-white/80 font-medium text-xs md:text-sm line-clamp-1"
               >
                 {item.subtitle}
               </motion.p>
