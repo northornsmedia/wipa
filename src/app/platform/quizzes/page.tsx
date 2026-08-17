@@ -1,177 +1,192 @@
 'use client';
-
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { BookOpen, Search, Filter, Clock, BrainCircuit, CheckCircle, Award, ChevronRight } from 'lucide-react';
+import { BrainCircuit, PlayCircle, BookOpen, Clock, Award, ChevronRight, CheckCircle, Trophy, Star } from 'lucide-react';
 import Link from 'next/link';
 
 export default function QuizzesPage() {
   const { user } = useAppStore();
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [attempts, setAttempts] = useState<Record<string, any>>({});
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('All');
-  const [difficultyFilter, setDifficultyFilter] = useState('All');
+  const [activeTab, setActiveTab] = useState<'All' | 'Beginner' | 'Intermediate' | 'Advanced'>('All');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchQuizzes = async () => {
-      setLoading(true);
+      setIsLoading(true);
       const { data } = await supabase
         .from('quizzes')
         .select('*, questions:quiz_questions(count)')
         .eq('is_published', true)
         .order('created_at', { ascending: false });
-      
+
       if (data) setQuizzes(data);
 
       if (user?.id) {
         const { data: attemptsData } = await supabase
           .from('quiz_attempts')
-          .select('quiz_id, score, max_score')
+          .select('quiz_id, score, max_score, xp_earned')
           .eq('user_id', user.id);
         
         if (attemptsData) {
           const attemptMap: Record<string, any> = {};
           attemptsData.forEach(a => {
-            attemptMap[a.quiz_id] = a;
+            if (!attemptMap[a.quiz_id] || attemptMap[a.quiz_id].score < a.score) {
+              attemptMap[a.quiz_id] = a;
+            }
           });
           setAttempts(attemptMap);
         }
       }
-      setLoading(false);
+      setIsLoading(false);
     };
     fetchQuizzes();
-  }, [user?.id]);
+  }, [user]);
 
   const filteredQuizzes = quizzes.filter(q => {
-    const matchesSearch = q.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (q.description && q.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = categoryFilter === 'All' || q.category === categoryFilter;
-    const matchesDifficulty = difficultyFilter === 'All' || q.difficulty === difficultyFilter;
-    return matchesSearch && matchesCategory && matchesDifficulty;
+    if (activeTab !== 'All' && q.difficulty !== activeTab) return false;
+    if (searchQuery && !q.title.toLowerCase().includes(searchQuery.toLowerCase()) && !q.description?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return true;
   });
 
-  const categories = ['All', ...Array.from(new Set(quizzes.map(q => q.category).filter(Boolean)))];
-  const difficulties = ['All', 'Easy', 'Medium', 'Hard'];
+  const totalXPEarned = Object.values(attempts).reduce((acc, curr) => acc + (curr.xp_earned || 0), 0);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] font-sans pb-24">
-      {/* Hero Header */}
-      <div className="bg-[#5a32fa] text-white py-16 px-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 opacity-10">
-          <BrainCircuit size={400} className="translate-x-1/4 -translate-y-1/4" />
-        </div>
-        <div className="max-w-6xl mx-auto relative z-10">
-          <h1 className="text-4xl md:text-5xl font-black mb-4">IP Knowledge Challenges</h1>
-          <p className="text-xl text-white/80 max-w-2xl font-medium">
-            Test your intellectual property expertise, earn XP, and climb the WIPA leaderboard.
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] relative overflow-hidden flex flex-col">
+      {/* Glow effects */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#5a32fa]/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#ff90e8]/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8 relative z-10">
+        
+        {/* Header */}
+        <div className="mb-12 bg-white/60 dark:bg-[#1e293b]/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/50 dark:border-white/10 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-8">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black flex items-center gap-4 text-gray-900 dark:text-white tracking-tight mb-4">
+              <div className="bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] p-3 rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-[#5a32fa]/30">
+                <BrainCircuit size={32} className="text-white" />
+              </div>
+              Knowledge <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5a32fa] to-[#ff90e8]">Arena</span>
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 font-medium text-lg max-w-xl leading-relaxed">
+              Level up your IP expertise. Take challenges, earn XP, and climb the leaderboard.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-6 bg-white dark:bg-[#0f172a] p-6 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm shrink-0">
+            <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30">
+              <Trophy size={32} className="text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Your Quiz XP</p>
+              <p className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-2">
+                {totalXPEarned} <Star size={20} className="text-amber-500 fill-amber-500" />
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Filters */}
-        <div className="bg-white dark:bg-[#1e293b] p-4 rounded-2xl shadow-sm border border-gray-200 dark:border-white/10 flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+        <div className="flex flex-col md:flex-row gap-6 mb-10 items-center justify-between">
+          <div className="flex gap-3 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
+            {['All', 'Beginner', 'Intermediate', 'Advanced'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as any)}
+                className={`px-6 py-3 rounded-2xl font-bold transition-all whitespace-nowrap ${
+                  activeTab === tab 
+                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-md' 
+                    : 'bg-white dark:bg-[#1e293b] text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5 border border-gray-200 dark:border-white/10'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative w-full md:w-80 group">
             <input 
               type="text" 
-              placeholder="Search quizzes..." 
+              placeholder="Search challenges..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#5a32fa] font-medium"
+              className="w-full bg-white dark:bg-[#1e293b] py-4 pl-5 pr-5 rounded-2xl font-bold text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] transition-colors shadow-sm placeholder-gray-400"
             />
-          </div>
-          
-          <div className="flex gap-4">
-            <select 
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[#5a32fa]"
-            >
-              {categories.map(c => <option key={c as string} value={c as string}>{c}</option>)}
-            </select>
-            
-            <select 
-              value={difficultyFilter}
-              onChange={(e) => setDifficultyFilter(e.target.value)}
-              className="bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-[#5a32fa]"
-            >
-              {difficulties.map(d => <option key={d} value={d}>{d}</option>)}
-            </select>
           </div>
         </div>
 
-        {/* Quiz Grid */}
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin w-12 h-12 border-4 border-[#5a32fa] border-t-transparent rounded-full"></div>
+        {/* Quizzes Grid */}
+        {isLoading ? (
+          <div className="py-24 text-center">
+            <div className="animate-spin w-12 h-12 border-4 border-[#5a32fa] border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-gray-500 font-bold">Loading challenges...</p>
           </div>
         ) : filteredQuizzes.length === 0 ? (
-          <div className="text-center py-20 bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10">
-            <BookOpen size={64} className="mx-auto text-gray-300 dark:text-gray-600 mb-6" />
-            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">No Quizzes Found</h3>
-            <p className="text-gray-500">Try adjusting your filters or search query.</p>
+          <div className="py-24 text-center bg-white/50 dark:bg-[#1e293b]/50 backdrop-blur-md rounded-[2.5rem] border border-gray-200 dark:border-white/10 shadow-sm">
+            <div className="w-24 h-24 bg-gray-100 dark:bg-[#0f172a] rounded-full flex items-center justify-center mb-6 mx-auto">
+              <BrainCircuit size={40} className="text-gray-400" />
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3">No challenges found</h3>
+            <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">Check back later or adjust your filters.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredQuizzes.map(quiz => {
               const attempt = attempts[quiz.id];
               const isCompleted = !!attempt;
-              
+              const isPerfect = attempt && attempt.score === attempt.max_score;
+
               return (
-                <div key={quiz.id} className="bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden flex flex-col group hover:border-[#5a32fa] transition-colors relative">
-                  {isCompleted && (
-                    <div className="absolute top-4 right-4 bg-green-500 text-white text-xs font-black uppercase px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5 z-10">
-                      <CheckCircle size={14} /> Completed
-                    </div>
-                  )}
-                  
-                  <div className="p-6 flex-1 flex flex-col">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 text-xs font-bold px-2 py-1 rounded-md">
-                        {quiz.category || 'General'}
-                      </span>
-                      <span className={`text-xs font-bold px-2 py-1 rounded-md ${
-                        quiz.difficulty === 'Easy' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400' :
-                        quiz.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400' :
+                <div key={quiz.id} className="bg-white/80 dark:bg-[#1e293b]/80 backdrop-blur-xl rounded-[2rem] border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden flex flex-col group hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#5a32fa]/10 transition-all duration-300">
+                  <div className="p-6 md:p-8 flex-1">
+                    <div className="flex justify-between items-start mb-6">
+                      <span className={`text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-wider ${
+                        quiz.difficulty === 'Beginner' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400' :
+                        quiz.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400' :
                         'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'
                       }`}>
-                        {quiz.difficulty || 'Medium'}
+                        {quiz.difficulty}
                       </span>
+                      {isCompleted && (
+                        <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-lg ${isPerfect ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>
+                          <CheckCircle size={14} /> {attempt.score}/{attempt.max_score}
+                        </span>
+                      )}
                     </div>
-                    
-                    <h3 className="text-xl font-black text-gray-900 dark:text-white mb-3 line-clamp-2">
+
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 group-hover:text-[#5a32fa] transition-colors leading-tight">
                       {quiz.title}
                     </h3>
-                    
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 line-clamp-3 flex-1">
-                      {quiz.description || 'Test your knowledge on this topic.'}
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-8 line-clamp-2">
+                      {quiz.description}
                     </p>
-                    
-                    <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-gray-500 dark:text-gray-400 mb-6 bg-gray-50 dark:bg-black/20 p-3 rounded-xl border border-gray-100 dark:border-white/5">
-                      <div className="flex items-center gap-1.5">
-                        <BookOpen size={16} /> {quiz.questions?.[0]?.count || 0} Qs
+
+                    <div className="grid grid-cols-3 gap-2 bg-gray-50 dark:bg-[#0f172a] p-4 rounded-2xl border border-gray-100 dark:border-white/5">
+                      <div className="flex flex-col items-center justify-center text-center">
+                        <BookOpen size={18} className="text-gray-400 mb-1" />
+                        <span className="font-bold text-gray-900 dark:text-white text-sm">{quiz.questions?.[0]?.count || 0}</span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Clock size={16} /> {Math.round((quiz.time_limit_seconds || 300) / 60)} mins
+                      <div className="flex flex-col items-center justify-center text-center border-x border-gray-200 dark:border-white/10">
+                        <Clock size={18} className="text-gray-400 mb-1" />
+                        <span className="font-bold text-gray-900 dark:text-white text-sm">{Math.round((quiz.time_limit_seconds || 300) / 60)}m</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[#5a32fa]">
-                        <Award size={16} /> +{quiz.xp_reward || 50} XP
+                      <div className="flex flex-col items-center justify-center text-center">
+                        <Award size={18} className="text-[#5a32fa] mb-1" />
+                        <span className="font-bold text-[#5a32fa] text-sm">+{quiz.xp_reward}</span>
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="px-6 pb-6 pt-0 mt-auto">
+
+                  <div className="p-6 pt-0">
                     {isCompleted ? (
-                      <Link href={`/platform/quizzes/${quiz.id}/results`} className="w-full bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-900 dark:text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors">
-                        View Results (Score: {attempt.score}/{attempt.max_score})
+                      <Link href={`/platform/quizzes/${quiz.id}`} className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-black dark:hover:bg-gray-100 py-4 rounded-xl font-black flex items-center justify-center gap-2 transition-colors">
+                        Retake Quiz <RotateCcw size={18} />
                       </Link>
                     ) : (
-                      <Link href={`/platform/quizzes/${quiz.id}`} className="w-full bg-[#5a32fa] hover:bg-[#4a24db] text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors group-hover:shadow-lg">
-                        Start Quiz <ChevronRight size={18} />
+                      <Link href={`/platform/quizzes/${quiz.id}`} className="w-full bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] hover:opacity-90 text-white py-4 rounded-xl font-black flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#5a32fa]/20 group-hover:shadow-xl group-hover:shadow-[#5a32fa]/30">
+                        Start Challenge <PlayCircle size={20} />
                       </Link>
                     )}
                   </div>
@@ -182,5 +197,15 @@ export default function QuizzesPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Inline RotateCcw icon since it wasn't imported from lucide-react in the original header
+function RotateCcw(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+      <path d="M3 3v5h5" />
+    </svg>
   );
 }

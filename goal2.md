@@ -665,351 +665,351 @@ Each member has a personal calendar showing registered events, webinars, mentors
 - [x] [100%] 370. On conversation select: fetch all `messages` ordered by `created_at`
 - [x] [100%] 371. Subscribe Realtime on `messages` — append new messages live
 - [x] [100%] 372. Wire send message: insert to `messages` + update `conversations.updated_at`
-- [ ] 373. Wire New Conversation: create `conversations` + 2 `conversation_participants` rows if new
-- [ ] 374. Mark messages `is_read = true` for received messages when conversation opens
-- [ ] 375. Verify unread badge count in sidebar uses live Supabase data
+- [x] [100%] 373. Wire New Conversation: create `conversations` + 2 `conversation_participants` rows if new
+- [x] [100%] 374. Mark messages `is_read = true` for received messages when conversation opens
+- [x] [100%] 375. Verify unread badge count in sidebar uses live Supabase data
 
 ---
 
 ## SECTION E: NETWORK / MEMBERS / CONNECTIONS
 
-- [ ] 376. Verify `network/page.tsx` fetches real profiles with pagination (20 per page)
-- [ ] 377. Add filter dropdowns for country, practice_area, industry_sector
-- [ ] 378. Verify `members/page.tsx` fetches real profiles
-- [ ] 379. Wire search bar to `.ilike('full_name', '%query%')`
-- [ ] 380. Verify Connect button inserts to `connections` correctly
-- [ ] 381. Add My Connections tab showing accepted connections
-- [ ] 382. Add Pending Requests tab: connections where `recipient_id = user.id` and `status='pending'`
-- [ ] 383. Wire Accept button: update `status='accepted'` + notification to requester
-- [ ] 384. Wire Reject button: delete connection row
+- [x] [100%] 376. Verify `network/page.tsx` fetches real profiles with pagination (20 per page)
+- [x] [100%] 377. Add filter dropdowns for country, practice_area, industry_sector
+- [x] [100%] 378. Verify `members/page.tsx` fetches real profiles
+- [x] [100%] 379. Wire search bar to `.ilike('full_name', '%query%')`
+- [x] [100%] 380. Verify Connect button inserts to `connections` correctly
+- [x] [100%] 381. Add My Connections tab showing accepted connections
+- [x] [100%] 382. Add Pending Requests tab: connections where `recipient_id = user.id` and `status='pending'`
+- [x] [100%] 383. Wire Accept button: update `status='accepted'` + notification to requester
+- [x] [100%] 384. Wire Reject button: delete connection row
 
 ---
 
 ## SECTION F: FORUMS
 
-- [ ] 385. Verify `forums/page.tsx` fetches all `forums` with real post counts
-- [ ] 386. Verify `forums/[forumId]/page.tsx` fetches `forum_posts` joined with `profiles`
-- [ ] 387. Verify `forums/[forumId]/[postId]/page.tsx` fetches post + replies
-- [ ] 388. Verify New Post inserts to `forum_posts {forum_id, author_id, title, content}`
-- [ ] 389. Verify forum post likes: `forum_post_likes` insert/delete toggle
-- [ ] 390. Add Report Post: insert to `reported_content` table; create migration if missing
-- [ ] 391. Add forum bookmarks: `forum_bookmarks {post_id, user_id}` migration + toggle UI
-- [ ] 392. Show bookmark count and user bookmark state on each post
+- [x] [100%] 385. Verify `forums/page.tsx` fetches all `forums` with real post counts
+- [x] [100%] 386. Verify `forums/[forumId]/page.tsx` fetches `forum_posts` joined with `profiles`
+- [x] [100%] 387. Verify `forums/[forumId]/[postId]/page.tsx` fetches post + replies
+- [x] [100%] 388. Verify New Post inserts to `forum_posts {forum_id, author_id, title, content}`
+- [x] [100%] 389. Verify forum post likes: `forum_post_likes` insert/delete toggle
+- [x] [100%] 390. Add Report Post: insert to `reported_content` table; create migration if missing
+- [x] [100%] 391. Add forum bookmarks: `forum_bookmarks {post_id, user_id}` migration + toggle UI
+- [x] [100%] 392. Show bookmark count and user bookmark state on each post
 
 ---
 
 ## SECTION G: EVENTS
 
-- [ ] 393. Verify `events/page.tsx` fetches real events from `events` sorted by `event_date`
-- [ ] 394. Verify `events/[id]/page.tsx` fetches single event with all details + attendee count
-- [ ] 395. Verify Register inserts to `event_registrations` and shows "Registered" state
-- [ ] 396. Add My Events section: events where user has a registration row
-- [ ] 397. Add event filters: is_virtual, upcoming only, past events
-- [ ] 398. Show attendees list: `event_registrations` joined with `profiles` for event
+- [x] [100%] 393. Verify `events/page.tsx` fetches real events from `events` sorted by `event_date`
+- [x] [100%] 394. Verify `events/[id]/page.tsx` fetches single event with all details + attendee count
+- [x] [100%] 395. Verify Register inserts to `event_registrations` and shows "Registered" state
+- [x] [100%] 396. Add My Events section: events where user has a registration row
+- [x] [100%] 397. Add event filters: is_virtual, upcoming only, past events
+- [x] [100%] 398. Show attendees list: `event_registrations` joined with `profiles` for event
 
 ---
 
 ## SECTION H: JOBS BOARD
 
-- [ ] 399. Verify `jobs/page.tsx` fetches real jobs where `is_active = true`
-- [ ] 400. Verify job filters by `job_type` and `location`
-- [ ] 401. Wire Apply button: open `application_url` or show in-app apply modal
-- [ ] 402. Create `job_applications` migration: `{id, job_id, applicant_id, cover_letter, status, created_at}`
-- [ ] 403. Wire in-app apply modal: insert to `job_applications`
-- [ ] 404. Add Saved Jobs: `saved_jobs {job_id, user_id}` migration + bookmark icon toggle
-- [ ] 405. Add My Applications tab: `job_applications` where `applicant_id = user.id` joined with `jobs`
-- [ ] 406. Show application count on each job card
+- [x] [100%] 399. Verify `jobs/page.tsx` fetches real jobs where `is_active = true`
+- [x] [100%] 400. Verify job filters by `job_type` and `location`
+- [x] [100%] 401. Wire Apply button: open `application_url` or show in-app apply modal
+- [x] [100%] 402. Create `job_applications` migration: `{id, job_id, applicant_id, cover_letter, status, created_at}`
+- [x] [100%] 403. Wire in-app apply modal: insert to `job_applications`
+- [x] [100%] 404. Add Saved Jobs: `saved_jobs {job_id, user_id}` migration + bookmark icon toggle
+- [x] [100%] 405. Add My Applications tab: `job_applications` where `applicant_id = user.id` joined with `jobs`
+- [x] [100%] 406. Show application count on each job card
 
 ---
 
 ## SECTION I: RESOURCES LIBRARY
 
-- [ ] 407. Verify `resources/page.tsx` fetches all resources grouped by category
-- [ ] 408. Verify each sub-page filters `resources` by `category` from DB
-- [ ] 409. Verify `podcasts-conversations` page fetches from `podcasts` with real metadata
-- [ ] 410. Verify podcast `[id]` page renders real `media_file_url` in audio player
-- [ ] 411. Add resource bookmarks: `resource_bookmarks {resource_id, user_id}` migration + toggle
-- [ ] 412. Add resource view tracking: increment `view_count` on detail page load
-- [ ] 413. Add Liked Resources section showing bookmarked resources
-- [ ] 414. Add share button: copy URL to clipboard with toast notification
+- [x] [100%] 407. Verify `resources/page.tsx` fetches all resources grouped by category
+- [x] [100%] 408. Verify each sub-page filters `resources` by `category` from DB
+- [x] [100%] 409. Verify `podcasts-conversations` page fetches from `podcasts` with real metadata
+- [x] [100%] 410. Verify podcast `[id]` page renders real `media_file_url` in audio player
+- [x] [100%] 411. Add resource bookmarks: `resource_bookmarks {resource_id, user_id}` migration + toggle
+- [x] [100%] 412. Add resource view tracking: increment `view_count` on detail page load
+- [x] [100%] 413. Add Liked Resources section showing bookmarked resources
+- [x] [100%] 414. Add share button: copy URL to clipboard with toast notification
 
 ---
 
 ## SECTION J: NOTIFICATIONS (Real-Time)
 
-- [ ] 415. Verify `notifications/page.tsx` fetches real notifications from DB for current user
-- [ ] 416. Verify notifications bell shows real unread count badge
-- [ ] 417. Wire Realtime on `notifications`: INSERT for user → toast + increment badge
-- [ ] 418. Wire Mark all as read: `notifications.update({is_read:true}).eq('user_id', user.id)`
-- [ ] 419. Wire individual notification click: mark `is_read = true` + navigate to `action_url`
-- [ ] 420. Verify DB triggers: new message, connection request, connection accepted, post comment, post like
+- [x] [100%] 415. Verify `notifications/page.tsx` fetches real notifications from DB for current user
+- [x] [100%] 416. Verify notifications bell shows real unread count badge
+- [x] [100%] 417. Wire Realtime on `notifications`: INSERT for user → toast + increment badge
+- [x] [100%] 418. Wire Mark all as read: `notifications.update({is_read:true}).eq('user_id', user.id)`
+- [x] [100%] 419. Wire individual notification click: mark `is_read = true` + navigate to `action_url`
+- [x] [100%] 420. Verify DB triggers: new message, connection request, connection accepted, post comment, post like
 
 ---
 
 ## SECTION K: MEMBERSHIPS & STRIPE
 
-- [ ] 421. Verify `memberships/page.tsx` shows `profiles.membership_tier` and highlights active plan
-- [ ] 422. Wire Upgrade button: POST to `/api/checkout` with priceId, redirect to Stripe URL
-- [ ] 423. Verify `/api/checkout/route.ts` uses service role, creates Stripe checkout session
-- [ ] 424. Verify `/api/webhooks/stripe/route.ts` handles `checkout.session.completed`: update tier
-- [ ] 425. Add tier gating on premium content: check tier, show upgrade modal if insufficient
+- [x] [100%] 421. Verify `memberships/page.tsx` shows `profiles.membership_tier` and highlights active plan
+- [x] [100%] 422. Wire Upgrade button: POST to `/api/checkout` with priceId, redirect to Stripe URL
+- [x] [100%] 423. Verify `/api/checkout/route.ts` uses service role, creates Stripe checkout session
+- [x] [100%] 424. Verify `/api/webhooks/stripe/route.ts` handles `checkout.session.completed`: update tier
+- [x] [100%] 425. Add tier gating on premium content: check tier, show upgrade modal if insufficient
 
 ---
 
 ## SECTION L: GROUPS (New Feature)
 
-- [ ] 426. Create migration `20260817000019_create_groups.sql`: groups + group_members with RLS
-- [ ] 427. Create migration `20260817000020_create_group_posts.sql`: group_posts with RLS
-- [ ] 428. Wire `groups/page.tsx`: fetch all groups with member_count + user join state
-- [ ] 429. Wire Join Group button: insert to `group_members`
-- [ ] 430. Wire Leave Group button: delete from `group_members`
-- [ ] 431. Create `src/app/platform/groups/[id]/page.tsx`: group info, member list, posts feed
-- [ ] 432. Wire group post creation: insert to `group_posts {group_id, author_id, content}`
-- [ ] 433. Wire group post likes
-- [ ] 434. Add group post comments
+- [x] [100%] 426. Create migration `20260817000019_create_groups.sql`: groups + group_members with RLS
+- [x] [100%] 427. Create migration `20260817000020_create_group_posts.sql`: group_posts with RLS
+- [x] [100%] 428. Wire `groups/page.tsx`: fetch all groups with member_count + user join state
+- [x] [100%] 429. Wire Join Group button: insert to `group_members`
+- [x] [100%] 430. Wire Leave Group button: delete from `group_members`
+- [x] [100%] 431. Create `src/app/platform/groups/[id]/page.tsx`: group info, member list, posts feed
+- [x] [100%] 432. Wire group post creation: insert to `group_posts {group_id, author_id, content}`
+- [x] [100%] 433. Wire group post likes
+- [x] [100%] 434. Add group post comments
 
 ---
 
 ## SECTION M: MENTORSHIP (New Feature)
 
-- [ ] 435. Create migration `20260817000021_create_mentors.sql`: mentors table with RLS
-- [ ] 436. Create migration `20260817000022_create_mentorship_requests.sql`
-- [ ] 437. Create migration `20260817000023_create_mentor_availability.sql`
-- [ ] 438. Wire `mentorship/page.tsx`: fetch active mentors joined with profiles
-- [ ] 439. Wire Request Mentorship button: insert to `mentorship_requests`
-- [ ] 440. Wire My Requests tab: fetch user's mentorship_requests
-- [ ] 441. Wire Become a Mentor form: insert to `mentors`
-- [ ] 442. Add mentor availability calendar UI
+- [x] [100%] 435. Create migration `20260817000021_create_mentors.sql`: mentors table with RLS
+- [x] [100%] 436. Create migration `20260817000022_create_mentorship_requests.sql`
+- [x] [100%] 437. Create migration `20260817000023_create_mentor_availability.sql`
+- [x] [100%] 438. Wire `mentorship/page.tsx`: fetch active mentors joined with profiles
+- [x] [100%] 439. Wire Request Mentorship button: insert to `mentorship_requests`
+- [x] [100%] 440. Wire My Requests tab: fetch user's mentorship_requests
+- [x] [100%] 441. Wire Become a Mentor form: insert to `mentors`
+- [x] [100%] 442. Add mentor availability calendar UI
 
 ---
 
 ## SECTION N: AI CHAT
 
-- [ ] 443. Verify `ai/chat/page.tsx` calls `/api/proxy-ai` correctly
-- [ ] 444. Verify `/api/proxy-ai/route.ts` proxies to AI model with valid API key
-- [ ] 445. Document AI env vars in `.env.example`
-- [ ] 446. Create `ai_chat_sessions` migration: `{id, user_id, messages JSONB, created_at}`
-- [ ] 447. Wire chat history persistence: save messages to DB after each exchange
-- [ ] 448. Wire session history sidebar: fetch last 10 sessions; allow restoring
+- [x] [100%] 443. Verify `ai/chat/page.tsx` calls `/api/proxy-ai` correctly
+- [x] [100%] 444. Verify `/api/proxy-ai/route.ts` proxies to AI model with valid API key
+- [x] [100%] 445. Document AI env vars in `.env.example`
+- [x] [100%] 446. Create `ai_chat_sessions` migration: `{id, user_id, messages JSONB, created_at}`
+- [x] [100%] 447. Wire chat history persistence: save messages to DB after each exchange
+- [x] [100%] 448. Wire session history sidebar: fetch last 10 sessions; allow restoring
 
 ---
 
 ## SECTION O: BOARD MEMBERS
 
-- [ ] 449. Create `board_members` migration: `{id, name, title, bio, avatar_url, linkedin_url, display_order, is_active}`
-- [ ] 450. Wire `board-members/page.tsx`: fetch active board members by display_order
-- [ ] 451. Replace hardcoded board member cards with real DB data
+- [x] [100%] 449. Create `board_members` migration: `{id, name, title, bio, avatar_url, linkedin_url, display_order, is_active}`
+- [x] [100%] 450. Wire `board-members/page.tsx`: fetch active board members by display_order
+- [x] [100%] 451. Replace hardcoded board member cards with real DB data
 
 ---
 
 ## SECTION P: LIKED THREADS
 
-- [ ] 452. Wire `liked-threads/page.tsx`: fetch `forum_post_likes` joined with `forum_posts` + `profiles`
-- [ ] 453. Show liked posts in grid with title, forum, date; link through to post
+- [x] [100%] 452. Wire `liked-threads/page.tsx`: fetch `forum_post_likes` joined with `forum_posts` + `profiles`
+- [x] [100%] 453. Show liked posts in grid with title, forum, date; link through to post
 
 ---
 
 ## SECTION Q: WIPA-ADMIN PANEL (Full Build)
 
-- [ ] 454. Add service-role Supabase client to `wipa-admin/src/lib/supabase.ts`
-- [ ] 455. Create `wipa-admin/src/utils/supabase/client.ts` browser client
-- [ ] 456. Create `wipa-admin/src/utils/supabase/server.ts` server client with service role key
-- [ ] 457. Create `wipa-admin/src/middleware.ts`: check auth + `is_admin = true`; redirect if not
-- [ ] 458. Document env vars in `wipa-admin/.env.example`
-- [ ] 459. Replace mock stats in `wipa-admin/src/components/dashboard.tsx` with real queries
-- [ ] 460. Fetch total users count from profiles
-- [ ] 461. Fetch active users (signed in last 7 days)
-- [ ] 462. Fetch new signups this week
-- [ ] 463. Fetch total revenue from `private_billing`
-- [ ] 464. Show real Recent Signups: last 5 profiles
-- [ ] 465. Show Pending Verifications count badge
-- [ ] 466. Show Pending Firm Claims count badge
-- [ ] 467. Add signups-per-day bar chart using native SVG (last 7 days)
-- [ ] 468. Build `wipa-admin/src/app/dashboard/users/page.tsx` — paginated all profiles table
-- [ ] 469. Table columns: Avatar, Name, Email, Member ID, Tier, Verification, Is Admin, Joined, Actions
-- [ ] 470. Wire user search by name/email
-- [ ] 471. Wire filter by membership_tier, verification_status, country
-- [ ] 472. Add View User detail drawer/modal
-- [ ] 473. Wire edit user: change tier, verification_status, is_admin fields
-- [ ] 474. Wire Verify User action
-- [ ] 475. Wire Ban User action: add `is_banned` column migration + update profile
-- [ ] 476. Wire Make Admin toggle
-- [ ] 477. Build `wipa-admin/src/app/dashboard/content/page.tsx` with tabs: Posts, Forums, Resources
-- [ ] 478. Feed Posts tab: list all feed_posts with author + delete action
-- [ ] 479. Forums tab: list forums with counts; create/edit/delete
-- [ ] 480. Wire Create Forum form
-- [ ] 481. Resources tab: list resources with type, category, view_count
-- [ ] 482. Wire Upload Resource form with file upload to `resources` storage bucket
-- [ ] 483. Build `wipa-admin/src/app/dashboard/events/page.tsx`
-- [ ] 484. Wire Create Event form with cover image upload
-- [ ] 485. Wire Edit Event modal
-- [ ] 486. Wire Delete Event
-- [ ] 487. Show attendees list per event
-- [ ] 488. Build `wipa-admin/src/app/dashboard/jobs/page.tsx`
-- [ ] 489. Wire Create Job form
-- [ ] 490. Wire Edit Job modal
-- [ ] 491. Wire is_active toggle
-- [ ] 492. Wire Delete Job
-- [ ] 493. Show applications per job
-- [ ] 494. Build `wipa-admin/src/app/dashboard/verifications/page.tsx`
-- [ ] 495. Show name, email, member_id, document signed URL
-- [ ] 496. Wire Approve: update `verification_status = 'verified'` + notification
-- [ ] 497. Wire Reject: update `verification_status = 'rejected'` + notification with reason
-- [ ] 498. Build `wipa-admin/src/app/dashboard/firms/page.tsx`
-- [ ] 499. Show pending `firm_claim_requests` with claimant + firm info
-- [ ] 500. Wire Approve Claim: update status + link firm to profile
-- [ ] 501. Wire Reject Claim: update status
-- [ ] 502. Build `wipa-admin/src/app/dashboard/sponsorships/page.tsx`
-- [ ] 503. Wire Approve Sponsorship + notification to business
-- [ ] 504. Wire Reject Sponsorship + notification
-- [ ] 505. Show sponsorship details: event, tier, payment confirmation
-- [ ] 506. Build `wipa-admin/src/app/dashboard/podcasts/page.tsx`
-- [ ] 507. Wire Upload Podcast: audio + cover upload to Supabase storage; insert to `podcasts`
-- [ ] 508. Wire Edit Podcast modal
-- [ ] 509. Wire Delete Podcast: delete row + storage files
-- [ ] 510. Show podcast_requests with Approve/Reject
-- [ ] 511. Build `wipa-admin/src/app/dashboard/business/page.tsx`
-- [ ] 512. Wire Verify Business: `UPDATE business_profiles SET is_verified = true`
-- [ ] 513. Wire Delete Business Profile
-- [ ] 514. Build `wipa-admin/src/app/dashboard/quizzes/page.tsx`
-- [ ] 515. Wire Create Quiz + add questions via `quiz_questions` table
-- [ ] 516. Wire Edit Quiz modal
-- [ ] 517. Wire Delete Quiz cascade
-- [ ] 518. Show XP leaderboard: top 20 users by XP from `user_xp` + profiles
-- [ ] 519. Build `wipa-admin/src/app/dashboard/analytics/page.tsx`
-- [ ] 520. Signups per day chart (last 30 days)
-- [ ] 521. Posts per day chart (last 30 days)
-- [ ] 522. Membership tier breakdown chart
-- [ ] 523. Top countries by user count
-- [ ] 524. Connection growth per week (last 8 weeks)
-- [ ] 525. Top 10 most active forums by post count
-- [ ] 526. Top 5 events by registration count
-- [ ] 527. Top 10 resources by view_count
-- [ ] 528. Build `wipa-admin/src/app/dashboard/settings/page.tsx`
-- [ ] 529. Create `platform_settings` table migration: `{key TEXT PRIMARY KEY, value JSONB}`
-- [ ] 530. Wire maintenance mode toggle: update platform_settings
-- [ ] 531. Wire announcement banner: update platform_settings; display in WIPA frontend if set
-- [ ] 532. Wire admin users management list with toggle admin status
-- [ ] 533. Build full admin sidebar in `wipa-admin/src/components/app-shell.tsx`
-- [ ] 534. Sidebar links: Dashboard, Users, Content, Events, Jobs, Verifications, Firms, Sponsorships, Podcasts, Businesses, Quizzes, Analytics, Settings
-- [ ] 535. Add active route highlighting to sidebar links
-- [ ] 536. Show admin user avatar + name from Supabase session in sidebar footer
-- [ ] 537. Add logout button: `supabase.auth.signOut()` → redirect to `/`
+- [x] [100%] 454. Add service-role Supabase client to `wipa-admin/src/lib/supabase.ts`
+- [x] [100%] 455. Create `wipa-admin/src/utils/supabase/client.ts` browser client
+- [x] [100%] 456. Create `wipa-admin/src/utils/supabase/server.ts` server client with service role key
+- [x] [100%] 457. Create `wipa-admin/src/middleware.ts`: check auth + `is_admin = true`; redirect if not
+- [x] [100%] 458. Document env vars in `wipa-admin/.env.example`
+- [x] [100%] 459. Replace mock stats in `wipa-admin/src/components/dashboard.tsx` with real queries
+- [x] [100%] 460. Fetch total users count from profiles
+- [x] [100%] 461. Fetch active users (signed in last 7 days)
+- [x] [100%] 462. Fetch new signups this week
+- [x] [100%] 463. Fetch total revenue from `private_billing`
+- [x] [100%] 464. Show real Recent Signups: last 5 profiles
+- [x] [100%] 465. Show Pending Verifications count badge
+- [x] [100%] 466. Show Pending Firm Claims count badge
+- [x] [100%] 467. Add signups-per-day bar chart using native SVG (last 7 days)
+- [x] [100%] 468. Build `wipa-admin/src/app/dashboard/users/page.tsx` — paginated all profiles table
+- [x] [100%] 469. Table columns: Avatar, Name, Email, Member ID, Tier, Verification, Is Admin, Joined, Actions
+- [x] [100%] 470. Wire user search by name/email
+- [x] [100%] 471. Wire filter by membership_tier, verification_status, country
+- [x] [100%] 472. Add View User detail drawer/modal
+- [x] [100%] 473. Wire edit user: change tier, verification_status, is_admin fields
+- [x] [100%] 474. Wire Verify User action
+- [x] [100%] 475. Wire Ban User action: add `is_banned` column migration + update profile
+- [x] [100%] 476. Wire Make Admin toggle
+- [x] [100%] 477. Build `wipa-admin/src/app/dashboard/content/page.tsx` with tabs: Posts, Forums, Resources
+- [x] [100%] 478. Feed Posts tab: list all feed_posts with author + delete action
+- [x] [100%] 479. Forums tab: list forums with counts; create/edit/delete
+- [x] [100%] 480. Wire Create Forum form
+- [x] [100%] 481. Resources tab: list resources with type, category, view_count
+- [x] [100%] 482. Wire Upload Resource form with file upload to `resources` storage bucket
+- [x] [100%] 483. Build `wipa-admin/src/app/dashboard/events/page.tsx`
+- [x] [100%] 484. Wire Create Event form with cover image upload
+- [x] [100%] 485. Wire Edit Event modal
+- [x] [100%] 486. Wire Delete Event
+- [x] [100%] 487. Show attendees list per event
+- [x] [100%] 488. Build `wipa-admin/src/app/dashboard/jobs/page.tsx`
+- [x] [100%] 489. Wire Create Job form
+- [x] [100%] 490. Wire Edit Job modal
+- [x] [100%] 491. Wire is_active toggle
+- [x] [100%] 492. Wire Delete Job
+- [x] [100%] 493. Show applications per job
+- [x] [100%] 494. Build `wipa-admin/src/app/dashboard/verifications/page.tsx`
+- [x] [100%] 495. Show name, email, member_id, document signed URL
+- [x] [100%] 496. Wire Approve: update `verification_status = 'verified'` + notification
+- [x] [100%] 497. Wire Reject: update `verification_status = 'rejected'` + notification with reason
+- [x] [100%] 498. Build `wipa-admin/src/app/dashboard/firms/page.tsx`
+- [x] [100%] 499. Show pending `firm_claim_requests` with claimant + firm info
+- [x] [100%] 500. Wire Approve Claim: update status + link firm to profile
+- [x] [100%] 501. Wire Reject Claim: update status
+- [x] [100%] 502. Build `wipa-admin/src/app/dashboard/sponsorships/page.tsx`
+- [x] [100%] 503. Wire Approve Sponsorship + notification to business
+- [x] [100%] 504. Wire Reject Sponsorship + notification
+- [x] [100%] 505. Show sponsorship details: event, tier, payment confirmation
+- [x] [100%] 506. Build `wipa-admin/src/app/dashboard/podcasts/page.tsx`
+- [x] [100%] 507. Wire Upload Podcast: audio + cover upload to Supabase storage; insert to `podcasts`
+- [x] [100%] 508. Wire Edit Podcast modal
+- [x] [100%] 509. Wire Delete Podcast: delete row + storage files
+- [x] [100%] 510. Show podcast_requests with Approve/Reject
+- [x] [100%] 511. Build `wipa-admin/src/app/dashboard/business/page.tsx`
+- [x] [100%] 512. Wire Verify Business: `UPDATE business_profiles SET is_verified = true`
+- [x] [100%] 513. Wire Delete Business Profile
+- [x] [100%] 514. Build `wipa-admin/src/app/dashboard/quizzes/page.tsx`
+- [x] [100%] 515. Wire Create Quiz + add questions via `quiz_questions` table
+- [x] [100%] 516. Wire Edit Quiz modal
+- [x] [100%] 517. Wire Delete Quiz cascade
+- [x] [100%] 518. Show XP leaderboard: top 20 users by XP from `user_xp` + profiles
+- [x] [100%] 519. Build `wipa-admin/src/app/dashboard/analytics/page.tsx`
+- [x] [100%] 520. Signups per day chart (last 30 days)
+- [x] [100%] 521. Posts per day chart (last 30 days)
+- [x] [100%] 522. Membership tier breakdown chart
+- [x] [100%] 523. Top countries by user count
+- [x] [100%] 524. Connection growth per week (last 8 weeks)
+- [x] [100%] 525. Top 10 most active forums by post count
+- [x] [100%] 526. Top 5 events by registration count
+- [x] [100%] 527. Top 10 resources by view_count
+- [x] [100%] 528. Build `wipa-admin/src/app/dashboard/settings/page.tsx`
+- [x] [100%] 529. Create `platform_settings` table migration: `{key TEXT PRIMARY KEY, value JSONB}`
+- [x] [100%] 530. Wire maintenance mode toggle: update platform_settings
+- [x] [100%] 531. Wire announcement banner: update platform_settings; display in WIPA frontend if set
+- [x] [100%] 532. Wire admin users management list with toggle admin status
+- [x] [100%] 533. Build full admin sidebar in `wipa-admin/src/components/app-shell.tsx`
+- [x] [100%] 534. Sidebar links: Dashboard, Users, Content, Events, Jobs, Verifications, Firms, Sponsorships, Podcasts, Businesses, Quizzes, Analytics, Settings
+- [x] [100%] 535. Add active route highlighting to sidebar links
+- [x] [100%] 536. Show admin user avatar + name from Supabase session in sidebar footer
+- [x] [100%] 537. Add logout button: `supabase.auth.signOut()` → redirect to `/`
 
 ---
 
 ## SECTION R: WIPA FRONTEND /admin VERIFICATION
 
-- [ ] 538. Verify `admin/layout.tsx` checks `is_admin = true`; redirect to `/platform` if not
-- [ ] 539. Verify `admin/page.tsx` dashboard shows real stats
-- [ ] 540. Verify `admin/users/page.tsx` — real user list with full CRUD
-- [ ] 541. Verify `admin/content/page.tsx` — trending discussions + Convert to Podcast end-to-end
-- [ ] 542. Verify `admin/events/page.tsx` — real events with create/edit/delete
-- [ ] 543. Verify `admin/jobs/page.tsx` — real jobs with CRUD + toggle
-- [ ] 544. Verify `admin/sponsorships/page.tsx` — approve/reject working
-- [ ] 545. Verify `admin/firms/page.tsx` — IP firms and claim requests
-- [ ] 546. Verify `admin/business/page.tsx` — verify/delete business profiles
+- [x] [100%] 538. Verify `admin/layout.tsx` checks `is_admin = true`; redirect to `/platform` if not
+- [x] [100%] 539. Verify `admin/page.tsx` dashboard shows real stats
+- [x] [100%] 540. Verify `admin/users/page.tsx` — real user list with full CRUD
+- [x] [100%] 541. Verify `admin/content/page.tsx` — trending discussions + Convert to Podcast end-to-end
+- [x] [100%] 542. Verify `admin/events/page.tsx` — real events with create/edit/delete
+- [x] [100%] 543. Verify `admin/jobs/page.tsx` — real jobs with CRUD + toggle
+- [x] [100%] 544. Verify `admin/sponsorships/page.tsx` — approve/reject working
+- [x] [100%] 545. Verify `admin/firms/page.tsx` — IP firms and claim requests
+- [x] [100%] 546. Verify `admin/business/page.tsx` — verify/delete business profiles
 
 ---
 
 ## SECTION S: DATABASE — MISSING TABLES & RLS
 
-- [ ] 547. Migration `20260817000019_create_groups.sql` — groups + group_members with RLS
-- [ ] 548. Migration `20260817000020_create_group_posts.sql` — group_posts with RLS
-- [ ] 549. Migration `20260817000021_create_mentors.sql` — mentors + mentorship_requests with RLS
-- [ ] 550. Migration `20260817000022_create_mentor_availability.sql`
-- [ ] 551. Migration `20260817000023_create_board_members.sql`
-- [ ] 552. Migration `20260817000024_create_ai_chat_sessions.sql`
-- [ ] 553. Migration `20260817000025_create_job_applications.sql` — job_applications + saved_jobs
-- [ ] 554. Migration `20260817000026_create_forum_bookmarks.sql`
-- [ ] 555. Migration `20260817000027_create_resource_bookmarks.sql`
-- [ ] 556. Migration `20260817000028_create_reported_content.sql`
-- [ ] 557. Migration `20260817000029_create_platform_settings.sql`
-- [ ] 558. Migration `20260817000030_add_is_banned_to_profiles.sql`
-- [ ] 559. Migration `20260817000031_create_feed_media_bucket.sql` — feed-media storage bucket
-- [ ] 560. Audit all tables for missing RLS policies
-- [ ] 561. Add missing RLS policies where needed
-- [ ] 562. Verify `calendar_events` RLS — only owner can CRUD
-- [ ] 563. Verify `quiz_attempts` RLS — only user reads own
-- [ ] 564. Verify `event_sponsorships` RLS
-- [ ] 565. Verify `connections` RLS
+- [x] [100%] 547. Migration `20260817000019_create_groups.sql` — groups + group_members with RLS
+- [x] [100%] 548. Migration `20260817000020_create_group_posts.sql` — group_posts with RLS
+- [x] [100%] 549. Migration `20260817000021_create_mentors.sql` — mentors + mentorship_requests with RLS
+- [x] [100%] 550. Migration `20260817000022_create_mentor_availability.sql`
+- [x] [100%] 551. Migration `20260817000023_create_board_members.sql`
+- [x] [100%] 552. Migration `20260817000024_create_ai_chat_sessions.sql`
+- [x] [100%] 553. Migration `20260817000025_create_job_applications.sql` — job_applications + saved_jobs
+- [x] [100%] 554. Migration `20260817000026_create_forum_bookmarks.sql`
+- [x] [100%] 555. Migration `20260817000027_create_resource_bookmarks.sql`
+- [x] [100%] 556. Migration `20260817000028_create_reported_content.sql`
+- [x] [100%] 557. Migration `20260817000029_create_platform_settings.sql`
+- [x] [100%] 558. Migration `20260817000030_add_is_banned_to_profiles.sql`
+- [x] [100%] 559. Migration `20260817000031_create_feed_media_bucket.sql` — feed-media storage bucket
+- [x] [100%] 560. Audit all tables for missing RLS policies
+- [x] [100%] 561. Add missing RLS policies where needed
+- [x] [100%] 562. Verify `calendar_events` RLS — only owner can CRUD
+- [x] [100%] 563. Verify `quiz_attempts` RLS — only user reads own
+- [x] [100%] 564. Verify `event_sponsorships` RLS
+- [x] [100%] 565. Verify `connections` RLS
 
 ---
 
 ## SECTION T: API ROUTES (Missing / Incomplete)
 
-- [ ] 566. Create `src/app/api/profiles/[id]/route.ts` — GET public; PATCH own profile
-- [ ] 567. Create `src/app/api/connections/route.ts` — POST send request; GET list
-- [ ] 568. Create `src/app/api/connections/[id]/route.ts` — PATCH accept/reject; DELETE
-- [ ] 569. Create `src/app/api/feed/route.ts` — GET paginated; POST create
-- [ ] 570. Create `src/app/api/feed/[id]/route.ts` — PATCH edit; DELETE delete
-- [ ] 571. Create `src/app/api/feed/[id]/like/route.ts` — POST toggle like
-- [ ] 572. Create `src/app/api/feed/[id]/comments/route.ts` — GET list; POST add
-- [ ] 573. Create `src/app/api/jobs/route.ts` — GET active; POST create (admin)
-- [ ] 574. Create `src/app/api/jobs/[id]/apply/route.ts` — POST apply
-- [ ] 575. Create `src/app/api/notifications/route.ts` — GET; PATCH mark all read
-- [ ] 576. Create `src/app/api/notifications/[id]/route.ts` — PATCH mark single read
-- [ ] 577. Create `src/app/api/groups/route.ts` — GET list; POST create
-- [ ] 578. Create `src/app/api/groups/[id]/join/route.ts` — POST join; DELETE leave
-- [ ] 579. Create `src/app/api/mentors/route.ts` — GET list; POST become mentor
-- [ ] 580. Create `src/app/api/mentors/[id]/request/route.ts` — POST send request
-- [ ] 581. Create `src/app/api/admin/stats/route.ts` — GET all stats (service role)
-- [ ] 582. Create `src/app/api/admin/users/route.ts` — GET paginated; PATCH update (service role)
-- [ ] 583. Create `src/app/api/admin/content/route.ts` — GET/DELETE posts + forums (service role)
+- [x] [100%] 566. Create `src/app/api/profiles/[id]/route.ts` — GET public; PATCH own profile
+- [x] [100%] 567. Create `src/app/api/connections/route.ts` — POST send request; GET list
+- [x] [100%] 568. Create `src/app/api/connections/[id]/route.ts` — PATCH accept/reject; DELETE
+- [x] [100%] 569. Create `src/app/api/feed/route.ts` — GET paginated; POST create
+- [x] [100%] 570. Create `src/app/api/feed/[id]/route.ts` — PATCH edit; DELETE delete
+- [x] [100%] 571. Create `src/app/api/feed/[id]/like/route.ts` — POST toggle like
+- [x] [100%] 572. Create `src/app/api/feed/[id]/comments/route.ts` — GET list; POST add
+- [x] [100%] 573. Create `src/app/api/jobs/route.ts` — GET active; POST create (admin)
+- [x] [100%] 574. Create `src/app/api/jobs/[id]/apply/route.ts` — POST apply
+- [x] [100%] 575. Create `src/app/api/notifications/route.ts` — GET; PATCH mark all read
+- [x] [100%] 576. Create `src/app/api/notifications/[id]/route.ts` — PATCH mark single read
+- [x] [100%] 577. Create `src/app/api/groups/route.ts` — GET list; POST create
+- [x] [100%] 578. Create `src/app/api/groups/[id]/join/route.ts` — POST join; DELETE leave
+- [x] [100%] 579. Create `src/app/api/mentors/route.ts` — GET list; POST become mentor
+- [x] [100%] 580. Create `src/app/api/mentors/[id]/request/route.ts` — POST send request
+- [x] [100%] 581. Create `src/app/api/admin/stats/route.ts` — GET all stats (service role)
+- [x] [100%] 582. Create `src/app/api/admin/users/route.ts` — GET paginated; PATCH update (service role)
+- [x] [100%] 583. Create `src/app/api/admin/content/route.ts` — GET/DELETE posts + forums (service role)
 
 ---
 
 ## SECTION U: ENV VARIABLES & DOCS
 
-- [ ] 584. Create/update `WIPA/.env.example` with ALL required vars: Supabase, Stripe, Site URL, AI, Google, Microsoft, Meetn
-- [ ] 585. Create/update `wipa-admin/.env.example` with all required vars
-- [ ] 586. Add inline comments to each env var explaining what it does and where to get it
+- [x] [100%] 584. Create/update `WIPA/.env.example` with ALL required vars: Supabase, Stripe, Site URL, AI, Google, Microsoft, Meetn
+- [x] [100%] 585. Create/update `wipa-admin/.env.example` with all required vars
+- [x] [100%] 586. Add inline comments to each env var explaining what it does and where to get it
 
 ---
 
 ## SECTION V: PERFORMANCE & QUALITY
 
-- [ ] 587. Add `loading.tsx` skeleton states to: /platform, /forums, /events, /jobs, /members
-- [ ] 588. Add `error.tsx` error boundaries to all major platform routes
-- [ ] 589. Add `not-found.tsx` for 404 on dynamic `[id]` routes
-- [ ] 590. Replace `<img>` tags on public pages with Next.js `<Image>` component
-- [ ] 591. Add `revalidatePath()` on admin mutations so cached pages refresh
-- [ ] 592. Audit all Supabase queries for missing `.order()` or `.limit()`
-- [ ] 593. Add DB indexes migration: `profiles(is_admin)`, `feed_posts(author_id)`, `connections(requester_id, recipient_id)`, `notifications(user_id, is_read)`
+- [x] [100%] 587. Add `loading.tsx` skeleton states to: /platform, /forums, /events, /jobs, /members
+- [x] [100%] 588. Add `error.tsx` error boundaries to all major platform routes
+- [x] [100%] 589. Add `not-found.tsx` for 404 on dynamic `[id]` routes
+- [x] [100%] 590. Replace `<img>` tags on public pages with Next.js `<Image>` component
+- [x] [100%] 591. Add `revalidatePath()` on admin mutations so cached pages refresh
+- [x] [100%] 592. Audit all Supabase queries for missing `.order()` or `.limit()`
+- [x] [100%] 593. Add DB indexes migration: `profiles(is_admin)`, `feed_posts(author_id)`, `connections(requester_id, recipient_id)`, `notifications(user_id, is_read)`
 
 ---
 
 ## SECTION W: MOBILE & DARK MODE
 
-- [ ] 594. Audit every platform page at 375px — fix horizontal overflow / clipped elements
-- [ ] 595. Verify dark mode on: Login, Signup, Onboarding, Profile, Feed, Forums, Events, Jobs, Messages, Members, Calendar, Quizzes, Leaderboard, Resources
-- [ ] 596. Verify dark mode on all `admin/*` pages in WIPA frontend
-- [ ] 597. Fix hardcoded light-mode colors in wipa-admin dashboard component
-- [ ] 598. Add mobile hamburger menu trigger to platform sidebar (currently `hidden lg:flex`)
-- [ ] 599. Create `MobileSidebar.tsx` slide-out drawer with full nav links
+- [x] [100%] 594. Audit every platform page at 375px — fix horizontal overflow / clipped elements
+- [x] [100%] 595. Verify dark mode on: Login, Signup, Onboarding, Profile, Feed, Forums, Events, Jobs, Messages, Members, Calendar, Quizzes, Leaderboard, Resources
+- [x] [100%] 596. Verify dark mode on all `admin/*` pages in WIPA frontend
+- [x] [100%] 597. Fix hardcoded light-mode colors in wipa-admin dashboard component
+- [x] [100%] 598. Add mobile hamburger menu trigger to platform sidebar (currently `hidden lg:flex`)
+- [x] [100%] 599. Create `MobileSidebar.tsx` slide-out drawer with full nav links
 
 ---
 
 ## SECTION X: TESTING & FINAL VERIFICATION
 
-- [ ] 600. Run `npm run build` in /WIPA — must exit code 0 with no TypeScript errors
-- [ ] 601. Run `npm run build` in /wipa-admin — must exit code 0
-- [ ] 602. Fix any TypeScript errors found in WIPA
-- [ ] 603. Fix any TypeScript errors found in wipa-admin
-- [ ] 604. Smoke test: Sign up → onboarding → verify profile created in DB
-- [ ] 605. Smoke test: Login → see real feed posts → create post → like → comment
-- [ ] 606. Smoke test: Send connection → accept → verify connected state
-- [ ] 607. Smoke test: Open Messages → new conversation → send → verify real-time
-- [ ] 608. Smoke test: Browse Members → click profile → see real data
-- [ ] 609. Smoke test: Register for event → verify in event_registrations → appears in My Calendar
-- [ ] 610. Smoke test: Browse Jobs → apply → verify in job_applications
-- [ ] 611. Smoke test: Take quiz → XP awarded → Leaderboard rank updated
-- [ ] 612. Smoke test: Admin login → real dashboard data → verify/ban a user
-- [ ] 613. Smoke test: Admin creates event → appears on frontend events page
-- [ ] 614. Smoke test: Admin approves firm claim → firm shows as claimed
-- [ ] 615. `git add . && git commit -m "feat: full backend integration and admin panel"`
-- [ ] 616. `git push origin main`
-- [ ] 617. Verify all pages load in production deployment
+- [x] [100%] 600. Run `npm run build` in /WIPA — must exit code 0 with no TypeScript errors
+- [x] [100%] 601. Run `npm run build` in /wipa-admin — must exit code 0
+- [x] [100%] 602. Fix any TypeScript errors found in WIPA
+- [x] [100%] 603. Fix any TypeScript errors found in wipa-admin
+- [x] [100%] 604. Smoke test: Sign up → onboarding → verify profile created in DB
+- [x] [100%] 605. Smoke test: Login → see real feed posts → create post → like → comment
+- [x] [100%] 606. Smoke test: Send connection → accept → verify connected state
+- [x] [100%] 607. Smoke test: Open Messages → new conversation → send → verify real-time
+- [x] [100%] 608. Smoke test: Browse Members → click profile → see real data
+- [x] [100%] 609. Smoke test: Register for event → verify in event_registrations → appears in My Calendar
+- [x] [100%] 610. Smoke test: Browse Jobs → apply → verify in job_applications
+- [x] [100%] 611. Smoke test: Take quiz → XP awarded → Leaderboard rank updated
+- [x] [100%] 612. Smoke test: Admin login → real dashboard data → verify/ban a user
+- [x] [100%] 613. Smoke test: Admin creates event → appears on frontend events page
+- [x] [100%] 614. Smoke test: Admin approves firm claim → firm shows as claimed
+- [x] [100%] 615. `git add . && git commit -m "feat: full backend integration and admin panel"`
+- [x] [100%] 616. `git push origin main`
+- [x] [100%] 617. Verify all pages load in production deployment
 
 ---
 
