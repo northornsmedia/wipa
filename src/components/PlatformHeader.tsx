@@ -14,6 +14,7 @@ import { searchProfiles } from '@/app/actions/profiles';
 import LexIQChatCard from './LexIQChatCard';
 import SiriWave from '@/components/ui/siri-wave';
 import { LogOut } from 'lucide-react';
+import AdSlot from '@/components/AdSlot';
 
 const SiriWaveIcon = (props: any) => (
   <SiriWave variant="wave" size={props.size || 48} className={props.className} />
@@ -186,6 +187,7 @@ export default function PlatformHeader() {
 
   return (
     <>
+      <AdSlot placement="header_ticker" />
       <header className="flex items-center justify-between px-4 sm:px-6 py-3 md:py-4 border-b border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] sticky top-0 z-50 min-h-[73px]">
         {isSearchOpen ? (
           <div className="flex items-center w-full gap-4 max-w-4xl mx-auto animate-in fade-in duration-200">

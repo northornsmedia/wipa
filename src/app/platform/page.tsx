@@ -12,6 +12,7 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import AdSlot from '@/components/AdSlot';
 
 export default function PlatformPage() {
   const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode } = useAppStore();
@@ -917,13 +918,10 @@ export default function PlatformPage() {
                       </div>
                       
                     </div>
-                    {/* Sponsored Content Placement after every 4 cards */}
+                    {/* Dynamic Sponsored Native Content Placement after every 4 posts */}
                     {(index + 1) % 4 === 0 && (
-                      <div className="w-full rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white/50 dark:bg-[#0f172a]/50 relative h-32 flex items-center justify-center group shrink-0">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/5 to-[#b892ff]/5 dark:from-[#5a32fa]/10 dark:to-[#b892ff]/10 flex flex-col items-center justify-center text-[#5a32fa] dark:text-[#b892ff] transition-opacity">
-                          <span className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-60">Sponsored Content</span>
-                          <span className="font-black text-xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</span>
-                        </div>
+                      <div className="w-full shrink-0">
+                        <AdSlot placement="feed_native" />
                       </div>
                     )}
                     </React.Fragment>
@@ -937,11 +935,8 @@ export default function PlatformPage() {
             {/* RIGHT SIDEBAR */}
             <aside className="hidden xl:flex flex-col w-[320px] shrink-0 space-y-6 pb-20">
                 
-                {/* Advertisement Space */}
-                <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative h-64 group shrink-0">
-                  
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/80 to-[#b892ff]/80 flex items-center justify-center text-white font-black text-2xl tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">AD SPACE</div>
-                </div>
+                {/* Dynamic Advertisement Space */}
+                <AdSlot placement="sidebar_banner" />
 
                 {/* Profile Completion / Welcome */}
                 <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-sm border border-gray-100 dark:border-white/10 p-5">
