@@ -14,6 +14,7 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
   const [replies, setReplies] = useState<any[]>([]);
   const [replyText, setReplyText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [podcastResource, setPodcastResource] = useState<any>(null);
 

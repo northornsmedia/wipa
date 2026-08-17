@@ -6,8 +6,6 @@ import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft, CheckCircle2, MapPin, Globe, Mail, Phone, Users, Building2, Briefcase, Monitor, MoreHorizontal, Link as LinkIcon, Edit, Upload, Trash2, X, Plus, Clock, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import ThemeWrapper from '@/components/ThemeWrapper';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
 const TYPE_ICONS: Record<string, any> = {
   startup: Briefcase,
@@ -78,7 +76,6 @@ export default function PublicBusinessProfilePage({ params }: { params: { slug: 
   return (
     <ThemeWrapper>
       <div className="font-sans min-h-screen flex flex-col bg-slate-50 dark:bg-[#020617]">
-        <Header />
         <main className="flex-1 text-slate-900 dark:text-white pb-24">
           
           {/* Cover & Header */}
@@ -278,7 +275,6 @@ export default function PublicBusinessProfilePage({ params }: { params: { slug: 
 
           </div>
         </main>
-        <Footer />
       </div>
     </ThemeWrapper>
   );

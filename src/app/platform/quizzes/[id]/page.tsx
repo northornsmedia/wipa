@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowLeft, Clock, BrainCircuit, Award, CheckCircle, XCircle, AlertCircle, PlayCircle, Trophy, BarChart3, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Clock, BrainCircuit, Award, CheckCircle, XCircle, AlertCircle, PlayCircle, Trophy, BarChart3, RotateCcw, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 export default function QuizTakingPage({ params }: { params: { id: string } }) {

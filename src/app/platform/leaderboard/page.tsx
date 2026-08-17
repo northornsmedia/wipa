@@ -157,7 +157,7 @@ export default function LeaderboardPage() {
                         <img src={leader.profile?.avatar_url || `https://ui-avatars.com/api/?name=${leader.profile?.first_name}+${leader.profile?.last_name}`} alt="Avatar" className="w-12 h-12 rounded-full object-cover" />
                         <div className="flex-1 min-w-0">
                           <Link href={`/platform/profile/${leader.user_id}`} className="font-bold text-gray-900 dark:text-white hover:text-[#5a32fa] truncate block">
-                            {leader.profile?.first_name} {leader.profile?.last_name}
+                            {(leader.profile as any)?.first_name} {(leader.profile as any)?.last_name}
                           </Link>
                           <div className="text-xs text-gray-500 truncate">{leader.profile?.job_title || 'Member'}</div>
                         </div>
@@ -175,7 +175,7 @@ export default function LeaderboardPage() {
                       <div className="w-12 text-center font-black text-[#5a32fa] text-xl">
                         {currentUserRank.rank}
                       </div>
-                      <img src={user?.avatar_url || `https://ui-avatars.com/api/?name=${user?.first_name}+${user?.last_name}`} alt="You" className="w-12 h-12 rounded-full object-cover border-2 border-[#5a32fa]" />
+                      <img src={user?.avatar_url || `https://ui-avatars.com/api/?name=${(user as any)?.first_name}+${(user as any)?.last_name}`} alt="You" className="w-12 h-12 rounded-full object-cover border-2 border-[#5a32fa]" />
                       <div className="flex-1 min-w-0">
                         <div className="font-black text-gray-900 dark:text-white truncate">You</div>
                       </div>

@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { 
   Calendar, LayoutGrid, Users, Mail, UsersRound, FileText, Briefcase, GraduationCap,
-  Calendar, LayoutGrid, Users, Mail, UsersRound, FileText, Briefcase, GraduationCap,
   BadgeCheck, MapPin, Clock, ArrowLeft, ArrowRight, BookOpen, UserPlus, FileUp, Star
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';

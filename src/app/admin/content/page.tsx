@@ -159,7 +159,6 @@ export default function AdminContentPage() {
                     </tr>
                   ))
                 )
-                )
               ) : activeTab === 'quizzes' ? (
                 quizzes.length === 0 ? (
                   <tr>

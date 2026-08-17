@@ -577,13 +577,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                     })}
                   </div>
                 </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
               </div>
-              
+
             </div>
           </div>
       </div>

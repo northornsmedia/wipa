@@ -34,11 +34,11 @@ export default function SponsorApplyPage({ params }: { params: { id: string } })
       const { data: pkgData } = await supabase.from('sponsorship_packages').select('*').eq('is_active', true).order('price', { ascending: true });
       if (pkgData) setPackages(pkgData);
       
-      if (user?.businessProfile) {
+      if ((user as any)?.businessProfile) {
         setFormData(prev => ({
           ...prev,
-          sponsor_name: user.businessProfile.company_name || '',
-          sponsor_website_url: user.businessProfile.website_url || ''
+          sponsor_name: (user as any).businessProfile.company_name || '',
+          sponsor_website_url: (user as any).businessProfile.website_url || ''
         }));
       }
       
@@ -54,7 +54,7 @@ export default function SponsorApplyPage({ params }: { params: { id: string } })
     // Insert sponsorship
     const { data, error } = await supabase.from('event_sponsorships').insert({
       event_id: eventId,
-      business_profile_id: user.businessProfile?.id || null, // Might be null if user doesn't have one
+      business_profile_id: (user as any).businessProfile?.id || null, // Might be null if user doesn't have one
       package_id: selectedPackage.id,
       sponsor_name: formData.sponsor_name,
       sponsor_website_url: formData.sponsor_website_url,
