@@ -3,6 +3,8 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Providers from "@/lib/query-provider";
 import ImageProtection from "@/components/ImageProtection";
+import TelemetryTracker from "@/components/TelemetryTracker";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -23,6 +25,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable} font-sans`}>
         <ImageProtection />
+        <Suspense fallback={null}>
+          <TelemetryTracker />
+        </Suspense>
         <Providers>
           {children}
         </Providers>
