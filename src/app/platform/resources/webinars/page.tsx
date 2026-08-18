@@ -148,6 +148,36 @@ export default function WebinarsHubPage() {
   const [userProfile, setUserProfile] = useState<any>(null);
   const canHost = true;
 
+  // User Webinars Modal State
+  const [isUserWebinarsOpen, setIsUserWebinarsOpen] = useState(false);
+  const [userWebinars, setUserWebinars] = useState<any[]>([]);
+  const [loadingUserWebinars, setLoadingUserWebinars] = useState(false);
+
+  const fetchUserWebinars = async () => {
+    if (!user?.id) return;
+    setLoadingUserWebinars(true);
+    try {
+      const userEmail = userProfile?.email || user?.email;
+      let filterQuery = `author_id.eq.${user.id},submitter_id.eq.${user.id}`;
+      if (userEmail) {
+        filterQuery += `,submitter_email.eq.${userEmail}`;
+      }
+      const { data, error } = await supabase
+        .from('webinars')
+        .select('*')
+        .or(filterQuery)
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        setUserWebinars(data);
+      }
+    } catch (e) {
+      console.error('Error fetching user webinars:', e);
+    } finally {
+      setLoadingUserWebinars(false);
+    }
+  };
+
   React.useEffect(() => {
     async function fetchUser() {
       if (user?.id) {
@@ -161,6 +191,7 @@ export default function WebinarsHubPage() {
             organization: prev.organization || data.company || ''
           }));
         }
+        fetchUserWebinars();
       }
     }
     fetchUser();
@@ -303,6 +334,7 @@ export default function WebinarsHubPage() {
       });
 
       fetchData();
+      fetchUserWebinars();
     } catch (err: any) {
       console.error('Error saving webinar:', err);
       alert('Failed to submit webinar: ' + err.message);
@@ -338,10 +370,10 @@ export default function WebinarsHubPage() {
       const { data, error } = await supabase
         .from('resources')
         .select('*')
-        .or('category.eq.webinars,category.ilike.%Live Event%')
+        .eq('category', 'webinars')
         .order('created_at', { ascending: false });
-        
-      if (data && data.length > 0) {
+
+      if (!error && data && data.length > 0) {
         setResources(data.map(d => ({
           ...d,
           expert: d.author_name || "Expert",
@@ -357,6 +389,16 @@ export default function WebinarsHubPage() {
       console.error('Error fetching webinars:', err);
     }
   }
+
+  const [userWebinarFilter, setUserWebinarFilter] = useState<'all' | 'in_review' | 'approved' | 'rejected'>('all');
+
+  const filteredUserWebinars = userWebinars.filter(w => {
+    if (userWebinarFilter === 'all') return true;
+    if (userWebinarFilter === 'in_review') return w.approval_status === 'in_review' || w.approval_status === 'pending';
+    if (userWebinarFilter === 'approved') return w.approval_status === 'approved';
+    if (userWebinarFilter === 'rejected') return w.approval_status === 'rejected';
+    return true;
+  });
 
   React.useEffect(() => {
     fetchData();
@@ -462,14 +504,37 @@ export default function WebinarsHubPage() {
               </div>
             </div>
             
-            {canHost && (
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-6 py-2.5 rounded-full font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95"
-              >
-                <Plus size={18} /> Host Webinar
-              </button>
-            )}
+            <div className="flex items-center gap-3">
+              {user && (
+                <button 
+                  onClick={() => {
+                    setIsUserWebinarsOpen(true);
+                    fetchUserWebinars();
+                  }}
+                  className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-full font-bold flex items-center gap-2 border border-white/15 backdrop-blur-md shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm"
+                >
+                  <Video size={16} className="text-[#ff2a5f]" />
+                  <span>Your Webinars</span>
+                  {userWebinars.length > 0 && (
+                    <span className="px-2 py-0.5 rounded-full text-xs font-black bg-[#ff2a5f] text-white">
+                      {userWebinars.length}
+                    </span>
+                  )}
+                  {userWebinars.some(w => w.approval_status === "in_review" || w.approval_status === "pending") && (
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" title="You have webinars in review" />
+                  )}
+                </button>
+              )}
+
+              {canHost && (
+                <button 
+                  onClick={() => setIsModalOpen(true)}
+                  className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-6 py-2.5 rounded-full font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm"
+                >
+                  <Plus size={18} /> Host Webinar
+                </button>
+              )}
+            </div>
           </div>
           
           <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row gap-8 items-end justify-between">
@@ -638,6 +703,196 @@ export default function WebinarsHubPage() {
         </div>
 
       </div>
+
+      {/* YOUR WEBINARS MODAL */}
+      {isUserWebinarsOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-md" 
+            onClick={() => setIsUserWebinarsOpen(false)}
+          />
+          <div className="bg-[#0f1117] border border-white/10 rounded-3xl p-6 sm:p-8 w-full max-w-4xl relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex flex-col">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between pb-5 border-b border-white/10">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff2a5f]/15 text-[#ff2a5f] text-xs font-bold mb-2 border border-[#ff2a5f]/20">
+                  <Video size={13} /> Submissions & Hosting
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Your Hosted Webinars</h2>
+                <p className="text-xs text-gray-400 mt-1">
+                  Track verification status, live broadcasting links, and approval states for all your submitted sessions.
+                </p>
+              </div>
+              <button 
+                onClick={() => setIsUserWebinarsOpen(false)} 
+                className="text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-2.5 rounded-full transition-colors shrink-0"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Filter Tabs */}
+            <div className="flex items-center gap-2 pt-4 pb-2 overflow-x-auto [scrollbar-width:none]">
+              {[
+                { id: 'all', label: 'All Webinars', count: userWebinars.length },
+                { id: 'in_review', label: '⏳ In Review', count: userWebinars.filter(w => w.approval_status === 'in_review' || w.approval_status === 'pending').length },
+                { id: 'approved', label: '✓ Approved', count: userWebinars.filter(w => w.approval_status === 'approved').length },
+                { id: 'rejected', label: '✕ Rejected', count: userWebinars.filter(w => w.approval_status === 'rejected').length }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setUserWebinarFilter(tab.id as any)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-2 shrink-0 ${
+                    userWebinarFilter === tab.id
+                      ? "bg-[#ff2a5f] text-white border-[#ff2a5f] shadow-md shadow-[#ff2a5f]/20"
+                      : "bg-white/5 text-gray-400 border-white/10 hover:text-white hover:border-white/20"
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${userWebinarFilter === tab.id ? 'bg-white/25 text-white' : 'bg-white/10 text-gray-400'}`}>
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Webinars List */}
+            <div className="py-4 space-y-3 flex-1">
+              {loadingUserWebinars ? (
+                <div className="py-20 flex flex-col items-center justify-center text-center">
+                  <Loader2 size={32} className="animate-spin text-[#ff2a5f] mb-3" />
+                  <p className="text-xs text-gray-400 font-medium">Fetching your webinars...</p>
+                </div>
+              ) : filteredUserWebinars.length === 0 ? (
+                <div className="py-16 text-center bg-white/[0.02] border border-dashed border-white/10 rounded-2xl p-8">
+                  <Video size={40} className="text-gray-600 mx-auto mb-3" />
+                  <h3 className="text-base font-bold text-white mb-1">No webinars found in this filter</h3>
+                  <p className="text-xs text-gray-500 max-w-sm mx-auto mb-4">
+                    {userWebinarFilter === 'all' 
+                      ? "You haven't submitted any webinars yet. Host your first live masterclass or panel session with WIPA!"
+                      : `You don't have any webinars with status '${userWebinarFilter}'.`}
+                  </p>
+                  {userWebinarFilter === 'all' && (
+                    <button
+                      onClick={() => {
+                        setIsUserWebinarsOpen(false);
+                        setIsModalOpen(true);
+                      }}
+                      className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-lg shadow-[#ff2a5f]/20 transition-all"
+                    >
+                      <Plus size={14} /> Host Your First Webinar
+                    </button>
+                  )}
+                </div>
+              ) : (
+                filteredUserWebinars.map(webinar => {
+                  const status = webinar.approval_status || 'in_review';
+                  const isApproved = status === 'approved';
+                  const isRejected = status === 'rejected';
+                  const isInReview = !isApproved && !isRejected;
+
+                  return (
+                    <div 
+                      key={webinar.id}
+                      className="p-4 rounded-2xl bg-[#181a24] border border-white/10 hover:border-white/20 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                    >
+                      {/* Left thumbnail & info */}
+                      <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                        <div className="w-20 h-14 rounded-xl bg-black/40 border border-white/10 overflow-hidden shrink-0">
+                          {webinar.cover_image_url || webinar.image ? (
+                            <img 
+                              src={webinar.cover_image_url || webinar.image} 
+                              alt={webinar.title} 
+                              className="w-full h-full object-cover" 
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-600">
+                              <Tv size={20} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#ff2a5f] bg-[#ff2a5f]/10 px-2 py-0.5 rounded border border-[#ff2a5f]/20">
+                              {webinar.subcategory || webinar.topic || 'Webinar'}
+                            </span>
+                            <span className="text-[11px] text-gray-500 flex items-center gap-1">
+                              <Calendar size={11} /> {webinar.scheduled_at ? new Date(webinar.scheduled_at).toLocaleDateString() : 'Scheduled'}
+                            </span>
+                            <span className="text-[11px] text-gray-500 flex items-center gap-1">
+                              <Clock size={11} /> {webinar.duration_minutes || 60} mins
+                            </span>
+                          </div>
+                          <h4 className="text-sm font-bold text-white truncate">{webinar.title}</h4>
+                          <p className="text-xs text-gray-400 truncate mt-0.5">
+                            Speaker: <span className="text-gray-300 font-medium">{webinar.author_name || userProfile?.full_name || 'You'}</span>
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right Status Badge & Room Action */}
+                      <div className="flex flex-row sm:flex-col items-end sm:items-end justify-between sm:justify-center gap-2 w-full sm:w-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-white/5">
+                        {/* Status Badge */}
+                        {isApproved && (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                            <Check size={12} /> Approved & Live
+                          </div>
+                        )}
+                        {isInReview && (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 animate-pulse">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" /> In Review
+                          </div>
+                        )}
+                        {isRejected && (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                            <X size={12} /> Rejected
+                          </div>
+                        )}
+
+                        {/* Room link & Copy button */}
+                        {webinar.url && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-mono text-gray-400 bg-black/40 px-2 py-0.5 rounded border border-white/10">
+                              📹 {webinar.assigned_room || (webinar.url.includes('room2-2') ? 'Room2' : webinar.url.includes('room3-2') ? 'Room3' : 'ROOM1')}
+                            </span>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(webinar.url);
+                                alert('Meetn room link copied: ' + webinar.url);
+                              }}
+                              className="text-[10px] font-bold text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded border border-white/10 transition-colors"
+                            >
+                              Copy Link
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+              <span className="text-xs text-gray-500">
+                Total Submissions: <strong className="text-white">{userWebinars.length}</strong>
+              </span>
+              <button
+                onClick={() => {
+                  setIsUserWebinarsOpen(false);
+                  setIsModalOpen(true);
+                }}
+                className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-lg shadow-[#ff2a5f]/20 transition-all"
+              >
+                <Plus size={14} /> Host New Webinar
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* RICH HOST WEBINAR MODAL */}
       {isModalOpen && (
