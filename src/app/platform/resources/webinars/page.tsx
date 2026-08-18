@@ -247,7 +247,7 @@ export default function WebinarsHubPage() {
     try {
       const cleanSlug = formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
       const isUserAdmin = Boolean(userProfile?.is_admin);
-      const initialApprovalStatus = isUserAdmin ? 'approved' : 'pending';
+      const initialApprovalStatus = isUserAdmin ? 'approved' : 'in_review';
 
       const payload = {
         title: formData.title.trim(),
@@ -299,7 +299,7 @@ export default function WebinarsHubPage() {
       setSuccessData({
         ...payload,
         id: savedWebinar?.id,
-        is_pending: initialApprovalStatus === 'pending'
+        is_pending: initialApprovalStatus === 'in_review'
       });
 
       fetchData();
@@ -313,11 +313,11 @@ export default function WebinarsHubPage() {
 
   async function fetchData() {
     try {
-      // 1. Fetch from dedicated webinars table (approved only)
+      // 1. Fetch from dedicated webinars table (strictly approved only!)
       const { data: webinarData, error: webErr } = await supabase
         .from('webinars')
         .select('*')
-        .or('approval_status.eq.approved,approval_status.is.null')
+        .eq('approval_status', 'approved')
         .order('created_at', { ascending: false });
 
       if (webinarData && webinarData.length > 0) {
@@ -753,8 +753,8 @@ export default function WebinarsHubPage() {
                         <div className="text-[11px] text-gray-500 font-mono">{userProfile?.email || user.email}</div>
                       </div>
                     </div>
-                    <div className="text-[10px] font-semibold text-amber-400 bg-amber-400/10 px-2 py-1 rounded-lg border border-amber-400/20 shrink-0">
-                      {userProfile?.is_admin ? "Auto-Approved" : "Requires Admin Review"}
+                    <div className="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20 shrink-0 flex items-center gap-1">
+                      {userProfile?.is_admin ? "✓ Auto-Approved (Admin)" : "⏳ In Review (Admin Approval Required)"}
                     </div>
                   </div>
                 )}
