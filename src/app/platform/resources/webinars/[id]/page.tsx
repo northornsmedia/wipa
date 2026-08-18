@@ -21,7 +21,7 @@ export default function WebinarDetailPage({ params }: { params: { id: string } }
       setLoading(true);
       const { data } = await supabase
         .from('resources')
-        .select('*, author:profiles(first_name, last_name, avatar_url, job_title)')
+        .select('*')
         .eq('id', params.id)
         .single();
         
@@ -246,22 +246,28 @@ export default function WebinarDetailPage({ params }: { params: { id: string } }
           <div className="bg-white dark:bg-[#1e293b] p-6 rounded-3xl border border-gray-200 dark:border-white/10 shadow-sm">
             <h3 className="font-black text-gray-900 dark:text-white mb-4 uppercase tracking-wider text-sm text-gray-500">Host</h3>
             
-            {webinar.author ? (
-              <Link href={`/platform/profile/${webinar.author_id}`} className="flex items-center gap-4 group">
-                <img src={webinar.author.avatar_url || `https://ui-avatars.com/api/?name=${webinar.author.first_name}+${webinar.author.last_name}`} alt="Host Avatar" className="w-16 h-16 rounded-2xl object-cover" />
+            {webinar.author_name || webinar.author ? (
+              <div className="flex items-center gap-4">
+                <img 
+                  src={webinar.author_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(webinar.author_name || "Host")}`} 
+                  alt="Host Avatar" 
+                  className="w-16 h-16 rounded-2xl object-cover" 
+                />
                 <div>
-                  <div className="font-bold text-gray-900 dark:text-white text-lg group-hover:text-[#ff2a5f] transition-colors">
-                    {webinar.author.first_name} {webinar.author.last_name}
+                  <div className="font-bold text-gray-900 dark:text-white text-lg">
+                    {webinar.author_name || (webinar.author?.full_name || "Official Host")}
                   </div>
-                  <div className="text-gray-500 text-sm">{webinar.author.job_title}</div>
+                  <div className="text-gray-500 text-sm">
+                    {webinar.author_title || webinar.organization || "Speaker & Panelist"}
+                  </div>
                 </div>
-              </Link>
+              </div>
             ) : (
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-2xl bg-gray-200 dark:bg-white/10 flex items-center justify-center text-gray-400">
                   <Users size={24} />
                 </div>
-                <div className="font-bold text-gray-400">Unknown Host</div>
+                <div className="font-bold text-gray-400">WIPA Expert Panel</div>
               </div>
             )}
           </div>
