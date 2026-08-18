@@ -13,8 +13,6 @@ import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { Suspense } from 'react';
 
-import { getConversationsAction, invalidateChatCacheAction } from '@/app/actions/chat';
-
 type MessageStatus = 'queued' | 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
 
 type Message = {
@@ -96,25 +94,78 @@ function MessagesContent() {
     activeChatIdRef.current = activeChatId;
   }, [activeChatId]);
 
-  // Load real conversations from Redis server action
+  // Load real conversations directly from Supabase DB on first load
   useEffect(() => {
     if (!user?.id) return;
     const fetchConversations = async () => {
       try {
-        const parsed = await getConversationsAction(user.id);
-        if (parsed && Array.isArray(parsed) && parsed.length > 0) {
-          setConversations(parsed);
-          setCachedConversations(parsed);
-          if (!activeChatIdRef.current && !targetUserId) {
-            setActiveChatId(parsed[0].id);
+        // 1. Fetch conversations where current user is a participant
+        const { data: myConvs, error: convErr } = await supabase
+          .from('conversation_participants')
+          .select(`
+            conversation_id,
+            conversations (
+              id,
+              updated_at,
+              name,
+              is_group,
+              conversation_participants (
+                user_id,
+                profiles:profiles!conversation_participants_user_id_fkey (id, full_name, avatar_url, role)
+              )
+            )
+          `)
+          .eq('user_id', user.id);
+
+        if (myConvs && myConvs.length > 0) {
+          // Get unread counts
+          const { data: unreadData } = await supabase
+            .from('messages')
+            .select('conversation_id')
+            .eq('is_read', false)
+            .neq('sender_id', user.id);
+
+          const unreadMap: Record<string, number> = {};
+          if (unreadData) {
+            unreadData.forEach((m: any) => {
+              unreadMap[m.conversation_id] = (unreadMap[m.conversation_id] || 0) + 1;
+            });
+          }
+
+          const parsed: Chat[] = myConvs
+            .filter((c: any) => c.conversations)
+            .map((c: any) => {
+              const conv = c.conversations;
+              const other = conv.conversation_participants?.find((p: any) => p.user_id !== user.id)?.profiles || {};
+              const title = conv.is_group ? conv.name : (other.full_name || 'Direct Message');
+              return {
+                id: conv.id,
+                name: title,
+                role: other.role || 'Member',
+                initial: title.charAt(0).toUpperCase() || 'U',
+                color: '#5a32fa',
+                unread: unreadMap[conv.id] || 0,
+                lastMessage: 'Tap to view conversation',
+                lastTime: conv.updated_at ? new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+                messages: [],
+                participantId: other.id
+              };
+            });
+
+          if (parsed.length > 0) {
+            setConversations(parsed);
+            useAppStore.getState().setCachedConversations(parsed);
+            if (!activeChatIdRef.current && !targetUserId) {
+              setActiveChatId(parsed[0].id);
+            }
           }
         }
       } catch (err) {
-        console.warn("Failed to load conversations:", err);
+        console.error("Failed to load conversations from DB:", err);
       }
     };
     fetchConversations();
-  }, [user?.id, targetUserId, setCachedConversations]);
+  }, [user?.id, targetUserId]);
 
   // Handle direct targetUserId routing
   useEffect(() => {
@@ -311,7 +362,6 @@ function MessagesContent() {
       }));
 
       await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeChatId);
-      invalidateChatCacheAction(user.id).catch(() => {});
     } catch (err: any) {
       console.error("Message send failed:", err);
       // Mark message as failed
