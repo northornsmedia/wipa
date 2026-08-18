@@ -497,7 +497,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                                   controls 
                                   playsInline 
                                   preload="metadata"
-                                  className="max-w-full w-auto h-auto max-h-[380px] sm:max-h-[500px] object-contain mx-auto block" 
+                                  className="w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain mx-auto block" 
                                 />
                               </div>
                             );
@@ -533,7 +533,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                               <img 
                                 src={url} 
                                 alt="Post attachment" 
-                                className="max-w-full w-auto h-auto max-h-[380px] sm:max-h-[500px] object-contain rounded-xl sm:rounded-2xl hover:opacity-98 transition-opacity md:cursor-pointer block mx-auto"
+                                className="w-full h-auto max-h-[75vh] sm:max-h-[580px] object-contain rounded-xl sm:rounded-2xl hover:opacity-98 transition-opacity md:cursor-pointer block mx-auto"
                                 onClick={() => {
                                   if (typeof window !== 'undefined' && window.innerWidth >= 768) {
                                     setPreviewModalImage(url);

@@ -218,12 +218,12 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleAdClick}
-              className="w-full max-w-full rounded-xl sm:rounded-2xl overflow-hidden bg-black/5 dark:bg-black/60 flex items-center justify-center border border-gray-100/80 dark:border-white/10 shadow-sm block"
+              className="w-full rounded-xl sm:rounded-2xl overflow-hidden bg-black/5 dark:bg-black/60 flex items-center justify-center border border-gray-100/80 dark:border-white/10 shadow-sm block"
             >
               <img 
                 src={ad.banner_image_url} 
                 alt={ad.headline} 
-                className="max-w-full w-auto h-auto max-h-[360px] sm:max-h-[480px] object-contain rounded-xl sm:rounded-2xl transition-opacity hover:opacity-98 block mx-auto" 
+                className="w-full h-auto max-h-[75vh] sm:max-h-[580px] object-contain rounded-xl sm:rounded-2xl transition-opacity hover:opacity-98 block mx-auto" 
               />
             </a>
           </div>
