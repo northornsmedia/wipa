@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Globe, Plus, BookOpen, User, Sparkles } from 'lucide-react';
+import { Home, Globe, Plus, BookOpen, User, Sparkles, MessageSquare } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import MobileCreationSheet from './MobileCreationSheet';
 
@@ -47,18 +47,18 @@ export default function MobileBottomNav() {
           )}
         </Link>
 
-        {/* 2. Network */}
+        {/* 2. Messages / Chat */}
         <Link
-          href="/platform/network"
+          href="/platform/messages"
           className={`flex flex-col items-center justify-center w-14 h-full relative transition-all active:scale-90 ${
-            isActive('/platform/network')
+            isActive('/platform/messages')
               ? 'text-[#5a32fa] dark:text-[#ff90e8]'
               : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
           }`}
         >
-          <Globe size={21} strokeWidth={isActive('/platform/network') ? 2.5 : 2} />
-          <span className="text-[10px] font-bold mt-1">Network</span>
-          {isActive('/platform/network') && (
+          <MessageSquare size={21} strokeWidth={isActive('/platform/messages') ? 2.5 : 2} />
+          <span className="text-[10px] font-bold mt-1">Chat</span>
+          {isActive('/platform/messages') && (
             <span className="absolute bottom-1 w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8]" />
           )}
         </Link>

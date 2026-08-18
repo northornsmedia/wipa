@@ -176,6 +176,7 @@ export default function NetworkPage() {
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedPracticeArea, setSelectedPracticeArea] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('');
+  const [isFilterTrayOpen, setIsFilterTrayOpen] = useState(false);
 
   const toggleConnection = (id: number) => {
     setNetwork(network.map(person => 
@@ -189,56 +190,60 @@ export default function NetworkPage() {
     ));
   };
 
-  return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
+  const hasActiveFilters = Boolean(selectedCountry || selectedPracticeArea || selectedIndustry);
 
+  return (
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#070b14] flex flex-col">
 
       {/* MAIN SCROLLABLE CONTENT */}
-      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
-        <div className="flex flex-col xl:flex-row gap-8">
+      <div className="flex-1 w-full max-w-[1400px] mx-auto p-3 sm:p-6 lg:p-8 pb-28 md:pb-12">
+        <div className="flex flex-col xl:flex-row gap-6 lg:gap-8">
           
           <div className="flex-1">
           
-          <div className="hidden md:flex mb-8 border-b border-gray-100 dark:border-white/10 pb-6 items-center justify-between">
+          <div className="hidden md:flex mb-6 border-b border-gray-100 dark:border-white/10 pb-5 items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                <UsersRound size={32} className="text-[#5a32fa]" />
+              <h1 className="text-2xl lg:text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2.5">
+                <UsersRound size={28} className="text-[#5a32fa]" />
                 My Network
               </h1>
-              <p className="text-gray-500 dark:text-gray-400 font-medium mt-2">
-                Manage your connections and discover people in the IP space.
+              <p className="text-gray-500 dark:text-gray-400 font-medium text-xs sm:text-sm mt-1">
+                Manage your connections and discover IP leaders worldwide.
               </p>
             </div>
           </div>
 
           {/* Pending Invitations */}
           {invitations.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Pending Invitations ({invitations.length})</h2>
-              <div className="flex flex-col gap-4">
+            <div className="mb-5 sm:mb-8">
+              <h2 className="text-sm sm:text-lg font-bold text-gray-900 dark:text-white mb-2.5 flex items-center justify-between">
+                <span>Pending Invitations</span>
+                <span className="bg-[#5a32fa] text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full">{invitations.length}</span>
+              </h2>
+              <div className="flex flex-col gap-2.5">
                 {invitations.map((invite) => (
-                  <div key={invite.id} className="bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-white/10 shadow-sm p-4 rounded-2xl flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-[#b892ff] rounded-full border border-gray-100 dark:border-white/10 flex items-center justify-center font-bold text-xl text-white">
+                  <div key={invite.id} className="bg-white dark:bg-[#151c2c] border border-gray-100 dark:border-white/5 shadow-sm p-3 sm:p-4 rounded-2xl flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] rounded-full flex items-center justify-center font-bold text-sm text-white shrink-0 shadow-sm">
                         {invite.requester.full_name?.charAt(0) || 'U'}
                       </div>
-                      <div>
-                        <Link href={`/platform/profile/${invite.requester.id}`} className="font-bold text-lg hover:underline decoration-2">
+                      <div className="min-w-0">
+                        <Link href={`/platform/profile/${invite.requester.id}`} className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white hover:underline truncate block">
                           {invite.requester.full_name || 'Anonymous User'}
                         </Link>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Sent you a connection request</p>
+                        <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate">Sent you a connection request</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 shrink-0">
                       <button 
                         onClick={() => handleAccept(invite.id)}
-                        className="px-4 py-2 bg-[#00d26a] text-gray-900 dark:text-white font-bold border border-gray-100 dark:border-white/10 rounded-xl  shadow-sm transition-all"
+                        className="px-3 py-1.5 bg-[#00d26a] text-white font-bold text-xs rounded-xl shadow-sm hover:opacity-90 active:scale-95 transition-all"
                       >
                         Accept
                       </button>
                       <button 
                         onClick={() => handleReject(invite.id)}
-                        className="px-4 py-2 bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 font-bold border-2 border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-white/5 transition-colors"
+                        className="px-3 py-1.5 bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 font-bold text-xs rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 active:scale-95 transition-all"
                       >
                         Ignore
                       </button>
@@ -249,83 +254,101 @@ export default function NetworkPage() {
             </div>
           )}
 
-          {/* Search and Tabs */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={() => setActiveTab('Connections')}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Connections' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900'}`}
-              >
-                Connections
-              </button>
-              <button 
-                onClick={() => setActiveTab('Following')}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Following' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900'}`}
-              >
-                Following
-              </button>
-              <button 
-                onClick={() => setActiveTab('Followers')}
-                className={`px-5 py-2.5 rounded-full font-bold text-sm transition-colors border-2 ${activeTab === 'Followers' ? 'bg-[#5a32fa] text-white border-[#5a32fa]' : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900'}`}
-              >
-                Followers
-              </button>
+          {/* Compact Mobile Tabs + Search + Filter Strip */}
+          <div className="space-y-2.5 mb-4 sm:mb-6">
+            {/* 1. Category Segmented Pills */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                {(['Connections', 'Following', 'Followers'] as const).map((tab) => (
+                  <button 
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-3.5 py-1.5 rounded-full font-bold text-xs whitespace-nowrap active:scale-95 transition-all ${
+                      activeTab === tab 
+                        ? 'bg-[#5a32fa] text-white shadow-sm shadow-[#5a32fa]/30' 
+                        : 'bg-white dark:bg-[#151c2c] text-gray-600 dark:text-gray-300 border border-gray-200/80 dark:border-white/5'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
             </div>
-            
-            <div className="relative">
-              <input 
-                type="text" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search network..."
-                className="w-full sm:w-64 pl-10 pr-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-white/20 focus:outline-none focus:border-[#5a32fa] font-medium text-sm transition-colors bg-white dark:bg-[#0f172a]"
-              />
-              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            </div>
-          </div>
 
-          {/* Advanced Filters */}
-          <div className="flex flex-wrap items-center gap-4 mb-8 p-4 bg-white dark:bg-[#0f172a] rounded-[1.5rem] border border-gray-100 dark:border-white/10 shadow-sm">
-            <h3 className="font-bold text-sm text-gray-900 dark:text-white uppercase tracking-wider mr-2 flex items-center gap-2">
-              <Filter size={16} className="text-[#5a32fa]" /> Filters
-            </h3>
-            <select 
-              value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-sm text-gray-700 dark:text-gray-200 focus:border-[#131313] focus:outline-none cursor-pointer hover:border-gray-900 transition-colors"
-            >
-              <option value="">All Countries</option>
-              {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <select 
-              value={selectedPracticeArea}
-              onChange={(e) => setSelectedPracticeArea(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-sm text-gray-700 dark:text-gray-200 focus:border-[#131313] focus:outline-none cursor-pointer hover:border-gray-900 transition-colors"
-            >
-              <option value="">All Practice Areas</option>
-              {PRACTICE_AREAS.map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
-            <select 
-              value={selectedIndustry}
-              onChange={(e) => setSelectedIndustry(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border-2 border-gray-200 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-sm text-gray-700 dark:text-gray-200 focus:border-[#131313] focus:outline-none cursor-pointer hover:border-gray-900 transition-colors"
-            >
-              <option value="">All Industries</option>
-              {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
-            </select>
-            
-            {(selectedCountry || selectedPracticeArea || selectedIndustry || searchQuery) && (
-              <button 
-                onClick={() => { setSelectedCountry(''); setSelectedPracticeArea(''); setSelectedIndustry(''); setSearchQuery(''); }}
-                className="ml-auto px-4 py-2.5 text-sm font-bold text-[#ff4b4b] border-2 border-transparent hover:border-[#ff4b4b] rounded-xl transition-all"
+            {/* 2. Search Bar + Filter Trigger */}
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input 
+                  type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search network members..."
+                  className="w-full pl-9 pr-3.5 py-2 sm:py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-xs sm:text-sm transition-all bg-white dark:bg-[#151c2c] text-gray-900 dark:text-white shadow-sm"
+                />
+              </div>
+
+              <button
+                onClick={() => setIsFilterTrayOpen(!isFilterTrayOpen)}
+                className={`px-3 py-2 sm:py-2.5 rounded-2xl border flex items-center gap-1.5 text-xs font-bold transition-all active:scale-95 shrink-0 ${
+                  hasActiveFilters
+                    ? 'bg-[#5a32fa] text-white border-[#5a32fa] shadow-sm'
+                    : 'bg-white dark:bg-[#151c2c] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-white/10 shadow-sm'
+                }`}
               >
-                Clear Filters
+                <Filter size={14} />
+                <span>Filters</span>
+                {hasActiveFilters && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00d26a]" />
+                )}
               </button>
+            </div>
+
+            {/* 3. Collapsible Filter Row (Modern Compact Layout) */}
+            {isFilterTrayOpen && (
+              <div className="p-3 bg-white dark:bg-[#151c2c] rounded-2xl border border-gray-200 dark:border-white/10 space-y-2 animate-in fade-in zoom-in-95 duration-150 shadow-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <select 
+                    value={selectedCountry}
+                    onChange={(e) => setSelectedCountry(e.target.value)}
+                    className="p-2 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-medium text-gray-800 dark:text-gray-200 outline-none"
+                  >
+                    <option value="">All Countries</option>
+                    {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <select 
+                    value={selectedPracticeArea}
+                    onChange={(e) => setSelectedPracticeArea(e.target.value)}
+                    className="p-2 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-medium text-gray-800 dark:text-gray-200 outline-none"
+                  >
+                    <option value="">All Practice Areas</option>
+                    {PRACTICE_AREAS.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                  <select 
+                    value={selectedIndustry}
+                    onChange={(e) => setSelectedIndustry(e.target.value)}
+                    className="p-2 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-medium text-gray-800 dark:text-gray-200 outline-none"
+                  >
+                    <option value="">All Industries</option>
+                    {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
+                  </select>
+                </div>
+                {hasActiveFilters && (
+                  <div className="flex justify-end pt-1">
+                    <button 
+                      onClick={() => { setSelectedCountry(''); setSelectedPracticeArea(''); setSelectedIndustry(''); setSearchQuery(''); }}
+                      className="text-xs font-bold text-rose-500 hover:underline"
+                    >
+                      Reset All Filters
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
-          {/* Network Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-24">
+          {/* Network Member Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
             {network.filter(person => {
               if (activeTab === 'Connections' && !person.isConnection) return false;
               if (activeTab === 'Following' && !person.isFollowing) return false;
@@ -336,10 +359,10 @@ export default function NetworkPage() {
               if (selectedIndustry && person.industrySector !== selectedIndustry) return false;
               return true;
             }).length === 0 ? (
-              <div className="sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-100 dark:border-white/10 shadow-sm p-16 text-center flex flex-col items-center">
-                <UsersRound size={64} className="text-gray-300 mb-6" />
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">No {activeTab.toLowerCase()} found</h3>
-                <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">Try adjusting your search filters.</p>
+              <div className="sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#151c2c] rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm p-10 text-center flex flex-col items-center">
+                <UsersRound size={44} className="text-gray-300 dark:text-gray-600 mb-3" />
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1">No {activeTab.toLowerCase()} found</h3>
+                <p className="text-gray-500 dark:text-gray-400 font-medium text-xs sm:text-sm">Try clearing your filters or searching a different name.</p>
               </div>
             ) : network.filter(person => {
               if (activeTab === 'Connections' && !person.isConnection) return false;
@@ -351,37 +374,39 @@ export default function NetworkPage() {
               if (selectedIndustry && person.industrySector !== selectedIndustry) return false;
               return true; 
             }).map((person) => (
-              <div key={person.id} className="bg-white dark:bg-[#0f172a] rounded-[1rem] md:rounded-[1.5rem] border-[1.5px] md:border border-gray-100 dark:border-white/10 shadow-sm md:shadow-sm overflow-hidden flex flex-row md:flex-col items-center p-3 md:p-6 text-left md:text-center transition-all hover:-translate-y-1 hover:shadow-sm md:hover:shadow-sm gap-3 md:gap-0">
+              <div key={person.id} className="bg-white dark:bg-[#151c2c] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-3.5 flex items-center justify-between gap-3 transition-all hover:border-[#5a32fa]/30">
                 
-                <div className="w-12 h-12 md:w-20 md:h-20 rounded-full border-[1.5px] md:border border-gray-100 dark:border-white/10 flex items-center justify-center font-bold text-lg md:text-3xl text-[#131313] md:mb-4 shrink-0" style={{ backgroundColor: person.avatarColor }}>
-                  {person.initial}
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <Link href={`/platform/profile/${person.id}`}>
-                    <h3 className="text-[14px] md:text-lg font-bold text-gray-900 dark:text-white mb-0.5 md:mb-1 leading-tight hover:text-[#5a32fa] transition-colors cursor-pointer truncate hover:underline decoration-2">
+                <Link href={`/platform/profile/${person.id}`} className="flex items-center gap-3 min-w-0 flex-1 group">
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-sm ring-2 ring-white dark:ring-[#0f172a]">
+                    {person.initial}
+                  </div>
+                  
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-[#5a32fa] transition-colors">
                       {person.name}
                     </h3>
-                  </Link>
-                  <p className="text-gray-500 dark:text-gray-400 font-medium text-[11px] md:text-xs mb-0.5 md:mb-1 truncate">{person.role}</p>
-                  <p className="text-gray-500 dark:text-gray-400 font-bold text-[10px] md:text-[11px] mb-0.5 md:mb-2 truncate opacity-80">{person.country} • {person.practiceArea}</p>
-                  <p className="text-[10px] md:text-[11px] font-bold text-gray-400 hidden md:block md:mb-6">
-                    {person.mutualConnections} mutual connections
-                  </p>
-                </div>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                      {person.practiceArea || person.role}
+                    </p>
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500 truncate block">
+                      {person.country} • {person.mutualConnections} mutual
+                    </span>
+                  </div>
+                </Link>
 
-                <div className="flex md:w-full md:mt-auto gap-2 shrink-0">
-                  <Link href={`/platform/messages?userId=${person.id}`} className="md:flex-1">
-                    <button className="w-full flex items-center justify-center gap-1.5 bg-[#5a32fa] text-white px-3 py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[11px] md:text-xs border border-gray-100 dark:border-white/10 shadow-sm hover:-translate-y-0.5 md:hover:shadow-sm transition-all">
-                      <MessageCircle size={14} className="hidden md:block" />
-                      Message
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Link href={`/platform/messages?userId=${person.id}`}>
+                    <button className="flex items-center gap-1 bg-[#5a32fa] hover:bg-[#4a24db] text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm shadow-[#5a32fa]/30 active:scale-95 transition-all">
+                      <MessageCircle size={13} />
+                      <span>Message</span>
                     </button>
                   </Link>
                   <button 
                     onClick={() => activeTab === 'Following' ? toggleFollow(person.id) : toggleConnection(person.id)}
-                    className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 rounded-lg md:rounded-xl font-bold border-[1.5px] md:border-2 border-gray-200 dark:border-white/20 hover:border-gray-900 hover:text-gray-900 dark:text-white transition-colors shrink-0"
+                    className="p-1.5 text-gray-400 hover:text-rose-500 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                    title="Remove connection"
                   >
-                    {activeTab === 'Following' ? <UserMinus size={14} /> : <UserMinus size={14} />}
+                    <UserMinus size={15} />
                   </button>
                 </div>
               </div>
@@ -389,10 +414,10 @@ export default function NetworkPage() {
           </div>
 
           {hasMore && network.length > 0 && (
-            <div className="flex justify-center mt-8 pb-24">
+            <div className="flex justify-center mt-6 pb-6">
               <button 
                 onClick={() => setPage(p => p + 1)}
-                className="px-6 py-3 bg-white dark:bg-[#0f172a] text-gray-900 dark:text-white border border-gray-200 dark:border-white/20 rounded-xl font-bold hover:bg-gray-50 transition-colors"
+                className="px-5 py-2 bg-white dark:bg-[#151c2c] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-xl font-bold text-xs hover:bg-gray-50 transition-colors shadow-sm"
               >
                 Load More
               </button>

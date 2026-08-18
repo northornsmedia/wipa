@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageSquare, Menu, X, Sparkles, User, ArrowRight } from 'lucide-react';
+import { Search, Bell, MessageSquare, Menu, X, Sparkles, User, ArrowRight, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
@@ -102,16 +102,17 @@ export default function MobileTopBar() {
             )}
           </Link>
 
-          {/* Messages Chat Bubble */}
+          {/* My Network Link */}
           <Link
-            href="/platform/messages"
-            aria-label="Messages"
-            className="relative w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90"
+            href="/platform/network"
+            aria-label="My Network"
+            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-transform active:scale-90 ${
+              pathname.startsWith('/platform/network')
+                ? 'bg-[#5a32fa] text-white shadow-sm'
+                : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300'
+            }`}
           >
-            <MessageSquare size={18} />
-            {unreadMessagesCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-[#0b0f19]" />
-            )}
+            <Globe size={18} />
           </Link>
 
           {/* Drawer Menu Trigger */}
