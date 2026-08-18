@@ -146,6 +146,7 @@ export default function WebinarsHubPage() {
   const [successData, setSuccessData] = useState<any>(null);
 
   const [userProfile, setUserProfile] = useState<any>(null);
+  const canHost = true;
 
   React.useEffect(() => {
     async function fetchUser() {
