@@ -8,10 +8,65 @@ import { CanvasText } from "@/components/ui/canvas-text";
 import SplashSponsoredBanner from '@/components/SplashSponsoredBanner';
 import { supabase } from '@/lib/supabase';
 
+const DEFAULT_IP_SERVICES = [
+  {
+    id: "821d981f-54f5-4d57-976f-6fd1cb998022",
+    title: "Tech Operations (PSS)",
+    description: "Transforming IP operations through strategy, technology, process and people.",
+    type: "ip_services",
+    url: "https://cdn.prod.website-files.com/64c4a14aa0442cfa0e0c62e9/6593a22b139e1daa37dd5974_PSS_Pfront_BLUE%20(1).svg",
+    category: "tech-operations",
+    slug: "pss-solutions",
+    subcategory: "Tech Operations"
+  },
+  {
+    id: "3022bf12-b177-4387-a478-1e86178adda2",
+    title: "Tech Way (AIP Genius)",
+    description: "Explore AI, technology and innovation transforming the way intellectual property professionals work.",
+    type: "ip_services",
+    url: "",
+    category: "tech-way",
+    subcategory: "AI & Automation"
+  },
+  {
+    id: "92eb3db7-9c95-4c01-ad32-f5c3fbe07538",
+    title: "Future Service Hub (Partner Company)",
+    description: "Additional specialist IP service providers can be added as the platform develops.",
+    type: "ip_services",
+    url: "",
+    category: "future-service-hub",
+    subcategory: "Service Hub"
+  },
+  {
+    id: "6fdbf611-53d1-4dac-a7d6-d3484de1d0e2",
+    title: "Patent Docketing & Annuity Management",
+    description: "End-to-end IP renewals, annuity payment automation, docketing audits, and global patent lifecycle management.",
+    type: "ip_services",
+    category: "ip-services",
+    subcategory: "Patent Operations"
+  },
+  {
+    id: "16be8056-cbd7-4c68-a2b9-75d10b94c173",
+    title: "IP Valuation & Commercialisation",
+    description: "Comprehensive intellectual property valuation, M&A due diligence, tech licensing strategy, and monetization frameworks.",
+    type: "ip_services",
+    category: "ip-services",
+    subcategory: "Strategy & Valuation"
+  },
+  {
+    id: "7faa2b14-2039-419d-a66d-cf0e2ef2175a",
+    title: "Global Trademark & Brand Protection",
+    description: "AI-powered trademark clearance, multi-jurisdiction brand monitoring, anti-counterfeiting, and online domain enforcement.",
+    type: "ip_services",
+    category: "ip-services",
+    subcategory: "Brand Enforcement"
+  }
+];
+
 export default function IPServicesPage() {
   const [showIntro, setShowIntro] = React.useState(true);
   const [fadeOut, setFadeOut] = React.useState(false);
-  const [ipServices, setIpServices] = React.useState<any[]>([]);
+  const [ipServices, setIpServices] = React.useState<any[]>(DEFAULT_IP_SERVICES);
   const [splashServices, setSplashServices] = React.useState<any[]>([]);
 
   const handleDismissSplash = () => {
@@ -21,15 +76,16 @@ export default function IPServicesPage() {
 
   React.useEffect(() => {
     const fetchServices = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('resources')
         .select('*')
-        .eq('type', 'ip_services');
+        .or('type.eq.ip_services,category.eq.ip-services,category.eq.tech-operations,category.eq.tech-way,category.eq.future-service-hub')
+        .order('created_at', { ascending: true });
 
-      if (data) {
+      if (data && data.length > 0) {
         const now = new Date();
-        const splash = [];
-        const normal = [];
+        const splash: any[] = [];
+        const normal: any[] = [];
 
         data.forEach(item => {
           // Check if splash sponsored and not expired
@@ -197,7 +253,7 @@ export default function IPServicesPage() {
           {ipServices.map(service => (
             <Link 
               key={service.id}
-              href={`/platform/resources/ip-services/${service.id}`}
+              href={service.slug === 'pss-solutions' || service.id === '821d981f-54f5-4d57-976f-6fd1cb998022' ? '/platform/resources/ip-services/pss-solutions' : `/platform/resources/ip-services/${service.slug || service.id}`}
               className="group relative bg-white dark:bg-[#0B1221] rounded-[2rem] border border-slate-200 dark:border-white/5 overflow-hidden flex flex-col h-[420px] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:hover:shadow-[0_20px_60px_-15px_rgba(14,165,233,0.15)] dark:hover:border-white/10"
             >
               {/* Branded Abstract Glow */}
@@ -229,7 +285,7 @@ export default function IPServicesPage() {
                   </h3>
                   <div className="inline-block px-3 py-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full mb-6">
                     <p className="text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-[0.2em]">
-                      {service.category || 'Tech Operations'}
+                      {service.subcategory || service.category || 'IP Operations'}
                     </p>
                   </div>
                   
