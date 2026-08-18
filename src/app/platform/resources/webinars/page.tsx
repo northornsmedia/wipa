@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Play, Calendar, Clock, ChevronDown, MonitorPlay, Users, Filter, Tv, Eye, Plus, Loader2, Link as LinkIcon, X } from 'lucide-react';
+import { ArrowLeft, Search, Play, Calendar, Clock, ChevronDown, MonitorPlay, Users, Filter, Tv, Eye, Plus, Loader2, Link as LinkIcon, X, Radio } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
@@ -166,20 +166,27 @@ export default function WebinarsHubPage() {
   };
 
   async function fetchData() {
-    const { data } = await supabase
-      .from('resources')
-      .select('*')
-      .or('category.eq.webinars,category.ilike.%Live Event%')
-      .order('created_at', { ascending: false });
-      
-    if (data && data.length > 0) {
-      setResources(data.map(d => ({
-        ...d,
-        expert: d.author_name || "Expert",
-        time: d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString() : (d.read_time || "45:00"),
-        image: d.cover_image_url || d.url || "/resourceimg1.jpg",
-        type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : (d.resource_type || 'Upcoming Webinar'))
-      })));
+    try {
+      const { data, error } = await supabase
+        .from('resources')
+        .select('*')
+        .or('category.eq.webinars,category.ilike.%Live Event%')
+        .order('created_at', { ascending: false });
+        
+      if (data && data.length > 0) {
+        setResources(data.map(d => ({
+          ...d,
+          expert: d.author_name || "Expert",
+          time: d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString() : (d.read_time || "45:00"),
+          image: d.cover_image_url || d.url || "/resourceimg1.jpg",
+          featured: Boolean(d.is_featured ?? d.featured ?? false),
+          topic: d.topic || d.subcategory || "IP Strategy",
+          subcategory: d.subcategory || "all",
+          type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : (d.resource_type || 'Upcoming Webinar'))
+        })));
+      }
+    } catch (err) {
+      console.error('Error fetching webinars:', err);
     }
   }
 
@@ -216,15 +223,16 @@ export default function WebinarsHubPage() {
       supabase.removeChannel(channel);
     };
   }, []);
+
   const filteredResources = resources.filter(r => {
-    const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = r.title?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;
     
     return matchesSearch && matchesSub && matchesType;
   });
 
-  const mainFeature = filteredResources.find(r => r.featured);
+  const mainFeature = filteredResources.find(r => r.featured) || filteredResources[0] || resources[0] || MOCK_WEBINAR_RESOURCES[0];
   const otherResources = filteredResources.filter(r => r.id !== mainFeature?.id);
 
   return (
@@ -234,23 +242,36 @@ export default function WebinarsHubPage() {
       {mainFeature && (
         <div className="relative w-full h-[70vh] min-h-[600px] flex flex-col justify-between pb-20">
           <div className="absolute inset-0 z-0 bg-gray-100 dark:bg-black">
-            <img src={mainFeature.image} alt={mainFeature.title} className="w-full h-full object-cover opacity-90 dark:opacity-60" />
+            <img 
+              src={mainFeature.image || "/resourceimg1.jpg"} 
+              alt={mainFeature.title} 
+              className="w-full h-full object-cover opacity-90 dark:opacity-60" 
+              onError={(e) => { e.currentTarget.src = '/resourceimg1.jpg'; }}
+            />
             {/* Reduced opacity on light mode via to stop it from washing out the image */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#f8f9fa] via-[#f8f9fa]/40 dark:from-[#0f172a] dark:via-[#0f172a]/80 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#f8f9fa]/80 via-[#f8f9fa]/20 dark:from-[#0f172a]/90 dark:via-[#0f172a]/50 to-transparent" />
           </div>
 
-          {/* Search bar positioned relative to hero */}
+          {/* Search bar & Top Navigation */}
           <div className="relative z-50 p-6 flex items-center justify-between">
-            <div className="flex items-center gap-4 bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-full px-4 py-2 border border-gray-300 dark:border-white/20 focus-within:border-gray-400 dark:focus-within:border-white/50 transition-all shadow-sm">
-              <Search size={16} className="text-gray-600 dark:text-white/80" />
-              <input 
-                type="text" 
-                placeholder="Search videos..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/70 w-48"
-              />
+            <div className="flex items-center gap-3">
+              <Link 
+                href="/platform/resources"
+                className="flex items-center gap-2 bg-white/70 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 backdrop-blur-md rounded-full px-4 py-2 border border-gray-300 dark:border-white/20 text-gray-700 dark:text-gray-200 text-sm font-semibold transition-all shadow-sm"
+              >
+                <ArrowLeft size={16} /> Back
+              </Link>
+              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/50 backdrop-blur-md rounded-full px-4 py-2 border border-gray-300 dark:border-white/20 focus-within:border-gray-400 dark:focus-within:border-white/50 transition-all shadow-sm">
+                <Search size={16} className="text-gray-600 dark:text-white/80" />
+                <input 
+                  type="text" 
+                  placeholder="Search videos..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/70 w-48 sm:w-64"
+                />
+              </div>
             </div>
             
             {canHost && (
@@ -267,19 +288,19 @@ export default function WebinarsHubPage() {
             <div className="max-w-3xl">
               <div className="flex items-center gap-3 mb-4">
                 <span className="bg-[#ff2a5f] text-white text-xs font-black uppercase px-3 py-1 rounded-sm flex items-center gap-1.5 shadow-md">
-                  <MonitorPlay size={14} /> {mainFeature.type}
+                  <MonitorPlay size={14} /> {mainFeature.type || "Upcoming Webinar"}
                 </span>
-                {mainFeature.type === "Upcoming Webinar" && (
+                {(mainFeature.type === "Upcoming Webinar" || mainFeature.time) && (
                   <span className="bg-gray-900/10 dark:bg-black/50 backdrop-blur-md text-gray-900 dark:text-white text-xs font-bold uppercase px-3 py-1 rounded-sm border border-gray-900/20 dark:border-white/20 flex items-center gap-1.5">
                     <Calendar size={14} /> {mainFeature.time}
                   </span>
                 )}
               </div>
-              <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white leading-tight mb-6 drop-shadow-sm dark:drop-shadow-lg">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white leading-tight mb-6 drop-shadow-sm dark:drop-shadow-lg">
                 {mainFeature.title}
               </h1>
-              <p className="text-xl text-gray-800 dark:text-white/80 mb-8 max-w-2xl font-medium drop-shadow-sm dark:drop-shadow-md">
-                Join {mainFeature.expert} for an in-depth dive into {mainFeature.topic}. {mainFeature.company?.description}
+              <p className="text-lg md:text-xl text-gray-800 dark:text-white/80 mb-8 max-w-2xl font-medium drop-shadow-sm dark:drop-shadow-md">
+                Join {mainFeature.expert || "Industry Experts"} for an in-depth dive into {mainFeature.topic || "Intellectual Property"}. {mainFeature.company?.description || mainFeature.description || ""}
               </p>
               
               <div className="flex items-center gap-4">
@@ -287,9 +308,9 @@ export default function WebinarsHubPage() {
                   <Play size={20} fill="currentColor" />
                   {mainFeature.type === "Upcoming Webinar" ? "Register Now" : "Watch Now"}
                 </Link>
-                <button className="bg-white/50 dark:bg-white/20 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/30 text-gray-900 dark:text-white px-8 py-4 rounded-full font-bold transition-colors border border-gray-300 dark:border-white/20 shadow-lg">
+                <Link href={`/platform/resources/webinars/${mainFeature.id}`} className="bg-white/50 dark:bg-white/20 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/30 text-gray-900 dark:text-white px-8 py-4 rounded-full font-bold transition-colors border border-gray-300 dark:border-white/20 shadow-lg">
                   More Info
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -359,7 +380,12 @@ export default function WebinarsHubPage() {
             {otherResources.map(resource => (
               <Link key={resource.id} href={`/platform/resources/webinars/${resource.id}`} className="group flex flex-col gap-3">
                 <div className="relative aspect-video rounded-xl overflow-hidden bg-gray-200 dark:bg-white/5">
-                  <img src={resource.image} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img 
+                    src={resource.image || "/resourceimg1.jpg"} 
+                    alt={resource.title} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                    onError={(e) => { e.currentTarget.src = '/resourceimg1.jpg'; }}
+                  />
                   
                   {/* Play Overlay */}
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
