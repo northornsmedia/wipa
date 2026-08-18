@@ -60,26 +60,29 @@ export default function IPServicesPage() {
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-20">
       
-      {/* CanvasText Splash Screen (Page-scoped, does not cover sidebar/header) */}
+      {/* CanvasText Splash Screen (Viewport-centered within main content area) */}
       {showIntro && (
         <div 
           onClick={handleDismissSplash}
-          className={`absolute inset-0 z-50 bg-[#020617] flex flex-col items-center justify-center p-8 cursor-pointer transition-opacity duration-500 ${fadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`fixed top-[73px] bottom-0 right-0 left-0 lg:left-[260px] z-30 bg-[#020617] flex flex-col items-center justify-center p-8 cursor-pointer transition-all duration-500 ${fadeOut ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
         >
+          {/* Ambient Glow */}
+          <div className="absolute w-[500px] h-[300px] bg-sky-500/10 rounded-full blur-[100px] pointer-events-none" />
+
           {/* Skip Button */}
           <button 
             onClick={(e) => { e.stopPropagation(); handleDismissSplash(); }}
-            className="absolute top-6 right-6 z-50 text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors"
+            className="absolute top-6 right-6 z-50 text-neutral-400 hover:text-white bg-white/5 hover:bg-white/15 border border-white/10 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors backdrop-blur-sm"
           >
             Skip
           </button>
 
-          <div className="flex items-center justify-center p-4">
-            <h2 className={cn("group relative mx-auto text-center text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white/90")}>
+          <div className="relative z-10 flex flex-col items-center justify-center p-4">
+            <h2 className={cn("group relative mx-auto text-center text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white/95 drop-shadow-sm")}>
               Sponsored by{" "}
               <CanvasText
                 text="PSS Solutions"
-                backgroundClassName="bg-sky-600 dark:bg-sky-700"
+                backgroundClassName="bg-sky-600 dark:bg-sky-700 shadow-[0_0_30px_rgba(14,165,233,0.3)]"
                 colors={[
                   "rgba(0, 153, 255, 1)",
                   "rgba(0, 153, 255, 0.9)",
