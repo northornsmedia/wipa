@@ -934,13 +934,13 @@ export default function PlatformPage() {
 
                             if (isVideo) {
                               return (
-                                <div key={mIdx} className="w-full rounded-xl sm:rounded-2xl overflow-hidden bg-black/95 dark:bg-black flex items-center justify-center border border-gray-100 dark:border-white/10 shadow-sm">
+                                <div key={mIdx} className="w-full rounded-2xl overflow-hidden bg-black flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5">
                                   <video 
                                     src={url} 
                                     controls 
                                     playsInline 
                                     preload="metadata"
-                                    className="w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain mx-auto block" 
+                                    className="max-h-[290px] sm:max-h-[440px] w-auto max-w-full h-auto object-contain rounded-xl mx-auto block" 
                                   />
                                 </div>
                               );
@@ -972,11 +972,11 @@ export default function PlatformPage() {
                             }
 
                             return (
-                              <div key={mIdx} className="w-full rounded-xl sm:rounded-2xl overflow-hidden bg-black/5 dark:bg-black/60 flex items-center justify-center border border-gray-100/80 dark:border-white/10 shadow-sm">
+                              <div key={mIdx} className="w-full rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5">
                                 <img 
                                   src={url} 
                                   alt="Post attachment" 
-                                  className="w-full h-auto max-h-[75vh] sm:max-h-[580px] object-contain rounded-xl sm:rounded-2xl transition-opacity md:cursor-pointer hover:opacity-98 block mx-auto"
+                                  className="max-h-[290px] sm:max-h-[440px] w-auto max-w-full h-auto object-contain rounded-xl transition-all duration-300 md:cursor-pointer hover:opacity-98 block mx-auto"
                                   onClick={() => {
                                     if (typeof window !== 'undefined' && window.innerWidth >= 768) {
                                       setPreviewModalImage(url);

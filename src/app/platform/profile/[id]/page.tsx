@@ -491,13 +491,13 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
 
                           if (isVideo) {
                             return (
-                              <div key={mIdx} className="mb-4 rounded-xl sm:rounded-2xl overflow-hidden bg-black/95 dark:bg-black shadow-sm flex items-center justify-center border border-gray-100 dark:border-white/10">
+                              <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-black shadow-sm flex items-center justify-center border border-gray-100 dark:border-white/5 p-0.5">
                                 <video 
                                   src={url} 
                                   controls 
                                   playsInline 
                                   preload="metadata"
-                                  className="w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain mx-auto block" 
+                                  className="max-h-[290px] sm:max-h-[440px] w-auto max-w-full h-auto object-contain rounded-xl mx-auto block" 
                                 />
                               </div>
                             );
@@ -529,11 +529,11 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                           }
 
                           return (
-                            <div key={mIdx} className="mb-4 rounded-xl sm:rounded-2xl overflow-hidden bg-black/5 dark:bg-black/60 shadow-sm flex items-center justify-center border border-gray-100/80 dark:border-white/10">
+                            <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 shadow-sm flex items-center justify-center border border-gray-100 dark:border-white/5 p-0.5">
                               <img 
                                 src={url} 
                                 alt="Post attachment" 
-                                className="w-full h-auto max-h-[75vh] sm:max-h-[580px] object-contain rounded-xl sm:rounded-2xl hover:opacity-98 transition-opacity md:cursor-pointer block mx-auto"
+                                className="max-h-[290px] sm:max-h-[440px] w-auto max-w-full h-auto object-contain rounded-xl hover:opacity-98 transition-opacity md:cursor-pointer block mx-auto"
                                 onClick={() => {
                                   if (typeof window !== 'undefined' && window.innerWidth >= 768) {
                                     setPreviewModalImage(url);
