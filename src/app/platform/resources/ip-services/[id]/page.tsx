@@ -47,7 +47,7 @@ const MOCK_COMPANIES = [
         status: "Upcoming",
         image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=600&h=400",
         speakers: [
-          { name: "Nadine Stuttle", role: "PSS Solutions", avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=100&h=100" }
+          { name: "Nadine Stuttle", role: "Founder & CEO, PSS Solutions", avatar: "/Nadine Stuttle Picture.jpg" }
         ]
       },
       { 
@@ -56,7 +56,7 @@ const MOCK_COMPANIES = [
         description: "A deep dive into the hidden inefficiencies of legacy IP management software and how to build a business case for modern tools.", 
         date: "Sep 10, 2024", 
         time: "1:00 PM EST", 
-        status: "On Demand",
+        status: "On Demand", 
         image: "https://images.unsplash.com/photo-1551818255-e6e10975bc17?auto=format&fit=crop&q=80&w=600&h=400",
         speakers: [
           { name: "Virginien Leost", role: "PSS Solutions", avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=100&h=100" }
@@ -94,7 +94,7 @@ const MOCK_COMPANIES = [
     ],
     locations: ["Switzerland", "Singapore", "Germany", "China", "United Kingdom", "Australia", "France", "USA"],
     team: [
-      { name: "Nadine Stuttle", role: "Senior IP Operations Expert", initials: "NS" },
+      { name: "Nadine Stuttle", role: "Founder & CEO, PSS Solutions", initials: "NS" },
       { name: "Virginien Leost", role: "Senior IP Operations Expert", initials: "VL" },
       { name: "Roisin Williams", role: "Senior Consultant", initials: "RW" },
       { name: "Franck Lancien", role: "Director – IP Consulting", initials: "FL" }
@@ -246,15 +246,15 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                       <div className="relative z-10 flex flex-col items-center text-center mb-8">
                         <div className="w-32 h-32 rounded-full border-[4px] border-white/10 overflow-hidden mb-6 shadow-xl relative">
                           <img 
-                            src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=250&h=250" 
+                            src="/Nadine Stuttle Picture.jpg" 
                             alt="Nadine Stuttle" 
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover object-top"
                           />
                           <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-2 border-[#1a1a24] rounded-full shadow-sm"></div>
                         </div>
                         
                         <h3 className="text-2xl font-black text-white mb-1">Nadine Stuttle</h3>
-                        <p className="text-sky-400 font-bold text-sm mb-4 uppercase tracking-widest">Senior IP Operations Expert</p>
+                        <p className="text-sky-400 font-bold text-sm mb-4 uppercase tracking-widest">Founder & CEO, PSS Solutions</p>
                         
                         <p className="text-white/80 font-medium text-sm leading-relaxed">
                           Connect with Nadine to discuss how PSS can transform your intellectual property function.
