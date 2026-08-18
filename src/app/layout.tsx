@@ -1,20 +1,45 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Providers from "@/lib/query-provider";
 import ImageProtection from "@/components/ImageProtection";
 import TelemetryTracker from "@/components/TelemetryTracker";
+import PWARegister from "@/components/PWARegister";
 import { Suspense } from "react";
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
 
+export const viewport: Viewport = {
+  themeColor: "#5a32fa",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  interactiveWidget: "resizes-content"
+};
+
 export const metadata: Metadata = {
   title: "WIPA | Women's IP Alliance",
   description: "Global community and professional platform empowering women leaders in intellectual property, patent prosecution, and legal innovation.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "WIPA"
+  },
+  icons: {
+    icon: [
+      { url: "/mobilelogowipa.png", sizes: "192x192", type: "image/png" },
+      { url: "/mobilelogowipa.png", sizes: "512x512", type: "image/png" }
+    ],
+    apple: [
+      { url: "/mobilelogowipa.png", sizes: "180x180", type: "image/png" }
+    ]
+  }
 };
-
-import Script from 'next/script';
 
 export default function RootLayout({
   children,
@@ -23,6 +48,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/mobilelogowipa.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="WIPA" />
+        <meta name="application-name" content="WIPA" />
+      </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans`}>
         <ImageProtection />
         <Suspense fallback={null}>
@@ -31,6 +65,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <PWARegister />
         
         <Script id="clarity-script" strategy="afterInteractive">
           {`

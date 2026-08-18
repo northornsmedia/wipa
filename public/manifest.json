@@ -1,0 +1,95 @@
+{
+  "name": "WIPA - Women's IP Alliance",
+  "short_name": "WIPA",
+  "description": "Global network connecting innovators, IP professionals, founders, and patent attorneys worldwide.",
+  "start_url": "/platform",
+  "scope": "/",
+  "id": "/platform",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "window-controls-overlay",
+    "minimal-ui"
+  ],
+  "orientation": "portrait-primary",
+  "background_color": "#0b0f19",
+  "theme_color": "#5a32fa",
+  "categories": [
+    "business",
+    "social",
+    "productivity",
+    "legal"
+  ],
+  "icons": [
+    {
+      "src": "/mobilelogowipa.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/mobilelogowipa.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/mobilelogowipa.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/mobilelogowipa.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Home Feed",
+      "short_name": "Feed",
+      "description": "View latest posts and IP discussions",
+      "url": "/platform",
+      "icons": [{ "src": "/mobilelogowipa.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Messages & Chat",
+      "short_name": "Chat",
+      "description": "Open direct practitioner messages",
+      "url": "/platform/messages",
+      "icons": [{ "src": "/mobilelogowipa.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Network",
+      "short_name": "Network",
+      "description": "Manage connections & discover members",
+      "url": "/platform/network",
+      "icons": [{ "src": "/mobilelogowipa.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Resource Library",
+      "short_name": "Resources",
+      "description": "Access webinars, law firms, and research",
+      "url": "/platform/resources",
+      "icons": [{ "src": "/mobilelogowipa.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
+}
