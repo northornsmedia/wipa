@@ -59,24 +59,24 @@ export default function IPServicesPage() {
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-20">
       
-      {/* Clean HyperText Splash Screen */}
+      {/* Clean HyperText Splash Screen (Page-scoped, does not cover sidebar/header) */}
       {showIntro && (
         <div 
           onClick={handleDismissSplash}
-          className={`fixed inset-0 z-[1000] bg-black flex flex-col items-center justify-center p-6 cursor-pointer transition-opacity duration-400 ${fadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`absolute inset-0 z-50 bg-[#020617] flex flex-col items-center justify-center p-6 cursor-pointer transition-opacity duration-400 ${fadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         >
           {/* Skip Button */}
           <button 
             onClick={(e) => { e.stopPropagation(); handleDismissSplash(); }}
-            className="absolute top-6 right-6 z-50 text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors"
+            className="absolute top-6 right-6 z-50 text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-1 rounded-full text-[11px] font-medium tracking-wider uppercase transition-colors"
           >
             Skip
           </button>
 
-          <div className="text-center max-w-3xl px-4">
+          <div className="text-center max-w-xl px-4">
             <HyperText
               duration={1000}
-              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight uppercase"
+              className="text-sm sm:text-base md:text-lg font-bold text-slate-200 dark:text-white tracking-[0.2em] uppercase"
             >
               Sponsored by PSS Solutions
             </HyperText>
