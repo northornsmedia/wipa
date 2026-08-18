@@ -803,13 +803,13 @@ export default function ProfilePage() {
 
                             if (isVideo) {
                               return (
-                                <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-black shadow-sm flex items-center justify-center">
+                                <div key={mIdx} className="mb-4 rounded-xl sm:rounded-2xl overflow-hidden bg-black/95 dark:bg-black shadow-sm flex items-center justify-center border border-gray-100 dark:border-white/10">
                                   <video 
                                     src={url} 
                                     controls 
                                     playsInline 
                                     preload="metadata"
-                                    className="w-full h-auto max-h-[85vh] sm:max-h-[560px] object-contain mx-auto" 
+                                    className="w-full h-auto max-h-[360px] sm:max-h-[480px] object-contain mx-auto block" 
                                   />
                                 </div>
                               );
@@ -822,7 +822,7 @@ export default function ProfilePage() {
                                   href={url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex items-center justify-between p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all mb-4 group/doc shadow-sm"
+                                  className="flex items-center justify-between p-4 rounded-xl sm:rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all mb-4 group/doc shadow-sm"
                                 >
                                   <div className="flex items-center gap-3.5 overflow-hidden">
                                     <div className="w-11 h-11 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
@@ -841,11 +841,11 @@ export default function ProfilePage() {
                             }
 
                             return (
-                              <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-slate-100/60 dark:bg-black/40 shadow-sm flex items-center justify-center">
+                              <div key={mIdx} className="mb-4 rounded-xl sm:rounded-2xl overflow-hidden bg-black/5 dark:bg-black/60 shadow-sm flex items-center justify-center border border-gray-100/80 dark:border-white/10">
                                 <img 
                                   src={url} 
                                   alt="Post attachment" 
-                                  className="w-full h-auto max-h-[85vh] sm:max-h-[620px] object-contain rounded-2xl hover:opacity-98 transition-opacity md:cursor-pointer"
+                                  className="w-full h-auto max-h-[360px] sm:max-h-[480px] object-contain rounded-xl sm:rounded-2xl hover:opacity-98 transition-opacity md:cursor-pointer block mx-auto"
                                   onClick={() => {
                                     if (typeof window !== 'undefined' && window.innerWidth >= 768) {
                                       setPreviewModalImage(url);
