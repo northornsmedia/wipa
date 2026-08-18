@@ -167,6 +167,27 @@ export default function WebinarsHubPage() {
 
   async function fetchData() {
     try {
+      // 1. Fetch from dedicated webinars table
+      const { data: webinarData, error: webErr } = await supabase
+        .from('webinars')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (webinarData && webinarData.length > 0) {
+        setResources(webinarData.map(d => ({
+          ...d,
+          expert: d.author_name || "Expert",
+          time: d.read_time || (d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString() : "45:00"),
+          image: d.cover_image_url || d.url || "/resourceimg1.jpg",
+          featured: Boolean(d.is_featured ?? d.featured ?? false),
+          topic: d.topic || d.subcategory || "AI in IP",
+          subcategory: (d.subcategory || "all").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : (d.resource_type || d.type || 'Upcoming Webinar'))
+        })));
+        return;
+      }
+
+      // 2. Fallback to resources table
       const { data, error } = await supabase
         .from('resources')
         .select('*')
@@ -177,12 +198,12 @@ export default function WebinarsHubPage() {
         setResources(data.map(d => ({
           ...d,
           expert: d.author_name || "Expert",
-          time: d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString() : (d.read_time || "45:00"),
+          time: d.read_time || (d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString() : "45:00"),
           image: d.cover_image_url || d.url || "/resourceimg1.jpg",
           featured: Boolean(d.is_featured ?? d.featured ?? false),
-          topic: d.topic || d.subcategory || "IP Strategy",
-          subcategory: d.subcategory || "all",
-          type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : (d.resource_type || 'Upcoming Webinar'))
+          topic: d.topic || d.subcategory || "AI in IP",
+          subcategory: (d.subcategory || "all").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : (d.resource_type || d.type || 'Upcoming Webinar'))
         })));
       }
     } catch (err) {
