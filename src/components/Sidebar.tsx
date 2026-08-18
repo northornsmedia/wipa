@@ -157,8 +157,8 @@ export default function Sidebar() {
           </Link>
           <div className="flex flex-col">
             <div className="flex items-center group relative">
-              <Link prefetch={false} href="/platform/resources" className={`flex-1 ${navLinkClass('/platform/resources')} pr-10`}>
-                <BookOpen size={18} /> Resource Library
+              <Link prefetch={false} href="/platform/resources" className={`flex-1 ${navLinkClass('/platform/resources')} pr-10 !font-bold`}>
+                <BookOpen size={18} className="stroke-[2.2]" /> <span className="font-bold">Resource Library</span>
               </Link>
               <button 
                 onClick={(e) => { e.preventDefault(); setIsResourcesExpanded(!isResourcesExpanded); }}
