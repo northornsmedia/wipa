@@ -180,7 +180,7 @@ export default function IPServicesPage() {
                 Explore trusted service providers, innovative technologies and specialist solutions supporting intellectual property professionals worldwide.
               </p>
               <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-                Access expert insights, practical resources, industry knowledge and solutions from selected IP service providers and Women's IP Alliance partners.
+                This page is sponsored by PSS Solutions — an independent IP operations consultancy specialising in strategy, technology and process for corporate legal and IP teams.
               </p>
             </div>
           </div>
