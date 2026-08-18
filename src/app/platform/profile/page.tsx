@@ -48,6 +48,7 @@ export default function ProfilePage() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [previewModalImage, setPreviewModalImage] = useState<string | null>(null);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [editForm, setEditForm] = useState(profileData);
   const [stats, setStats] = useState({ connections: 142, followers: 890, posts: 14, profileViews: 328, postImpressions: '4.2k' });
@@ -772,13 +773,13 @@ export default function ProfilePage() {
 
                             if (isVideo) {
                               return (
-                                <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-black border border-gray-100 dark:border-white/10 shadow-sm max-h-[440px]">
+                                <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-black shadow-sm flex items-center justify-center">
                                   <video 
                                     src={url} 
                                     controls 
                                     playsInline 
                                     preload="metadata"
-                                    className="w-full max-h-[420px] object-contain mx-auto" 
+                                    className="w-full h-auto max-h-[85vh] sm:max-h-[560px] object-contain mx-auto" 
                                   />
                                 </div>
                               );
@@ -810,12 +811,16 @@ export default function ProfilePage() {
                             }
 
                             return (
-                              <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden border border-gray-100 dark:border-white/10 shadow-sm max-h-[480px]">
+                              <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-slate-100/60 dark:bg-black/40 shadow-sm flex items-center justify-center">
                                 <img 
                                   src={url} 
                                   alt="Post attachment" 
-                                  className="w-full h-full max-h-[460px] object-cover hover:opacity-95 transition-opacity cursor-pointer"
-                                  onClick={() => window.open(url, '_blank')}
+                                  className="w-full h-auto max-h-[85vh] sm:max-h-[620px] object-contain rounded-2xl hover:opacity-98 transition-opacity md:cursor-pointer"
+                                  onClick={() => {
+                                    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                                      setPreviewModalImage(url);
+                                    }
+                                  }}
                                 />
                               </div>
                             );
@@ -1495,6 +1500,32 @@ export default function ProfilePage() {
                 Update Password
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Image Lightbox Preview Modal */}
+      {previewModalImage && (
+        <div 
+          className="hidden md:flex fixed inset-0 z-[120] bg-black/90 backdrop-blur-md items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200"
+          onClick={() => setPreviewModalImage(null)}
+        >
+          <button 
+            onClick={() => setPreviewModalImage(null)}
+            className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all active:scale-95 shadow-lg border border-white/20 z-20 cursor-pointer"
+            title="Close preview (Esc)"
+          >
+            <X size={22} />
+          </button>
+          <div 
+            className="relative max-w-5xl max-h-[90vh] flex items-center justify-center overflow-hidden rounded-2xl shadow-2xl border border-white/10 bg-black/40"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={previewModalImage} 
+              alt="Enlarged Post View" 
+              className="w-auto h-auto max-w-full max-h-[88vh] object-contain rounded-2xl" 
+            />
           </div>
         </div>
       )}

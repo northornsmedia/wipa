@@ -42,6 +42,7 @@ export default function PlatformPage() {
   const [editContent, setEditContent] = useState('');
   const [isUpdatingPost, setIsUpdatingPost] = useState(false);
   const [isIpWisdomModalOpen, setIsIpWisdomModalOpen] = useState(false);
+  const [previewModalImage, setPreviewModalImage] = useState<string | null>(null);
   const [userBusiness, setUserBusiness] = useState<any>(null);
   const [postAsId, setPostAsId] = useState<string>('user'); // 'user' or business.id
   const [trendingForums, setTrendingForums] = useState<any[]>([]);
@@ -875,22 +876,22 @@ export default function PlatformPage() {
                         </div>
                       </div>
 
-                      {/* Post Media Attachments (Edge-to-Edge on Mobile) */}
+                      {/* Post Media Attachments (Dynamically Adapting to Image/Video Dimensions) */}
                       {post.media_urls && post.media_urls.length > 0 && (
-                        <div className="w-full my-1 sm:my-3">
+                        <div className="w-full my-1.5 sm:my-3">
                           {post.media_urls.map((url: string, mIdx: number) => {
                             const isVideo = post.media_type === 'video' || url.match(/\.(mp4|webm|mov|ogg)$/i);
                             const isDoc = post.media_type === 'doc' || url.match(/\.(pdf|doc|docx|txt)$/i);
 
                             if (isVideo) {
                               return (
-                                <div key={mIdx} className="w-full bg-black sm:rounded-2xl overflow-hidden shadow-sm max-h-[500px]">
+                                <div key={mIdx} className="w-full bg-black sm:rounded-2xl overflow-hidden shadow-sm flex items-center justify-center">
                                   <video 
                                     src={url} 
                                     controls 
                                     playsInline 
                                     preload="metadata"
-                                    className="w-full max-h-[480px] object-contain mx-auto" 
+                                    className="w-full h-auto max-h-[85vh] sm:max-h-[560px] object-contain mx-auto" 
                                   />
                                 </div>
                               );
@@ -922,12 +923,16 @@ export default function PlatformPage() {
                             }
 
                             return (
-                              <div key={mIdx} className="w-full bg-black/5 dark:bg-black/50 sm:rounded-2xl overflow-hidden shadow-sm max-h-[500px] flex items-center justify-center">
+                              <div key={mIdx} className="w-full bg-slate-100/60 dark:bg-black/40 sm:rounded-2xl overflow-hidden shadow-none sm:shadow-sm flex items-center justify-center">
                                 <img 
                                   src={url} 
                                   alt="Post attachment" 
-                                  className="w-full h-auto max-h-[480px] object-cover sm:object-contain hover:opacity-95 transition-opacity cursor-pointer"
-                                  onClick={() => window.open(url, '_blank')}
+                                  className="w-full h-auto max-h-[85vh] sm:max-h-[620px] object-contain sm:rounded-2xl transition-opacity md:cursor-pointer hover:opacity-98"
+                                  onClick={() => {
+                                    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                                      setPreviewModalImage(url);
+                                    }
+                                  }}
                                 />
                               </div>
                             );
@@ -1310,6 +1315,32 @@ export default function PlatformPage() {
         onSubmitComment={() => activeCommentPost && handleCommentSubmit(activeCommentPost.id)}
         isSubmitting={isSubmittingComment}
       />
+
+      {/* Desktop Image Lightbox Preview Modal */}
+      {previewModalImage && (
+        <div 
+          className="hidden md:flex fixed inset-0 z-[120] bg-black/90 backdrop-blur-md items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200"
+          onClick={() => setPreviewModalImage(null)}
+        >
+          <button 
+            onClick={() => setPreviewModalImage(null)}
+            className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all active:scale-95 shadow-lg border border-white/20 z-20 cursor-pointer"
+            title="Close preview (Esc)"
+          >
+            <X size={22} />
+          </button>
+          <div 
+            className="relative max-w-5xl max-h-[90vh] flex items-center justify-center overflow-hidden rounded-2xl shadow-2xl border border-white/10 bg-black/40"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={previewModalImage} 
+              alt="Enlarged Post View" 
+              className="w-auto h-auto max-w-full max-h-[88vh] object-contain rounded-2xl" 
+            />
+          </div>
+        </div>
+      )}
 
     </div>
   );
