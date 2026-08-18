@@ -209,10 +209,13 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
                   <div 
                     onClick={() => {
                       onClose();
-                      window.dispatchEvent(new Event('beforeinstallprompt'));
-                      // Trigger install if PWARegister is available
-                      if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-                        alert("To install WIPA App:\n• On Android/Chrome: Tap 'Add to Home screen' or 'Install App'\n• On iOS/Safari: Tap the Share icon (⬆️) and select 'Add to Home Screen'");
+                      if (typeof window !== 'undefined') {
+                        const promptEvent = (window as any).deferredInstallPrompt;
+                        if (promptEvent) {
+                          window.dispatchEvent(new Event('wipa_trigger_install'));
+                        } else {
+                          alert("To install WIPA App:\n• On Android/Chrome: Tap the 3 dots (⋮) ➔ 'Install App' or 'Add to Home screen'\n• On iOS/Safari: Tap the Share icon (⬆️) ➔ select 'Add to Home Screen'");
+                        }
                       }
                     }}
                     className="w-full flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-[#5a32fa]/15 via-[#ff2a5f]/15 to-[#ff90e8]/15 border border-[#5a32fa]/30 dark:border-white/10 active:scale-98 transition-all cursor-pointer shadow-sm"

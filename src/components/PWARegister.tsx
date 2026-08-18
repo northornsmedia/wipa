@@ -42,6 +42,7 @@ export default function PWARegister() {
       const handleBeforeInstallPrompt = (e: Event) => {
         e.preventDefault();
         setDeferredPrompt(e);
+        (window as any).deferredInstallPrompt = e;
         
         // Show banner only if user hasn't dismissed it recently
         const dismissedAt = localStorage.getItem('wipa_pwa_dismissed');
@@ -49,6 +50,21 @@ export default function PWARegister() {
           setShowInstallBanner(true);
         }
       };
+
+      // Custom event to trigger prompt from anywhere in the app
+      const handleCustomTrigger = () => {
+        const promptEvent = (window as any).deferredInstallPrompt;
+        if (promptEvent) {
+          promptEvent.prompt();
+          promptEvent.userChoice.then((choiceResult: any) => {
+            if (choiceResult.outcome === 'accepted') {
+              setShowInstallBanner(false);
+            }
+            (window as any).deferredInstallPrompt = null;
+          });
+        }
+      };
+      window.addEventListener('wipa_trigger_install', handleCustomTrigger);
 
       window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
@@ -62,6 +78,7 @@ export default function PWARegister() {
 
       return () => {
         window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.removeEventListener('wipa_trigger_install', handleCustomTrigger);
       };
     }
   }, []);

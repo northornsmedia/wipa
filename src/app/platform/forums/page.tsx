@@ -34,8 +34,7 @@ export default function ForumsPage() {
       const { data: trendingData } = await supabase
         .from('forum_posts')
         .select('*, author:profiles(first_name, last_name, avatar_url), forum:forums(id, title)')
-        .eq('is_trending', true)
-        .order('trending_score', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(20);
         
       if (trendingData) setTrendingPosts(trendingData);

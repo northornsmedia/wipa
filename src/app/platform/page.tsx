@@ -88,9 +88,8 @@ export default function PlatformPage() {
 
     const { data: trendingData } = await supabase
       .from('forum_posts')
-      .select('id, title, replies_count, is_trending')
-      .eq('is_trending', true)
-      .order('trending_score', { ascending: false })
+      .select('id, title, created_at')
+      .order('created_at', { ascending: false })
       .limit(3);
     
     if (trendingData) {
