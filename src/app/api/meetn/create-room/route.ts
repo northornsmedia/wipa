@@ -17,31 +17,43 @@ export async function POST(request: Request) {
     const mockRoomUrl = `https://meetn.com/room/${mockRoomId}`;
     const mockHostUrl = `https://meetn.com/host/${mockRoomId}?token=mock_token_123`;
 
-    // Save to database
-    // We assume the resource row was already created and we just need to update it,
-    // OR we create a new resource row if resource_id is not provided.
-    // The instructions say "saves to DB", so let's insert a new resource if not provided.
-    const { data: resourceData, error: resourceError } = await supabase
-      .from('resources')
+    // Check if creator is admin or regular user
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', host_user_id)
+      .single();
+
+    const isUserAdmin = Boolean(profile?.is_admin);
+    const initialApprovalStatus = isUserAdmin ? 'approved' : 'pending';
+
+    const cleanSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+    // Save directly to dedicated webinars table
+    const { data: webinarData, error: webinarError } = await supabase
+      .from('webinars')
       .insert({
         title,
+        slug: `${cleanSlug}-${Date.now()}`,
+        category: 'webinars',
+        resource_type: 'Upcoming Webinar',
         type: 'webinar',
-        category: 'Live Event',
         url: mockRoomUrl,
         author_id: host_user_id,
         meetn_room_id: mockRoomId,
         meetn_room_url: mockRoomUrl,
         meetn_host_url: mockHostUrl,
-        webinar_status: 'scheduled',
+        webinar_status: 'upcoming',
         webinar_platform: 'meetn',
+        approval_status: initialApprovalStatus,
         scheduled_at,
         duration_minutes: duration_minutes || 60
       })
       .select()
       .single();
 
-    if (resourceError) {
-      console.error('Error saving webinar to DB:', resourceError);
+    if (webinarError) {
+      console.error('Error saving webinar to DB:', webinarError);
       return NextResponse.json({ error: 'Failed to save to database' }, { status: 500 });
     }
 
@@ -58,10 +70,12 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       data: {
-        resource_id: resourceData.id,
+        resource_id: webinarData?.id,
+        webinar_id: webinarData?.id,
         room_id: mockRoomId,
         room_url: mockRoomUrl,
-        host_url: mockHostUrl
+        host_url: mockHostUrl,
+        approval_status: initialApprovalStatus
       }
     });
   } catch (error: any) {

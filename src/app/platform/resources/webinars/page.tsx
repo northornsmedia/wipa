@@ -167,10 +167,11 @@ export default function WebinarsHubPage() {
 
   async function fetchData() {
     try {
-      // 1. Fetch from dedicated webinars table
+      // 1. Fetch from dedicated webinars table (approved only)
       const { data: webinarData, error: webErr } = await supabase
         .from('webinars')
         .select('*')
+        .or('approval_status.eq.approved,approval_status.is.null')
         .order('created_at', { ascending: false });
 
       if (webinarData && webinarData.length > 0) {
