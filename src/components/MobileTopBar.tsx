@@ -79,70 +79,72 @@ export default function MobileTopBar() {
 
   return (
     <>
-      <header className="md:hidden sticky top-0 left-0 right-0 z-40 h-14 bg-white/90 dark:bg-[#0b0f19]/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800/80 px-3.5 flex items-center justify-between transition-colors">
-        {/* Left Brand Zone (Double-tap / double-click toggles Light/Dark theme) */}
-        <Link 
-          href="/platform" 
-          onClick={handleLogoTap}
-          title="Double tap to toggle Light / Dark mode"
-          className="flex items-center gap-2 active:scale-95 transition-transform select-none cursor-pointer"
-        >
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] flex items-center justify-center text-white font-black text-xs shadow-md shadow-[#5a32fa]/20">
-            W
+      <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-all w-full max-w-full box-border">
+        <div className="h-14 flex items-center justify-between w-full">
+          {/* Left Brand Zone (Double-tap / double-click toggles Light/Dark theme) */}
+          <Link 
+            href="/platform" 
+            onClick={handleLogoTap}
+            title="Double tap to toggle Light / Dark mode"
+            className="flex items-center gap-2 active:scale-95 transition-transform select-none cursor-pointer"
+          >
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] flex items-center justify-center text-white font-black text-xs shadow-md shadow-[#5a32fa]/20">
+              W
+            </div>
+            <span className="font-black text-base tracking-tight text-gray-900 dark:text-white flex items-center">
+              WIPA<span className="text-[#ff2a5f] text-xs ml-0.5 font-bold">●</span>
+            </span>
+          </Link>
+
+          {/* Right Action Hub */}
+          <div className="flex items-center gap-1.5">
+            {/* Global Search Button */}
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              aria-label="Search WIPA"
+              className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90"
+            >
+              <Search size={18} />
+            </button>
+
+            {/* Notifications Bell */}
+            <Link
+              href="/platform/notifications"
+              aria-label="Notifications"
+              className="relative w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90"
+            >
+              <Bell size={18} />
+              {unreadNotificationsCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#ff2a5f] rounded-full ring-2 ring-white dark:ring-[#0b0f19]" />
+              )}
+            </Link>
+
+            {/* My Network Link */}
+            <Link
+              href="/platform/network"
+              aria-label="My Network"
+              className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-transform active:scale-90 ${
+                pathname.startsWith('/platform/network')
+                  ? 'bg-[#5a32fa] text-white shadow-sm'
+                  : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300'
+              }`}
+            >
+              <Globe size={18} />
+            </Link>
+
+            {/* Drawer Menu Trigger */}
+            <button
+              onClick={() => setIsDrawerOpen(true)}
+              aria-label="Open Navigation Menu"
+              className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90 ml-0.5 overflow-hidden ring-1 ring-gray-200 dark:ring-white/10"
+            >
+              {user?.avatar_url ? (
+                <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                <Menu size={18} />
+              )}
+            </button>
           </div>
-          <span className="font-black text-base tracking-tight text-gray-900 dark:text-white flex items-center">
-            WIPA<span className="text-[#ff2a5f] text-xs ml-0.5 font-bold">●</span>
-          </span>
-        </Link>
-
-        {/* Right Action Hub */}
-        <div className="flex items-center gap-1.5">
-          {/* Global Search Button */}
-          <button
-            onClick={() => setIsSearchOpen(true)}
-            aria-label="Search WIPA"
-            className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90"
-          >
-            <Search size={18} />
-          </button>
-
-          {/* Notifications Bell */}
-          <Link
-            href="/platform/notifications"
-            aria-label="Notifications"
-            className="relative w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90"
-          >
-            <Bell size={18} />
-            {unreadNotificationsCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#ff2a5f] rounded-full ring-2 ring-white dark:ring-[#0b0f19]" />
-            )}
-          </Link>
-
-          {/* My Network Link */}
-          <Link
-            href="/platform/network"
-            aria-label="My Network"
-            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-transform active:scale-90 ${
-              pathname.startsWith('/platform/network')
-                ? 'bg-[#5a32fa] text-white shadow-sm'
-                : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300'
-            }`}
-          >
-            <Globe size={18} />
-          </Link>
-
-          {/* Drawer Menu Trigger */}
-          <button
-            onClick={() => setIsDrawerOpen(true)}
-            aria-label="Open Navigation Menu"
-            className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90 ml-0.5 overflow-hidden ring-1 ring-gray-200 dark:ring-white/10"
-          >
-            {user?.avatar_url ? (
-              <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
-            ) : (
-              <Menu size={18} />
-            )}
-          </button>
         </div>
       </header>
 

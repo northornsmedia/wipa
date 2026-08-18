@@ -364,8 +364,8 @@ export default function PlatformPage() {
           <main className="flex-1 w-full max-w-full min-w-0 bg-[#f8f9fa] dark:bg-[#070b14] md:bg-slate-50/50 md:dark:bg-[#0b1120] p-0 sm:p-6 md:p-8 flex flex-col xl:flex-row gap-0 xl:gap-8">
             
             {/* LEFT COLUMN */}
-            <div className="flex-1 w-full max-w-full min-w-0 flex justify-center pb-24 md:pb-20">
-              <div className="w-full max-w-full sm:max-w-4xl min-w-0 space-y-0 sm:space-y-6">
+            <div className="flex-1 w-full max-w-full min-w-0 flex justify-center pb-36 sm:pb-24 md:pb-20 box-border">
+              <div className="w-full max-w-full sm:max-w-4xl min-w-0 space-y-0 sm:space-y-6 box-border">
 
               {/* MOBILE INSTAGRAM-STYLE STORIES & SUB-HEADER (MOBILE ONLY) */}
               <div className="md:hidden w-full max-w-full overflow-hidden bg-white dark:bg-[#0f172a] border-b border-gray-100 dark:border-white/5 sticky top-0 z-20 backdrop-blur-md">

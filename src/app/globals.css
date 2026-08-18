@@ -252,8 +252,12 @@ img, video {
   height: auto;
 }
 
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top, 0px), 0px);
+}
+
 .pb-safe {
-  padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px);
+  padding-bottom: max(env(safe-area-inset-bottom, 16px), 16px);
 }
 
 .no-scrollbar::-webkit-scrollbar {
