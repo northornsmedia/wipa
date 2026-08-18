@@ -63,13 +63,29 @@ export default function MobileTopBar() {
     router.push(path);
   };
 
+  const toggleDarkMode = useAppStore((state) => state.toggleDarkMode);
+  const lastLogoTap = React.useRef(0);
+
+  const handleLogoTap = (e: React.MouseEvent) => {
+    const now = Date.now();
+    if (now - lastLogoTap.current < 450) {
+      e.preventDefault();
+      toggleDarkMode();
+      lastLogoTap.current = 0;
+    } else {
+      lastLogoTap.current = now;
+    }
+  };
+
   return (
     <>
       <header className="md:hidden sticky top-0 left-0 right-0 z-40 h-14 bg-white/90 dark:bg-[#0b0f19]/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800/80 px-3.5 flex items-center justify-between transition-colors">
-        {/* Left Brand Zone */}
+        {/* Left Brand Zone (Double-tap / double-click toggles Light/Dark theme) */}
         <Link 
           href="/platform" 
-          className="flex items-center gap-2 active:scale-95 transition-transform"
+          onClick={handleLogoTap}
+          title="Double tap to toggle Light / Dark mode"
+          className="flex items-center gap-2 active:scale-95 transition-transform select-none cursor-pointer"
         >
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] flex items-center justify-center text-white font-black text-xs shadow-md shadow-[#5a32fa]/20">
             W

@@ -940,7 +940,7 @@ export default function PlatformPage() {
                                     controls 
                                     playsInline 
                                     preload="metadata"
-                                    className="w-full h-auto max-h-[360px] sm:max-h-[480px] object-contain mx-auto block" 
+                                    className="max-w-full w-auto h-auto max-h-[380px] sm:max-h-[500px] object-contain mx-auto block" 
                                   />
                                 </div>
                               );
@@ -976,7 +976,7 @@ export default function PlatformPage() {
                                 <img 
                                   src={url} 
                                   alt="Post attachment" 
-                                  className="w-full h-auto max-h-[360px] sm:max-h-[480px] object-contain rounded-xl sm:rounded-2xl transition-opacity md:cursor-pointer hover:opacity-98 block mx-auto"
+                                  className="max-w-full w-auto h-auto max-h-[380px] sm:max-h-[500px] object-contain rounded-xl sm:rounded-2xl transition-opacity md:cursor-pointer hover:opacity-98 block mx-auto"
                                   onClick={() => {
                                     if (typeof window !== 'undefined' && window.innerWidth >= 768) {
                                       setPreviewModalImage(url);

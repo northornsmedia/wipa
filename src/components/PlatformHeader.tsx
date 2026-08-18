@@ -52,6 +52,7 @@ export default function PlatformHeader() {
   const setIsLexIQOpen = useAppStore((state) => state.setIsLexIQOpen);
   const [flyingBox, setFlyingBox] = useState<DOMRect | null>(null);
   const lexiqRef = useRef<HTMLDivElement>(null);
+  const lastLogoClickRef = useRef<number>(0);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -209,7 +210,22 @@ export default function PlatformHeader() {
         ) : (
           <>
             <div className="flex items-center gap-2">
-              <Link prefetch={false} href="/platform">
+              <Link 
+                prefetch={false} 
+                href="/platform"
+                onClick={(e) => {
+                  const now = Date.now();
+                  if (now - lastLogoClickRef.current < 450) {
+                    e.preventDefault();
+                    toggleDarkMode();
+                    lastLogoClickRef.current = 0;
+                  } else {
+                    lastLogoClickRef.current = now;
+                  }
+                }}
+                title="Double click to toggle Light / Dark mode"
+                className="select-none cursor-pointer"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/WIPA-Logo.png" alt="WIPA Logo" className="h-10 w-auto object-contain" />
               </Link>
