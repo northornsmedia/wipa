@@ -845,7 +845,7 @@ export default function ProfilePage() {
                                 <img 
                                   src={url} 
                                   alt="Post attachment" 
-                                  className="max-h-[290px] sm:max-h-[440px] w-auto max-w-full h-auto object-contain rounded-xl hover:opacity-98 transition-opacity md:cursor-pointer block mx-auto"
+                                  className="w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl hover:opacity-98 transition-opacity md:cursor-pointer block mx-auto"
                                   onClick={() => {
                                     if (typeof window !== 'undefined' && window.innerWidth >= 768) {
                                       setPreviewModalImage(url);
@@ -856,45 +856,45 @@ export default function ProfilePage() {
                             );
                           })}
 
-                          {/* Reaction Counters */}
-                          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 pb-2 border-b border-gray-100 dark:border-gray-800">
-                            <span className="flex items-center gap-1">
-                              <span className="p-1 bg-[#5a32fa] text-white rounded-full text-[9px]"><ThumbsUp size={10} /></span>
-                              {post.likes_count || 0} likes
-                            </span>
-                            <span>{post.comments_count || 0} comments</span>
-                          </div>
-
-                          {/* Reaction Buttons */}
-                          <div className="flex items-center justify-around pt-1 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
-                            <button 
-                              onClick={() => handleToggleLike(post.id)}
-                              className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors ${
-                                isLiked ? 'text-[#5a32fa] font-bold' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                              }`}
-                            >
-                              <ThumbsUp size={16} className={isLiked ? 'fill-[#5a32fa]' : ''} />
-                              <span>Like</span>
-                            </button>
-
-                            <button 
-                              onClick={() => router.push('/platform')}
-                              className="flex-1 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition-colors"
-                            >
-                              <MessageCircle size={16} />
-                              <span>Comment</span>
-                            </button>
-
+                          {/* Instagram-Style Action Bar */}
+                          <div className="flex items-center justify-between pt-2">
+                            <div className="flex items-center gap-4">
+                              <button 
+                                onClick={() => handleToggleLike(post.id)}
+                                className="text-gray-700 dark:text-gray-200 hover:text-rose-500 transition-transform active:scale-75"
+                              >
+                                <Heart size={22} className={isLiked ? 'fill-rose-500 text-rose-500' : ''} />
+                              </button>
+                              <button 
+                                onClick={() => router.push('/platform')}
+                                className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] transition-transform active:scale-75"
+                              >
+                                <MessageCircle size={22} />
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  navigator.clipboard.writeText(window.location.origin + '/platform');
+                                  alert('Post link copied to clipboard!');
+                                }}
+                                className="text-gray-700 dark:text-gray-200 hover:text-[#ff90e8] transition-transform active:scale-75 -rotate-12"
+                              >
+                                <Send size={20} />
+                              </button>
+                            </div>
                             <button 
                               onClick={() => {
                                 navigator.clipboard.writeText(window.location.origin + '/platform');
-                                alert('Post link copied to clipboard!');
+                                alert('Post saved!');
                               }}
-                              className="flex-1 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center gap-1.5 transition-colors"
+                              className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] transition-transform active:scale-75"
                             >
-                              <Send size={16} />
-                              <span>Share</span>
+                              <Bookmark size={22} />
                             </button>
+                          </div>
+
+                          {/* Likes Count Summary */}
+                          <div className="pt-2 text-xs font-bold text-gray-900 dark:text-white">
+                            {post.likes_count ? `${post.likes_count.toLocaleString()} likes` : '0 likes'}
                           </div>
                         </div>
                       );

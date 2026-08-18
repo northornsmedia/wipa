@@ -975,109 +975,108 @@ export default function PlatformPage() {
                             }
 
                             return (
-                              <div key={mIdx} className="w-full rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5">
-                                <img 
-                                  src={url} 
-                                  alt="Post attachment" 
-                                  className="max-h-[290px] sm:max-h-[440px] w-auto max-w-full h-auto object-contain rounded-xl transition-all duration-300 md:cursor-pointer hover:opacity-98 block mx-auto"
-                                  onClick={() => {
-                                    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-                                      setPreviewModalImage(url);
-                                    }
-                                  }}
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                                <div key={mIdx} className="w-full rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5">
+                                  <img 
+                                    src={url} 
+                                    alt="Post attachment" 
+                                    className="w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl transition-all duration-300 md:cursor-pointer hover:opacity-98 block mx-auto"
+                                    onClick={() => {
+                                      if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                                        setPreviewModalImage(url);
+                                      }
+                                    }}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
 
-                      {/* Engagement Counters Line */}
-                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-3 sm:px-0 py-1.5 border-b border-gray-100 dark:border-white/5">
-                        <span className="flex items-center gap-1 font-medium">
-                          {post.likes_count ? `❤️ ${post.likes_count} ${post.likes_count === 1 ? 'like' : 'likes'}` : 'Be the first to like'}
-                        </span>
-                        {(post.comments_count || 0) > 0 && (
+                        {/* Instagram-Style Post Action Row */}
+                        <div className="flex items-center justify-between px-3 sm:px-0 pt-2">
+                          <div className="flex items-center gap-4 sm:gap-5">
+                            {/* Like Button */}
+                            <button 
+                              onClick={() => handleLikePost(post.id)} 
+                              className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-rose-500 transition-transform active:scale-75"
+                              aria-label="Like post"
+                            >
+                              <Heart 
+                                size={22} 
+                                className={isLiked ? "fill-rose-500 text-rose-500 transition-transform scale-110" : "hover:text-rose-500 transition-colors"} 
+                              />
+                            </button>
+
+                            {/* Comment Button */}
+                            <button 
+                              onClick={() => {
+                                if (post.comments_disabled) return;
+                                setActiveCommentPost(post);
+                                fetchComments(post.id);
+                              }}
+                              disabled={post.comments_disabled}
+                              className={`flex items-center gap-1 transition-transform active:scale-75 ${
+                                post.comments_disabled ? 'opacity-30 cursor-not-allowed text-gray-400' : 'text-gray-700 dark:text-gray-200 hover:text-[#5a32fa]'
+                              }`}
+                              aria-label="Comment on post"
+                            >
+                              <MessageCircle size={22} />
+                            </button>
+
+                            {/* Share Button */}
+                            <button 
+                              onClick={() => {
+                                if (typeof navigator !== 'undefined' && navigator.share) {
+                                  navigator.share({
+                                    title: 'WIPA Network Post',
+                                    text: post.content?.slice(0, 100) || 'Check out this post on WIPA',
+                                    url: window.location.href,
+                                  }).catch(() => {});
+                                } else {
+                                  navigator.clipboard.writeText(window.location.href);
+                                  alert('Link copied to clipboard!');
+                                }
+                              }}
+                              className="text-gray-700 dark:text-gray-200 hover:text-[#ff90e8] transition-transform active:scale-75 -rotate-12"
+                              aria-label="Share post"
+                            >
+                              <Send size={20} />
+                            </button>
+                          </div>
+
+                          {/* Bookmark / Save Button (Right Edge) */}
                           <button 
                             onClick={() => {
-                              if (post.comments_disabled) return;
-                              setActiveCommentPost(post);
-                              fetchComments(post.id);
+                              navigator.clipboard.writeText(`${window.location.origin}/platform/post/${post.id}`);
+                              alert('Post link copied & saved!');
                             }}
-                            className="hover:underline"
+                            className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] transition-transform active:scale-75"
+                            aria-label="Save post"
                           >
-                            {post.comments_count} {post.comments_count === 1 ? 'comment' : 'comments'}
+                            <Bookmark size={22} />
                           </button>
-                        )}
+                        </div>
+
+                        {/* Likes & Comments Count Summary */}
+                        <div className="px-3 sm:px-0 pt-2 pb-0.5 text-xs">
+                          <span className="font-bold text-gray-900 dark:text-white">
+                            {post.likes_count ? `${post.likes_count.toLocaleString()} ${post.likes_count === 1 ? 'like' : 'likes'}` : 'Be the first to like'}
+                          </span>
+                          {(post.comments_count || 0) > 0 && (
+                            <button 
+                              onClick={() => {
+                                if (post.comments_disabled) return;
+                                setActiveCommentPost(post);
+                                fetchComments(post.id);
+                              }}
+                              className="block text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xs mt-0.5"
+                            >
+                              View all {post.comments_count} comments
+                            </button>
+                          )}
+                        </div>
+                        
                       </div>
-
-                      {/* Action Bar (Like, Comment, Share, Save) */}
-                      <div className="grid grid-cols-4 gap-1 pt-1.5 px-3 sm:px-0">
-                        {/* Like Button */}
-                        <button 
-                          onClick={() => handleLikePost(post.id)} 
-                          className={`h-10 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 text-xs font-bold ${
-                            isLiked 
-                              ? 'text-rose-500 bg-rose-500/10' 
-                              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5'
-                          }`}
-                        >
-                          <Heart size={18} className={isLiked ? "fill-rose-500 text-rose-500" : ""} />
-                          <span>Like</span>
-                        </button>
-
-                        {/* Comment Button */}
-                        <button 
-                          onClick={() => {
-                            if (post.comments_disabled) return;
-                            setActiveCommentPost(post);
-                            fetchComments(post.id);
-                          }}
-                          disabled={post.comments_disabled}
-                          className={`h-10 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 text-xs font-bold ${
-                            post.comments_disabled 
-                              ? 'text-gray-300 cursor-not-allowed opacity-40' 
-                              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#5a32fa]'
-                          }`}
-                        >
-                          <MessageCircle size={18} />
-                          <span>Comment</span>
-                        </button>
-
-                        {/* Share Button */}
-                        <button 
-                          onClick={() => {
-                            if (typeof navigator !== 'undefined' && navigator.share) {
-                              navigator.share({
-                                title: 'WIPA Network Post',
-                                text: post.content?.slice(0, 100) || 'Check out this post on WIPA',
-                                url: window.location.href,
-                              }).catch(() => {});
-                            } else {
-                              navigator.clipboard.writeText(window.location.href);
-                              alert('Link copied to clipboard!');
-                            }
-                          }}
-                          className="h-10 rounded-xl flex items-center justify-center gap-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#ff90e8] transition-all active:scale-95 text-xs font-bold"
-                        >
-                          <Send size={16} className="-rotate-45 -mt-0.5" />
-                          <span>Share</span>
-                        </button>
-
-                        {/* Bookmark / Save Button */}
-                        <button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(`${window.location.origin}/platform/post/${post.id}`);
-                            alert('Post saved!');
-                          }}
-                          className="h-10 rounded-xl flex items-center justify-center gap-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#5a32fa] transition-all active:scale-95 text-xs font-bold"
-                        >
-                          <Bookmark size={18} />
-                          <span>Save</span>
-                        </button>
-                      </div>
-                      
-                    </div>
                     {/* Dynamic Sponsored Native Content Placement after every 4 posts */}
                     {(index + 1) % 4 === 0 && (
                       <div className="w-full shrink-0 px-3 sm:px-0 mb-3">
