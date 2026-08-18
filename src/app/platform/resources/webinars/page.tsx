@@ -121,48 +121,193 @@ export default function WebinarsHubPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    title: '', description: '', scheduled_at: '', duration_minutes: 60, max_attendees: 100, cover_image: ''
+    title: '',
+    slug: '',
+    resource_type: 'Upcoming Webinar',
+    subcategory: 'AI in IP',
+    author_name: '',
+    author_title: '',
+    organization: '',
+    scheduled_at: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16),
+    duration_minutes: 60,
+    read_time: '45:00',
+    max_attendees: 500,
+    assigned_room: 'ROOM1',
+    url: 'https://meetn.com/room1-2',
+    cover_image_url: '/resourceimg1.jpg',
+    summary: '',
+    content: '',
+    webinar_status: 'upcoming'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [generatingMeetn, setGeneratingMeetn] = useState(false);
+  const [meetnAssigned, setMeetnAssigned] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [successData, setSuccessData] = useState<any>(null);
 
-  const isAdmin = user && (user as any).is_admin; // Assuming is_admin is attached to user or handled via profile, for demo assume true if user exists. Wait, let's fetch profile.
   const [userProfile, setUserProfile] = useState<any>(null);
 
   React.useEffect(() => {
     async function fetchUser() {
       if (user?.id) {
-        const { data } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
-        if (data) setUserProfile(data);
+        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+        if (data) {
+          setUserProfile(data);
+          setFormData(prev => ({
+            ...prev,
+            author_name: prev.author_name || data.full_name || user.email?.split('@')[0] || '',
+            author_title: prev.author_title || data.role || '',
+            organization: prev.organization || data.company || ''
+          }));
+        }
       }
     }
     fetchUser();
   }, [user?.id]);
 
-  const canHost = userProfile?.is_admin;
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    const cleanSlug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    setFormData(prev => ({ ...prev, title: val, slug: cleanSlug }));
+  };
 
-  const handleHostWebinar = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleAssignMeetn = async () => {
+    setGeneratingMeetn(true);
+    setMeetnAssigned(false);
     try {
-      const res = await fetch('/api/meetn/create-room', {
+      const res = await fetch('/api/meetn/generate-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
-          host_user_id: user?.id
+          scheduled_at: formData.scheduled_at,
+          duration_minutes: formData.duration_minutes
         })
       });
       const data = await res.json();
-      if (data.success) {
-        setSuccessData(data.data);
-        // Refresh webinars
-        fetchData();
+      if (data.success && data.url) {
+        setFormData(prev => ({
+          ...prev,
+          url: data.url,
+          assigned_room: data.assigned_room || data.room_name || 'ROOM1'
+        }));
+      } else {
+        setFormData(prev => ({ ...prev, url: 'https://meetn.com/room1-2', assigned_room: 'ROOM1' }));
       }
     } catch (err) {
-      console.error(err);
+      setFormData(prev => ({ ...prev, url: 'https://meetn.com/room1-2', assigned_room: 'ROOM1' }));
+    } finally {
+      setMeetnAssigned(true);
+      setTimeout(() => setMeetnAssigned(false), 5000);
+      setGeneratingMeetn(false);
     }
-    setIsSubmitting(false);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    try {
+      const safeName = `${Date.now()}_cover_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('covers')
+        .upload(safeName, file, { upsert: true });
+
+      if (uploadErr) {
+        const { error: resErr } = await supabase.storage
+          .from('resources')
+          .upload(safeName, file, { upsert: true });
+        
+        if (resErr) {
+          alert('Cover upload error: ' + uploadErr.message);
+          return;
+        }
+        const { data } = supabase.storage.from('resources').getPublicUrl(safeName);
+        if (data?.publicUrl) setFormData(prev => ({ ...prev, cover_image_url: data.publicUrl }));
+      } else {
+        const { data } = supabase.storage.from('covers').getPublicUrl(safeName);
+        if (data?.publicUrl) setFormData(prev => ({ ...prev, cover_image_url: data.publicUrl }));
+      }
+    } catch (err: any) {
+      alert('Error uploading cover: ' + err.message);
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
+  const handleHostWebinar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.title.trim()) {
+      alert('Please enter a webinar title');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const cleanSlug = formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      const isUserAdmin = Boolean(userProfile?.is_admin);
+      const initialApprovalStatus = isUserAdmin ? 'approved' : 'pending';
+
+      const payload = {
+        title: formData.title.trim(),
+        slug: `${cleanSlug}-${Date.now()}`,
+        category: 'webinars',
+        subcategory: formData.subcategory,
+        resource_type: formData.resource_type,
+        type: formData.resource_type,
+        author_name: formData.author_name || userProfile?.full_name || user?.email || 'Member Host',
+        author_title: formData.author_title || userProfile?.role || 'Speaker',
+        organization: formData.organization || userProfile?.company || 'WIPA Member',
+        author_id: user?.id || null,
+        scheduled_at: formData.scheduled_at ? new Date(formData.scheduled_at).toISOString() : new Date().toISOString(),
+        duration_minutes: Number(formData.duration_minutes) || 60,
+        read_time: formData.read_time || `${formData.duration_minutes}:00`,
+        max_attendees: Number(formData.max_attendees) || 500,
+        url: formData.url || 'https://meetn.com/room1-2',
+        external_url: formData.url || 'https://meetn.com/room1-2',
+        meetn_room_url: formData.url || 'https://meetn.com/room1-2',
+        assigned_room: formData.assigned_room || 'ROOM1',
+        assigned_room_url: formData.url || 'https://meetn.com/room1-2',
+        meetn_room_id: formData.assigned_room || 'ROOM1',
+        webinar_platform: 'meetn',
+        cover_image_url: formData.cover_image_url || '/resourceimg1.jpg',
+        summary: formData.summary || formData.content?.slice(0, 200) || '',
+        description: formData.summary || formData.content?.slice(0, 200) || '',
+        content: formData.content || '',
+        is_featured: false,
+        webinar_status: 'upcoming',
+        // Track complete Submitter Details
+        submitter_id: user?.id || null,
+        submitter_email: userProfile?.email || user?.email || '',
+        submitter_name: userProfile?.full_name || formData.author_name || user?.email || '',
+        submitter_phone: userProfile?.mobile_number || '',
+        submitter_membership: userProfile?.membership_tier || 'Member',
+        approval_status: initialApprovalStatus,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      const { data: savedWebinar, error: saveErr } = await supabase
+        .from('webinars')
+        .insert(payload)
+        .select()
+        .single();
+
+      if (saveErr) throw saveErr;
+
+      setSuccessData({
+        ...payload,
+        id: savedWebinar?.id,
+        is_pending: initialApprovalStatus === 'pending'
+      });
+
+      fetchData();
+    } catch (err: any) {
+      console.error('Error saving webinar:', err);
+      alert('Failed to submit webinar: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   async function fetchData() {
@@ -493,39 +638,77 @@ export default function WebinarsHubPage() {
 
       </div>
 
-      {/* HOST WEBINAR MODAL */}
+      {/* RICH HOST WEBINAR MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !isSubmitting && !successData && setIsModalOpen(false)}></div>
-          <div className="bg-white dark:bg-[#0f172a] rounded-3xl p-8 w-full max-w-2xl relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-md" 
+            onClick={() => !isSubmitting && !successData && setIsModalOpen(false)}
+          />
+          <div className="bg-[#0f1117] border border-white/10 rounded-3xl p-6 sm:p-8 w-full max-w-3xl relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
             {!successData && (
-              <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors">
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                className="absolute top-6 right-6 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors"
+              >
                 <X size={20} />
               </button>
             )}
 
             {successData ? (
-              <div className="text-center py-8">
-                <div className="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Play size={40} className="ml-2" fill="currentColor" />
+              <div className="text-center py-8 space-y-6">
+                <div className="w-20 h-20 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
+                  <Check size={40} />
                 </div>
-                <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-4">Webinar Scheduled!</h2>
-                <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">Your webinar has been successfully created. You can share the viewer URL or save your host URL.</p>
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">
+                    {successData.is_pending ? "Webinar Submitted for Review!" : "Webinar Scheduled Successfully!"}
+                  </h2>
+                  <p className="text-gray-400 max-w-md mx-auto text-sm">
+                    {successData.is_pending
+                      ? "Thank you for hosting with WIPA! Your submission has been sent to the admin team for approval. It will appear on the platform once verified."
+                      : "Your webinar is now live on the WIPA platform calendar."}
+                  </p>
+                </div>
                 
-                <div className="space-y-4 mb-8 text-left">
-                  <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10">
-                    <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Host URL (Keep Secret)</div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 bg-white dark:bg-black/40 px-3 py-2 rounded-xl text-sm font-mono truncate border border-gray-200 dark:border-white/10">{successData.host_url}</div>
-                      <button onClick={() => navigator.clipboard.writeText(successData.host_url)} className="bg-[#ff2a5f] text-white px-4 py-2 rounded-xl font-bold text-sm">Copy</button>
+                {/* Submitter Summary Card */}
+                <div className="bg-[#181a24] p-5 rounded-2xl border border-white/10 text-left space-y-3 max-w-lg mx-auto">
+                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Users size={14} className="text-[#ff2a5f]" /> Host & Submitter Info
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-gray-500 block">Host Name:</span>
+                      <span className="text-white font-bold">{successData.submitter_name || successData.author_name}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Account Email:</span>
+                      <span className="text-white font-mono">{successData.submitter_email}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Membership Status:</span>
+                      <span className="text-purple-400 font-bold">{successData.submitter_membership || "Member"}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block">Assigned Room:</span>
+                      <span className="text-rose-400 font-bold">{successData.assigned_room}</span>
                     </div>
                   </div>
-                  
-                  <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10">
-                    <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Public Viewer URL</div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 bg-white dark:bg-black/40 px-3 py-2 rounded-xl text-sm font-mono truncate border border-gray-200 dark:border-white/10">{successData.room_url}</div>
-                      <button onClick={() => navigator.clipboard.writeText(successData.room_url)} className="bg-gray-200 dark:bg-white/20 text-gray-900 dark:text-white px-4 py-2 rounded-xl font-bold text-sm">Copy</button>
+                </div>
+
+                <div className="space-y-3 max-w-lg mx-auto text-left">
+                  <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+                    <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Assigned Meetn Broadcast Room</div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-black/40 px-3 py-2 rounded-xl text-xs font-mono truncate text-white border border-white/10">
+                        {successData.url}
+                      </div>
+                      <button 
+                        onClick={() => navigator.clipboard.writeText(successData.url)} 
+                        className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-3.5 py-2 rounded-xl font-bold text-xs transition-colors"
+                      >
+                        Copy
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -534,57 +717,353 @@ export default function WebinarsHubPage() {
                   onClick={() => {
                     setIsModalOpen(false);
                     setSuccessData(null);
-                    setFormData({ title: '', description: '', scheduled_at: '', duration_minutes: 60, max_attendees: 100, cover_image: '' });
                   }}
-                  className="bg-gray-900 dark:bg-white text-white dark:text-black px-8 py-3 rounded-xl font-bold hover:opacity-90 transition-opacity"
+                  className="bg-white text-black px-8 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors text-sm shadow-lg"
                 >
-                  Done
+                  Close & Return
                 </button>
               </div>
             ) : (
-              <>
-                <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-6">Host a Webinar</h2>
+              <div className="space-y-6">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff2a5f]/15 text-[#ff2a5f] text-xs font-bold mb-3 border border-[#ff2a5f]/20">
+                    <Video size={13} /> Host Live Masterclass
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Host a Webinar</h2>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Submit your live masterclass, panel discussion, or presentation to the WIPA community.
+                  </p>
+                </div>
+
+                {/* Submitter User Profile Pill */}
+                {user && (
+                  <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#ff2a5f] text-white flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                        {userProfile?.full_name?.charAt(0) || user.email?.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="font-bold text-white flex items-center gap-1.5">
+                          {userProfile?.full_name || user.email}
+                          <span className="px-1.5 py-0.2 rounded text-[10px] bg-purple-500/20 text-purple-300 font-semibold border border-purple-500/30">
+                            {userProfile?.membership_tier || "Member"}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-gray-500 font-mono">{userProfile?.email || user.email}</div>
+                      </div>
+                    </div>
+                    <div className="text-[10px] font-semibold text-amber-400 bg-amber-400/10 px-2 py-1 rounded-lg border border-amber-400/20 shrink-0">
+                      {userProfile?.is_admin ? "Auto-Approved" : "Requires Admin Review"}
+                    </div>
+                  </div>
+                )}
+
                 <form onSubmit={handleHostWebinar} className="space-y-5">
+                  {/* Format & Topic */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                        Webinar Format / Type *
+                      </label>
+                      <select
+                        value={formData.resource_type}
+                        onChange={(e) => setFormData({ ...formData, resource_type: e.target.value })}
+                        className="w-full bg-[#181a24] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#ff2a5f]"
+                      >
+                        {["Upcoming Webinar", "Live Masterclass", "Interactive Panel", "Workshop", "Executive Briefing", "Video Session"].map(f => (
+                          <option key={f} value={f} className="bg-[#181a24]">{f}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                        Topic & Domain *
+                      </label>
+                      <select
+                        value={formData.subcategory}
+                        onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
+                        className="w-full bg-[#181a24] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#ff2a5f]"
+                      >
+                        {["AI in IP", "Patent Law", "IP Litigation", "Trademark & Brand Protection", "Licensing & Tech Transfer", "Trade Secrets", "Copyright & Media", "IP Strategy & Valuation", "Global IP & Cross-Border", "Career & Leadership", "General"].map(t => (
+                          <option key={t} value={t} className="bg-[#181a24]">{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Title & Slug */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                        Webinar Title *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. AI in Patent Law: Opportunities, Liabilities, and Prosecution Risks"
+                        value={formData.title}
+                        onChange={handleTitleChange}
+                        className="w-full bg-[#181a24] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-gray-600 focus:outline-none focus:border-[#ff2a5f]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                        URL Slug *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.slug}
+                        onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                        className="w-full bg-[#181a24] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-gray-300 font-mono focus:outline-none focus:border-[#ff2a5f]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Speaker Details Card */}
+                  <div className="p-4 rounded-2xl bg-[#181a24] border border-white/10 space-y-3">
+                    <div className="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <Users size={14} className="text-[#ff2a5f]" /> Speaker & Expert Details
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-400 mb-1">Speaker / Host Name *</label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.author_name}
+                          onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
+                          className="w-full bg-[#09090b] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff2a5f]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-400 mb-1">Professional Title</label>
+                        <input
+                          type="text"
+                          value={formData.author_title}
+                          onChange={(e) => setFormData({ ...formData, author_title: e.target.value })}
+                          className="w-full bg-[#09090b] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff2a5f]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-400 mb-1">Firm / Company Name</label>
+                        <input
+                          type="text"
+                          value={formData.organization}
+                          onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+                          className="w-full bg-[#09090b] border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff2a5f]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Date, Duration & Status */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5 flex items-center gap-1">
+                        <Calendar size={13} className="text-amber-400" /> Scheduled Date & Time *
+                      </label>
+                      <input
+                        type="datetime-local"
+                        required
+                        value={formData.scheduled_at}
+                        onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
+                        className="w-full bg-[#181a24] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#ff2a5f]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5 flex items-center gap-1">
+                        <Clock size={13} className="text-sky-400" /> Duration (Minutes) *
+                      </label>
+                      <input
+                        type="number"
+                        min={15}
+                        max={300}
+                        required
+                        value={formData.duration_minutes}
+                        onChange={(e) => setFormData({ ...formData, duration_minutes: Number(e.target.value), read_time: `${e.target.value}:00` })}
+                        className="w-full bg-[#181a24] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#ff2a5f]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                        Webinar Status
+                      </label>
+                      <select
+                        value={formData.webinar_status}
+                        onChange={(e) => setFormData({ ...formData, webinar_status: e.target.value })}
+                        className="w-full bg-[#181a24] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#ff2a5f]"
+                      >
+                        <option value="upcoming">Upcoming Session</option>
+                        <option value="live">Live Now</option>
+                        <option value="ended">Ended / Recording</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Meetn Room Assignment Section */}
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Webinar Title</label>
-                    <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" placeholder="e.g. AI in Patent Law" />
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                        <Video size={13} className="text-[#ff2a5f]" /> Meetn Live Room URL *
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleAssignMeetn}
+                        disabled={generatingMeetn}
+                        className={`text-xs px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition-all shadow-md ${
+                          meetnAssigned
+                            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                            : "bg-gradient-to-r from-[#ff2a5f] to-rose-600 hover:from-[#e02553] hover:to-rose-700 text-white active:scale-95 shadow-[#ff2a5f]/20"
+                        }`}
+                      >
+                        {generatingMeetn ? (
+                          <>
+                            <Loader2 size={13} className="animate-spin" /> Checking Availability...
+                          </>
+                        ) : meetnAssigned ? (
+                          <>
+                            <Check size={13} /> Room Assigned: {formData.assigned_room}!
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles size={13} /> ⚡ Assign Meetn Room
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        readOnly
+                        placeholder="Click '⚡ Assign Meetn Room' above..."
+                        value={formData.url}
+                        className="w-full bg-[#181a24] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-gray-500 focus:outline-none cursor-default font-mono selection:bg-[#ff2a5f]/30 select-all"
+                      />
+                      {formData.url && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 pointer-events-none">
+                          <Check size={10} /> {formData.assigned_room || "ROOM1"}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Room pills */}
+                    <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+                      <span className="text-[10px] uppercase font-bold text-gray-500">Available Meetn Rooms:</span>
+                      {[
+                        { name: "ROOM1", url: "https://meetn.com/room1-2" },
+                        { name: "Room2", url: "https://meetn.com/room2-2" },
+                        { name: "Room3", url: "https://meetn.com/room3-2" }
+                      ].map(room => (
+                        <button
+                          key={room.name}
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, url: room.url, assigned_room: room.name }))}
+                          className={`text-[11px] px-3 py-1 rounded-lg border font-bold transition-all flex items-center gap-1.5 ${
+                            formData.url === room.url || formData.assigned_room === room.name
+                              ? "bg-[#ff2a5f] border-[#ff2a5f] text-white shadow-md shadow-[#ff2a5f]/30"
+                              : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/20"
+                          }`}
+                        >
+                          <Video size={11} /> {room.name}
+                          <span className="text-[9px] opacity-70 font-normal">({room.url.replace("https://meetn.com/", "")})</span>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-1">
+                      Click &quot;⚡ Assign Meetn Room&quot; to auto-check collisions with a <strong>+60 min buffer</strong> and assign the next available room.
+                    </p>
                   </div>
-                  
+
+                  {/* Cover Artwork */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400">
+                      Webinar Cover Artwork / Thumbnail
+                    </label>
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 h-14 rounded-xl bg-[#181a24] border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
+                        {formData.cover_image_url ? (
+                          <img src={formData.cover_image_url} alt="Cover Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <Tv size={22} className="text-gray-600" />
+                        )}
+                      </div>
+                      <div className="flex-1 space-y-2">
+                        <input
+                          type="text"
+                          placeholder="https://... or upload artwork below"
+                          value={formData.cover_image_url}
+                          onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
+                          className="w-full bg-[#181a24] border border-white/10 rounded-xl px-4 py-2 text-xs text-white placeholder:text-gray-600 focus:outline-none focus:border-[#ff2a5f]"
+                        />
+                        <div className="flex items-center gap-3">
+                          <label className="cursor-pointer text-xs font-bold text-white bg-white/10 hover:bg-white/15 px-3 py-1.5 rounded-lg border border-white/10 transition-colors inline-flex items-center gap-1.5">
+                            {uploadingCover ? <Loader2 size={12} className="animate-spin" /> : <Tv size={12} />}
+                            {uploadingCover ? "Uploading..." : "Upload Image File"}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={uploadingCover}
+                              onChange={handleFileUpload}
+                            />
+                          </label>
+                          <span className="text-[11px] text-gray-500">16:9 ratio recommended</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Summary */}
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Description</label>
-                    <textarea rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" placeholder="What will you cover?" />
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                      Short Summary / Excerpt *
+                    </label>
+                    <textarea
+                      rows={2}
+                      required
+                      placeholder="A concise, high-impact synopsis of what attendees will learn in this session..."
+                      value={formData.summary}
+                      onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
+                      className="w-full bg-[#181a24] border border-white/10 rounded-xl p-3 text-xs text-white placeholder:text-gray-600 focus:outline-none focus:border-[#ff2a5f]"
+                    />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Date & Time</label>
-                      <input type="datetime-local" required value={formData.scheduled_at} onChange={e => setFormData({...formData, scheduled_at: e.target.value})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Duration (mins)</label>
-                      <input type="number" required value={formData.duration_minutes} onChange={e => setFormData({...formData, duration_minutes: Number(e.target.value)})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" />
-                    </div>
+                  {/* Full Agenda */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                      Full Agenda & Learning Objectives (Markdown Supported)
+                    </label>
+                    <textarea
+                      rows={4}
+                      placeholder="Outline the detailed schedule, discussion points, key takeaways, and speaker bios..."
+                      value={formData.content}
+                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                      className="w-full bg-[#181a24] border border-white/10 rounded-xl p-3 text-xs text-white placeholder:text-gray-600 focus:outline-none focus:border-[#ff2a5f] font-mono"
+                    />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Max Attendees</label>
-                      <input type="number" required value={formData.max_attendees} onChange={e => setFormData({...formData, max_attendees: Number(e.target.value)})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Cover Image URL (optional)</label>
-                      <input value={formData.cover_image} onChange={e => setFormData({...formData, cover_image: e.target.value})} className="w-full bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]" placeholder="https://..." />
-                    </div>
-                  </div>
-
-                  <div className="pt-6">
-                    <button type="submit" disabled={isSubmitting} className="w-full bg-[#ff2a5f] hover:bg-[#e02553] text-white px-6 py-4 rounded-xl font-bold flex justify-center items-center gap-2 transition-colors disabled:opacity-70">
-                      {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <MonitorPlay size={20} />}
-                      Schedule Webinar
+                  {/* Submit Button */}
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-gradient-to-r from-[#ff2a5f] to-rose-600 hover:from-[#e02553] hover:to-rose-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-[#ff2a5f]/25 flex items-center justify-center gap-2 text-sm transition-all active:scale-[0.99] disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" /> Submitting Webinar...
+                        </>
+                      ) : (
+                        <>
+                          <MonitorPlay size={16} /> Submit Webinar for Review
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>
-              </>
+              </div>
             )}
           </div>
         </div>
