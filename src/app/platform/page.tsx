@@ -43,9 +43,19 @@ export default function PlatformPage() {
   const [isUpdatingPost, setIsUpdatingPost] = useState(false);
   const [isIpWisdomModalOpen, setIsIpWisdomModalOpen] = useState(false);
   const [previewModalImage, setPreviewModalImage] = useState<string | null>(null);
+  const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const [userBusiness, setUserBusiness] = useState<any>(null);
   const [postAsId, setPostAsId] = useState<string>('user'); // 'user' or business.id
   const [trendingForums, setTrendingForums] = useState<any[]>([]);
+
+  const toggleExpandPost = (postId: string) => {
+    setExpandedPosts(prev => {
+      const next = new Set(prev);
+      if (next.has(postId)) next.delete(postId);
+      else next.add(postId);
+      return next;
+    });
+  };
   
   const fetchFeed = useCallback(async () => {
     setIsLoadingFeed(true);
@@ -340,14 +350,14 @@ export default function PlatformPage() {
   };
 
   return (
-    <div className="w-full font-sans flex flex-col h-[calc(100vh-73px)] overflow-hidden">
-      <div className="w-full bg-white dark:bg-[#0f172a] flex flex-col flex-1 overflow-hidden">
+    <div className="w-full font-sans flex flex-col min-h-[calc(100dvh-56px)] md:h-[calc(100vh-73px)] md:overflow-hidden">
+      <div className="w-full bg-white dark:bg-[#0f172a] flex flex-col flex-1">
         
         {/* MAIN LAYOUT */}
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 md:overflow-hidden">
           
           {/* MAIN CONTENT AREA */}
-          <main className="flex-1 bg-[#f8f9fa] dark:bg-[#070b14] md:bg-slate-50/50 md:dark:bg-[#0b1120] overflow-y-auto p-0 sm:p-6 md:p-8 no-scrollbar flex gap-6 xl:gap-8">
+          <main className="flex-1 bg-[#f8f9fa] dark:bg-[#070b14] md:bg-slate-50/50 md:dark:bg-[#0b1120] md:overflow-y-auto p-0 sm:p-6 md:p-8 no-scrollbar flex gap-6 xl:gap-8">
             
             {/* LEFT COLUMN */}
             <div className="flex-1 flex justify-center pb-24 md:pb-20">
@@ -766,9 +776,6 @@ export default function PlatformPage() {
                 </div>
               )}
 
-              {/* FEED STORIES & SPOTLIGHT HIGHLIGHTS */}
-              <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
-
               {/* FEED */}
               <div className="space-y-3 sm:space-y-4">
                 {isLoadingFeed ? (
@@ -785,23 +792,25 @@ export default function PlatformPage() {
                   const authorName = author.full_name || 'Anonymous User';
                   const initial = authorName.charAt(0).toUpperCase();
                   const timeAgo = formatDistanceToNow(parseISO(post.created_at), { addSuffix: true });
-                  const memberSince = author.created_at 
-                    ? format(parseISO(author.created_at), 'MMMM d, yyyy') 
-                    : 'Unknown';
+                  const isExpanded = expandedPosts.has(post.id);
+                  const isLongText = (post.content || '').length > 180;
+                  const displayContent = isLongText && !isExpanded 
+                    ? `${post.content.slice(0, 180)}...` 
+                    : post.content;
                     
                   return (
                     <React.Fragment key={post.id}>
-                    <div className={`w-full bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all overflow-hidden`}>
+                    <div className={`w-full bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3.5 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all overflow-hidden`}>
                       
                       {/* Post Header */}
-                      <div className="flex items-center justify-between mb-2.5 px-3 sm:px-0">
+                      <div className="flex items-center justify-between mb-3 px-3 sm:px-0">
                         <div className="flex items-center gap-2.5">
                           <Link href={`/platform/profile/${post.author_id}`} className="shrink-0 hover:opacity-80 transition-opacity block">
                             <div className="p-0.5 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8]">
                               {author.avatar_url ? (
-                                <img src={author.avatar_url} alt={authorName} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-white dark:ring-[#0f172a]" />
+                                <img src={author.avatar_url} alt={authorName} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-white dark:ring-[#0f172a]" />
                               ) : (
-                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-[#0f172a]">
+                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-[#0f172a]">
                                   {initial}
                                 </div>
                               )}
@@ -876,9 +885,49 @@ export default function PlatformPage() {
                         </div>
                       </div>
 
-                      {/* Post Media Attachments (Dynamically Adapting to Image/Video Dimensions) */}
+                      {/* LinkedIn-Style Post Text (ABOVE the Media) */}
+                      {editingPost?.id === post.id ? (
+                        <div className="space-y-2 mb-3 px-3 sm:px-0">
+                          <textarea 
+                            value={editContent} 
+                            onChange={(e) => setEditContent(e.target.value)}
+                            className="w-full p-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs sm:text-sm text-gray-900 dark:text-white outline-none resize-none"
+                            rows={3}
+                          />
+                          <div className="flex justify-end gap-2">
+                            <button onClick={() => setEditingPost(null)} className="px-3 py-1 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100">Cancel</button>
+                            <button onClick={submitEditPost} disabled={isUpdatingPost} className="px-3.5 py-1 rounded-lg text-xs font-bold bg-[#5a32fa] text-white">Save</button>
+                          </div>
+                        </div>
+                      ) : (
+                        post.content && (
+                          <div className="px-3 sm:px-0 mb-2.5">
+                            <p className="text-[13px] sm:text-[14px] text-gray-900 dark:text-gray-100 leading-relaxed font-normal whitespace-pre-wrap">
+                              {displayContent}
+                              {isLongText && !isExpanded && (
+                                <button 
+                                  onClick={() => toggleExpandPost(post.id)} 
+                                  className="text-gray-500 hover:text-[#5a32fa] dark:text-gray-400 dark:hover:text-[#ff90e8] font-bold text-xs ml-1 transition-colors"
+                                >
+                                  ...read more
+                                </button>
+                              )}
+                            </p>
+                            {isLongText && isExpanded && (
+                              <button 
+                                onClick={() => toggleExpandPost(post.id)} 
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-medium mt-1 block"
+                              >
+                                Show less
+                              </button>
+                            )}
+                          </div>
+                        )
+                      )}
+
+                      {/* Post Media Attachments (BELOW Text — Dynamically Adapting to Media Dimensions) */}
                       {post.media_urls && post.media_urls.length > 0 && (
-                        <div className="w-full my-1.5 sm:my-3">
+                        <div className="w-full my-2">
                           {post.media_urls.map((url: string, mIdx: number) => {
                             const isVideo = post.media_type === 'video' || url.match(/\.(mp4|webm|mov|ogg)$/i);
                             const isDoc = post.media_type === 'doc' || url.match(/\.(pdf|doc|docx|txt)$/i);
@@ -940,93 +989,11 @@ export default function PlatformPage() {
                         </div>
                       )}
 
-                      {/* Instagram-Style 3-Left / 1-Right Action Bar */}
-                      <div className="flex items-center justify-between px-3 sm:px-0 pt-2">
-                        <div className="flex items-center gap-3 sm:gap-4">
-                          {/* Like Button */}
-                          <button 
-                            onClick={() => handleLikePost(post.id)} 
-                            className="flex items-center gap-1 text-gray-800 dark:text-gray-200 active:scale-75 transition-transform"
-                          >
-                            <Heart size={22} className={isLiked ? "fill-rose-500 text-rose-500" : "hover:text-rose-500"} />
-                          </button>
-
-                          {/* Comment Button */}
-                          <button 
-                            onClick={() => {
-                              if (post.comments_disabled) return;
-                              setActiveCommentPost(post);
-                              fetchComments(post.id);
-                            }}
-                            disabled={post.comments_disabled}
-                            className={`flex items-center gap-1 text-gray-800 dark:text-gray-200 active:scale-75 transition-transform ${post.comments_disabled ? 'opacity-40' : 'hover:text-[#5a32fa]'}`}
-                          >
-                            <MessageCircle size={22} />
-                          </button>
-
-                          {/* Share Button */}
-                          <button 
-                            onClick={() => {
-                              if (typeof navigator !== 'undefined' && navigator.share) {
-                                navigator.share({
-                                  title: 'WIPA Network Post',
-                                  text: post.content?.slice(0, 100) || 'Check out this post on WIPA',
-                                  url: window.location.href,
-                                }).catch(() => {});
-                              } else {
-                                navigator.clipboard.writeText(window.location.href);
-                                alert('Link copied to clipboard!');
-                              }
-                            }}
-                            className="flex items-center gap-1 text-gray-800 dark:text-gray-200 active:scale-75 transition-transform hover:text-[#ff90e8]"
-                          >
-                            <Send size={20} className="-rotate-45 -mt-0.5" />
-                          </button>
-                        </div>
-
-                        {/* Bookmark / Save Button */}
-                        <button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(`${window.location.origin}/platform/post/${post.id}`);
-                            alert('Post saved!');
-                          }}
-                          className="text-gray-800 dark:text-gray-200 active:scale-75 transition-transform hover:text-[#5a32fa]"
-                        >
-                          <Bookmark size={21} />
-                        </button>
-                      </div>
-
-                      {/* Post Caption & Comments Section (Instagram Layout) */}
-                      <div className="px-3 sm:px-0 pt-1.5 space-y-1">
-                        {/* Likes Count */}
-                        <p className="text-xs font-bold text-gray-900 dark:text-white">
-                          {post.likes_count ? `${post.likes_count.toLocaleString()} likes` : 'Be the first to like'}
-                        </p>
-
-                        {/* Content / Caption */}
-                        {editingPost?.id === post.id ? (
-                          <div className="space-y-2 my-2">
-                            <textarea 
-                              value={editContent} 
-                              onChange={(e) => setEditContent(e.target.value)}
-                              className="w-full p-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs text-gray-900 dark:text-white outline-none resize-none"
-                              rows={3}
-                            />
-                            <div className="flex justify-end gap-2">
-                              <button onClick={() => setEditingPost(null)} className="px-3 py-1 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100">Cancel</button>
-                              <button onClick={submitEditPost} disabled={isUpdatingPost} className="px-3.5 py-1 rounded-lg text-xs font-bold bg-[#5a32fa] text-white">Save</button>
-                            </div>
-                          </div>
-                        ) : (
-                          post.content && (
-                            <p className="text-xs text-gray-800 dark:text-gray-200 leading-snug">
-                              <span className="font-bold mr-1.5 text-gray-900 dark:text-white">{authorName}</span>
-                              {post.content}
-                            </p>
-                          )
-                        )}
-
-                        {/* View All Comments Link */}
+                      {/* Engagement Counters Line */}
+                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-3 sm:px-0 py-1.5 border-b border-gray-100 dark:border-white/5">
+                        <span className="flex items-center gap-1 font-medium">
+                          {post.likes_count ? `❤️ ${post.likes_count} ${post.likes_count === 1 ? 'like' : 'likes'}` : 'Be the first to like'}
+                        </span>
                         {(post.comments_count || 0) > 0 && (
                           <button 
                             onClick={() => {
@@ -1034,11 +1001,77 @@ export default function PlatformPage() {
                               setActiveCommentPost(post);
                               fetchComments(post.id);
                             }}
-                            className="text-[11px] font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 block pt-0.5"
+                            className="hover:underline"
                           >
-                            View all {post.comments_count} comments
+                            {post.comments_count} {post.comments_count === 1 ? 'comment' : 'comments'}
                           </button>
                         )}
+                      </div>
+
+                      {/* Action Bar (Like, Comment, Share, Save) */}
+                      <div className="grid grid-cols-4 gap-1 pt-1.5 px-3 sm:px-0">
+                        {/* Like Button */}
+                        <button 
+                          onClick={() => handleLikePost(post.id)} 
+                          className={`h-10 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 text-xs font-bold ${
+                            isLiked 
+                              ? 'text-rose-500 bg-rose-500/10' 
+                              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          <Heart size={18} className={isLiked ? "fill-rose-500 text-rose-500" : ""} />
+                          <span>Like</span>
+                        </button>
+
+                        {/* Comment Button */}
+                        <button 
+                          onClick={() => {
+                            if (post.comments_disabled) return;
+                            setActiveCommentPost(post);
+                            fetchComments(post.id);
+                          }}
+                          disabled={post.comments_disabled}
+                          className={`h-10 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 text-xs font-bold ${
+                            post.comments_disabled 
+                              ? 'text-gray-300 cursor-not-allowed opacity-40' 
+                              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#5a32fa]'
+                          }`}
+                        >
+                          <MessageCircle size={18} />
+                          <span>Comment</span>
+                        </button>
+
+                        {/* Share Button */}
+                        <button 
+                          onClick={() => {
+                            if (typeof navigator !== 'undefined' && navigator.share) {
+                              navigator.share({
+                                title: 'WIPA Network Post',
+                                text: post.content?.slice(0, 100) || 'Check out this post on WIPA',
+                                url: window.location.href,
+                              }).catch(() => {});
+                            } else {
+                              navigator.clipboard.writeText(window.location.href);
+                              alert('Link copied to clipboard!');
+                            }
+                          }}
+                          className="h-10 rounded-xl flex items-center justify-center gap-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#ff90e8] transition-all active:scale-95 text-xs font-bold"
+                        >
+                          <Send size={16} className="-rotate-45 -mt-0.5" />
+                          <span>Share</span>
+                        </button>
+
+                        {/* Bookmark / Save Button */}
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${window.location.origin}/platform/post/${post.id}`);
+                            alert('Post saved!');
+                          }}
+                          className="h-10 rounded-xl flex items-center justify-center gap-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#5a32fa] transition-all active:scale-95 text-xs font-bold"
+                        >
+                          <Bookmark size={18} />
+                          <span>Save</span>
+                        </button>
                       </div>
                       
                     </div>

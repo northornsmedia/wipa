@@ -49,6 +49,7 @@ export default function ProfilePage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [previewModalImage, setPreviewModalImage] = useState<string | null>(null);
+  const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [editForm, setEditForm] = useState(profileData);
   const [stats, setStats] = useState({ connections: 142, followers: 890, posts: 14, profileViews: 328, postImpressions: '4.2k' });
@@ -57,6 +58,15 @@ export default function ProfilePage() {
   const [newPostText, setNewPostText] = useState('');
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [likedPostIds, setLikedPostIds] = useState<Set<string>>(new Set());
+
+  const toggleExpandPost = (postId: string) => {
+    setExpandedPosts(prev => {
+      const next = new Set(prev);
+      if (next.has(postId)) next.delete(postId);
+      else next.add(postId);
+      return next;
+    });
+  };
   const [endorsedSkills, setEndorsedSkills] = useState<Record<string, { count: number; endorsed: boolean }>>({
     'Patent Prosecution': { count: 24, endorsed: false },
     'Trademark Law': { count: 19, endorsed: false },
@@ -759,11 +769,31 @@ export default function ProfilePage() {
                             </button>
                           </div>
 
-                          {/* Content */}
+                          {/* LinkedIn-Style Content */}
                           {post.content && (
-                            <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed mb-3 whitespace-pre-wrap">
-                              {post.content}
-                            </p>
+                            <div className="mb-3">
+                              <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
+                                {post.content.length > 180 && !expandedPosts.has(post.id)
+                                  ? `${post.content.slice(0, 180)}...`
+                                  : post.content}
+                                {post.content.length > 180 && !expandedPosts.has(post.id) && (
+                                  <button
+                                    onClick={() => toggleExpandPost(post.id)}
+                                    className="text-gray-500 hover:text-[#5a32fa] dark:text-gray-400 dark:hover:text-[#ff90e8] font-bold text-xs ml-1"
+                                  >
+                                    ...read more
+                                  </button>
+                                )}
+                              </p>
+                              {post.content.length > 180 && expandedPosts.has(post.id) && (
+                                <button
+                                  onClick={() => toggleExpandPost(post.id)}
+                                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-medium mt-1 block"
+                                >
+                                  Show less
+                                </button>
+                              )}
+                            </div>
                           )}
 
                           {/* Post Media Attachments (Images, Videos, Documents/PDFs) */}
