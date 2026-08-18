@@ -1,39 +1,8 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, Building2, Sparkles, MonitorSmartphone } from 'lucide-react';
+import { ArrowRight, Building2, Sparkles, MonitorSmartphone, X, ExternalLink, ShieldCheck, Zap } from 'lucide-react';
 import Link from 'next/link';
-
-const IP_SERVICES_DATA = [
-  {
-    id: "tech-operations",
-    serviceName: "Tech Operations",
-    companyName: "PSS",
-    logo: "https://cdn.prod.website-files.com/64c4a14aa0442cfa0e0c62e9/6593a22b139e1daa37dd5974_PSS_Pfront_BLUE%20(1).svg",
-    subline: "Transforming IP operations through strategy, technology, process and people.",
-    bgGradient: "from-blue-500/20 to-cyan-500/20",
-    icon: MonitorSmartphone,
-  },
-  {
-    id: "tech-way",
-    serviceName: "Tech Way",
-    companyName: "AIP Genius",
-    logo: null,
-    subline: "Explore AI, technology and innovation transforming the way intellectual property professionals work.",
-    bgGradient: "from-purple-500/20 to-pink-500/20",
-    icon: Sparkles,
-  },
-  {
-    id: "future-service-hub",
-    serviceName: "Future Service Hub",
-    companyName: "Partner Company",
-    logo: null,
-    subline: "Additional specialist IP service providers can be added as the platform develops.",
-    bgGradient: "from-emerald-500/20 to-teal-500/20",
-    icon: Building2,
-  }
-];
-
 import { SparklesCore } from '@/components/animations/SparklesCore';
 import SplashSponsoredBanner from '@/components/SplashSponsoredBanner';
 import { supabase } from '@/lib/supabase';
@@ -43,6 +12,11 @@ export default function IPServicesPage() {
   const [fadeOut, setFadeOut] = React.useState(false);
   const [ipServices, setIpServices] = React.useState<any[]>([]);
   const [splashServices, setSplashServices] = React.useState<any[]>([]);
+
+  const handleDismissSplash = () => {
+    setFadeOut(true);
+    setTimeout(() => setShowIntro(false), 400);
+  };
 
   React.useEffect(() => {
     const fetchServices = async () => {
@@ -74,8 +48,8 @@ export default function IPServicesPage() {
     };
     
     fetchServices();
-    const timer1 = setTimeout(() => setFadeOut(true), 3500);
-    const timer2 = setTimeout(() => setShowIntro(false), 4000);
+    const timer1 = setTimeout(() => setFadeOut(true), 4000);
+    const timer2 = setTimeout(() => setShowIntro(false), 4500);
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
@@ -85,22 +59,103 @@ export default function IPServicesPage() {
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-20">
       
+      {/* Cool, Ultra-Premium Sponsored Splash Screen */}
       {showIntro && (
-        <div className={`absolute inset-0 z-[100] bg-[#020617] flex flex-col items-center justify-center transition-opacity duration-500 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
-          <div className="absolute inset-0 w-full h-full">
+        <div className={`fixed inset-0 z-[1000] bg-[#020617]/95 backdrop-blur-2xl flex items-center justify-center p-4 transition-all duration-500 ${fadeOut ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
+          
+          {/* Ambient Lighting Orbs */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-500/15 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute bottom-10 right-1/4 w-[450px] h-[450px] bg-cyan-400/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute top-10 left-10 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+          {/* Particles Background */}
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
             <SparklesCore
               id="tsparticlesfullpage"
               background="transparent"
               minSize={0.6}
-              maxSize={1.4}
-              particleDensity={100}
+              maxSize={1.6}
+              particleDensity={70}
               className="w-full h-full"
-              particleColor="#FFFFFF"
+              particleColor="#38bdf8"
             />
           </div>
-          <h1 className="md:text-4xl text-2xl lg:text-6xl font-black text-center text-white relative z-20 tracking-tight">
-            Page Sponsored by PSS Solutions
-          </h1>
+
+          {/* Dismiss Button */}
+          <button 
+            onClick={handleDismissSplash}
+            className="absolute top-6 right-6 z-50 text-slate-400 hover:text-white bg-white/5 hover:bg-white/15 border border-white/10 px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 backdrop-blur-md shadow-lg"
+          >
+            <span>Skip</span>
+            <X size={14} />
+          </button>
+
+          {/* Central Glass Showcase Card */}
+          <div className="relative z-20 w-full max-w-xl bg-slate-900/85 dark:bg-slate-950/85 border border-sky-500/30 shadow-[0_0_80px_rgba(14,165,233,0.25)] rounded-[2.5rem] p-8 md:p-12 text-center backdrop-blur-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-500">
+            
+            {/* Shimmer Border Accent */}
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-48 bg-gradient-to-b from-sky-400/30 to-transparent blur-2xl pointer-events-none" />
+            
+            {/* Sponsor Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-black tracking-widest uppercase mb-8 shadow-inner">
+              <Sparkles size={13} className="text-sky-400 animate-pulse" />
+              Official Category Partner
+            </div>
+
+            {/* Logo Display Capsule */}
+            <div className="relative mx-auto mb-8 w-60 h-24 bg-white/90 dark:bg-white/95 rounded-2xl p-4 flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.3)] border border-white/20 transform transition-transform hover:scale-105 duration-300">
+              <img 
+                src="https://cdn.prod.website-files.com/64c4a14aa0442cfa0e0c62e9/6593a22b139e1daa37dd5974_PSS_Pfront_BLUE%20(1).svg" 
+                alt="PSS Solutions Logo" 
+                className="max-h-14 max-w-[200px] object-contain drop-shadow-sm" 
+              />
+            </div>
+
+            {/* Title & Tagline */}
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-tight mb-4 leading-snug">
+              Elevating IP Operations & Technology
+            </h1>
+            
+            <p className="text-slate-300 text-sm md:text-base leading-relaxed mb-6 font-medium max-w-md mx-auto">
+              Presented by <strong className="text-white font-bold">PSS Solutions</strong> — Transforming IP through strategic advisory, cutting-edge technology, and operational excellence.
+            </p>
+
+            {/* Feature Badges */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8 text-xs font-semibold text-sky-200/90">
+              <span className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl flex items-center gap-1.5 backdrop-blur-sm">
+                <ShieldCheck size={14} className="text-sky-400" /> Strategic IP Advisory
+              </span>
+              <span className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl flex items-center gap-1.5 backdrop-blur-sm">
+                <Zap size={14} className="text-sky-400" /> Tech Optimization
+              </span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button 
+                onClick={handleDismissSplash}
+                className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white rounded-xl font-bold text-sm shadow-[0_0_30px_rgba(14,165,233,0.4)] hover:shadow-[0_0_40px_rgba(14,165,233,0.6)] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+              >
+                <span>Explore IP Services</span>
+                <ArrowRight size={16} />
+              </button>
+              
+              <Link 
+                href="/platform/resources/ip-services/pss-solutions"
+                onClick={handleDismissSplash}
+                className="w-full sm:w-auto px-6 py-3.5 bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white border border-white/10 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 backdrop-blur-md"
+              >
+                <span>Sponsor Profile</span>
+                <ExternalLink size={14} />
+              </Link>
+            </div>
+
+            {/* Animated Bottom Timer Bar */}
+            <div className="mt-8 w-full bg-white/5 h-1 rounded-full overflow-hidden">
+              <div className="bg-gradient-to-r from-sky-500 to-cyan-400 h-full w-full animate-[progress_4.5s_linear_forwards]" />
+            </div>
+
+          </div>
         </div>
       )}
       
