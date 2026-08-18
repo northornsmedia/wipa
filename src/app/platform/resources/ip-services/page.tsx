@@ -3,7 +3,8 @@
 import React from 'react';
 import { ArrowRight, Building2, Sparkles, MonitorSmartphone, X } from 'lucide-react';
 import Link from 'next/link';
-import { HyperText } from "@/registry/magicui/hyper-text";
+import { cn } from "@/lib/utils";
+import { CanvasText } from "@/components/ui/canvas-text";
 import SplashSponsoredBanner from '@/components/SplashSponsoredBanner';
 import { supabase } from '@/lib/supabase';
 
@@ -48,8 +49,8 @@ export default function IPServicesPage() {
     };
     
     fetchServices();
-    const timer1 = setTimeout(() => setFadeOut(true), 2000);
-    const timer2 = setTimeout(() => setShowIntro(false), 2400);
+    const timer1 = setTimeout(() => setFadeOut(true), 2400);
+    const timer2 = setTimeout(() => setShowIntro(false), 2800);
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
@@ -59,27 +60,42 @@ export default function IPServicesPage() {
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-20">
       
-      {/* Clean HyperText Splash Screen (Page-scoped, does not cover sidebar/header) */}
+      {/* CanvasText Splash Screen (Page-scoped, does not cover sidebar/header) */}
       {showIntro && (
         <div 
           onClick={handleDismissSplash}
-          className={`absolute inset-0 z-50 bg-[#020617] flex flex-col items-center justify-center p-6 cursor-pointer transition-opacity duration-400 ${fadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`absolute inset-0 z-50 bg-[#020617] flex flex-col items-center justify-center p-8 cursor-pointer transition-opacity duration-500 ${fadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         >
           {/* Skip Button */}
           <button 
             onClick={(e) => { e.stopPropagation(); handleDismissSplash(); }}
-            className="absolute top-6 right-6 z-50 text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-1 rounded-full text-[11px] font-medium tracking-wider uppercase transition-colors"
+            className="absolute top-6 right-6 z-50 text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors"
           >
             Skip
           </button>
 
-          <div className="text-center max-w-xl px-4">
-            <HyperText
-              duration={1000}
-              className="text-sm sm:text-base md:text-lg font-bold text-slate-200 dark:text-white tracking-[0.2em] uppercase"
-            >
-              Sponsored by PSS Solutions
-            </HyperText>
+          <div className="flex items-center justify-center p-4">
+            <h2 className={cn("group relative mx-auto text-center text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white/90")}>
+              Sponsored by{" "}
+              <CanvasText
+                text="PSS Solutions"
+                backgroundClassName="bg-sky-600 dark:bg-sky-700"
+                colors={[
+                  "rgba(0, 153, 255, 1)",
+                  "rgba(0, 153, 255, 0.9)",
+                  "rgba(0, 153, 255, 0.8)",
+                  "rgba(0, 153, 255, 0.7)",
+                  "rgba(0, 153, 255, 0.6)",
+                  "rgba(0, 153, 255, 0.5)",
+                  "rgba(0, 153, 255, 0.4)",
+                  "rgba(0, 153, 255, 0.3)",
+                  "rgba(0, 153, 255, 0.2)",
+                  "rgba(0, 153, 255, 0.1)",
+                ]}
+                lineGap={4}
+                animationDuration={20}
+              />
+            </h2>
           </div>
         </div>
       )}
