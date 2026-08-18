@@ -78,25 +78,25 @@ export default function IPServicesPage() {
           </button>
 
           <div className="relative z-10 flex flex-col items-center justify-center p-4">
-            <h2 className={cn("group relative mx-auto text-center text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white/95 drop-shadow-sm")}>
-              Sponsored by{" "}
+            <h2 className={cn("group relative mx-auto text-center text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white flex flex-wrap items-center justify-center gap-x-3 gap-y-2")}>
+              <span className="text-slate-300">Sponsored by</span>
               <CanvasText
                 text="PSS Solutions"
-                backgroundClassName="bg-sky-600 dark:bg-sky-700 shadow-[0_0_30px_rgba(14,165,233,0.3)]"
+                className="font-black"
                 colors={[
-                  "rgba(0, 153, 255, 1)",
-                  "rgba(0, 153, 255, 0.9)",
-                  "rgba(0, 153, 255, 0.8)",
-                  "rgba(0, 153, 255, 0.7)",
-                  "rgba(0, 153, 255, 0.6)",
-                  "rgba(0, 153, 255, 0.5)",
-                  "rgba(0, 153, 255, 0.4)",
-                  "rgba(0, 153, 255, 0.3)",
-                  "rgba(0, 153, 255, 0.2)",
-                  "rgba(0, 153, 255, 0.1)",
+                  "#38bdf8",
+                  "#0ea5e9",
+                  "#0284c7",
+                  "#60a5fa",
+                  "#818cf8",
+                  "#a78bfa",
+                  "#38bdf8",
+                  "#06b6d4"
                 ]}
-                lineGap={4}
-                animationDuration={20}
+                lineGap={6}
+                lineWidth={2.2}
+                curveIntensity={45}
+                animationDuration={4}
               />
             </h2>
           </div>

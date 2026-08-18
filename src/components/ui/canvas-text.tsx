@@ -1,65 +1,91 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useId } from 'react';
 import { cn } from '@/lib/utils';
 
-interface CanvasTextProps extends React.HTMLAttributes<HTMLSpanElement> {
+export interface CanvasTextProps extends React.HTMLAttributes<HTMLSpanElement> {
   text: string;
   className?: string;
   backgroundClassName?: string;
   colors?: string[];
-  lineGap?: number;
   animationDuration?: number;
+  lineWidth?: number;
+  lineGap?: number;
+  curveIntensity?: number;
+  overlay?: boolean;
 }
+
+const DEFAULT_COLORS = [
+  "#ff6b6b",
+  "#4ecdc4",
+  "#45b7d1",
+  "#96ceb4",
+  "#ffeaa7",
+  "#dff9fb",
+  "#f6e58d",
+  "#ffbe76"
+];
 
 export function CanvasText({
   text,
-  className,
-  backgroundClassName = 'bg-blue-600 dark:bg-blue-700',
-  colors = [
-    "rgba(0, 153, 255, 1)",
-    "rgba(0, 153, 255, 0.9)",
-    "rgba(0, 153, 255, 0.8)",
-    "rgba(0, 153, 255, 0.7)",
-    "rgba(0, 153, 255, 0.6)",
-    "rgba(0, 153, 255, 0.5)",
-    "rgba(0, 153, 255, 0.4)",
-    "rgba(0, 153, 255, 0.3)",
-    "rgba(0, 153, 255, 0.2)",
-    "rgba(0, 153, 255, 0.1)",
-  ],
-  lineGap = 4,
-  animationDuration = 20,
+  className = "",
+  backgroundClassName = "bg-white dark:bg-neutral-950",
+  colors = DEFAULT_COLORS,
+  animationDuration = 5,
+  lineWidth = 1.5,
+  lineGap = 10,
+  curveIntensity = 60,
+  overlay = false,
   ...props
 }: CanvasTextProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLSpanElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
+  const clipId = useId().replace(/:/g, "_");
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  // Resolve CSS variables if passed in colors array
+  const resolveColor = (color: string, element: HTMLElement | null) => {
+    if (color.startsWith("var(") && element) {
+      const varName = color.slice(4, -1).trim();
+      const resolved = getComputedStyle(element).getPropertyValue(varName).trim();
+      return resolved || color;
+    }
+    return color;
+  };
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (textRef.current) {
+        const rect = textRef.current.getBoundingClientRect();
+        setDimensions({
+          width: Math.max(rect.width, 1),
+          height: Math.max(rect.height, 1)
+        });
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, [text, className]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
-    if (!canvas || !container) return;
+    const textEl = textRef.current;
+    if (!canvas || !container || !textEl) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     let animationFrameId: number;
-    let time = 0;
+    let startTime = performance.now();
 
-    const resize = () => {
-      const rect = container.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-    };
+    const dpr = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
 
-    resize();
-    window.addEventListener('resize', resize);
-
-    const render = () => {
-      time += 0.03 * (20 / (animationDuration || 20));
-      const rect = container.getBoundingClientRect();
+    const render = (currentTime: number) => {
+      const rect = textEl.getBoundingClientRect();
       const width = rect.width;
       const height = rect.height;
 
@@ -68,61 +94,105 @@ export function CanvasText({
         return;
       }
 
+      if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
+      }
+
+      const elapsed = (currentTime - startTime) / 1000;
+      const progress = (elapsed % (animationDuration || 5)) / (animationDuration || 5);
+      const phase = progress * Math.PI * 2;
+
       ctx.clearRect(0, 0, width, height);
 
-      const waveCount = colors.length || 10;
+      const computedStyle = window.getComputedStyle(textEl);
+      const fontSize = computedStyle.fontSize;
+      const fontFamily = computedStyle.fontFamily;
+      const fontWeight = computedStyle.fontWeight;
+      const fontStyle = computedStyle.fontStyle;
 
-      for (let i = 0; i < waveCount; i++) {
-        const color = colors[i % colors.length];
+      // 1. Draw waving bezier curve lines across the canvas
+      ctx.save();
+
+      const numLines = Math.max(Math.floor(height / (lineGap || 10)), 5);
+      const activeColors = colors.length > 0 ? colors : DEFAULT_COLORS;
+
+      for (let i = 0; i <= numLines + 4; i++) {
+        const color = resolveColor(activeColors[i % activeColors.length], container);
+        const baseY = (i - 2) * (lineGap || 10);
+        const waveOffset = (i * 0.4) + phase;
+
         ctx.strokeStyle = color;
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = lineWidth || 1.5;
+        ctx.lineCap = 'round';
         ctx.beginPath();
 
-        const offset = (i * Math.PI) / waveCount;
-        const amplitude = Math.min(height * 0.35, 16);
-        const frequency = 0.04;
+        const cp1x = width * 0.25;
+        const cp1y = baseY + Math.sin(waveOffset) * (curveIntensity || 60);
+        const cp2x = width * 0.75;
+        const cp2y = baseY + Math.cos(waveOffset + Math.PI / 2) * (curveIntensity || 60);
+        const endX = width;
+        const endY = baseY + Math.sin(waveOffset + Math.PI) * (curveIntensity * 0.5);
 
-        for (let x = 0; x <= width; x += 2) {
-          const y =
-            height / 2 +
-            Math.sin(x * frequency + time + offset) *
-              amplitude *
-              Math.sin((x / width) * Math.PI);
-          if (x === 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
-        }
+        ctx.moveTo(0, baseY);
+        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);
         ctx.stroke();
       }
+
+      // 2. Clip the canvas to the exact text characters using destination-in compositing
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.font = `${fontStyle} ${fontWeight} ${fontSize} ${fontFamily}`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, width / 2, height / 2);
+
+      ctx.restore();
 
       animationFrameId = requestAnimationFrame(render);
     };
 
-    render();
+    animationFrameId = requestAnimationFrame(render);
 
     return () => {
-      window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [colors, lineGap, animationDuration]);
+  }, [text, colors, animationDuration, lineWidth, lineGap, curveIntensity, className]);
 
   return (
     <span
       ref={containerRef}
       className={cn(
-        'relative inline-flex items-center justify-center px-3 py-1 rounded-xl overflow-hidden font-extrabold text-white align-baseline shadow-sm',
-        backgroundClassName,
+        "relative inline-block align-baseline overflow-visible select-none",
+        overlay ? "absolute inset-0 z-10" : "",
         className
       )}
       {...props}
     >
+      {/* Hidden text measuring node to preserve exact layout typography */}
+      <span
+        ref={textRef}
+        aria-hidden="true"
+        className={cn(
+          "invisible pointer-events-none select-none whitespace-pre",
+          className
+        )}
+      >
+        {text}
+      </span>
+
+      {/* Animated Canvas with colorful curved lines clipped into the text letters */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none opacity-85 mix-blend-screen"
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{
+          width: dimensions.width ? `${dimensions.width}px` : "100%",
+          height: dimensions.height ? `${dimensions.height}px` : "100%"
+        }}
       />
-      <span className="relative z-10">{text}</span>
+      
+      {/* Screen reader text */}
+      <span className="sr-only">{text}</span>
     </span>
   );
 }
