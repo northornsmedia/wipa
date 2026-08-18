@@ -250,57 +250,136 @@ export default function IPServicesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           
-          {ipServices.map(service => (
-            <Link 
-              key={service.id}
-              href={service.slug === 'pss-solutions' || service.id === '821d981f-54f5-4d57-976f-6fd1cb998022' ? '/platform/resources/ip-services/pss-solutions' : `/platform/resources/ip-services/${service.slug || service.id}`}
-              className="group relative bg-white dark:bg-[#0B1221] rounded-[2rem] border border-slate-200 dark:border-white/5 overflow-hidden flex flex-col h-[420px] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:hover:shadow-[0_20px_60px_-15px_rgba(14,165,233,0.15)] dark:hover:border-white/10"
-            >
-              {/* Branded Abstract Glow */}
-              <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/20 to-cyan-500/20 blur-[70px] rounded-full pointer-events-none opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700`}></div>
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.02] dark:opacity-[0.1] mix-blend-overlay"></div>
-              
-              <div className="relative z-10 p-8 md:p-10 flex flex-col h-full">
-                
-                <div className="flex justify-between items-start mb-auto">
-                  <div className="w-16 h-16 rounded-[1.25rem] bg-slate-50 dark:bg-white/5 backdrop-blur-md shadow-lg border border-slate-100 dark:border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 relative overflow-hidden">
-                    <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-20 transition-opacity duration-500`}></div>
-                    {service.url ? (
-                      <img src={service.url} alt={service.title} className="max-w-[40px] max-h-[40px] object-contain relative z-10 drop-shadow-sm" />
-                    ) : (
-                      <Building2 size={28} className="text-slate-400 dark:text-slate-300 relative z-10" />
-                    )}
-                  </div>
-                  
-                  {service.is_splash_sponsored && new Date(service.splash_expires_at) > new Date() && (
-                    <span className="bg-gradient-to-r from-yellow-400 to-[#f59e0b] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md flex items-center gap-1">
-                      <Sparkles size={10} /> Sponsored
-                    </span>
-                  )}
-                </div>
+          {ipServices.map((service, index) => {
+            const isSponsored = Boolean(service.is_featured || service.is_splash_sponsored || index === 0);
+            const cardHref = service.slug === 'pss-solutions' || service.id === '821d981f-54f5-4d57-976f-6fd1cb998022' 
+              ? '/platform/resources/ip-services/pss-solutions' 
+              : `/platform/resources/ip-services/${service.slug || service.id}`;
 
-                <div className="mt-8 relative z-10">
-                  <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-sky-500 transition-colors drop-shadow-sm line-clamp-1">
-                    {service.title}
-                  </h3>
-                  <div className="inline-block px-3 py-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full mb-6">
-                    <p className="text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-[0.2em]">
-                      {service.subcategory || service.category || 'IP Operations'}
-                    </p>
-                  </div>
+            if (isSponsored) {
+              return (
+                <Link
+                  key={service.id}
+                  href={cardHref}
+                  className="group relative bg-white dark:bg-[#0B1221] rounded-[2rem] border-2 border-sky-400/40 dark:border-sky-500/30 overflow-hidden flex flex-col md:col-span-2 lg:col-span-2 min-h-[420px] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl shadow-xl dark:shadow-[0_20px_60px_-15px_rgba(14,165,233,0.2)]"
+                >
+                  {/* Glowing ambient gradient */}
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-sky-500/25 via-blue-500/15 to-transparent blur-[80px] rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-700"></div>
+                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.03] dark:opacity-[0.12] mix-blend-overlay"></div>
                   
-                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8 line-clamp-3">
-                    {service.description}
-                  </p>
-                  
-                  <div className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white group-hover:text-sky-500 transition-colors uppercase tracking-widest mt-auto w-max">
-                    Explore Profile <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-300" />
+                  <div className="relative z-10 p-8 md:p-12 flex flex-col justify-between h-full">
+                    
+                    {/* Header Row */}
+                    <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 rounded-[1.25rem] bg-slate-50 dark:bg-white/5 backdrop-blur-md shadow-lg border border-slate-200 dark:border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-br from-sky-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          {service.url ? (
+                            <img src={service.url} alt={service.title} className="max-w-[42px] max-h-[42px] object-contain relative z-10 drop-shadow-sm" />
+                          ) : (
+                            <Building2 size={30} className="text-sky-500 relative z-10" />
+                          )}
+                        </div>
+
+                        <div>
+                          <div className="inline-block px-3 py-1 bg-sky-50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-500/20 rounded-full">
+                            <p className="text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-[0.2em]">
+                              {service.subcategory || service.category || 'Tech Operations'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Sponsored Gold/Sky Badge */}
+                      <span className="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 text-slate-950 font-black text-[10px] uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                        <Sparkles size={13} className="fill-slate-950" /> Sponsored Partner
+                      </span>
+                    </div>
+
+                    {/* Body Content */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+                      <div className="md:col-span-2">
+                        <h3 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-3 leading-tight group-hover:text-sky-500 transition-colors drop-shadow-sm">
+                          {service.title}
+                        </h3>
+                        <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed line-clamp-3">
+                          {service.description}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col justify-center bg-slate-50/70 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/5 rounded-2xl p-5 md:p-6 backdrop-blur-sm">
+                        <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400 mb-2">
+                          Service Capability
+                        </span>
+                        <p className="text-xs text-slate-700 dark:text-slate-200 font-semibold leading-relaxed">
+                          Enterprise IP Operating Models, Technology Transformation & Impartial Advisory.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Footer Row */}
+                    <div className="pt-6 mt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+                      <span className="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest flex items-center gap-1.5">
+                        Verified IP Consultancy
+                      </span>
+
+                      <div className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white group-hover:text-sky-500 transition-colors uppercase tracking-widest">
+                        Explore Full Profile <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-300 text-sky-500" />
+                      </div>
+                    </div>
+
                   </div>
-                </div>
+                </Link>
+              );
+            }
+
+            // Normal single-width card
+            return (
+              <Link 
+                key={service.id}
+                href={cardHref}
+                className="group relative bg-white dark:bg-[#0B1221] rounded-[2rem] border border-slate-200 dark:border-white/5 overflow-hidden flex flex-col h-[420px] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:hover:shadow-[0_20px_60px_-15px_rgba(14,165,233,0.15)] dark:hover:border-white/10"
+              >
+                {/* Branded Abstract Glow */}
+                <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/20 to-cyan-500/20 blur-[70px] rounded-full pointer-events-none opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700`}></div>
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.02] dark:opacity-[0.1] mix-blend-overlay"></div>
                 
-              </div>
-            </Link>
-          ))}
+                <div className="relative z-10 p-8 md:p-10 flex flex-col h-full">
+                  
+                  <div className="flex justify-between items-start mb-auto">
+                    <div className="w-16 h-16 rounded-[1.25rem] bg-slate-50 dark:bg-white/5 backdrop-blur-md shadow-lg border border-slate-100 dark:border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 relative overflow-hidden">
+                      <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-20 transition-opacity duration-500`}></div>
+                      {service.url ? (
+                        <img src={service.url} alt={service.title} className="max-w-[40px] max-h-[40px] object-contain relative z-10 drop-shadow-sm" />
+                      ) : (
+                        <Building2 size={28} className="text-slate-400 dark:text-slate-300 relative z-10" />
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-8 relative z-10">
+                    <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-sky-500 transition-colors drop-shadow-sm line-clamp-1">
+                      {service.title}
+                    </h3>
+                    <div className="inline-block px-3 py-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full mb-6">
+                      <p className="text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-[0.2em]">
+                        {service.subcategory || service.category || 'IP Operations'}
+                      </p>
+                    </div>
+                    
+                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8 line-clamp-3">
+                      {service.description}
+                    </p>
+                    
+                    <div className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white group-hover:text-sky-500 transition-colors uppercase tracking-widest mt-auto w-max">
+                      Explore Profile <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-300" />
+                    </div>
+                  </div>
+                  
+                </div>
+              </Link>
+            );
+          })}
 
         </div>
       </div>

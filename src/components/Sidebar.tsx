@@ -86,7 +86,8 @@ export default function Sidebar() {
     };
     fetchUpcomingEvents();
 
-    const channel = supabase.channel(`sidebar-messages-${user.id}`)
+    const channelName = `sidebar-messages-${user.id}-${Date.now()}`;
+    const channel = supabase.channel(channelName)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
         const m = payload.new as any;
         if (m.sender_id !== user.id) {
@@ -101,7 +102,9 @@ export default function Sidebar() {
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => { 
+      supabase.removeChannel(channel); 
+    };
   }, [user?.id]);
 
   if (pathname.startsWith('/platform/messages')) {
