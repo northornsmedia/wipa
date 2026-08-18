@@ -261,7 +261,7 @@ export default function WebinarsHubPage() {
       
       {/* Cinematic Hero Feature */}
       {mainFeature && (
-        <div className="relative w-full h-[70vh] min-h-[600px] flex flex-col justify-between pb-20">
+        <div className="relative w-full h-[62vh] min-h-[500px] max-h-[660px] flex flex-col justify-between pb-12 sm:pb-16">
           <div className="absolute inset-0 z-0 bg-gray-100 dark:bg-black">
             <img 
               src={mainFeature.image || "/resourceimg1.jpg"} 
@@ -307,7 +307,7 @@ export default function WebinarsHubPage() {
           
           <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row gap-8 items-end justify-between">
             <div className="max-w-3xl">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-3">
                 <span className="bg-[#ff2a5f] text-white text-xs font-black uppercase px-3 py-1 rounded-sm flex items-center gap-1.5 shadow-md">
                   <MonitorPlay size={14} /> {mainFeature.type || "Upcoming Webinar"}
                 </span>
@@ -317,19 +317,25 @@ export default function WebinarsHubPage() {
                   </span>
                 )}
               </div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white leading-tight mb-6 drop-shadow-sm dark:drop-shadow-lg">
+              <h1 className={`${
+                (mainFeature.title || '').length > 60
+                  ? 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl'
+                  : (mainFeature.title || '').length > 35
+                  ? 'text-3xl sm:text-4xl md:text-5xl lg:text-6xl'
+                  : 'text-4xl sm:text-5xl md:text-6xl lg:text-7xl'
+              } font-black text-gray-900 dark:text-white leading-[1.12] mb-4 drop-shadow-sm dark:drop-shadow-lg line-clamp-3 tracking-tight`}>
                 {mainFeature.title}
               </h1>
-              <p className="text-lg md:text-xl text-gray-800 dark:text-white/80 mb-8 max-w-2xl font-medium drop-shadow-sm dark:drop-shadow-md">
+              <p className="text-sm sm:text-base md:text-lg text-gray-800 dark:text-white/80 mb-6 max-w-2xl font-medium drop-shadow-sm dark:drop-shadow-md line-clamp-2 leading-relaxed">
                 Join {mainFeature.expert || "Industry Experts"} for an in-depth dive into {mainFeature.topic || "Intellectual Property"}. {mainFeature.company?.description || mainFeature.description || ""}
               </p>
               
               <div className="flex items-center gap-4">
-                <Link href={`/platform/resources/webinars/${mainFeature.id}`} className="bg-gray-900 text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-transform hover:scale-105 active:scale-95 shadow-xl">
-                  <Play size={20} fill="currentColor" />
+                <Link href={`/platform/resources/webinars/${mainFeature.id}`} className="bg-gray-900 text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 px-7 py-3.5 rounded-full font-bold flex items-center gap-2 transition-transform hover:scale-105 active:scale-95 shadow-xl text-sm sm:text-base">
+                  <Play size={18} fill="currentColor" />
                   {mainFeature.type === "Upcoming Webinar" ? "Register Now" : "Watch Now"}
                 </Link>
-                <Link href={`/platform/resources/webinars/${mainFeature.id}`} className="bg-white/50 dark:bg-white/20 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/30 text-gray-900 dark:text-white px-8 py-4 rounded-full font-bold transition-colors border border-gray-300 dark:border-white/20 shadow-lg">
+                <Link href={`/platform/resources/webinars/${mainFeature.id}`} className="bg-white/50 dark:bg-white/20 backdrop-blur-md hover:bg-white/80 dark:hover:bg-white/30 text-gray-900 dark:text-white px-7 py-3.5 rounded-full font-bold transition-colors border border-gray-300 dark:border-white/20 shadow-lg text-sm sm:text-base">
                   More Info
                 </Link>
               </div>
