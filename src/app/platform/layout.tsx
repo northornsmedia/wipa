@@ -13,17 +13,17 @@ export default function PlatformLayout({
 }) {
   return (
     <ThemeWrapper>
-      <div className="font-sans flex flex-col flex-1 min-h-screen overflow-x-hidden">
+      <div className="font-sans flex flex-col flex-1 min-h-screen w-full max-w-full min-w-0 overflow-x-hidden box-border">
         <AuthGuard>
           {/* Desktop Header */}
           <PlatformHeader />
           {/* Mobile Top App Bar */}
           <MobileTopBar />
           
-          <div className="flex-1 flex min-w-0">
+          <div className="flex-1 flex w-full max-w-full min-w-0 box-border">
             <Sidebar />
-            <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-              <main className="flex-1 w-full pb-20 md:pb-0 overflow-x-hidden">
+            <div className="flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-hidden box-border">
+              <main className="flex-1 w-full max-w-full min-w-0 pb-20 md:pb-0 overflow-x-hidden box-border">
                 {children}
               </main>
               {/* Mobile 5-Tab Bottom Navigation Bar */}

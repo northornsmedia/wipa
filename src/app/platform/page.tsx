@@ -804,10 +804,10 @@ export default function PlatformPage() {
                     
                   return (
                     <React.Fragment key={post.id}>
-                    <div className={`w-full bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3.5 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all overflow-hidden`}>
+                    <div className="w-full max-w-full min-w-0 bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3.5 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border">
                       
                       {/* Post Header */}
-                      <div className="flex items-center justify-between mb-3 px-3 sm:px-0">
+                      <div className="w-full max-w-full min-w-0 flex items-center justify-between mb-3 px-3 sm:px-0 box-border">
                         <div className="flex items-center gap-2.5">
                           <Link href={`/platform/profile/${post.author_id}`} className="shrink-0 hover:opacity-80 transition-opacity block">
                             <div className="p-0.5 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8]">
@@ -994,12 +994,12 @@ export default function PlatformPage() {
                       )}
 
                         {/* Instagram-Style Post Action Row */}
-                        <div className="flex items-center justify-between px-3 sm:px-0 pt-2">
-                          <div className="flex items-center gap-4 sm:gap-5">
+                        <div className="w-full max-w-full min-w-0 flex items-center justify-between px-3 sm:px-0 pt-2 box-border">
+                          <div className="flex items-center gap-4 sm:gap-5 min-w-0">
                             {/* Like Button */}
                             <button 
                               onClick={() => handleLikePost(post.id)} 
-                              className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-rose-500 transition-transform active:scale-75"
+                              className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-rose-500 transition-transform active:scale-75 shrink-0"
                               aria-label="Like post"
                             >
                               <Heart 
@@ -1016,7 +1016,7 @@ export default function PlatformPage() {
                                 fetchComments(post.id);
                               }}
                               disabled={post.comments_disabled}
-                              className={`flex items-center gap-1 transition-transform active:scale-75 ${
+                              className={`flex items-center gap-1 transition-transform active:scale-75 shrink-0 ${
                                 post.comments_disabled ? 'opacity-30 cursor-not-allowed text-gray-400' : 'text-gray-700 dark:text-gray-200 hover:text-[#5a32fa]'
                               }`}
                               aria-label="Comment on post"
@@ -1038,7 +1038,7 @@ export default function PlatformPage() {
                                   alert('Link copied to clipboard!');
                                 }
                               }}
-                              className="text-gray-700 dark:text-gray-200 hover:text-[#ff90e8] transition-transform active:scale-75 -rotate-12"
+                              className="text-gray-700 dark:text-gray-200 hover:text-[#ff90e8] transition-transform active:scale-75 -rotate-12 shrink-0"
                               aria-label="Share post"
                             >
                               <Send size={20} />
@@ -1051,7 +1051,7 @@ export default function PlatformPage() {
                               navigator.clipboard.writeText(`${window.location.origin}/platform/post/${post.id}`);
                               alert('Post link copied & saved!');
                             }}
-                            className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] transition-transform active:scale-75"
+                            className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] transition-transform active:scale-75 shrink-0"
                             aria-label="Save post"
                           >
                             <Bookmark size={22} />
@@ -1059,7 +1059,7 @@ export default function PlatformPage() {
                         </div>
 
                         {/* Likes & Comments Count Summary */}
-                        <div className="px-3 sm:px-0 pt-2 pb-0.5 text-xs">
+                        <div className="w-full max-w-full min-w-0 px-3 sm:px-0 pt-2 pb-0.5 text-xs box-border">
                           <span className="font-bold text-gray-900 dark:text-white">
                             {post.likes_count ? `${post.likes_count.toLocaleString()} ${post.likes_count === 1 ? 'like' : 'likes'}` : 'Be the first to like'}
                           </span>
@@ -1080,7 +1080,7 @@ export default function PlatformPage() {
                       </div>
                     {/* Dynamic Sponsored Native Content Placement after every 4 posts */}
                     {(index + 1) % 4 === 0 && (
-                      <div className="w-full shrink-0 px-3 sm:px-0 mb-3">
+                      <div className="w-full max-w-full min-w-0 shrink-0 px-3 sm:px-0 mb-3 box-border">
                         <AdSlot placement="feed_native" />
                       </div>
                     )}

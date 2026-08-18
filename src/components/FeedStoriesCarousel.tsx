@@ -67,8 +67,8 @@ export default function FeedStoriesCarousel({ onOpenCreatePost }: { onOpenCreate
   const user = useAppStore((state) => state.user);
 
   return (
-    <div className="w-full bg-white dark:bg-[#0f172a] md:bg-white/80 md:dark:bg-[#151c2c]/80 md:backdrop-blur-xl md:rounded-[2rem] p-3 sm:p-4 border-b md:border border-gray-100 dark:border-white/5 md:border-gray-200/80 md:dark:border-gray-800/80 shadow-none md:shadow-sm overflow-hidden mb-2 sm:mb-4">
-      <div className="flex items-center gap-3 overflow-x-auto pb-1 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+    <div className="w-full max-w-full min-w-0 bg-white dark:bg-[#0f172a] md:bg-white/80 md:dark:bg-[#151c2c]/80 md:backdrop-blur-xl md:rounded-[2rem] p-3 sm:p-4 border-b md:border border-gray-100 dark:border-white/5 md:border-gray-200/80 md:dark:border-gray-800/80 shadow-none md:shadow-sm overflow-hidden mb-2 sm:mb-4 box-border">
+      <div className="flex items-center gap-3 overflow-x-auto pb-1 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full max-w-full min-w-0 box-border">
         {/* 1. Add Story / Share Insight Card */}
         <button
           onClick={onOpenCreatePost}

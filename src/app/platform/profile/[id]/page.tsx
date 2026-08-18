@@ -529,11 +529,11 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                           }
 
                           return (
-                            <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 shadow-sm flex items-center justify-center border border-gray-100 dark:border-white/5 p-0.5">
+                            <div key={mIdx} className="mb-4 w-full max-w-full min-w-0 rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 shadow-sm flex items-center justify-center border border-gray-100 dark:border-white/5 p-0.5 box-border">
                               <img 
                                 src={url} 
                                 alt="Post attachment" 
-                                className="w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl hover:opacity-98 transition-opacity md:cursor-pointer block mx-auto"
+                                className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl hover:opacity-98 transition-opacity md:cursor-pointer block mx-auto"
                                 onClick={() => {
                                   if (typeof window !== 'undefined' && window.innerWidth >= 768) {
                                     setPreviewModalImage(url);
@@ -545,7 +545,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                         })}
 
                         {/* Instagram-Style Action Bar */}
-                        <div className="flex items-center justify-between pt-2">
+                        <div className="w-full max-w-full min-w-0 flex items-center justify-between pt-2 box-border">
                           <div className="flex items-center gap-4">
                             <button 
                               onClick={() => handleToggleLike(post.id)}
