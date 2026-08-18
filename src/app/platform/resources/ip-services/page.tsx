@@ -60,33 +60,41 @@ export default function IPServicesPage() {
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-20">
       
-      {/* CanvasText Splash Screen (Viewport-centered within main content area) */}
+      {/* CanvasText Splash Screen (Viewport-centered, light and dark theme ready) */}
       {showIntro && (
         <div 
           onClick={handleDismissSplash}
-          className={`fixed top-[73px] bottom-0 right-0 left-0 lg:left-[260px] z-30 bg-[#020617] flex flex-col items-center justify-center p-8 cursor-pointer transition-all duration-500 ${fadeOut ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
+          className={`fixed top-[73px] bottom-0 right-0 left-0 lg:left-[260px] z-30 bg-white/95 dark:bg-[#020617]/95 backdrop-blur-md flex flex-col items-center justify-center p-8 cursor-pointer transition-all duration-500 ${fadeOut ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
         >
           {/* Ambient Glow */}
-          <div className="absolute w-[500px] h-[300px] bg-sky-500/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute w-[500px] h-[300px] bg-sky-400/20 dark:bg-sky-500/10 rounded-full blur-[100px] pointer-events-none" />
 
           {/* Skip Button */}
           <button 
             onClick={(e) => { e.stopPropagation(); handleDismissSplash(); }}
-            className="absolute top-6 right-6 z-50 text-neutral-400 hover:text-white bg-white/5 hover:bg-white/15 border border-white/10 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors backdrop-blur-sm"
+            className="absolute top-6 right-6 z-50 text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/15 border border-slate-200 dark:border-white/10 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors backdrop-blur-sm"
           >
             Skip
           </button>
 
           <div className="relative z-10 flex flex-col items-center justify-center p-4">
-            <h2 className={cn("group relative mx-auto text-center text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white flex flex-wrap items-center justify-center gap-x-3 gap-y-2")}>
-              <span className="text-slate-300">Sponsored by</span>
+            <h2 className={cn("group relative mx-auto text-center text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white flex flex-wrap items-center justify-center gap-x-3 gap-y-2")}>
+              <span className="text-slate-600 dark:text-slate-300">Sponsored by</span>
               <CanvasText
                 text="PSS Solutions"
                 className="font-black"
-                colors={[
+                lightColors={[
+                  "#0284c7",
+                  "#2563eb",
+                  "#0369a1",
+                  "#1d4ed8",
+                  "#0891b2",
+                  "#4f46e5",
+                  "#0284c7"
+                ]}
+                darkColors={[
                   "#38bdf8",
                   "#0ea5e9",
-                  "#0284c7",
                   "#60a5fa",
                   "#818cf8",
                   "#a78bfa",

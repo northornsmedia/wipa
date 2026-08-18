@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useId } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface CanvasTextProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -8,6 +8,8 @@ export interface CanvasTextProps extends React.HTMLAttributes<HTMLSpanElement> {
   className?: string;
   backgroundClassName?: string;
   colors?: string[];
+  darkColors?: string[];
+  lightColors?: string[];
   animationDuration?: number;
   lineWidth?: number;
   lineGap?: number;
@@ -15,22 +17,35 @@ export interface CanvasTextProps extends React.HTMLAttributes<HTMLSpanElement> {
   overlay?: boolean;
 }
 
-const DEFAULT_COLORS = [
-  "#ff6b6b",
-  "#4ecdc4",
-  "#45b7d1",
-  "#96ceb4",
-  "#ffeaa7",
-  "#dff9fb",
-  "#f6e58d",
-  "#ffbe76"
+const DEFAULT_LIGHT_COLORS = [
+  "#2563eb", // blue-600
+  "#0284c7", // sky-600
+  "#0891b2", // cyan-600
+  "#4f46e5", // indigo-600
+  "#7c3aed", // violet-600
+  "#0d9488", // teal-600
+  "#2563eb",
+  "#0369a1"
+];
+
+const DEFAULT_DARK_COLORS = [
+  "#38bdf8", // sky-400
+  "#0ea5e9", // sky-500
+  "#60a5fa", // blue-400
+  "#818cf8", // indigo-400
+  "#a78bfa", // violet-400
+  "#38bdf8",
+  "#06b6d4", // cyan-500
+  "#22d3ee"  // cyan-400
 ];
 
 export function CanvasText({
   text,
   className = "",
   backgroundClassName = "bg-white dark:bg-neutral-950",
-  colors = DEFAULT_COLORS,
+  colors,
+  darkColors,
+  lightColors,
   animationDuration = 5,
   lineWidth = 1.5,
   lineGap = 10,
@@ -41,7 +56,6 @@ export function CanvasText({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
-  const clipId = useId().replace(/:/g, "_");
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   // Resolve CSS variables if passed in colors array
@@ -112,14 +126,25 @@ export function CanvasText({
       const fontWeight = computedStyle.fontWeight;
       const fontStyle = computedStyle.fontStyle;
 
+      // Determine active color set based on current light/dark theme
+      const isDark = Boolean(
+        container.closest('.dark') ||
+        document.documentElement.classList.contains('dark') ||
+        document.body.classList.contains('dark')
+      );
+
+      const activePalette =
+        (isDark ? darkColors : lightColors) ||
+        colors ||
+        (isDark ? DEFAULT_DARK_COLORS : DEFAULT_LIGHT_COLORS);
+
       // 1. Draw waving bezier curve lines across the canvas
       ctx.save();
 
       const numLines = Math.max(Math.floor(height / (lineGap || 10)), 5);
-      const activeColors = colors.length > 0 ? colors : DEFAULT_COLORS;
 
       for (let i = 0; i <= numLines + 4; i++) {
-        const color = resolveColor(activeColors[i % activeColors.length], container);
+        const color = resolveColor(activePalette[i % activePalette.length], container);
         const baseY = (i - 2) * (lineGap || 10);
         const waveOffset = (i * 0.4) + phase;
 
@@ -157,7 +182,7 @@ export function CanvasText({
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [text, colors, animationDuration, lineWidth, lineGap, curveIntensity, className]);
+  }, [text, colors, darkColors, lightColors, animationDuration, lineWidth, lineGap, curveIntensity, className]);
 
   return (
     <span
