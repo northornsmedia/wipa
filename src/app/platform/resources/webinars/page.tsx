@@ -9,8 +9,8 @@ import { useAppStore } from '@/store/useAppStore';
 
 const MOCK_WEBINAR_SUBCATEGORIES = [
   { id: 'all', name: 'All Webinars' },
-  { id: 'ai-ip', name: 'AI in IP' },
-  { id: 'litigation', name: 'IP Litigation' },
+  { id: 'ai-in-ip', name: 'AI in IP' },
+  { id: 'ip-litigation', name: 'IP Litigation' },
   { id: 'patent-law', name: 'Patent Law' },
   { id: 'ip-strategy', name: 'IP Strategy' }
 ];
@@ -181,7 +181,7 @@ export default function WebinarsHubPage() {
           image: d.cover_image_url || d.url || "/resourceimg1.jpg",
           featured: Boolean(d.is_featured ?? d.featured ?? false),
           topic: d.topic || d.subcategory || "AI in IP",
-          subcategory: (d.subcategory || "all").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          subcategory: d.subcategory || d.topic || "AI in IP",
           type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : (d.resource_type || d.type || 'Upcoming Webinar'))
         })));
         return;
@@ -202,7 +202,7 @@ export default function WebinarsHubPage() {
           image: d.cover_image_url || d.url || "/resourceimg1.jpg",
           featured: Boolean(d.is_featured ?? d.featured ?? false),
           topic: d.topic || d.subcategory || "AI in IP",
-          subcategory: (d.subcategory || "all").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          subcategory: d.subcategory || d.topic || "AI in IP",
           type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : (d.resource_type || d.type || 'Upcoming Webinar'))
         })));
       }
@@ -245,16 +245,36 @@ export default function WebinarsHubPage() {
     };
   }, []);
 
+  const normalize = (str: string = '') => str.toLowerCase().replace(/[^a-z0-9]/g, '');
+
   const filteredResources = resources.filter(r => {
-    const matchesSearch = r.title?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
-    const matchesType = typeFilter === 'All Types' || r.type === typeFilter;
+    const q = searchQuery.toLowerCase().trim();
+    const matchesSearch = !q || 
+      (r.title && r.title.toLowerCase().includes(q)) ||
+      (r.description && r.description.toLowerCase().includes(q)) ||
+      (r.expert && r.expert.toLowerCase().includes(q)) ||
+      (r.author_name && r.author_name.toLowerCase().includes(q));
+
+    const itemSubNorm = normalize(r.subcategory || r.topic || '');
+    const activeSubNorm = normalize(activeSub);
+
+    const matchesSub = activeSub === 'all' || 
+      itemSubNorm.includes(activeSubNorm) || 
+      activeSubNorm.includes(itemSubNorm) ||
+      (activeSubNorm.includes('patent') && itemSubNorm.includes('patent')) ||
+      (activeSubNorm.includes('litigation') && itemSubNorm.includes('litigation')) ||
+      (activeSubNorm.includes('ai') && itemSubNorm.includes('ai')) ||
+      (activeSubNorm.includes('strategy') && itemSubNorm.includes('strategy'));
+
+    const matchesType = typeFilter === 'All Types' || r.type === typeFilter || r.resource_type === typeFilter;
     
     return matchesSearch && matchesSub && matchesType;
   });
 
-  const mainFeature = filteredResources.find(r => r.featured) || filteredResources[0] || resources[0] || MOCK_WEBINAR_RESOURCES[0];
-  const otherResources = filteredResources.filter(r => r.id !== mainFeature?.id);
+  const mainFeature = resources.find(r => r.featured) || filteredResources[0] || resources[0] || MOCK_WEBINAR_RESOURCES[0];
+  const otherResources = activeSub === 'all' && !searchQuery
+    ? filteredResources.filter(r => r.id !== mainFeature?.id)
+    : filteredResources;
 
   return (
     <div className="relative min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] text-gray-900 dark:text-white font-sans selection:bg-[#ff2a5f]/30">
