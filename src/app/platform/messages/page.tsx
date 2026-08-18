@@ -49,6 +49,7 @@ function MessagesContent() {
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [chatFilter, setChatFilter] = useState<'all' | 'unread' | 'direct' | 'groups'>('all');
   const [isAttachmentMenuOpen, setIsAttachmentMenuOpen] = useState(false);
   const [isChatOptionsOpen, setIsChatOptionsOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
@@ -547,9 +548,14 @@ function MessagesContent() {
     setShowMobileChat(true);
   };
 
-  const filteredConversations = conversations.filter(c => 
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredConversations = conversations.filter(c => {
+    const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.lastMessage?.toLowerCase().includes(searchQuery.toLowerCase());
+    if (!matchesSearch) return false;
+    if (chatFilter === 'unread') return c.unread > 0;
+    if (chatFilter === 'groups') return c.role?.toLowerCase().includes('group') || c.name?.toLowerCase().includes('group');
+    if (chatFilter === 'direct') return !c.role?.toLowerCase().includes('group') && !c.name?.toLowerCase().includes('group');
+    return true;
+  });
 
   return (
     <div className="h-[calc(100vh-73px)] overflow-hidden bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
@@ -569,12 +575,12 @@ function MessagesContent() {
         <div className={`w-full md:w-[350px] lg:w-[400px] bg-white dark:bg-[#0f172a] md:rounded-3xl border-0 md:border border-gray-200 dark:border-white/10 md:shadow-xl flex-col overflow-hidden shrink-0 h-full min-h-0 ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
           
           {/* Top Bar with Back Button to Platform */}
-          <div className="p-5 border-b border-gray-100 dark:border-white/10 space-y-4">
+          <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-white/10 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Link 
                   href="/platform" 
-                  className="flex items-center justify-center w-9 h-9 rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-700 dark:text-gray-200 transition-all duration-200 shadow-sm"
+                  className="flex items-center justify-center w-9 h-9 rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-700 dark:text-gray-200 transition-all duration-200 shadow-sm active:scale-90"
                   title="Back to Feed"
                 >
                   <ArrowLeft size={18} />
@@ -592,9 +598,36 @@ function MessagesContent() {
                 placeholder="Search messages & contacts..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-xs transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
+                className="w-full pl-10 pr-4 py-2 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-xs transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
               />
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            </div>
+
+            {/* Quick Filter Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1">
+              {[
+                { id: 'all', label: 'All' },
+                { id: 'unread', label: 'Unread', count: conversations.filter(c => c.unread > 0).length },
+                { id: 'direct', label: 'Direct' },
+                { id: 'groups', label: 'Groups' }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setChatFilter(tab.id as any)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all whitespace-nowrap active:scale-95 flex items-center gap-1.5 ${
+                    chatFilter === tab.id
+                      ? 'bg-[#5a32fa] text-white shadow-sm'
+                      : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  {tab.count !== undefined && tab.count > 0 && (
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${chatFilter === tab.id ? 'bg-white/20 text-white' : 'bg-[#5a32fa] text-white'}`}>
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
 

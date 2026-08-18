@@ -417,37 +417,48 @@ export default function ResourcesPage() {
           </div>
         </div>
 
-        {/* Filters & Search */}
-        <div className="flex flex-col xl:flex-row gap-5 mb-16 items-center">
-          <div className="flex gap-2 overflow-x-auto pb-2 xl:pb-0 no-scrollbar w-full xl:w-auto p-1">
-            {['All Resources', 'Latest Resources'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 whitespace-nowrap shrink-0 ${
-                  activeTab === tab
-                    ? 'bg-white dark:bg-[#0f172a] text-[#5a32fa] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 dark:border-white/10/50 scale-105'
-                    : 'bg-transparent text-gray-500 dark:text-gray-400 hover:bg-white dark:bg-[#0f172a]/60 hover:text-gray-800 dark:text-gray-100 hover:shadow-sm border border-transparent'
-                }`}
+        {/* Swipeable 11-Vertical Category Carousel for Fast Mobile Navigation */}
+        <div className="mb-6 -mt-4">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {[
+              { title: 'Webinars', path: '/platform/resources/webinars', color: 'bg-rose-500/10 text-rose-500 border-rose-500/20' },
+              { title: 'Education', path: '/platform/resources/education', color: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' },
+              { title: 'Articles & Insights', path: '/platform/resources/articles-insights', color: 'bg-sky-500/10 text-sky-500 border-sky-500/20' },
+              { title: 'IP Law News', path: '/platform/resources/ip-news', color: 'bg-red-500/10 text-red-500 border-red-500/20' },
+              { title: 'IP Law Firms', path: '/platform/resources/ip-firms', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
+              { title: 'Podcasts', path: '/platform/resources/podcasts-conversations', color: 'bg-purple-500/10 text-purple-500 border-purple-500/20' },
+              { title: 'Research & Reports', path: '/platform/resources/research-reports', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
+              { title: "Women's IP World", path: '/platform/resources/womens-ip-world', color: 'bg-pink-500/10 text-pink-500 border-pink-500/20' },
+              { title: 'Guides & Toolkits', path: '/platform/resources/guides-toolkits', color: 'bg-teal-500/10 text-teal-500 border-teal-500/20' },
+              { title: 'In-House Counsel', path: '/platform/resources/in-house-counsel', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
+              { title: 'Career & Leadership', path: '/platform/resources/career-leadership', color: 'bg-orange-500/10 text-orange-500 border-orange-500/20' }
+            ].map((vert, vIdx) => (
+              <Link
+                key={vIdx}
+                href={vert.path}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap active:scale-90 flex items-center gap-1.5 shrink-0 ${vert.color}`}
               >
-                {tab}
-              </button>
+                <span>{vert.title}</span>
+              </Link>
             ))}
           </div>
+        </div>
 
-          <div className="relative flex-1 w-full max-w-md ml-auto group">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-            <div className="relative flex items-center bg-white dark:bg-[#0f172a] rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm group-hover:shadow-md transition-shadow overflow-hidden">
-              <Search className="w-5 h-5 text-gray-400 ml-4 shrink-0 group-focus-within:text-[#5a32fa] transition-colors" />
-              <input 
-                type="text" 
-                placeholder="Search resources..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent py-3.5 pl-3 pr-4 font-medium text-gray-800 dark:text-gray-100 focus:outline-none placeholder-gray-400"
-              />
-            </div>
+        {/* Mobile Splash Sponsored Banner */}
+        <div className="mb-8 p-4 sm:p-6 rounded-2xl md:rounded-3xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#ff2a5f] text-white shadow-lg relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="relative z-10">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-white/20 text-white backdrop-blur-md mb-2 inline-block border border-white/20">
+              ⭐ Featured Global IP Partner
+            </span>
+            <h3 className="text-base sm:text-xl font-black">Ennoble IP · Global Patent Prosecution</h3>
+            <p className="text-xs text-white/80 max-w-xl mt-1">Accelerate your cross-border patent applications with 24/7 AI-assisted analytics and expert drafting.</p>
           </div>
+          <Link
+            href="/platform/resources/ip-firms"
+            className="relative z-10 px-4 py-2 rounded-xl bg-white text-gray-900 text-xs font-bold shadow-md hover:bg-white/90 active:scale-95 transition-all shrink-0"
+          >
+            Explore Firm
+          </Link>
         </div>
 
         {/* Resources Grid */}

@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { Trophy, Medal, Star, Shield, Lock, Search, Award } from 'lucide-react';
+import { Trophy, Medal, Star, Shield, Lock, Search, Award, Crown } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LeaderboardPage() {
   const { user } = useAppStore();
   const [activeTab, setActiveTab] = useState<'leaderboard' | 'achievements'>('leaderboard');
+  const [timeframe, setTimeframe] = useState<'all_time' | 'monthly' | 'weekly'>('all_time');
   const [leaders, setLeaders] = useState<any[]>([]);
   const [achievements, setAchievements] = useState<any[]>([]);
   const [userAchievements, setUserAchievements] = useState<Set<string>>(new Set());
@@ -103,45 +104,66 @@ export default function LeaderboardPage() {
           <>
             {activeTab === 'leaderboard' && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* Timeframe Selector */}
+                <div className="flex items-center justify-center gap-2">
+                  {[
+                    { id: 'all_time', label: 'All Time' },
+                    { id: 'monthly', label: 'This Month' },
+                    { id: 'weekly', label: 'This Week' }
+                  ].map((tf) => (
+                    <button
+                      key={tf.id}
+                      onClick={() => setTimeframe(tf.id as any)}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 ${
+                        timeframe === tf.id
+                          ? 'bg-[#5a32fa] text-white shadow-sm shadow-[#5a32fa]/30'
+                          : 'bg-white dark:bg-[#1e293b] text-gray-500 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-white/10'
+                      }`}
+                    >
+                      {tf.label}
+                    </button>
+                  ))}
+                </div>
+
                 {/* Podium */}
-                <div className="flex items-end justify-center gap-4 md:gap-8 pt-8 pb-12">
+                <div className="flex items-end justify-center gap-4 md:gap-8 pt-4 pb-10">
                   {/* 2nd Place */}
                   {top3[1] && (
                     <div className="flex flex-col items-center animate-in zoom-in duration-500 delay-100">
-                      <div className="relative mb-4">
-                        <img src={top3[1].profile?.avatar_url || `https://ui-avatars.com/api/?name=${top3[1].profile?.first_name}+${top3[1].profile?.last_name}`} alt="2nd" className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-[#C0C0C0] object-cover" />
-                        <div className="absolute -bottom-3 -right-3 bg-[#C0C0C0] text-white w-8 h-8 rounded-full flex items-center justify-center font-black border-2 border-white dark:border-[#0f172a]">2</div>
+                      <div className="relative mb-3">
+                        <img src={top3[1].profile?.avatar_url || `https://ui-avatars.com/api/?name=${top3[1].profile?.first_name}+${top3[1].profile?.last_name}`} alt="2nd" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full border-4 border-[#C0C0C0] object-cover" />
+                        <div className="absolute -bottom-2 -right-2 bg-[#C0C0C0] text-white w-7 h-7 rounded-full flex items-center justify-center font-black text-xs border-2 border-white dark:border-[#0f172a]">2</div>
                       </div>
-                      <div className="font-bold text-gray-900 dark:text-white text-center max-w-[100px] truncate">{top3[1].profile?.first_name}</div>
-                      <div className="text-xs font-bold text-[#5a32fa]">Lvl {top3[1].level}</div>
-                      <div className="text-sm font-medium text-gray-500">{top3[1].total_xp} XP</div>
+                      <div className="font-bold text-gray-900 dark:text-white text-center max-w-[90px] truncate text-xs sm:text-sm">{top3[1].profile?.first_name}</div>
+                      <div className="text-[11px] font-bold text-[#5a32fa]">Lvl {top3[1].level}</div>
+                      <div className="text-xs font-medium text-gray-500">{top3[1].total_xp} XP</div>
                     </div>
                   )}
                   
                   {/* 1st Place */}
                   {top3[0] && (
-                    <div className="flex flex-col items-center animate-in zoom-in duration-500 z-10 -mt-8">
-                      <CrownIcon className="text-[#FFD700] mb-2 w-10 h-10" />
-                      <div className="relative mb-4 shadow-xl rounded-full">
-                        <img src={top3[0].profile?.avatar_url || `https://ui-avatars.com/api/?name=${top3[0].profile?.first_name}+${top3[0].profile?.last_name}`} alt="1st" className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-[#FFD700] object-cover" />
-                        <div className="absolute -bottom-4 -right-2 bg-[#FFD700] text-gray-900 w-10 h-10 rounded-full flex items-center justify-center font-black text-xl border-2 border-white dark:border-[#0f172a]">1</div>
+                    <div className="flex flex-col items-center animate-in zoom-in duration-500 z-10 -mt-6">
+                      <Crown className="text-[#FFD700] mb-2 w-8 h-8 sm:w-10 sm:h-10 animate-bounce" />
+                      <div className="relative mb-3 shadow-xl rounded-full">
+                        <img src={top3[0].profile?.avatar_url || `https://ui-avatars.com/api/?name=${top3[0].profile?.first_name}+${top3[0].profile?.last_name}`} alt="1st" className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full border-4 border-[#FFD700] object-cover" />
+                        <div className="absolute -bottom-3 -right-2 bg-[#FFD700] text-gray-900 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black text-sm sm:text-xl border-2 border-white dark:border-[#0f172a]">1</div>
                       </div>
-                      <div className="font-black text-xl text-gray-900 dark:text-white text-center max-w-[140px] truncate">{top3[0].profile?.first_name} {top3[0].profile?.last_name}</div>
-                      <div className="text-sm font-bold text-[#5a32fa] px-3 py-1 bg-[#5a32fa]/10 rounded-full mt-1">Level {top3[0].level}</div>
-                      <div className="font-bold text-gray-600 dark:text-gray-400 mt-1">{top3[0].total_xp} XP</div>
+                      <div className="font-black text-sm sm:text-xl text-gray-900 dark:text-white text-center max-w-[120px] sm:max-w-[140px] truncate">{top3[0].profile?.first_name} {top3[0].profile?.last_name}</div>
+                      <div className="text-xs font-bold text-[#5a32fa] px-3 py-0.5 bg-[#5a32fa]/10 rounded-full mt-1">Level {top3[0].level}</div>
+                      <div className="font-bold text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-0.5">{top3[0].total_xp} XP</div>
                     </div>
                   )}
 
                   {/* 3rd Place */}
                   {top3[2] && (
                     <div className="flex flex-col items-center animate-in zoom-in duration-500 delay-200">
-                      <div className="relative mb-4">
-                        <img src={top3[2].profile?.avatar_url || `https://ui-avatars.com/api/?name=${top3[2].profile?.first_name}+${top3[2].profile?.last_name}`} alt="3rd" className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-[#CD7F32] object-cover" />
-                        <div className="absolute -bottom-3 -right-3 bg-[#CD7F32] text-white w-8 h-8 rounded-full flex items-center justify-center font-black border-2 border-white dark:border-[#0f172a]">3</div>
+                      <div className="relative mb-3">
+                        <img src={top3[2].profile?.avatar_url || `https://ui-avatars.com/api/?name=${top3[2].profile?.first_name}+${top3[2].profile?.last_name}`} alt="3rd" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full border-4 border-[#CD7F32] object-cover" />
+                        <div className="absolute -bottom-2 -right-2 bg-[#CD7F32] text-white w-7 h-7 rounded-full flex items-center justify-center font-black text-xs border-2 border-white dark:border-[#0f172a]">3</div>
                       </div>
-                      <div className="font-bold text-gray-900 dark:text-white text-center max-w-[100px] truncate">{top3[2].profile?.first_name}</div>
-                      <div className="text-xs font-bold text-[#5a32fa]">Lvl {top3[2].level}</div>
-                      <div className="text-sm font-medium text-gray-500">{top3[2].total_xp} XP</div>
+                      <div className="font-bold text-gray-900 dark:text-white text-center max-w-[90px] truncate text-xs sm:text-sm">{top3[2].profile?.first_name}</div>
+                      <div className="text-[11px] font-bold text-[#5a32fa]">Lvl {top3[2].level}</div>
+                      <div className="text-xs font-medium text-gray-500">{top3[2].total_xp} XP</div>
                     </div>
                   )}
                 </div>

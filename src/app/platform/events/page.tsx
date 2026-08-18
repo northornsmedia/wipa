@@ -318,24 +318,40 @@ export default function EventsPage() {
                       </div>
                     </div>
                     
-                    <button 
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        if (event.isRegistered) {
-                          await supabase.from('event_registrations').delete().match({ event_id: event.id, user_id: user?.id });
-                          setEvents(events.map(ev => ev.id === event.id ? { ...ev, isRegistered: false, attendees: ev.attendees - 1 } : ev));
-                        } else {
-                          await supabase.from('event_registrations').insert({ event_id: event.id, user_id: user?.id });
-                          setEvents(events.map(ev => ev.id === event.id ? { ...ev, isRegistered: true, attendees: ev.attendees + 1 } : ev));
-                        }
-                      }}
-                      className={`w-full py-3.5 mt-8 font-black text-[13px] tracking-wide rounded-xl transition-all relative z-20 ${
-                      event.isRegistered 
-                        ? 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-white/20 hover:scale-105 shadow-sm' 
-                        : 'bg-[#131313] dark:bg-white text-white dark:text-[#131313] hover:scale-105 shadow-md dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]'
-                    }`}>
-                      {event.isRegistered ? 'MANAGE / CANCEL' : 'REGISTER'}
-                    </button>
+                    <div className="w-full space-y-2 mt-6">
+                      <button 
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (event.isRegistered) {
+                            await supabase.from('event_registrations').delete().match({ event_id: event.id, user_id: user?.id });
+                            setEvents(events.map(ev => ev.id === event.id ? { ...ev, isRegistered: false, attendees: ev.attendees - 1 } : ev));
+                          } else {
+                            await supabase.from('event_registrations').insert({ event_id: event.id, user_id: user?.id });
+                            setEvents(events.map(ev => ev.id === event.id ? { ...ev, isRegistered: true, attendees: ev.attendees + 1 } : ev));
+                          }
+                        }}
+                        className={`w-full py-3 font-black text-xs tracking-wide rounded-xl transition-all relative z-20 active:scale-95 shadow-sm ${
+                        event.isRegistered 
+                          ? 'bg-emerald-500 text-white shadow-emerald-500/20' 
+                          : 'bg-[#5a32fa] hover:bg-[#4a24db] text-white shadow-[#5a32fa]/30'
+                      }`}>
+                        {event.isRegistered ? '✓ ATTENDING (CLICK TO CANCEL)' : 'RSVP / REGISTER NOW'}
+                      </button>
+
+                      {/* 1-Tap Calendar Sync Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const eventStart = new Date(event.event_date || Date.now()).toISOString().replace(/-|:|\.\d\d\d/g, "");
+                          const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&details=${encodeURIComponent(event.description || 'WIPA Summit Event')}&location=${encodeURIComponent(event.location || 'Virtual')}&dates=${eventStart}/${eventStart}`;
+                          window.open(gcalUrl, '_blank');
+                        }}
+                        className="w-full py-2 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 text-gray-700 dark:text-gray-300 text-[11px] font-bold rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                      >
+                        <Calendar size={13} />
+                        <span>+ Add to Calendar</span>
+                      </button>
+                    </div>
 
                     {/* Fake Barcode */}
                     <div className="w-full flex justify-between h-8 mt-6 opacity-20 dark:opacity-40 px-2 relative z-10">

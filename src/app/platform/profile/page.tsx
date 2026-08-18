@@ -56,6 +56,13 @@ export default function ProfilePage() {
   const [newPostText, setNewPostText] = useState('');
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [likedPostIds, setLikedPostIds] = useState<Set<string>>(new Set());
+  const [endorsedSkills, setEndorsedSkills] = useState<Record<string, { count: number; endorsed: boolean }>>({
+    'Patent Prosecution': { count: 24, endorsed: false },
+    'Trademark Law': { count: 19, endorsed: false },
+    'IP Litigation': { count: 31, endorsed: true },
+    'Tech Licensing': { count: 15, endorsed: false },
+    'AI Regulation': { count: 28, endorsed: true }
+  });
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
 
@@ -985,17 +992,62 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {profileData.skills.split(',').map((skill, idx) => (
-                    <div key={idx} className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 flex items-center justify-between group hover:border-[#5a32fa]/40 transition-colors">
-                      <div>
-                        <h4 className="font-bold text-sm text-gray-900 dark:text-white">{skill.trim()}</h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">18 endorsements</p>
+                  {profileData.skills.split(',').map((rawSkill, idx) => {
+                    const skill = rawSkill.trim();
+                    const state = endorsedSkills[skill] || { count: 12, endorsed: false };
+
+                    const handleEndorse = () => {
+                      setEndorsedSkills(prev => {
+                        const current = prev[skill] || { count: 12, endorsed: false };
+                        return {
+                          ...prev,
+                          [skill]: {
+                            count: current.endorsed ? current.count - 1 : current.count + 1,
+                            endorsed: !current.endorsed
+                          }
+                        };
+                      });
+                    };
+
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`p-4 rounded-2xl border transition-all flex items-center justify-between group ${
+                          state.endorsed 
+                            ? 'bg-[#5a32fa]/10 dark:bg-[#5a32fa]/15 border-[#5a32fa]/30 shadow-sm' 
+                            : 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 hover:border-[#5a32fa]/40'
+                        }`}
+                      >
+                        <div className="flex-1 min-w-0 pr-2">
+                          <h4 className="font-bold text-sm text-gray-900 dark:text-white truncate">{skill}</h4>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-1">
+                            <span>{state.count} endorsements</span>
+                            {state.endorsed && <span className="text-emerald-500 font-bold text-[11px]">· Endorsed by you</span>}
+                          </p>
+                        </div>
+                        <button 
+                          onClick={handleEndorse}
+                          className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all active:scale-90 flex items-center gap-1 shrink-0 ${
+                            state.endorsed
+                              ? 'bg-[#5a32fa] text-white shadow-sm shadow-[#5a32fa]/30'
+                              : 'border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-[#5a32fa] hover:text-white hover:border-[#5a32fa]'
+                          }`}
+                        >
+                          {state.endorsed ? (
+                            <>
+                              <Check size={12} strokeWidth={3} />
+                              <span>Endorsed</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus size={12} />
+                              <span>Endorse</span>
+                            </>
+                          )}
+                        </button>
                       </div>
-                      <button className="px-3 py-1 rounded-full border border-gray-300 dark:border-gray-700 text-xs font-semibold hover:bg-[#5a32fa] hover:text-white hover:border-[#5a32fa] transition-all">
-                        Endorse
-                      </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}

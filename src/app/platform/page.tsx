@@ -7,12 +7,15 @@ import {
   Search, Bell, LayoutGrid, BookOpen, Calendar, Users, Info, Settings, 
   Hash, BellOff, ArrowUpRight, CheckCircle2, Circle, Image as ImageIcon, Video, Smile,
   Bookmark, MoreVertical, Heart, MessageCircle, Gift, LogOut, Pencil, Copy, MessageSquareOff, Trash2, Globe, Lock, Shield,
-  FileText, Loader2, PlayCircle, Plus, Send, X, Mail, ThumbsUp, UsersRound, MessageSquare, Briefcase, GraduationCap, Home, Star, Paperclip
+  FileText, Loader2, PlayCircle, Plus, Send, X, Mail, ThumbsUp, UsersRound, MessageSquare, Briefcase, GraduationCap, Home, Star, Paperclip,
+  Share2, Repeat2
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import AdSlot from '@/components/AdSlot';
+import FeedStoriesCarousel from '@/components/FeedStoriesCarousel';
+import MobileCommentDrawer from '@/components/MobileCommentDrawer';
 
 export default function PlatformPage() {
   const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode } = useAppStore();
@@ -710,11 +713,14 @@ export default function PlatformPage() {
                 </div>
               )}
 
+              {/* FEED STORIES & SPOTLIGHT HIGHLIGHTS */}
+              <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
+
               {/* FEED */}
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {isLoadingFeed ? (
                   <div className="flex items-center justify-center py-20 text-gray-400">
-                    <Loader2 size={32} className="animate-spin" />
+                    <Loader2 size={32} className="animate-spin text-[#5a32fa]" />
                   </div>
                 ) : feedPosts.length === 0 ? (
                   <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-10 text-center border border-gray-100 dark:border-white/10">
@@ -732,13 +738,13 @@ export default function PlatformPage() {
                     
                   return (
                     <React.Fragment key={post.id}>
-                    <div className={`bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-xl rounded-[2rem] p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] border ${author.is_wipa_recommended ? 'border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.2)] dark:shadow-[0_0_15px_rgba(250,204,21,0.15)]' : 'border-white dark:border-white/5'} transition-all duration-300 hover:shadow-[0_10px_40px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 group/post relative overflow-hidden`}>
+                    <div className={`w-full bg-white dark:bg-[#151c2c] rounded-2xl md:rounded-[2rem] p-4 sm:p-6 shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] border ${author.is_wipa_recommended ? 'border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.2)] dark:shadow-[0_0_15px_rgba(250,204,21,0.15)]' : 'border-gray-200/80 dark:border-gray-800/80'} transition-all duration-300 hover:shadow-[0_10px_40px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 group/post relative overflow-hidden`}>
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent dark:from-white/5 opacity-0 group-hover/post:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                      <div className="flex items-start justify-between mb-4 relative z-10">
+                      <div className="flex items-start justify-between mb-3 sm:mb-4 relative z-10">
                         <div className="flex items-center gap-3">
                           <Link href={`/platform/profile/${post.author_id}`} className="shrink-0 hover:opacity-80 transition-opacity block">
                             {author.avatar_url ? (
-                              <img src={author.avatar_url} alt={authorName} className="w-10 h-10 rounded-full object-cover shadow-sm" />
+                              <img src={author.avatar_url} alt={authorName} className="w-10 h-10 rounded-full object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10" />
                             ) : (
                               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
                                 {initial}
@@ -748,90 +754,90 @@ export default function PlatformPage() {
                           <div className="flex flex-col">
                             <div className="flex items-center gap-2">
                               <Link href={`/platform/profile/${post.author_id}`} className="hover:underline hover:text-[#5a32fa] transition-colors flex items-center gap-1">
-                                <h3 className="font-bold text-[14px] text-gray-900 dark:text-white leading-none">{authorName}</h3>
-                                {author.is_wipa_recommended && <span className="text-[10px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1.5 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>}
+                                <span className="font-bold text-[14px] text-gray-900 dark:text-white leading-tight">{authorName}</span>
+                                {author.is_wipa_recommended && (
+                                  <span title="WIPA Recommended">
+                                    <Star size={13} className="fill-yellow-400 text-yellow-400 shrink-0" />
+                                  </span>
+                                )}
                               </Link>
-                              <span className="text-gray-300 text-xs">•</span>
-                              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-none">{timeAgo}</span>
                             </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">
-                              {author.practice_area ? `${author.practice_area} • ` : ''}Member since {memberSince}
-                            </p>
+                            <span className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                              {timeAgo}
+                              <span>•</span>
+                              <span className="truncate max-w-[140px] sm:max-w-none">{author.practice_area || 'IP Professional'}</span>
+                            </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-400 relative">
-                          <button className="p-1.5 hover:bg-gray-50 dark:bg-white/5 hover:text-gray-600 dark:text-gray-300 rounded-lg transition-colors"><Bookmark size={18} /></button>
+
+                        {/* More Post Options Menu */}
+                        <div className="relative">
                           <button 
-                            onClick={() => setActiveMenuPostId(activeMenuPostId === post.id ? null : post.id)}
-                            className="p-1.5 hover:bg-gray-50 dark:bg-white/5 hover:text-gray-600 dark:text-gray-300 rounded-lg transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveMenuPostId(activeMenuPostId === post.id ? null : post.id);
+                            }}
+                            className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
                           >
-                            <MoreVertical size={18} />
+                            <MoreVertical size={16} />
                           </button>
-                          
                           {activeMenuPostId === post.id && (
-                            <>
-                              <div className="fixed inset-0 z-40" onClick={() => setActiveMenuPostId(null)}></div>
-                              <div className="absolute right-0 top-10 w-56 bg-white dark:bg-[#0f172a] rounded-xl shadow-xl border border-gray-100 dark:border-white/10 z-50 overflow-hidden py-1">
-                                {user?.id === post.author_id && (
+                            <div className="absolute right-0 top-8 w-48 bg-white dark:bg-[#1f293d] rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-150">
+                              <button 
+                                onClick={() => handleCopyLink(post.id)}
+                                className="w-full px-3.5 py-2 text-left text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
+                              >
+                                <Copy size={14} /> Copy Link
+                              </button>
+                              {user?.id === post.author_id && (
+                                <>
                                   <button 
                                     onClick={() => {
+                                      setActiveMenuPostId(null);
                                       setEditingPost(post);
                                       setEditContent(post.content);
-                                      setActiveMenuPostId(null);
                                     }}
-                                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-white/5 flex items-center gap-3 transition-colors"
+                                    className="w-full px-3.5 py-2 text-left text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                   >
-                                    <Pencil size={16} /> Edit Post
+                                    <Pencil size={14} /> Edit Post
                                   </button>
-                                )}
-                                <button 
-                                  onClick={() => handleCopyLink(post.id)}
-                                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-white/5 flex items-center gap-3 transition-colors"
-                                >
-                                  <Copy size={16} /> Copy Link
-                                </button>
-                                {user?.id === post.author_id && (
-                                  <>
-                                    <div className="h-px bg-gray-100 dark:bg-white/10 my-1"></div>
-                                    <button 
-                                      onClick={() => handleToggleComments(post.id, !!post.comments_disabled)}
-                                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-white/5 flex items-center gap-3 transition-colors"
-                                    >
-                                      <MessageSquareOff size={16} /> {post.comments_disabled ? 'Turn On Comments' : 'Turn Off Comments'}
-                                    </button>
-                                    <div className="h-px bg-gray-100 dark:bg-white/10 my-1"></div>
-                                    <button 
-                                      onClick={() => handleDeletePost(post.id)}
-                                      className="w-full text-left px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"
-                                    >
-                                      <Trash2 size={16} /> Delete Post
-                                    </button>
-                                  </>
-                                )}
-                              </div>
-                            </>
+                                  <button 
+                                    onClick={() => handleToggleComments(post.id, post.comments_disabled)}
+                                    className="w-full px-3.5 py-2 text-left text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
+                                  >
+                                    <MessageSquareOff size={14} /> {post.comments_disabled ? 'Enable Comments' : 'Disable Comments'}
+                                  </button>
+                                  <button 
+                                    onClick={() => handleDeletePost(post.id)}
+                                    className="w-full px-3.5 py-2 text-left text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 flex items-center gap-2"
+                                  >
+                                    <Trash2 size={14} /> Delete Post
+                                  </button>
+                                </>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
-                      
+
+                      {/* Post Content */}
                       {editingPost?.id === post.id ? (
-                        <div className="space-y-3">
+                        <div className="space-y-3 mb-4">
                           <textarea 
-                            className="w-full p-3 border border-gray-200 dark:border-white/20 rounded-xl text-sm"
-                            value={editContent}
+                            value={editContent} 
                             onChange={(e) => setEditContent(e.target.value)}
+                            className="w-full p-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-900 dark:text-white outline-none resize-none"
+                            rows={3}
                           />
-                          <div className="flex gap-2">
-                            <button onClick={() => setEditingPost(null)} className="px-4 py-2 text-xs font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-white/10 rounded-lg">Cancel</button>
-                            <button onClick={submitEditPost} disabled={isUpdatingPost} className="px-4 py-2 text-xs font-bold text-white bg-[#5a32fa] rounded-lg">
-                              {isUpdatingPost ? 'Saving...' : 'Save Changes'}
-                            </button>
+                          <div className="flex justify-end gap-2">
+                            <button onClick={() => setEditingPost(null)} className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100">Cancel</button>
+                            <button onClick={submitEditPost} disabled={isUpdatingPost} className="px-4 py-1.5 rounded-lg text-xs font-bold bg-[#5a32fa] text-white">Save</button>
                           </div>
                         </div>
                       ) : (
                         <div>
                           {post.content && (
-                            <p className="text-[14px] text-gray-800 dark:text-gray-100 leading-relaxed mb-4 font-medium whitespace-pre-wrap">
+                            <p className="text-[14px] text-gray-800 dark:text-gray-100 leading-relaxed mb-3 sm:mb-4 font-medium whitespace-pre-wrap">
                               {post.content}
                             </p>
                           )}
@@ -843,7 +849,7 @@ export default function PlatformPage() {
 
                             if (isVideo) {
                               return (
-                                <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-black border border-gray-100 dark:border-white/10 shadow-sm max-h-[440px]">
+                                <div key={mIdx} className="mb-3 sm:mb-4 rounded-2xl overflow-hidden bg-black border border-gray-100 dark:border-white/10 shadow-sm max-h-[440px]">
                                   <video 
                                     src={url} 
                                     controls 
@@ -862,26 +868,26 @@ export default function PlatformPage() {
                                   href={url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex items-center justify-between p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all mb-4 group/doc shadow-sm"
+                                  className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all mb-3 sm:mb-4 group/doc shadow-sm"
                                 >
                                   <div className="flex items-center gap-3.5 overflow-hidden">
-                                    <div className="w-11 h-11 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
-                                      <FileText size={22} />
+                                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
+                                      <FileText size={20} />
                                     </div>
                                     <div className="overflow-hidden">
-                                      <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover/doc:text-[#5a32fa] transition-colors">
+                                      <h4 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate group-hover/doc:text-[#5a32fa] transition-colors">
                                         {post.document_name || 'Legal Document / PDF'}
                                       </h4>
-                                      <p className="text-xs text-gray-500 dark:text-gray-400">Click to view & download document</p>
+                                      <p className="text-[11px] text-gray-500 dark:text-gray-400">Click to view & download document</p>
                                     </div>
                                   </div>
-                                  <ArrowUpRight size={18} className="text-gray-400 group-hover/doc:text-[#5a32fa] group-hover/doc:translate-x-0.5 group-hover/doc:-translate-y-0.5 transition-transform shrink-0" />
+                                  <ArrowUpRight size={16} className="text-gray-400 group-hover/doc:text-[#5a32fa] group-hover/doc:translate-x-0.5 group-hover/doc:-translate-y-0.5 transition-transform shrink-0" />
                                 </a>
                               );
                             }
 
                             return (
-                              <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden border border-gray-100 dark:border-white/10 shadow-sm max-h-[480px]">
+                              <div key={mIdx} className="mb-3 sm:mb-4 rounded-2xl overflow-hidden border border-gray-100 dark:border-white/10 shadow-sm max-h-[480px]">
                                 <img 
                                   src={url} 
                                   alt="Post attachment" 
@@ -894,27 +900,70 @@ export default function PlatformPage() {
                         </div>
                       )}
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-50 dark:border-white/5">
-                        <div className="flex items-center gap-3 sm:gap-4 text-gray-400">
-                          <button 
-                            onClick={() => handleLikePost(post.id)} 
-                            className={`hover:text-red-500 transition-colors flex items-center gap-1.5 ${isLiked ? 'text-red-500' : ''}`}
-                          >
-                            <Heart size={20} className={isLiked ? "fill-current" : ""} />
-                            <span className="text-xs font-bold">{post.likes_count || 0}</span>
-                          </button>
-                          <button 
-                            onClick={() => {
-                              if (post.comments_disabled) return;
-                              setActiveCommentPost(post);
-                              fetchComments(post.id);
-                            }}
-                            className={`transition-colors flex items-center gap-1.5 ${post.comments_disabled ? 'text-gray-300 cursor-not-allowed' : 'hover:text-[#5a32fa]'}`}
-                          >
-                            <MessageCircle size={20} />
-                            <span className="text-xs font-bold">{post.comments_disabled ? 'Disabled' : (post.comments_count || 0)}</span>
-                          </button>
-                        </div>
+                      {/* Large Thumb-Zone Action Bar (Like, Comment, Repost, Share) */}
+                      <div className="grid grid-cols-4 gap-1 pt-2.5 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-100 dark:border-white/5">
+                        {/* Like Button */}
+                        <button 
+                          onClick={() => handleLikePost(post.id)} 
+                          className={`h-11 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 text-xs font-bold ${
+                            isLiked 
+                              ? 'text-rose-500 bg-rose-500/10' 
+                              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          <Heart size={18} className={isLiked ? "fill-current text-rose-500" : ""} />
+                          <span>{post.likes_count || 0}</span>
+                        </button>
+
+                        {/* Comment Button */}
+                        <button 
+                          onClick={() => {
+                            if (post.comments_disabled) return;
+                            setActiveCommentPost(post);
+                            fetchComments(post.id);
+                          }}
+                          disabled={post.comments_disabled}
+                          className={`h-11 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 text-xs font-bold ${
+                            post.comments_disabled 
+                              ? 'text-gray-300 cursor-not-allowed opacity-40' 
+                              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#5a32fa]'
+                          }`}
+                        >
+                          <MessageCircle size={18} />
+                          <span>{post.comments_disabled ? 'Off' : (post.comments_count || 0)}</span>
+                        </button>
+
+                        {/* Repost / Save Button */}
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${window.location.origin}/platform/post/${post.id}`);
+                            alert('Post link copied to clipboard!');
+                          }}
+                          className="h-11 rounded-xl flex items-center justify-center gap-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-emerald-500 transition-all active:scale-95 text-xs font-bold"
+                        >
+                          <Repeat2 size={18} />
+                          <span className="hidden sm:inline">Save</span>
+                        </button>
+
+                        {/* Share Button */}
+                        <button 
+                          onClick={() => {
+                            if (typeof navigator !== 'undefined' && navigator.share) {
+                              navigator.share({
+                                title: 'WIPA Network Post',
+                                text: post.content?.slice(0, 100) || 'Check out this post on WIPA',
+                                url: window.location.href,
+                              }).catch(() => {});
+                            } else {
+                              navigator.clipboard.writeText(window.location.href);
+                              alert('Link copied to clipboard!');
+                            }
+                          }}
+                          className="h-11 rounded-xl flex items-center justify-center gap-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#ff90e8] transition-all active:scale-95 text-xs font-bold"
+                        >
+                          <Share2 size={18} />
+                          <span className="hidden sm:inline">Share</span>
+                        </button>
                       </div>
                       
                     </div>
@@ -1179,6 +1228,18 @@ export default function PlatformPage() {
           </div>
         </div>
       )}
+
+      {/* Mobile Comment Bottom Drawer */}
+      <MobileCommentDrawer
+        isOpen={Boolean(activeCommentPost)}
+        onClose={() => setActiveCommentPost(null)}
+        post={activeCommentPost}
+        comments={activeCommentPost ? (postComments[activeCommentPost.id] || []) : []}
+        commentText={commentText}
+        setCommentText={setCommentText}
+        onSubmitComment={() => activeCommentPost && handleCommentSubmit(activeCommentPost.id)}
+        isSubmitting={isSubmittingComment}
+      />
 
     </div>
   );

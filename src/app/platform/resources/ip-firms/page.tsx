@@ -48,17 +48,25 @@ export default function IPFirmsPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white pb-24">
       
       {/* Hero Header */}
-      <div className="bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-white/10 pt-20 pb-16 px-6">
+      <div className="bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-white/10 pt-10 sm:pt-20 pb-10 sm:pb-16 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-4 py-1.5 rounded-full font-black text-sm uppercase tracking-widest mb-6">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-4 py-1.5 rounded-full font-black text-xs sm:text-sm uppercase tracking-widest mb-4">
             <Building2 size={16} /> IP Firms Directory
           </div>
-          <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 tracking-tight">
             Find the Right IP Partner
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-6">
             Browse our curated directory of top intellectual property law firms, agencies, and specialists worldwide.
           </p>
+          <div className="flex items-center justify-center gap-3">
+            <Link
+              href="/platform/resources/ip-firms/claim"
+              className="px-5 py-2.5 rounded-full bg-[#5a32fa] text-white text-xs sm:text-sm font-bold shadow-md hover:bg-[#4a24db] active:scale-95 transition-all inline-flex items-center gap-1.5"
+            >
+              <CheckCircle2 size={15} /> Claim or Register Your Firm
+            </Link>
+          </div>
         </div>
       </div>
 
