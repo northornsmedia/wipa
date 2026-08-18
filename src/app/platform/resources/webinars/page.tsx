@@ -646,7 +646,7 @@ export default function WebinarsHubPage() {
             className="absolute inset-0 bg-black/80 backdrop-blur-md" 
             onClick={() => !isSubmitting && !successData && setIsModalOpen(false)}
           />
-          <div className="bg-[#0f1117] border border-white/10 rounded-3xl p-6 sm:p-8 w-full max-w-3xl relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="bg-[#0f1117] border border-white/10 rounded-3xl p-6 sm:p-8 w-full max-w-3xl relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {!successData && (
               <button 
                 onClick={() => setIsModalOpen(false)} 
