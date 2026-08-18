@@ -247,6 +247,11 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
 .pb-safe {
   padding-bottom: max(env(safe-area-inset-bottom, 12px), 12px);
 }

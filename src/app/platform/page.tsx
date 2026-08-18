@@ -354,21 +354,21 @@ export default function PlatformPage() {
   };
 
   return (
-    <div className="w-full font-sans flex flex-col min-h-screen">
-      <div className="w-full bg-white dark:bg-[#0f172a] flex flex-col flex-1">
+    <div className="w-full max-w-full font-sans flex flex-col min-h-screen overflow-x-hidden">
+      <div className="w-full max-w-full bg-white dark:bg-[#0f172a] flex flex-col flex-1 min-w-0">
         
         {/* MAIN LAYOUT */}
-        <div className="flex flex-1">
+        <div className="flex flex-1 w-full max-w-full min-w-0">
           
           {/* MAIN CONTENT AREA */}
-          <main className="flex-1 bg-[#f8f9fa] dark:bg-[#070b14] md:bg-slate-50/50 md:dark:bg-[#0b1120] p-0 sm:p-6 md:p-8 flex gap-6 xl:gap-8">
+          <main className="flex-1 w-full max-w-full min-w-0 bg-[#f8f9fa] dark:bg-[#070b14] md:bg-slate-50/50 md:dark:bg-[#0b1120] p-0 sm:p-6 md:p-8 flex flex-col xl:flex-row gap-0 xl:gap-8">
             
             {/* LEFT COLUMN */}
-            <div className="flex-1 flex justify-center pb-24 md:pb-20">
-              <div className="w-full max-w-4xl space-y-0 sm:space-y-6">
+            <div className="flex-1 w-full max-w-full min-w-0 flex justify-center pb-24 md:pb-20">
+              <div className="w-full max-w-full sm:max-w-4xl min-w-0 space-y-0 sm:space-y-6">
 
               {/* MOBILE INSTAGRAM-STYLE STORIES & SUB-HEADER (MOBILE ONLY) */}
-              <div className="md:hidden w-full bg-white dark:bg-[#0f172a] border-b border-gray-100 dark:border-white/5 sticky top-0 z-20 backdrop-blur-md">
+              <div className="md:hidden w-full max-w-full overflow-hidden bg-white dark:bg-[#0f172a] border-b border-gray-100 dark:border-white/5 sticky top-0 z-20 backdrop-blur-md">
                 {/* 1. Stories Carousel */}
                 <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
 
@@ -931,20 +931,20 @@ export default function PlatformPage() {
 
                       {/* Post Media Attachments (100% Uncropped Whole Image/Video in Phone Frame) */}
                       {post.media_urls && post.media_urls.length > 0 && (
-                        <div className="w-full px-3 sm:px-0 my-2.5">
+                        <div className="w-full max-w-full px-3 sm:px-0 my-2.5 min-w-0">
                           {post.media_urls.map((url: string, mIdx: number) => {
                             const isVideo = post.media_type === 'video' || url.match(/\.(mp4|webm|mov|ogg)$/i);
                             const isDoc = post.media_type === 'doc' || url.match(/\.(pdf|doc|docx|txt)$/i);
 
                             if (isVideo) {
                               return (
-                                <div key={mIdx} className="w-full rounded-2xl overflow-hidden bg-black flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5">
+                                <div key={mIdx} className="w-full max-w-full rounded-2xl overflow-hidden bg-black flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5 min-w-0">
                                   <video 
                                     src={url} 
                                     controls 
                                     playsInline 
                                     preload="metadata"
-                                    className="max-h-[290px] sm:max-h-[440px] w-auto max-w-full h-auto object-contain rounded-xl mx-auto block" 
+                                    className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl block mx-auto" 
                                   />
                                 </div>
                               );
@@ -957,7 +957,7 @@ export default function PlatformPage() {
                                   href={url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all group/doc shadow-sm"
+                                  className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all group/doc shadow-sm min-w-0"
                                 >
                                   <div className="flex items-center gap-3 overflow-hidden">
                                     <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
@@ -976,22 +976,22 @@ export default function PlatformPage() {
                             }
 
                             return (
-                                <div key={mIdx} className="w-full rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5">
-                                  <img 
-                                    src={url} 
-                                    alt="Post attachment" 
-                                    className="w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl transition-all duration-300 md:cursor-pointer hover:opacity-98 block mx-auto"
-                                    onClick={() => {
-                                      if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-                                        setPreviewModalImage(url);
-                                      }
-                                    }}
-                                  />
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
+                              <div key={mIdx} className="w-full max-w-full rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5 min-w-0">
+                                <img 
+                                  src={url} 
+                                  alt="Post attachment" 
+                                  className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl transition-all duration-300 md:cursor-pointer hover:opacity-98 block mx-auto"
+                                  onClick={() => {
+                                    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                                      setPreviewModalImage(url);
+                                    }
+                                  }}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
 
                         {/* Instagram-Style Post Action Row */}
                         <div className="flex items-center justify-between px-3 sm:px-0 pt-2">
