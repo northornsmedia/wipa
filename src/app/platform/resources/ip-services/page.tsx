@@ -137,20 +137,23 @@ export default function IPServicesPage() {
             </div>
           </div>
 
-          {/* Right Side - Sponsor Banner */}
+          {/* Right Side - Sponsor Banner (Full Card Clickable) */}
           <div className="w-full lg:w-auto shrink-0 flex justify-center lg:justify-end">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 p-10 md:p-12 rounded-[2.5rem] shadow-2xl w-full max-w-[480px] flex flex-col items-center text-center relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <Link 
+              href="/platform/resources/ip-services/pss-solutions" 
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 p-10 md:p-12 rounded-[2.5rem] shadow-2xl hover:shadow-sky-500/10 hover:-translate-y-1.5 w-full max-w-[480px] flex flex-col items-center text-center relative overflow-hidden group transition-all duration-300 cursor-pointer"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
-              <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-6 bg-slate-100 dark:bg-slate-800 px-4 py-1.5 rounded-full relative z-10">
+              <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-6 bg-slate-100 dark:bg-slate-800 px-4 py-1.5 rounded-full relative z-10 group-hover:bg-sky-50 dark:group-hover:bg-sky-950/40 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
                 Sponsored by
               </span>
               
-              <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-8 relative z-10">
+              <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-8 relative z-10 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
                 PSS Solutions
               </h3>
               
-              <div className="bg-slate-50 dark:bg-slate-800/50 p-8 rounded-[2rem] w-full flex items-center justify-center border border-slate-100 dark:border-white/5 mb-8 shadow-inner h-40 relative z-10">
+              <div className="bg-slate-50 dark:bg-slate-800/50 p-8 rounded-[2rem] w-full flex items-center justify-center border border-slate-100 dark:border-white/5 mb-8 shadow-inner h-40 relative z-10 group-hover:scale-[1.02] transition-transform duration-300">
                 <img 
                   src="https://cdn.prod.website-files.com/64c4a14aa0442cfa0e0c62e9/6593a22b139e1daa37dd5974_PSS_Pfront_BLUE%20(1).svg" 
                   alt="PSS Solutions Logo" 
@@ -158,10 +161,11 @@ export default function IPServicesPage() {
                 />
               </div>
 
-              <Link href="/platform/resources/ip-services/pss-solutions" className="text-sky-600 dark:text-sky-400 font-bold text-base flex items-center gap-2 hover:text-sky-700 dark:hover:text-sky-300 transition-colors relative z-10">
-                View Sponsor Profile <ArrowRight size={20} />
-              </Link>
-            </div>
+              <div className="text-sky-600 dark:text-sky-400 font-bold text-base flex items-center gap-2 group-hover:text-sky-700 dark:group-hover:text-sky-300 transition-colors relative z-10">
+                <span>View Sponsor Profile</span>
+                <ArrowRight size={20} className="transform group-hover:translate-x-1.5 transition-transform duration-300" />
+              </div>
+            </Link>
           </div>
 
         </div>
