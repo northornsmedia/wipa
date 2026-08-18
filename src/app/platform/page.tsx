@@ -13,13 +13,12 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { getFeedPostsAction, invalidateFeedCacheAction } from '@/app/actions/feed';
 import AdSlot from '@/components/AdSlot';
 import FeedStoriesCarousel from '@/components/FeedStoriesCarousel';
 import MobileCommentDrawer from '@/components/MobileCommentDrawer';
 
 export default function PlatformPage() {
-  const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode, cachedFeedPosts, setCachedFeedPosts } = useAppStore();
+  const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode } = useAppStore();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Latest');
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
@@ -30,8 +29,8 @@ export default function PlatformPage() {
   const [postContent, setPostContent] = useState('');
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishSuccess, setPublishSuccess] = useState(false);
-  const [feedPosts, setFeedPosts] = useState<any[]>(() => cachedFeedPosts || []);
-  const [isLoadingFeed, setIsLoadingFeed] = useState(() => !(cachedFeedPosts && cachedFeedPosts.length > 0));
+  const [feedPosts, setFeedPosts] = useState<any[]>(() => useAppStore.getState().cachedFeedPosts || []);
+  const [isLoadingFeed, setIsLoadingFeed] = useState(() => !(useAppStore.getState().cachedFeedPosts?.length > 0));
   const [dbLikedPostIds, setDbLikedPostIds] = useState<Set<string>>(new Set());
   const [activeCommentPost, setActiveCommentPost] = useState<any | null>(null);
   const [commentText, setCommentText] = useState('');
@@ -59,23 +58,27 @@ export default function PlatformPage() {
   };
   
   const fetchFeed = useCallback(async () => {
-    // If no cache, show skeleton; if cached, update seamlessly in background
-    if (!cachedFeedPosts || cachedFeedPosts.length === 0) {
-      setIsLoadingFeed(true);
-    }
-    
-    // 1. Fetch from Upstash Redis server action
     try {
-      const { data } = await getFeedPostsAction();
+      const { data, error } = await supabase
+        .from('feed_posts')
+        .select(`
+          *,
+          author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, practice_area, created_at, is_wipa_recommended)
+        `)
+        .order('created_at', { ascending: false });
+
       if (data && Array.isArray(data)) {
         setFeedPosts(data);
-        setCachedFeedPosts(data);
+        useAppStore.getState().setCachedFeedPosts(data);
       }
-    } catch (e) {
-      console.warn("Feed fetch error, falling back:", e);
+      if (error) {
+        console.error("Error fetching feed:", error);
+      }
+    } catch (err) {
+      console.error("Feed error:", err);
     }
-    
-    if (user) {
+
+    if (user?.id) {
       const { data: likesData } = await supabase
         .from('feed_likes')
         .select('post_id')
@@ -95,9 +98,9 @@ export default function PlatformPage() {
     if (trendingData) {
       setTrendingForums(trendingData);
     }
-    
+
     setIsLoadingFeed(false);
-  }, [user, cachedFeedPosts, setCachedFeedPosts]);
+  }, [user?.id]);
 
   useEffect(() => {
     fetchFeed();
@@ -110,7 +113,7 @@ export default function PlatformPage() {
       }
     };
     fetchBusiness();
-  }, [fetchFeed, user]);
+  }, [fetchFeed, user?.business_profile_id]);
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -241,7 +244,6 @@ export default function PlatformPage() {
       setAttachedMedia(null);
       setShowEmojiPicker(false);
       setUploadError(null);
-      await invalidateFeedCacheAction();
       fetchFeed();
     } catch (err: any) {
       console.error("Error publishing post:", err);
