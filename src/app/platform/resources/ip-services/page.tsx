@@ -99,8 +99,21 @@ export default function IPServicesPage() {
           normal.push(item);
         });
 
+        // Ensure PSS is strictly first at index 0
+        const pssIndex = normal.findIndex(s => 
+          s.slug === 'pss-solutions' || 
+          s.title?.toLowerCase().includes('pss') || 
+          s.category === 'tech-operations'
+        );
+        
+        let sorted = [...normal];
+        if (pssIndex > 0) {
+          const [pssItem] = sorted.splice(pssIndex, 1);
+          sorted.unshift(pssItem);
+        }
+
         setSplashServices(splash);
-        setIpServices(normal);
+        setIpServices(sorted);
       }
     };
     
@@ -251,7 +264,7 @@ export default function IPServicesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           
           {ipServices.map((service, index) => {
-            const isSponsored = Boolean(service.is_featured || service.is_splash_sponsored || index === 0);
+            const isSponsored = index === 0;
             const cardHref = service.slug === 'pss-solutions' || service.id === '821d981f-54f5-4d57-976f-6fd1cb998022' 
               ? '/platform/resources/ip-services/pss-solutions' 
               : `/platform/resources/ip-services/${service.slug || service.id}`;
