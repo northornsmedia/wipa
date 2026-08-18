@@ -13,6 +13,8 @@ import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { Suspense } from 'react';
 
+import { getConversationsAction, invalidateChatCacheAction } from '@/app/actions/chat';
+
 type MessageStatus = 'queued' | 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
 
 type Message = {
@@ -41,11 +43,11 @@ type Chat = {
 
 function MessagesContent() {
   const router = useRouter();
-  const { user } = useAppStore();
+  const { user, cachedConversations, setCachedConversations } = useAppStore();
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get('userId');
-  const [conversations, setConversations] = useState<Chat[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string | number | null>(null);
+  const [conversations, setConversations] = useState<Chat[]>(() => cachedConversations || []);
+  const [activeChatId, setActiveChatId] = useState<string | number | null>(() => (cachedConversations && cachedConversations.length > 0 ? cachedConversations[0].id : null));
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -94,62 +96,25 @@ function MessagesContent() {
     activeChatIdRef.current = activeChatId;
   }, [activeChatId]);
 
-  // Load real conversations
+  // Load real conversations from Redis server action
   useEffect(() => {
     if (!user?.id) return;
     const fetchConversations = async () => {
-      // Fetch unread messages
-      const { data: unreadData } = await supabase
-        .from('messages')
-        .select('conversation_id')
-        .eq('is_read', false)
-        .neq('sender_id', user.id);
-
-      const unreadMap: Record<string, number> = {};
-      if (unreadData) {
-        unreadData.forEach((m: any) => {
-          unreadMap[m.conversation_id] = (unreadMap[m.conversation_id] || 0) + 1;
-        });
-      }
-      const { data } = await supabase
-        .from('conversations')
-        .select(`
-          id,
-          updated_at,
-          name,
-          is_group,
-          conversation_participants (
-            user_id,
-            profiles (id, full_name, avatar_url, role)
-          )
-        `)
-        .order('updated_at', { ascending: false });
-
-      if (data) {
-        const parsed: Chat[] = data.map((c: any) => {
-          const other = c.conversation_participants?.find((p: any) => p.user_id !== user.id)?.profiles || {};
-          const title = c.is_group ? c.name : (other.full_name || 'Direct Message');
-          return {
-            id: c.id,
-            name: title,
-            role: other.role || 'Member',
-            initial: title.charAt(0).toUpperCase() || 'U',
-            color: '#5a32fa',
-            unread: unreadMap[c.id] || 0,
-            lastMessage: 'Tap to view conversation',
-            lastTime: c.updated_at ? new Date(c.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
-            messages: [],
-            participantId: other.id
-          };
-        });
-        setConversations(parsed);
-        if (parsed.length > 0 && !activeChatId && !targetUserId) {
-          setActiveChatId(parsed[0].id);
+      try {
+        const parsed = await getConversationsAction(user.id);
+        if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+          setConversations(parsed);
+          setCachedConversations(parsed);
+          if (!activeChatIdRef.current && !targetUserId) {
+            setActiveChatId(parsed[0].id);
+          }
         }
+      } catch (err) {
+        console.warn("Failed to load conversations:", err);
       }
     };
     fetchConversations();
-  }, [user?.id, targetUserId]);
+  }, [user?.id, targetUserId, setCachedConversations]);
 
   // Handle direct targetUserId routing
   useEffect(() => {
@@ -346,6 +311,7 @@ function MessagesContent() {
       }));
 
       await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeChatId);
+      invalidateChatCacheAction(user.id).catch(() => {});
     } catch (err: any) {
       console.error("Message send failed:", err);
       // Mark message as failed

@@ -153,6 +153,10 @@ interface AppState {
   } | null;
   setUser: (user: any | null) => void;
   posts: Post[];
+  cachedFeedPosts: any[];
+  setCachedFeedPosts: (posts: any[]) => void;
+  cachedConversations: any[];
+  setCachedConversations: (convs: any[]) => void;
   likedPostIds: number[];
   toggleLike: (postId: number) => void;
 }
@@ -171,6 +175,10 @@ export const useAppStore = create<AppState>()(
       user: null,
       setUser: (user) => set({ user }),
       posts: DUMMY_POSTS,
+      cachedFeedPosts: [],
+      setCachedFeedPosts: (cachedFeedPosts) => set({ cachedFeedPosts }),
+      cachedConversations: [],
+      setCachedConversations: (cachedConversations) => set({ cachedConversations }),
       likedPostIds: [],
       toggleLike: (postId) => set((state) => {
         const isLiked = state.likedPostIds.includes(postId);
