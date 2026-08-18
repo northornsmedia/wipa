@@ -346,14 +346,61 @@ export default function PlatformPage() {
         <div className="flex flex-1 overflow-hidden">
           
           {/* MAIN CONTENT AREA */}
-          <main className="flex-1 bg-slate-50/50 dark:bg-[#0b1120] overflow-y-auto p-4 sm:p-6 md:p-8 no-scrollbar flex gap-6 xl:gap-8">
+          <main className="flex-1 bg-[#f8f9fa] dark:bg-[#070b14] md:bg-slate-50/50 md:dark:bg-[#0b1120] overflow-y-auto p-0 sm:p-6 md:p-8 no-scrollbar flex gap-6 xl:gap-8">
             
             {/* LEFT COLUMN */}
-            <div className="flex-1 flex justify-center pb-20">
-              <div className="w-full max-w-4xl space-y-6">
+            <div className="flex-1 flex justify-center pb-24 md:pb-20">
+              <div className="w-full max-w-4xl space-y-0 sm:space-y-6">
+
+              {/* MOBILE INSTAGRAM-STYLE STORIES & SUB-HEADER (MOBILE ONLY) */}
+              <div className="md:hidden w-full bg-white dark:bg-[#0f172a] border-b border-gray-100 dark:border-white/5 sticky top-0 z-20 backdrop-blur-md">
+                {/* 1. Stories Carousel */}
+                <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
+
+                {/* 2. Sleek Filter Pills & Quick Search */}
+                <div className="flex items-center justify-between gap-2 px-3 pb-2.5">
+                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                    {['Latest', 'Trending', 'Following', 'Saved'].map((tab) => (
+                      <button 
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`px-3.5 py-1 rounded-full text-xs font-bold whitespace-nowrap active:scale-95 transition-all ${
+                          activeTab === tab 
+                            ? 'bg-[#5a32fa] text-white shadow-sm shadow-[#5a32fa]/30' 
+                            : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300'
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. Compact 1-Line Quick Composer Strip */}
+                <div className="px-3 pb-3">
+                  <div 
+                    onClick={() => setIsCreatePostModalOpen(true)}
+                    className="flex items-center gap-2.5 py-2 px-3.5 bg-gray-50 dark:bg-white/5 rounded-full border border-gray-100 dark:border-white/10 active:scale-98 transition-all cursor-pointer shadow-sm"
+                  >
+                    <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 ring-1 ring-[#5a32fa]">
+                      {user?.avatar_url ? (
+                        <img src={user.avatar_url} alt={user?.name || 'User'} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-[10px]">
+                          {user?.name?.charAt(0) || 'U'}
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-400 dark:text-gray-500 font-medium flex-1 truncate">
+                      Share an IP insight, news, or question...
+                    </span>
+                    <ImageIcon size={16} className="text-[#00d26a] shrink-0" />
+                  </div>
+                </div>
+              </div>
               
-              {/* PREMIUM HERO BANNER */}
-              <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] dark:from-[#0a0a0f] dark:to-[#12121a] p-6 sm:p-8 shadow-[inset_0_1px_1px_rgba(255,255,255,1)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] border border-white/50 dark:border-white/5 group">
+              {/* DESKTOP PREMIUM HERO BANNER (DESKTOP ONLY) */}
+              <div className="hidden md:block relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] dark:from-[#0a0a0f] dark:to-[#12121a] p-6 sm:p-8 shadow-[inset_0_1px_1px_rgba(255,255,255,1)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] border border-white/50 dark:border-white/5 group">
                 {/* Animated Mesh Background */}
                 <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
                    <div className="absolute -top-[50%] -right-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_20s_linear_infinite] transform-gpu"></div>
@@ -436,9 +483,9 @@ export default function PlatformPage() {
                 </div>
               </div>
 
-              {/* PREMIUM COMPOSER */}
+              {/* DESKTOP PREMIUM COMPOSER (DESKTOP ONLY) */}
               <div 
-                className="bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] border border-white dark:border-white/10 flex flex-col overflow-hidden cursor-pointer hover:shadow-[0_20px_40px_rgb(0,0,0,0.12)] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 relative group z-20"
+                className="hidden md:flex bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] border border-white dark:border-white/10 flex-col overflow-hidden cursor-pointer hover:shadow-[0_20px_40px_rgb(0,0,0,0.12)] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 relative group z-20"
                 onClick={() => setIsCreatePostModalOpen(true)}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 pointer-events-none rounded-[2rem]" />
@@ -473,6 +520,11 @@ export default function PlatformPage() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* DESKTOP STORIES (DESKTOP ONLY) */}
+              <div className="hidden md:block">
+                <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
               </div>
 
               {/* CREATE POST MODAL */}
@@ -738,31 +790,34 @@ export default function PlatformPage() {
                     
                   return (
                     <React.Fragment key={post.id}>
-                    <div className={`w-full bg-white dark:bg-[#151c2c] rounded-2xl md:rounded-[2rem] p-4 sm:p-6 shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] border ${author.is_wipa_recommended ? 'border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.2)] dark:shadow-[0_0_15px_rgba(250,204,21,0.15)]' : 'border-gray-200/80 dark:border-gray-800/80'} transition-all duration-300 hover:shadow-[0_10px_40px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 group/post relative overflow-hidden`}>
-                      <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent dark:from-white/5 opacity-0 group-hover/post:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                      <div className="flex items-start justify-between mb-3 sm:mb-4 relative z-10">
-                        <div className="flex items-center gap-3">
+                    <div className={`w-full bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all overflow-hidden`}>
+                      
+                      {/* Post Header */}
+                      <div className="flex items-center justify-between mb-2.5 px-3 sm:px-0">
+                        <div className="flex items-center gap-2.5">
                           <Link href={`/platform/profile/${post.author_id}`} className="shrink-0 hover:opacity-80 transition-opacity block">
-                            {author.avatar_url ? (
-                              <img src={author.avatar_url} alt={authorName} className="w-10 h-10 rounded-full object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10" />
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
-                                {initial}
-                              </div>
-                            )}
+                            <div className="p-0.5 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8]">
+                              {author.avatar_url ? (
+                                <img src={author.avatar_url} alt={authorName} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-white dark:ring-[#0f172a]" />
+                              ) : (
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-[#0f172a]">
+                                  {initial}
+                                </div>
+                              )}
+                            </div>
                           </Link>
                           <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5">
                               <Link href={`/platform/profile/${post.author_id}`} className="hover:underline hover:text-[#5a32fa] transition-colors flex items-center gap-1">
-                                <span className="font-bold text-[14px] text-gray-900 dark:text-white leading-tight">{authorName}</span>
+                                <span className="font-bold text-[13px] sm:text-[14px] text-gray-900 dark:text-white leading-tight">{authorName}</span>
                                 {author.is_wipa_recommended && (
                                   <span title="WIPA Recommended">
-                                    <Star size={13} className="fill-yellow-400 text-yellow-400 shrink-0" />
+                                    <Star size={12} className="fill-yellow-400 text-yellow-400 shrink-0" />
                                   </span>
                                 )}
                               </Link>
                             </div>
-                            <span className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <span className="text-[10px] sm:text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
                               {timeAgo}
                               <span>•</span>
                               <span className="truncate max-w-[140px] sm:max-w-none">{author.practice_area || 'IP Professional'}</span>
@@ -777,17 +832,17 @@ export default function PlatformPage() {
                               e.stopPropagation();
                               setActiveMenuPostId(activeMenuPostId === post.id ? null : post.id);
                             }}
-                            className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                            className="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
                           >
                             <MoreVertical size={16} />
                           </button>
                           {activeMenuPostId === post.id && (
-                            <div className="absolute right-0 top-8 w-48 bg-white dark:bg-[#1f293d] rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-150">
+                            <div className="absolute right-0 top-7 w-44 bg-white dark:bg-[#1f293d] rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-1 z-30 animate-in fade-in zoom-in-95 duration-150">
                               <button 
                                 onClick={() => handleCopyLink(post.id)}
-                                className="w-full px-3.5 py-2 text-left text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
+                                className="w-full px-3 py-2 text-left text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                               >
-                                <Copy size={14} /> Copy Link
+                                <Copy size={13} /> Copy Link
                               </button>
                               {user?.id === post.author_id && (
                                 <>
@@ -797,21 +852,21 @@ export default function PlatformPage() {
                                       setEditingPost(post);
                                       setEditContent(post.content);
                                     }}
-                                    className="w-full px-3.5 py-2 text-left text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
+                                    className="w-full px-3 py-2 text-left text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                   >
-                                    <Pencil size={14} /> Edit Post
+                                    <Pencil size={13} /> Edit Post
                                   </button>
                                   <button 
                                     onClick={() => handleToggleComments(post.id, post.comments_disabled)}
-                                    className="w-full px-3.5 py-2 text-left text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
+                                    className="w-full px-3 py-2 text-left text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                                   >
-                                    <MessageSquareOff size={14} /> {post.comments_disabled ? 'Enable Comments' : 'Disable Comments'}
+                                    <MessageSquareOff size={13} /> {post.comments_disabled ? 'Enable Comments' : 'Disable Comments'}
                                   </button>
                                   <button 
                                     onClick={() => handleDeletePost(post.id)}
-                                    className="w-full px-3.5 py-2 text-left text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 flex items-center gap-2"
+                                    className="w-full px-3 py-2 text-left text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 flex items-center gap-2"
                                   >
-                                    <Trash2 size={14} /> Delete Post
+                                    <Trash2 size={13} /> Delete Post
                                   </button>
                                 </>
                               )}
@@ -820,42 +875,22 @@ export default function PlatformPage() {
                         </div>
                       </div>
 
-                      {/* Post Content */}
-                      {editingPost?.id === post.id ? (
-                        <div className="space-y-3 mb-4">
-                          <textarea 
-                            value={editContent} 
-                            onChange={(e) => setEditContent(e.target.value)}
-                            className="w-full p-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-900 dark:text-white outline-none resize-none"
-                            rows={3}
-                          />
-                          <div className="flex justify-end gap-2">
-                            <button onClick={() => setEditingPost(null)} className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100">Cancel</button>
-                            <button onClick={submitEditPost} disabled={isUpdatingPost} className="px-4 py-1.5 rounded-lg text-xs font-bold bg-[#5a32fa] text-white">Save</button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div>
-                          {post.content && (
-                            <p className="text-[14px] text-gray-800 dark:text-gray-100 leading-relaxed mb-3 sm:mb-4 font-medium whitespace-pre-wrap">
-                              {post.content}
-                            </p>
-                          )}
-
-                          {/* Post Media Attachments (Images, Videos, Documents/PDFs) */}
-                          {post.media_urls && post.media_urls.length > 0 && post.media_urls.map((url: string, mIdx: number) => {
+                      {/* Post Media Attachments (Edge-to-Edge on Mobile) */}
+                      {post.media_urls && post.media_urls.length > 0 && (
+                        <div className="w-full my-1 sm:my-3">
+                          {post.media_urls.map((url: string, mIdx: number) => {
                             const isVideo = post.media_type === 'video' || url.match(/\.(mp4|webm|mov|ogg)$/i);
                             const isDoc = post.media_type === 'doc' || url.match(/\.(pdf|doc|docx|txt)$/i);
 
                             if (isVideo) {
                               return (
-                                <div key={mIdx} className="mb-3 sm:mb-4 rounded-2xl overflow-hidden bg-black border border-gray-100 dark:border-white/10 shadow-sm max-h-[440px]">
+                                <div key={mIdx} className="w-full bg-black sm:rounded-2xl overflow-hidden shadow-sm max-h-[500px]">
                                   <video 
                                     src={url} 
                                     controls 
                                     playsInline 
                                     preload="metadata"
-                                    className="w-full max-h-[420px] object-contain mx-auto" 
+                                    className="w-full max-h-[480px] object-contain mx-auto" 
                                   />
                                 </div>
                               );
@@ -868,30 +903,30 @@ export default function PlatformPage() {
                                   href={url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all mb-3 sm:mb-4 group/doc shadow-sm"
+                                  className="mx-3 sm:mx-0 flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 hover:border-[#5a32fa] transition-all group/doc shadow-sm"
                                 >
-                                  <div className="flex items-center gap-3.5 overflow-hidden">
-                                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
-                                      <FileText size={20} />
+                                  <div className="flex items-center gap-3 overflow-hidden">
+                                    <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
+                                      <FileText size={18} />
                                     </div>
                                     <div className="overflow-hidden">
                                       <h4 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate group-hover/doc:text-[#5a32fa] transition-colors">
                                         {post.document_name || 'Legal Document / PDF'}
                                       </h4>
-                                      <p className="text-[11px] text-gray-500 dark:text-gray-400">Click to view & download document</p>
+                                      <p className="text-[10px] sm:text-[11px] text-gray-500 dark:text-gray-400">Click to view document</p>
                                     </div>
                                   </div>
-                                  <ArrowUpRight size={16} className="text-gray-400 group-hover/doc:text-[#5a32fa] group-hover/doc:translate-x-0.5 group-hover/doc:-translate-y-0.5 transition-transform shrink-0" />
+                                  <ArrowUpRight size={15} className="text-gray-400 group-hover/doc:text-[#5a32fa] shrink-0" />
                                 </a>
                               );
                             }
 
                             return (
-                              <div key={mIdx} className="mb-3 sm:mb-4 rounded-2xl overflow-hidden border border-gray-100 dark:border-white/10 shadow-sm max-h-[480px]">
+                              <div key={mIdx} className="w-full bg-black/5 dark:bg-black/50 sm:rounded-2xl overflow-hidden shadow-sm max-h-[500px] flex items-center justify-center">
                                 <img 
                                   src={url} 
                                   alt="Post attachment" 
-                                  className="w-full h-full max-h-[460px] object-cover hover:opacity-95 transition-opacity cursor-pointer"
+                                  className="w-full h-auto max-h-[480px] object-cover sm:object-contain hover:opacity-95 transition-opacity cursor-pointer"
                                   onClick={() => window.open(url, '_blank')}
                                 />
                               </div>
@@ -900,76 +935,111 @@ export default function PlatformPage() {
                         </div>
                       )}
 
-                      {/* Large Thumb-Zone Action Bar (Like, Comment, Repost, Share) */}
-                      <div className="grid grid-cols-4 gap-1 pt-2.5 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-100 dark:border-white/5">
-                        {/* Like Button */}
-                        <button 
-                          onClick={() => handleLikePost(post.id)} 
-                          className={`h-11 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 text-xs font-bold ${
-                            isLiked 
-                              ? 'text-rose-500 bg-rose-500/10' 
-                              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5'
-                          }`}
-                        >
-                          <Heart size={18} className={isLiked ? "fill-current text-rose-500" : ""} />
-                          <span>{post.likes_count || 0}</span>
-                        </button>
+                      {/* Instagram-Style 3-Left / 1-Right Action Bar */}
+                      <div className="flex items-center justify-between px-3 sm:px-0 pt-2">
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          {/* Like Button */}
+                          <button 
+                            onClick={() => handleLikePost(post.id)} 
+                            className="flex items-center gap-1 text-gray-800 dark:text-gray-200 active:scale-75 transition-transform"
+                          >
+                            <Heart size={22} className={isLiked ? "fill-rose-500 text-rose-500" : "hover:text-rose-500"} />
+                          </button>
 
-                        {/* Comment Button */}
-                        <button 
-                          onClick={() => {
-                            if (post.comments_disabled) return;
-                            setActiveCommentPost(post);
-                            fetchComments(post.id);
-                          }}
-                          disabled={post.comments_disabled}
-                          className={`h-11 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 text-xs font-bold ${
-                            post.comments_disabled 
-                              ? 'text-gray-300 cursor-not-allowed opacity-40' 
-                              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#5a32fa]'
-                          }`}
-                        >
-                          <MessageCircle size={18} />
-                          <span>{post.comments_disabled ? 'Off' : (post.comments_count || 0)}</span>
-                        </button>
+                          {/* Comment Button */}
+                          <button 
+                            onClick={() => {
+                              if (post.comments_disabled) return;
+                              setActiveCommentPost(post);
+                              fetchComments(post.id);
+                            }}
+                            disabled={post.comments_disabled}
+                            className={`flex items-center gap-1 text-gray-800 dark:text-gray-200 active:scale-75 transition-transform ${post.comments_disabled ? 'opacity-40' : 'hover:text-[#5a32fa]'}`}
+                          >
+                            <MessageCircle size={22} />
+                          </button>
 
-                        {/* Repost / Save Button */}
+                          {/* Share Button */}
+                          <button 
+                            onClick={() => {
+                              if (typeof navigator !== 'undefined' && navigator.share) {
+                                navigator.share({
+                                  title: 'WIPA Network Post',
+                                  text: post.content?.slice(0, 100) || 'Check out this post on WIPA',
+                                  url: window.location.href,
+                                }).catch(() => {});
+                              } else {
+                                navigator.clipboard.writeText(window.location.href);
+                                alert('Link copied to clipboard!');
+                              }
+                            }}
+                            className="flex items-center gap-1 text-gray-800 dark:text-gray-200 active:scale-75 transition-transform hover:text-[#ff90e8]"
+                          >
+                            <Send size={20} className="-rotate-45 -mt-0.5" />
+                          </button>
+                        </div>
+
+                        {/* Bookmark / Save Button */}
                         <button 
                           onClick={() => {
                             navigator.clipboard.writeText(`${window.location.origin}/platform/post/${post.id}`);
-                            alert('Post link copied to clipboard!');
+                            alert('Post saved!');
                           }}
-                          className="h-11 rounded-xl flex items-center justify-center gap-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-emerald-500 transition-all active:scale-95 text-xs font-bold"
+                          className="text-gray-800 dark:text-gray-200 active:scale-75 transition-transform hover:text-[#5a32fa]"
                         >
-                          <Repeat2 size={18} />
-                          <span className="hidden sm:inline">Save</span>
+                          <Bookmark size={21} />
                         </button>
+                      </div>
 
-                        {/* Share Button */}
-                        <button 
-                          onClick={() => {
-                            if (typeof navigator !== 'undefined' && navigator.share) {
-                              navigator.share({
-                                title: 'WIPA Network Post',
-                                text: post.content?.slice(0, 100) || 'Check out this post on WIPA',
-                                url: window.location.href,
-                              }).catch(() => {});
-                            } else {
-                              navigator.clipboard.writeText(window.location.href);
-                              alert('Link copied to clipboard!');
-                            }
-                          }}
-                          className="h-11 rounded-xl flex items-center justify-center gap-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-[#ff90e8] transition-all active:scale-95 text-xs font-bold"
-                        >
-                          <Share2 size={18} />
-                          <span className="hidden sm:inline">Share</span>
-                        </button>
+                      {/* Post Caption & Comments Section (Instagram Layout) */}
+                      <div className="px-3 sm:px-0 pt-1.5 space-y-1">
+                        {/* Likes Count */}
+                        <p className="text-xs font-bold text-gray-900 dark:text-white">
+                          {post.likes_count ? `${post.likes_count.toLocaleString()} likes` : 'Be the first to like'}
+                        </p>
+
+                        {/* Content / Caption */}
+                        {editingPost?.id === post.id ? (
+                          <div className="space-y-2 my-2">
+                            <textarea 
+                              value={editContent} 
+                              onChange={(e) => setEditContent(e.target.value)}
+                              className="w-full p-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs text-gray-900 dark:text-white outline-none resize-none"
+                              rows={3}
+                            />
+                            <div className="flex justify-end gap-2">
+                              <button onClick={() => setEditingPost(null)} className="px-3 py-1 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100">Cancel</button>
+                              <button onClick={submitEditPost} disabled={isUpdatingPost} className="px-3.5 py-1 rounded-lg text-xs font-bold bg-[#5a32fa] text-white">Save</button>
+                            </div>
+                          </div>
+                        ) : (
+                          post.content && (
+                            <p className="text-xs text-gray-800 dark:text-gray-200 leading-snug">
+                              <span className="font-bold mr-1.5 text-gray-900 dark:text-white">{authorName}</span>
+                              {post.content}
+                            </p>
+                          )
+                        )}
+
+                        {/* View All Comments Link */}
+                        {(post.comments_count || 0) > 0 && (
+                          <button 
+                            onClick={() => {
+                              if (post.comments_disabled) return;
+                              setActiveCommentPost(post);
+                              fetchComments(post.id);
+                            }}
+                            className="text-[11px] font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 block pt-0.5"
+                          >
+                            View all {post.comments_count} comments
+                          </button>
+                        )}
                       </div>
                       
                     </div>
                     {/* Dynamic Sponsored Native Content Placement after every 4 posts */}
                     {(index + 1) % 4 === 0 && (
-                      <div className="w-full shrink-0">
+                      <div className="w-full shrink-0 px-3 sm:px-0 mb-3">
                         <AdSlot placement="feed_native" />
                       </div>
                     )}

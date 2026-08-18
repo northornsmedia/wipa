@@ -67,37 +67,27 @@ export default function FeedStoriesCarousel({ onOpenCreatePost }: { onOpenCreate
   const user = useAppStore((state) => state.user);
 
   return (
-    <div className="w-full bg-white/80 dark:bg-[#151c2c]/80 backdrop-blur-xl rounded-2xl md:rounded-[2rem] p-3.5 sm:p-4 border border-gray-200/80 dark:border-gray-800/80 shadow-sm overflow-hidden mb-4">
-      <div className="flex items-center justify-between mb-2.5 px-1">
-        <div className="flex items-center gap-1.5 text-xs font-bold text-gray-900 dark:text-white">
-          <Sparkles size={14} className="text-[#ff2a5f]" />
-          <span>Spotlight Stories & Highlights</span>
-        </div>
-        <Link href="/platform/resources/webinars" className="text-[11px] font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:underline">
-          View All Live
-        </Link>
-      </div>
-
+    <div className="w-full bg-white dark:bg-[#0f172a] md:bg-white/80 md:dark:bg-[#151c2c]/80 md:backdrop-blur-xl md:rounded-[2rem] p-3 sm:p-4 border-b md:border border-gray-100 dark:border-white/5 md:border-gray-200/80 md:dark:border-gray-800/80 shadow-none md:shadow-sm overflow-hidden mb-2 sm:mb-4">
       <div className="flex items-center gap-3 overflow-x-auto pb-1 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {/* 1. Add Story / Share Insight Card */}
         <button
           onClick={onOpenCreatePost}
-          className="flex flex-col items-center gap-1.5 shrink-0 group active:scale-95 transition-transform"
+          className="flex flex-col items-center gap-1 shrink-0 group active:scale-90 transition-transform"
         >
           <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full p-0.5 border-2 border-dashed border-[#5a32fa] flex items-center justify-center bg-gray-50 dark:bg-white/5">
             {user?.avatar_url ? (
-              <img src={user.avatar_url} alt={user.name} className="w-full h-full rounded-full object-cover opacity-80" />
+              <img src={user.avatar_url} alt={user.name} className="w-full h-full rounded-full object-cover" />
             ) : (
               <div className="w-full h-full rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] flex items-center justify-center text-white font-bold text-sm">
                 {user?.name?.charAt(0) || 'U'}
               </div>
             )}
-            <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-[#ff2a5f] text-white flex items-center justify-center shadow-md border-2 border-white dark:border-[#151c2c]">
-              <Plus size={12} strokeWidth={3} />
+            <div className="absolute bottom-0 right-0 w-4.5 h-4.5 rounded-full bg-[#5a32fa] text-white flex items-center justify-center shadow-md border-2 border-white dark:border-[#0f172a]">
+              <Plus size={11} strokeWidth={3} />
             </div>
           </div>
-          <span className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate max-w-[64px]">
-            Share Post
+          <span className="text-[10px] font-medium text-gray-700 dark:text-gray-300 truncate max-w-[62px]">
+            Your story
           </span>
         </button>
 
@@ -106,10 +96,10 @@ export default function FeedStoriesCarousel({ onOpenCreatePost }: { onOpenCreate
           <Link
             key={story.id}
             href={story.path}
-            className="flex flex-col items-center gap-1.5 shrink-0 group active:scale-95 transition-transform"
+            className="flex flex-col items-center gap-1 shrink-0 group active:scale-90 transition-transform"
           >
-            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full p-0.5 bg-gradient-to-tr from-[#ff2a5f] via-[#5a32fa] to-[#ff90e8] shadow-md group-hover:shadow-[#5a32fa]/30 transition-shadow">
-              <div className="w-full h-full rounded-full overflow-hidden bg-white dark:bg-[#151c2c] p-0.5">
+            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full p-0.5 bg-gradient-to-tr from-[#f59e0b] via-[#ec4899] to-[#8b5cf6] shadow-sm">
+              <div className="w-full h-full rounded-full overflow-hidden bg-white dark:bg-[#0f172a] p-0.5">
                 <img
                   src={story.avatar}
                   alt={story.name}
@@ -122,8 +112,8 @@ export default function FeedStoriesCarousel({ onOpenCreatePost }: { onOpenCreate
                 </span>
               )}
             </div>
-            <span className="text-[10px] font-bold text-gray-800 dark:text-gray-200 truncate max-w-[68px] text-center">
-              {story.name}
+            <span className="text-[10px] font-medium text-gray-800 dark:text-gray-200 truncate max-w-[64px] text-center">
+              {story.name.split(' ')[0]}
             </span>
           </Link>
         ))}
