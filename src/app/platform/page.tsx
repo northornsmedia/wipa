@@ -350,14 +350,14 @@ export default function PlatformPage() {
   };
 
   return (
-    <div className="w-full font-sans flex flex-col min-h-[calc(100dvh-56px)] md:h-[calc(100vh-73px)] md:overflow-hidden">
+    <div className="w-full font-sans flex flex-col min-h-screen">
       <div className="w-full bg-white dark:bg-[#0f172a] flex flex-col flex-1">
         
         {/* MAIN LAYOUT */}
-        <div className="flex flex-1 md:overflow-hidden">
+        <div className="flex flex-1">
           
           {/* MAIN CONTENT AREA */}
-          <main className="flex-1 bg-[#f8f9fa] dark:bg-[#070b14] md:bg-slate-50/50 md:dark:bg-[#0b1120] md:overflow-y-auto p-0 sm:p-6 md:p-8 no-scrollbar flex gap-6 xl:gap-8">
+          <main className="flex-1 bg-[#f8f9fa] dark:bg-[#070b14] md:bg-slate-50/50 md:dark:bg-[#0b1120] p-0 sm:p-6 md:p-8 flex gap-6 xl:gap-8">
             
             {/* LEFT COLUMN */}
             <div className="flex-1 flex justify-center pb-24 md:pb-20">
