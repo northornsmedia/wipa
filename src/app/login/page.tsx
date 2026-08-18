@@ -63,14 +63,18 @@ export default function LoginPage() {
     setError(null);
     setMessage(null);
 
+    const cleanEmail = email.trim().toLowerCase();
+
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: cleanEmail,
+      password: password,
     });
 
     if (error) {
-      if (error.message === "Failed to fetch" || error.message.includes("Invalid login credentials")) {
-        setError("Wrong username / email entered. Please enter correct details.");
+      if (error.message.includes("Invalid login credentials") || error.message.includes("invalid_grant")) {
+        setError("Invalid email or password. Please verify your credentials or use Forgot Password.");
+      } else if (error.message === "Failed to fetch") {
+        setError("Connection issue. Please check your internet connection and try again.");
       } else {
         setError(error.message);
       }
