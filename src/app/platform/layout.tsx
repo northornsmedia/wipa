@@ -6,6 +6,8 @@ import Sidebar from "@/components/Sidebar";
 import ThemeWrapper from "@/components/ThemeWrapper";
 import WelcomeBackSplash from "@/components/WelcomeBackSplash";
 
+import MobilePullToRefresh from "@/components/MobilePullToRefresh";
+
 export default function PlatformLayout({
   children,
 }: {
@@ -24,7 +26,9 @@ export default function PlatformLayout({
             <Sidebar />
             <div className="flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-hidden box-border">
               <main className="flex-1 w-full max-w-full min-w-0 pb-20 md:pb-0 overflow-x-hidden box-border">
-                {children}
+                <MobilePullToRefresh>
+                  {children}
+                </MobilePullToRefresh>
               </main>
               {/* Mobile 5-Tab Bottom Navigation Bar */}
               <MobileBottomNav />
