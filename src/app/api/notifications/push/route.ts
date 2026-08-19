@@ -146,6 +146,21 @@ export async function POST(req: Request) {
         .in('endpoint', expiredEndpoints);
     }
 
+    // Record server execution event in analytics_events for DB audit
+    await supabase.from('analytics_events').insert({
+      event_name: 'push_api_dispatched',
+      page_route: '/api/notifications/push',
+      page_title: 'Push Dispatch Log',
+      metadata: {
+        conversationId,
+        senderId,
+        targetRecipientIds,
+        subscriptionsCount: subscriptions.length,
+        sentCount,
+        expiredCount: expiredEndpoints.length,
+      }
+    });
+
     return NextResponse.json({ success: true, sentCount, prunedCount: expiredEndpoints.length });
   } catch (err: any) {
     console.error('[CHAT_PUSH_DEBUG] Internal error:', err);
