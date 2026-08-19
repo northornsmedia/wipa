@@ -908,9 +908,11 @@ function MessagesContent() {
       recordingTimerRef.current = setInterval(() => {
         setRecordingDuration(prev => prev + 1);
       }, 1000);
-    } catch (err) {
-      console.error("Microphone access error:", err);
-      alert("Microphone permission is required to record voice messages.");
+    } catch (err: any) {
+      console.warn("Microphone access permission status:", err?.name || err);
+      // Cleanly reset state without blocking with alert popups
+      setIsVoiceRecording(false);
+      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
     }
   };
 
@@ -1381,15 +1383,9 @@ function MessagesContent() {
                     ) : (
                       <button 
                         type="button"
-                        onPointerDown={startVoiceRecord}
-                        onPointerUp={stopVoiceRecord}
-                        onTouchStart={startVoiceRecord}
-                        onTouchEnd={stopVoiceRecord}
-                        onMouseDown={startVoiceRecord}
-                        onMouseUp={stopVoiceRecord}
                         onClick={startVoiceRecord}
                         aria-label="Record voice message"
-                        title="Hold or tap to record voice message"
+                        title="Tap to record voice message"
                         className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-600 dark:text-gray-300 transition-all shrink-0 active:scale-90 active:bg-rose-500 active:text-white"
                       >
                         <Mic size={18} />
