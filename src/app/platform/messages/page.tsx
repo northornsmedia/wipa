@@ -956,7 +956,7 @@ function MessagesContent() {
         />
 
         {/* Right Pane: Active Chat Window */}
-        <div className={`bg-white dark:bg-[#0f172a] md:rounded-3xl border-0 md:border border-gray-200 dark:border-white/10 md:shadow-xl flex-col overflow-hidden ${!showMobileChat ? 'hidden md:flex flex-1 h-full min-h-0 relative' : 'flex fixed inset-0 z-[100] md:relative md:flex-1 md:inset-auto md:z-auto h-full min-h-0'}`}>
+        <div className={`bg-white dark:bg-[#0f172a] md:rounded-3xl border-0 md:border border-gray-200 dark:border-white/10 md:shadow-xl flex-col overflow-hidden ${!showMobileChat ? 'hidden md:flex flex-1 h-full min-h-0 relative' : 'flex fixed inset-0 z-[100] h-[100dvh] max-h-[100dvh] md:relative md:flex-1 md:inset-auto md:z-auto md:h-full min-h-0'}`}>
           
           {activeChat ? (
             <>
@@ -1040,7 +1040,7 @@ function MessagesContent() {
               </div>
 
               {/* Chat Input Bar */}
-              <div className="p-4 pb-[max(env(safe-area-inset-bottom,0px),1rem)] md:pb-4 border-t border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] shrink-0">
+              <div className="sticky bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pb-[max(env(safe-area-inset-bottom,0px),1rem)] md:pb-4 border-t border-gray-100 dark:border-white/10 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-xl shrink-0 w-full">
                 <form onSubmit={handleSendMessage} className="flex items-center gap-2">
                   <div className="relative">
                     <button 
@@ -1101,7 +1101,7 @@ function MessagesContent() {
                         handleSendMessage();
                       }
                     }}
-                    className="flex-1 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-xs transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
+                    className="flex-1 min-w-0 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-[16px] sm:text-xs leading-normal caret-[#5a32fa] transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
                   />
 
                   {isVoiceRecording ? (
