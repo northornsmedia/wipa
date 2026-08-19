@@ -160,6 +160,10 @@ function MessagesContent() {
               ? new Date(latest.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
               : (conv.updated_at ? new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
 
+            const rawTimestamp = latest?.created_at 
+              ? new Date(latest.created_at).getTime()
+              : (conv.updated_at ? new Date(conv.updated_at).getTime() : 0);
+
             return {
               id: String(conv.id),
               name: title,
@@ -170,10 +174,14 @@ function MessagesContent() {
               unread: unreadMap[conv.id] || 0,
               lastMessage: previewText,
               lastTime: timeStr,
+              rawTimestamp,
               messages: [],
               participantId: other.id
             };
           });
+
+        // Always put most recent conversation at the top
+        parsed.sort((a, b) => (b.rawTimestamp || 0) - (a.rawTimestamp || 0));
 
         if (parsed.length > 0) {
           setConversations(parsed);
@@ -410,16 +418,22 @@ function MessagesContent() {
              status: 'read'
           };
 
-          setConversations(prev => prev.map(chat => {
-            if (String(chat.id) !== currentChatId) return chat;
-            return { 
-              ...chat, 
-              messages: [...chat.messages, msg],
+          setConversations(prev => {
+            const targetChat = prev.find(chat => String(chat.id) === currentChatId);
+            if (!targetChat) return prev;
+            const updatedChat = { 
+              ...targetChat, 
+              messages: [...targetChat.messages, msg],
               lastMessage: m.content || 'Media message',
               lastTime: msg.time,
-              unread: 0
+              unread: 0,
+              rawTimestamp: Date.now()
             };
-          }));
+            const others = prev.filter(chat => String(chat.id) !== currentChatId);
+            const nextList = [updatedChat, ...others];
+            useAppStore.getState().setCachedConversations(nextList);
+            return nextList;
+          });
           
           // Mark as read on server immediately since we are viewing the chat
           supabase.from('messages').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', m.id).then();
@@ -579,25 +593,31 @@ function MessagesContent() {
       is_read: false
     };
 
-    // Optimistically update UI
-    setConversations(prev => prev.map(chat => {
-      if (String(chat.id) === String(activeChatId)) {
-        let lastMsgPreview = text || "Sent an attachment";
-        if (type === 'image') lastMsgPreview = "📷 Photo";
-        if (type === 'video') lastMsgPreview = "🎥 Video";
-        if (type === 'document') lastMsgPreview = "📄 Document";
-        if (type === 'location') lastMsgPreview = "📍 Location";
-        if (type === 'audio') lastMsgPreview = "🎤 Voice message";
+    // Optimistically update UI and immediately bump this conversation to the very top
+    setConversations(prev => {
+      const targetChat = prev.find(chat => String(chat.id) === String(activeChatId));
+      if (!targetChat) return prev;
 
-        return {
-          ...chat,
-          messages: [...chat.messages, newMsg],
-          lastMessage: lastMsgPreview,
-          lastTime: "Just now"
-        };
-      }
-      return chat;
-    }));
+      let lastMsgPreview = text || "Sent an attachment";
+      if (type === 'image') lastMsgPreview = "📷 Photo";
+      if (type === 'video') lastMsgPreview = "🎥 Video";
+      if (type === 'document') lastMsgPreview = "📄 Document";
+      if (type === 'location') lastMsgPreview = "📍 Location";
+      if (type === 'audio') lastMsgPreview = "🎤 Voice message";
+
+      const updatedChat = {
+        ...targetChat,
+        messages: [...targetChat.messages, newMsg],
+        lastMessage: lastMsgPreview,
+        lastTime: "Just now",
+        rawTimestamp: Date.now()
+      };
+
+      const others = prev.filter(chat => String(chat.id) !== String(activeChatId));
+      const nextList = [updatedChat, ...others];
+      useAppStore.getState().setCachedConversations(nextList);
+      return nextList;
+    });
 
     // Instantly scroll to bottom for sender's own message
     setTimeout(() => {

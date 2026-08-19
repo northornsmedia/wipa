@@ -13,6 +13,7 @@ export interface SidebarChat {
   unread: number;
   lastMessage: string;
   lastTime: string;
+  rawTimestamp?: number;
   isOnline?: boolean;
   isTyping?: boolean;
 }
