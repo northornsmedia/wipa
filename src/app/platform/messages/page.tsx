@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { 
   Paperclip, Send, Camera, Mic, MapPin, Image as ImageIcon, Video, FileText, 
-  X, Square, WifiOff, Sparkles, ChevronDown
+  X, Square, WifiOff, Sparkles, ChevronDown, Loader2
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -35,6 +35,7 @@ function MessagesContent() {
   const [isChatOptionsOpen, setIsChatOptionsOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [showScrollBottomPill, setShowScrollBottomPill] = useState(false);
   const [lightboxImageUrl, setLightboxImageUrl] = useState<string | null>(null);
 
@@ -81,78 +82,114 @@ function MessagesContent() {
     };
   }, []);
 
-  // Load real conversations directly from Supabase DB with real avatar URLs
-  useEffect(() => {
+  // Load real conversations directly from Supabase DB with real avatar URLs and latest messages
+  const fetchConversations = useCallback(async () => {
     if (!user?.id) return;
-    const fetchConversations = async () => {
-      try {
-        const { data: myConvs, error: convErr } = await supabase
-          .from('conversation_participants')
-          .select(`
-            conversation_id,
-            conversations (
-              id,
-              updated_at,
-              name,
-              is_group,
-              conversation_participants (
-                user_id,
-                profiles:profiles!conversation_participants_user_id_fkey (id, full_name, avatar_url, role, practice_area)
-              )
+    try {
+      const { data: myConvs, error: convErr } = await supabase
+        .from('conversation_participants')
+        .select(`
+          conversation_id,
+          conversations (
+            id,
+            updated_at,
+            name,
+            is_group,
+            conversation_participants (
+              user_id,
+              profiles:profiles!conversation_participants_user_id_fkey (id, full_name, avatar_url, role, practice_area)
             )
-          `)
-          .eq('user_id', user.id);
+          )
+        `)
+        .eq('user_id', user.id);
 
-        if (myConvs && myConvs.length > 0) {
-          // Get unread counts
-          const { data: unreadData } = await supabase
-            .from('messages')
-            .select('conversation_id')
-            .eq('is_read', false)
-            .neq('sender_id', user.id);
+      if (myConvs && myConvs.length > 0) {
+        const convIds = myConvs.filter(c => c.conversations).map(c => c.conversation_id);
+        
+        // 1. Get actual unread counts from messages table
+        const { data: unreadData } = await supabase
+          .from('messages')
+          .select('conversation_id')
+          .in('conversation_id', convIds)
+          .eq('is_read', false)
+          .neq('sender_id', user.id);
 
-          const unreadMap: Record<string, number> = {};
-          if (unreadData) {
-            unreadData.forEach((m: any) => {
-              unreadMap[m.conversation_id] = (unreadMap[m.conversation_id] || 0) + 1;
-            });
-          }
+        const unreadMap: Record<string, number> = {};
+        if (unreadData) {
+          unreadData.forEach((m: any) => {
+            unreadMap[m.conversation_id] = (unreadMap[m.conversation_id] || 0) + 1;
+          });
+        }
 
-          const parsed: Chat[] = myConvs
-            .filter((c: any) => c.conversations)
-            .map((c: any) => {
-              const conv = c.conversations;
-              const other = conv.conversation_participants?.find((p: any) => p.user_id !== user.id)?.profiles || {};
-              const title = conv.is_group ? (conv.name || 'Group Chat') : (other.full_name || 'Direct Message');
-              return {
-                id: String(conv.id),
-                name: title,
-                role: other.practice_area || other.role || 'Member',
-                avatarUrl: other.avatar_url || null,
-                initial: title.charAt(0).toUpperCase() || 'U',
-                color: '#5a32fa',
-                unread: unreadMap[conv.id] || 0,
-                lastMessage: 'Tap to view conversation',
-                lastTime: conv.updated_at ? new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
-                messages: [],
-                participantId: other.id
-              };
-            });
+        // 2. Get latest message for EACH conversation
+        const { data: latestMsgs } = await supabase
+          .from('messages')
+          .select('conversation_id, content, media_type, created_at')
+          .in('conversation_id', convIds)
+          .order('created_at', { ascending: false });
 
-          if (parsed.length > 0) {
-            setConversations(parsed);
-            useAppStore.getState().setCachedConversations(parsed);
-            if (!activeChatIdRef.current && !targetUserId) {
-              setActiveChatId(String(parsed[0].id));
+        const latestMsgMap: Record<string, any> = {};
+        if (latestMsgs) {
+          latestMsgs.forEach((m: any) => {
+            if (!latestMsgMap[m.conversation_id]) {
+              latestMsgMap[m.conversation_id] = m;
             }
+          });
+        }
+
+        const parsed: Chat[] = myConvs
+          .filter((c: any) => c.conversations)
+          .map((c: any) => {
+            const conv = c.conversations;
+            const other = conv.conversation_participants?.find((p: any) => p.user_id !== user.id)?.profiles || {};
+            const title = conv.is_group ? (conv.name || 'Group Chat') : (other.full_name || 'Direct Message');
+            const latest = latestMsgMap[conv.id];
+            
+            let previewText = 'Start a conversation';
+            if (latest) {
+              if (latest.media_type === 'image') previewText = '📷 Photo';
+              else if (latest.media_type === 'video') previewText = '🎥 Video';
+              else if (latest.media_type === 'document') previewText = '📄 Document';
+              else if (latest.media_type === 'audio') previewText = '🎤 Voice message';
+              else if (latest.media_type === 'location') previewText = '📍 Location';
+              else previewText = latest.content || 'Start a conversation';
+            }
+
+            const timeStr = latest?.created_at 
+              ? new Date(latest.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : (conv.updated_at ? new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
+
+            return {
+              id: String(conv.id),
+              name: title,
+              role: other.practice_area || other.role || 'Member',
+              avatarUrl: other.avatar_url || null,
+              initial: title.charAt(0).toUpperCase() || 'U',
+              color: '#5a32fa',
+              unread: unreadMap[conv.id] || 0,
+              lastMessage: previewText,
+              lastTime: timeStr,
+              messages: [],
+              participantId: other.id
+            };
+          });
+
+        if (parsed.length > 0) {
+          setConversations(parsed);
+          useAppStore.getState().setCachedConversations(parsed);
+          if (!activeChatIdRef.current && !targetUserId) {
+            setActiveChatId(String(parsed[0].id));
           }
         }
-      } catch (err) {
-        console.error("Failed to load conversations from DB:", err);
       }
-    };
-    fetchConversations();
+    } catch (err) {
+      console.error("Failed to load conversations from DB:", err);
+    }
   }, [user?.id, targetUserId]);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
 
   // Handle direct targetUserId routing
   useEffect(() => {
@@ -213,61 +250,103 @@ function MessagesContent() {
     }
   }, [targetUserId, user?.id]);
 
+  // Mark conversation as read both locally, in cached store, and in live Supabase DB
+  const markAsRead = useCallback(async (id: string) => {
+    const currentId = String(id);
+    setActiveChatId(currentId);
+    setShowMobileChat(true);
+
+    // 1. Immediately reset unread count in local state
+    setConversations(prev => {
+      const updated = prev.map(chat => 
+        String(chat.id) === currentId ? { ...chat, unread: 0 } : chat
+      );
+      useAppStore.getState().setCachedConversations(updated);
+      return updated;
+    });
+
+    // 2. Update is_read = true in Supabase DB
+    if (user?.id) {
+      try {
+        await supabase
+          .from('messages')
+          .update({ is_read: true, read_at: new Date().toISOString() })
+          .eq('conversation_id', currentId)
+          .eq('is_read', false)
+          .neq('sender_id', user.id);
+      } catch (err) {
+        console.error("Failed to mark messages as read:", err);
+      }
+    }
+  }, [user?.id]);
+
   // Fetch messages for active chat, handle realtime (INSERT, UPDATE, Presence, Broadcast)
   useEffect(() => {
     if (!activeChatId || !user?.id) return;
     
     const currentChatId = String(activeChatId);
+    let isSubscribed = true;
+    setIsLoadingMessages(true);
 
     const fetchMessages = async () => {
-      const { data } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('conversation_id', currentChatId)
-        .order('created_at', { ascending: true });
-        
-      if (data) {
-        const msgs: ChatMessage[] = data.map(m => {
-          const isMe = m.sender_id === user.id;
-          let calculatedStatus: MessageStatus = 'sent';
-          if (isMe) {
-            if (m.is_read) {
-              calculatedStatus = 'read';
-            } else if (m.delivered_at || activeChat?.isOnline) {
-              calculatedStatus = 'delivered';
-            } else {
-              calculatedStatus = 'sent';
-            }
-          }
-
-          return {
-            id: String(m.id),
-            conversation_id: String(m.conversation_id),
-            text: m.content,
-            sender: isMe ? 'me' : 'them',
-            sender_id: m.sender_id,
-            time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            created_at: m.created_at,
-            type: (m.media_type as MediaType) || 'text',
-            mediaUrl: m.media_url,
-            is_read: m.is_read,
-            delivered_at: m.delivered_at,
-            read_at: m.read_at,
-            status: calculatedStatus
-          };
-        });
-        
-        setConversations(prev => prev.map(chat => String(chat.id) === currentChatId ? { ...chat, messages: msgs, unread: 0 } : chat));
-        
-        // Mark all as read immediately since user opened the chat
-        supabase.from('messages')
-          .update({ is_read: true, read_at: new Date().toISOString() })
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
           .eq('conversation_id', currentChatId)
-          .eq('is_read', false)
-          .neq('sender_id', user.id)
-          .then();
+          .order('created_at', { ascending: true });
+          
+        if (error) throw error;
+
+        if (data && isSubscribed) {
+          const msgs: ChatMessage[] = data.map(m => {
+            const isMe = m.sender_id === user.id;
+            let calculatedStatus: MessageStatus = 'sent';
+            if (isMe) {
+              if (m.is_read) {
+                calculatedStatus = 'read';
+              } else if (m.delivered_at || activeChat?.isOnline) {
+                calculatedStatus = 'delivered';
+              } else {
+                calculatedStatus = 'sent';
+              }
+            }
+
+            return {
+              id: String(m.id),
+              conversation_id: String(m.conversation_id),
+              text: m.content,
+              sender: isMe ? 'me' : 'them',
+              sender_id: m.sender_id,
+              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              created_at: m.created_at,
+              type: (m.media_type as MediaType) || 'text',
+              mediaUrl: m.media_url,
+              is_read: m.is_read,
+              delivered_at: m.delivered_at,
+              read_at: m.read_at,
+              status: calculatedStatus
+            };
+          });
+          
+          setConversations(prev => prev.map(chat => String(chat.id) === currentChatId ? { ...chat, messages: msgs, unread: 0 } : chat));
+          
+          // Mark all incoming messages as read in Supabase DB
+          await supabase.from('messages')
+            .update({ is_read: true, read_at: new Date().toISOString() })
+            .eq('conversation_id', currentChatId)
+            .eq('is_read', false)
+            .neq('sender_id', user.id);
+        }
+      } catch (err) {
+        console.error("Failed to load messages:", err);
+      } finally {
+        if (isSubscribed) {
+          setIsLoadingMessages(false);
+        }
       }
     };
+    
     fetchMessages();
     
     // Realtime channel with Presence and Broadcast
@@ -322,7 +401,8 @@ function MessagesContent() {
               ...chat, 
               messages: [...chat.messages, msg],
               lastMessage: m.content || 'Media message',
-              lastTime: msg.time
+              lastTime: msg.time,
+              unread: 0
             };
           }));
           
@@ -385,6 +465,7 @@ function MessagesContent() {
        });
        
     return () => { 
+      isSubscribed = false;
       supabase.removeChannel(channel); 
     };
   }, [activeChatId, user?.id, activeChat?.participantId]);
@@ -396,7 +477,7 @@ function MessagesContent() {
     const chatIdKey = String(activeChatId);
     const isFirstTime = !initialScrolledRef.current[chatIdKey];
 
-    if (isFirstTime) {
+    if (isFirstTime && activeChat.messages.length > 0) {
       // Instant snap to bottom
       messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
       initialScrolledRef.current[chatIdKey] = true;
@@ -487,11 +568,11 @@ function MessagesContent() {
     setConversations(prev => prev.map(chat => {
       if (String(chat.id) === String(activeChatId)) {
         let lastMsgPreview = text || "Sent an attachment";
-        if (type === 'image') lastMsgPreview = "Sent an image 📸";
-        if (type === 'video') lastMsgPreview = "Sent a video 🎥";
-        if (type === 'document') lastMsgPreview = "Sent a document 📄";
-        if (type === 'location') lastMsgPreview = "Shared a location 📍";
-        if (type === 'audio') lastMsgPreview = "Sent a voice message 🎤";
+        if (type === 'image') lastMsgPreview = "📷 Photo";
+        if (type === 'video') lastMsgPreview = "🎥 Video";
+        if (type === 'document') lastMsgPreview = "📄 Document";
+        if (type === 'location') lastMsgPreview = "📍 Location";
+        if (type === 'audio') lastMsgPreview = "🎤 Voice message";
 
         return {
           ...chat,
@@ -738,14 +819,6 @@ function MessagesContent() {
     setIsCameraOpen(false);
   };
 
-  const markAsRead = (id: string) => {
-    setConversations(conversations.map(chat => 
-      String(chat.id) === String(id) ? { ...chat, unread: 0 } : chat
-    ));
-    setActiveChatId(String(id));
-    setShowMobileChat(true);
-  };
-
   return (
     <div className="h-[calc(100vh-73px)] overflow-hidden bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col font-sans">
 
@@ -800,14 +873,29 @@ function MessagesContent() {
                 onScroll={handleScroll}
                 className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#f8f9fa] dark:bg-[#0a0f1d] space-y-4 relative"
               >
-                {activeChat.messages.map((msg) => (
-                  <MessageBubble 
-                    key={msg.id}
-                    message={msg}
-                    onRetry={handleRetryMessage}
-                    onImageClick={setLightboxImageUrl}
-                  />
-                ))}
+                {isLoadingMessages && activeChat.messages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2">
+                    <Loader2 size={24} className="animate-spin text-[#5a32fa]" />
+                    <span className="text-xs font-semibold">Loading messages...</span>
+                  </div>
+                ) : activeChat.messages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                    <div className="w-12 h-12 rounded-2xl bg-[#5a32fa]/10 text-[#5a32fa] flex items-center justify-center mb-3">
+                      <Sparkles size={20} />
+                    </div>
+                    <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200">No messages yet</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Send a message to start this conversation.</p>
+                  </div>
+                ) : (
+                  activeChat.messages.map((msg) => (
+                    <MessageBubble 
+                      key={msg.id}
+                      message={msg}
+                      onRetry={handleRetryMessage}
+                      onImageClick={setLightboxImageUrl}
+                    />
+                  ))
+                )}
                 <div ref={messagesEndRef} className="h-0 w-0 pointer-events-none" />
 
                 {/* Floating "Scroll to Bottom" button */}
