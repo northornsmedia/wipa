@@ -10,20 +10,17 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
+
 export async function generateMetadata({ params }: { params: Promise<{ member_id: string }> }): Promise<Metadata> {
   const { member_id } = await params;
-  
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name, bio, avatar_url, practice_area')
-    .eq('member_id', member_id)
-    .single();
+  const profile = await getProfileByIdOrMemberId(member_id);
 
-  if (!profile) return { title: 'WIPA Member Not Found' };
+  if (!profile) return { title: 'WIPA Member | Women In Public Affairs' };
 
   return {
     title: `${profile.full_name} | WIPA Profile`,
-    description: profile.bio || `${profile.full_name} is a member of the Women In Public Affairs (WIPA) network.`,
+    description: profile.bio || `${profile.full_name} is a verified member of the Women In Public Affairs (WIPA) network.`,
     openGraph: {
       title: `${profile.full_name} - WIPA`,
       description: profile.practice_area || 'Women In Public Affairs',
@@ -35,15 +32,28 @@ export async function generateMetadata({ params }: { params: Promise<{ member_id
 export default async function PublicProfilePage({ params }: { params: Promise<{ member_id: string }> }) {
   const { member_id } = await params;
   
-  // Fetch profile by member_id
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('member_id', member_id)
-    .single();
+  const profile = await getProfileByIdOrMemberId(member_id);
 
   if (!profile) {
-    notFound();
+    return (
+      <div className="min-h-screen bg-[#f8f9fa] font-sans flex flex-col items-center justify-center p-6">
+        <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-sm border border-gray-100">
+          <div className="w-16 h-16 rounded-2xl bg-[#5a32fa]/10 text-[#5a32fa] mx-auto flex items-center justify-center mb-4">
+            <ShieldCheck size={32} />
+          </div>
+          <h1 className="text-2xl font-black text-gray-900 mb-2">Member Profile Not Found</h1>
+          <p className="text-xs text-gray-500 mb-6">
+            The member ID or profile link you followed might have expired or does not exist.
+          </p>
+          <Link
+            href="/platform/members"
+            className="w-full py-3 rounded-xl bg-[#5a32fa] text-white font-bold text-xs shadow-md shadow-[#5a32fa]/20 hover:opacity-95 transition-all text-center block"
+          >
+            Explore WIPA Members Directory
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (

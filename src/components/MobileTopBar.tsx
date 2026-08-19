@@ -206,7 +206,7 @@ export default function MobileTopBar() {
                 {searchResults.map((prof: any) => (
                   <button
                     key={prof.id}
-                    onClick={() => handleSelectResult(prof.member_id ? `/u/${prof.member_id}` : `/platform/profile`)}
+                    onClick={() => handleSelectResult(prof.id ? `/platform/profile/${prof.id}` : `/platform/profile`)}
                     className="w-full flex items-center gap-3 p-3 rounded-2xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 text-left"
                   >
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden">

@@ -1,59 +1,99 @@
 'use server';
 
 import { supabase } from '@/lib/supabase';
-import { redis } from '@/lib/redis';
+import { redisSafeGet, redisSafeSet, REDIS_KEYS } from '@/lib/redis';
 
 export async function searchProfiles(searchQuery: string, currentUserEmail?: string | null): Promise<any[]> {
-  if (!searchQuery.trim()) {
+  if (!searchQuery?.trim()) {
     return [];
   }
 
-  const cacheKey = `search:profiles:${searchQuery.toLowerCase()}`;
+  const cleanQuery = searchQuery.trim().toLowerCase();
+  const cacheKey = REDIS_KEYS.searchProfiles(cleanQuery);
 
   try {
     // 1. Check Redis Cache
-    const cachedData = await redis.get(cacheKey);
-    if (cachedData) {
-      console.log(`[Cache Hit] Redis: ${cacheKey}`);
-      // Redis might return string or parsed object depending on the client. 
-      // Upstash Redis usually parses JSON arrays automatically, but let's handle it safely:
-      let parsed = cachedData;
-      if (typeof cachedData === 'string') {
-        try { parsed = JSON.parse(cachedData); } catch (e) {}
+    const cachedData = await redisSafeGet<any[]>(cacheKey);
+    if (cachedData && Array.isArray(cachedData)) {
+      if (currentUserEmail) {
+        return cachedData.filter((p: any) => p.email !== currentUserEmail);
       }
-      
-      // Filter out current user from cached result dynamically
-      if (currentUserEmail && Array.isArray(parsed)) {
-        return parsed.filter((p: any) => p.email !== currentUserEmail);
-      }
-      return (Array.isArray(parsed) ? parsed : []) as any[];
+      return cachedData;
     }
 
-    console.log(`[Cache Miss] Supabase: ${cacheKey}`);
-    
     // 2. Fetch from Supabase
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .ilike('full_name', `%${searchQuery}%`)
-      .limit(5);
+      .ilike('full_name', `%${cleanQuery}%`)
+      .limit(10);
 
     if (error || !data) {
-      console.error("Supabase search error:", error);
+      console.error("Supabase search error:", error?.message);
       return [];
     }
 
-    // 3. Store in Redis (cache for 5 minutes)
-    await redis.set(cacheKey, JSON.stringify(data), { ex: 300 });
+    // 3. Store in Redis
+    await redisSafeSet(cacheKey, data, 180);
 
-    // Filter out current user before returning to client
     if (currentUserEmail) {
       return data.filter((p: any) => p.email !== currentUserEmail);
     }
 
     return data;
   } catch (error) {
-    console.error("Redis search action error:", error);
+    console.error("Profiles search error:", error);
     return [];
+  }
+}
+
+export async function getProfileByIdOrMemberId(identifier: string): Promise<any | null> {
+  if (!identifier?.trim()) return null;
+  const cleanId = identifier.trim();
+  const cacheKey = REDIS_KEYS.profile(cleanId);
+
+  try {
+    // 1. Check Redis Cache
+    const cached = await redisSafeGet<any>(cacheKey);
+    if (cached && cached.id) {
+      return cached;
+    }
+
+    // 2. Fetch from Supabase
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanId);
+    
+    let query = supabase.from('profiles').select('*');
+    if (isUUID) {
+      query = query.eq('id', cleanId);
+    } else {
+      query = query.ilike('member_id', cleanId);
+    }
+
+    let { data, error } = await query.maybeSingle();
+
+    // Secondary fallback: if not found by member_id, check if identifier matches full_name or email
+    if (!data && !isUUID) {
+      const { data: fallbackData } = await supabase
+        .from('profiles')
+        .select('*')
+        .or(`full_name.ilike.%${cleanId}%,email.ilike.%${cleanId}%`)
+        .limit(1)
+        .maybeSingle();
+      data = fallbackData;
+    }
+
+    if (data) {
+      // 3. Cache both under cleanId and data.id in Redis for fast resolution
+      await redisSafeSet(cacheKey, data, 300);
+      if (data.id && data.id !== cleanId) {
+        await redisSafeSet(REDIS_KEYS.profile(data.id), data, 300);
+      }
+      return data;
+    }
+
+    return null;
+  } catch (err) {
+    console.error("Error in getProfileByIdOrMemberId:", err);
+    return null;
   }
 }

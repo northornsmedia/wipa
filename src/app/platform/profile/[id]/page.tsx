@@ -16,6 +16,8 @@ import { useRouter } from 'next/navigation';
 
 const DEFAULT_MOCK_VIDEO = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
 
+import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
+
 export default function PublicProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
   const profileId = unwrappedParams.id;
@@ -24,6 +26,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   const router = useRouter();
   
   const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending_sent' | 'pending_received' | 'accepted'>('none');
   const [activeTab, setActiveTab] = useState<'activity' | 'about' | 'experience' | 'education' | 'skills'>('activity');
@@ -69,14 +72,16 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
 
   useEffect(() => {
     const fetchProfile = async () => {
+      if (!profileId) {
+        setIsLoading(false);
+        setNotFound(true);
+        return;
+      }
+
       setIsLoading(true);
+      setNotFound(false);
       try {
-        // Query by either UUID or member_id
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .or(`id.eq.${profileId},member_id.eq.${profileId}`)
-          .maybeSingle();
+        const data = await getProfileByIdOrMemberId(profileId);
           
         if (data) {
           const resolvedId = data.id;
@@ -146,9 +151,12 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
               setLikedPostIds(new Set(likesData.map(l => l.post_id)));
             }
           }
+        } else {
+          setNotFound(true);
         }
       } catch (err) {
         console.error("Error fetching member profile:", err);
+        setNotFound(true);
       } finally {
         setIsLoading(false);
       }
@@ -204,6 +212,36 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={36} className="animate-spin text-[#5a32fa]" />
           <p className="text-sm font-semibold text-gray-500">Loading member profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (notFound || !profileData.id) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6] dark:bg-[#0b0f19] px-4">
+        <div className="bg-white dark:bg-[#151c2c] border border-gray-200 dark:border-gray-800 rounded-3xl p-8 max-w-md w-full text-center shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-500 mx-auto flex items-center justify-center mb-4">
+            <Users size={32} />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Member Profile Not Found</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
+            The member profile you are looking for might have been updated, changed, or does not exist.
+          </p>
+          <div className="flex flex-col gap-2.5">
+            <Link
+              href="/platform/members"
+              className="w-full py-3 rounded-xl bg-[#5a32fa] hover:bg-[#4924d6] text-white font-bold text-xs shadow-md shadow-[#5a32fa]/20 transition-all text-center block"
+            >
+              Browse Member Directory
+            </Link>
+            <Link
+              href="/platform/network"
+              className="w-full py-3 rounded-xl bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200 font-bold text-xs transition-colors text-center block"
+            >
+              Back to My Network
+            </Link>
+          </div>
         </div>
       </div>
     );
