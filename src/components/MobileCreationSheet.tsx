@@ -16,11 +16,19 @@ interface MobileCreationSheetProps {
 export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }: MobileCreationSheetProps) {
   const router = useRouter();
   const setIsLexIQOpen = useAppStore((state) => state.setIsLexIQOpen);
+  const setIsCreatePostOpen = useAppStore((state) => state.setIsCreatePostOpen);
 
   const handleAction = (item: any) => {
     onClose();
     if (item.action === 'open_lexiq') {
       setIsLexIQOpen(true);
+      return;
+    }
+    if (item.action === 'open_composer' || item.id === 'post') {
+      setIsCreatePostOpen(true);
+      if (typeof window !== 'undefined' && window.location.pathname !== '/platform') {
+        router.push('/platform');
+      }
       return;
     }
     if (item.action && onSelectAction) {

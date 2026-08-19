@@ -133,6 +133,8 @@ interface AppState {
   toggleMenu: () => void;
   isLexIQOpen: boolean;
   setIsLexIQOpen: (open: boolean) => void;
+  isCreatePostOpen: boolean;
+  setIsCreatePostOpen: (open: boolean) => void;
   lexiqMessages: { role: string; content: string; reasoning_details?: any }[];
   setLexiqMessages: (messages: { role: string; content: string; reasoning_details?: any }[]) => void;
   user: { 
@@ -170,6 +172,8 @@ export const useAppStore = create<AppState>()(
       toggleMenu: () => set((state) => ({ isMenuOpen: !state.isMenuOpen })),
       isLexIQOpen: false,
       setIsLexIQOpen: (open) => set({ isLexIQOpen: open }),
+      isCreatePostOpen: false,
+      setIsCreatePostOpen: (open) => set({ isCreatePostOpen: open }),
       lexiqMessages: [{ role: 'ai', content: 'Hello! I am LexIQ, your IP assistant. How can I help you today?' }],
       setLexiqMessages: (lexiqMessages) => set({ lexiqMessages }),
       user: null,

@@ -18,10 +18,11 @@ import FeedStoriesCarousel from '@/components/FeedStoriesCarousel';
 import MobileCommentDrawer from '@/components/MobileCommentDrawer';
 
 export default function PlatformPage() {
-  const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode } = useAppStore();
+  const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode, isCreatePostOpen, setIsCreatePostOpen } = useAppStore();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Latest');
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
+  const isModalOpen = isCreatePostModalOpen || isCreatePostOpen;
   const [isClosingModal, setIsClosingModal] = useState(false);
   const [postPrivacy, setPostPrivacy] = useState<'Anyone' | 'Followers only'>('Anyone');
   const [isPrivacyDropdownOpen, setIsPrivacyDropdownOpen] = useState(false);
@@ -117,10 +118,11 @@ export default function PlatformPage() {
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isCreatePostModalOpen && !isClosingModal) {
+      if (e.key === 'Escape' && isModalOpen && !isClosingModal) {
         setIsClosingModal(true);
         setTimeout(() => {
           setIsCreatePostModalOpen(false);
+          setIsCreatePostOpen(false);
           setPublishSuccess(false);
           setPostContent('');
           setUploadError(null);
@@ -130,7 +132,7 @@ export default function PlatformPage() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isCreatePostModalOpen, isClosingModal]);
+  }, [isModalOpen, isClosingModal, setIsCreatePostOpen]);
   
   const [attachedMedia, setAttachedMedia] = useState<{
     file: File;
@@ -161,6 +163,7 @@ export default function PlatformPage() {
     setIsClosingModal(true);
     setTimeout(() => {
       setIsCreatePostModalOpen(false);
+      setIsCreatePostOpen(false);
       setPublishSuccess(false);
       setPostContent('');
       setAttachedMedia(null);
@@ -502,7 +505,7 @@ export default function PlatformPage() {
               </div>
 
               {/* CREATE POST MODAL */}
-              {isCreatePostModalOpen && (
+              {isModalOpen && (
                 <div className={`fixed inset-0 bg-gray-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-0 transition-opacity ${isClosingModal ? 'animate-out fade-out duration-200' : 'animate-in fade-in duration-200'}`}>
                   <div className={`bg-white dark:bg-[#0f172a] rounded-[2rem] w-full max-w-lg shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col border border-white/50 relative group ease-out ${isClosingModal ? 'animate-out fade-out zoom-out-95 duration-200' : 'animate-in fade-in zoom-in-95 duration-200'}`}>
                     
