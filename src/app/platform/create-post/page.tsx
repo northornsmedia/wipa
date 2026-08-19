@@ -186,7 +186,7 @@ export default function CreatePostPage() {
   const isPostEmpty = !postContent.trim() && !attachedMedia;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0b0f19] text-gray-900 dark:text-white flex flex-col justify-between w-full max-w-full min-w-0 box-border">
+    <div className="fixed inset-0 z-50 h-[100dvh] max-h-[100dvh] w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] text-gray-900 dark:text-white flex flex-col overflow-hidden box-border">
       
       {/* Hidden File Inputs */}
       <input 
@@ -212,7 +212,7 @@ export default function CreatePostPage() {
       />
 
       {/* TOP APP BAR (Instagram Style) */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800/80 px-4 h-14 flex items-center justify-between pt-safe">
+      <header className="shrink-0 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800/80 px-4 h-14 flex items-center justify-between pt-safe z-10">
         <button
           onClick={() => router.back()}
           className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-200 flex items-center justify-center active:scale-90 transition-transform"
@@ -251,7 +251,7 @@ export default function CreatePostPage() {
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 p-4 flex flex-col space-y-4 max-w-2xl mx-auto w-full box-border">
+      <main className="flex-1 overflow-y-auto p-4 flex flex-col space-y-4 max-w-2xl mx-auto w-full box-border [scrollbar-width:none]">
         
         {/* Error Alert */}
         {uploadError && (
@@ -480,8 +480,8 @@ export default function CreatePostPage() {
         )}
       </main>
 
-      {/* BOTTOM STICKY TOOLBAR (Instagram Style) */}
-      <footer className="sticky bottom-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800/80 px-4 py-3 pb-safe flex items-center justify-between">
+      {/* BOTTOM FIXED TOOLBAR (Pinned cleanly to viewport bottom) */}
+      <footer className="shrink-0 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800/80 px-4 py-3 pb-[max(env(safe-area-inset-bottom),12px)] flex items-center justify-between z-40 w-full">
         
         {/* Media Pickers */}
         <div className="flex items-center gap-2 sm:gap-3">
