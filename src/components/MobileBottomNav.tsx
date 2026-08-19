@@ -1,17 +1,24 @@
 // @ts-nocheck
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Home, Plus, BookOpen, User, MessageSquare } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import MobileCreationSheet from './MobileCreationSheet';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const user = useAppStore((state) => state.user);
   const [isCreationOpen, setIsCreationOpen] = useState(false);
+
+  // Proactively warm up and prefetch all primary platform routes on mount
+  useEffect(() => {
+    const routes = ['/platform', '/platform/messages', '/platform/resources', '/platform/profile', '/platform/network'];
+    routes.forEach(r => router.prefetch(r));
+  }, [router]);
 
   const isActive = (path: string) => {
     if (path === '/platform') return pathname === '/platform';
@@ -29,7 +36,9 @@ export default function MobileBottomNav() {
           {/* 1. Feed / Home */}
           <Link
             href="/platform"
-            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 ${
+            prefetch={true}
+            onTouchStart={() => router.prefetch('/platform')}
+            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 touch-manipulation ${
               isActive('/platform')
                 ? 'text-[#5a32fa] dark:text-[#ff90e8]'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
@@ -45,7 +54,9 @@ export default function MobileBottomNav() {
           {/* 2. Messages / Chat */}
           <Link
             href="/platform/messages"
-            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 ${
+            prefetch={true}
+            onTouchStart={() => router.prefetch('/platform/messages')}
+            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 touch-manipulation ${
               isActive('/platform/messages')
                 ? 'text-[#5a32fa] dark:text-[#ff90e8]'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
@@ -63,7 +74,7 @@ export default function MobileBottomNav() {
             <button
               onClick={() => setIsCreationOpen(true)}
               aria-label="Create Post, Webinar, or Topic"
-              className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#ff2a5f] to-rose-600 text-white flex items-center justify-center shadow-lg shadow-[#ff2a5f]/40 active:scale-90 transition-transform ring-4 ring-white dark:ring-[#0b0f19]"
+              className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#ff2a5f] to-rose-600 text-white flex items-center justify-center shadow-lg shadow-[#ff2a5f]/40 active:scale-90 transition-transform ring-4 ring-white dark:ring-[#0b0f19] touch-manipulation"
             >
               <Plus size={24} strokeWidth={2.8} />
             </button>
@@ -75,7 +86,9 @@ export default function MobileBottomNav() {
           {/* 4. Resources (11 Verticals) */}
           <Link
             href="/platform/resources"
-            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 ${
+            prefetch={true}
+            onTouchStart={() => router.prefetch('/platform/resources')}
+            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 touch-manipulation ${
               isActive('/platform/resources')
                 ? 'text-[#5a32fa] dark:text-[#ff90e8]'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
@@ -91,7 +104,9 @@ export default function MobileBottomNav() {
           {/* 5. Profile */}
           <Link
             href="/platform/profile"
-            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 ${
+            prefetch={true}
+            onTouchStart={() => router.prefetch('/platform/profile')}
+            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 touch-manipulation ${
               isActive('/platform/profile')
                 ? 'text-[#5a32fa] dark:text-[#ff90e8]'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
