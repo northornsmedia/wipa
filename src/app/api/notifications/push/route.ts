@@ -118,10 +118,6 @@ export async function POST(req: Request) {
         await webpush.sendNotification(pushSubscription, payload, {
           TTL: 300, // 5 minutes immediate high-priority delivery window
           urgency: 'high',
-          headers: {
-            'Urgency': 'high',
-            'Topic': 'chat-message',
-          },
         });
         sentCount++;
       } catch (pushErr: any) {
