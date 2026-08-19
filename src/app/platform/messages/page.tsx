@@ -556,9 +556,9 @@ function MessagesContent() {
        .on('presence', { event: 'sync' }, () => {
           const state = channel.presenceState();
           const onlineUserIds = Object.keys(state);
-          const isOtherOnline = activeChat?.participantId ? onlineUserIds.includes(activeChat.participantId) : false;
           setConversations(prev => prev.map(chat => {
             if (String(chat.id) !== currentChatId) return chat;
+            const isOtherOnline = chat.participantId ? onlineUserIds.includes(chat.participantId) : false;
             return {
               ...chat,
               isOnline: isOtherOnline,
@@ -590,7 +590,7 @@ function MessagesContent() {
       activeChannelRef.current = null;
       supabase.removeChannel(channel); 
     };
-  }, [activeChatId, user?.id, activeChat?.participantId]);
+  }, [activeChatId, user?.id]);
 
   // Realtime typing broadcast handler
   const handleTypingEvent = () => {
@@ -1071,27 +1071,31 @@ function MessagesContent() {
     
     setIsUploading(true);
     try {
-      const fileName = `voice_${Date.now()}_${user.id.slice(0, 8)}.webm`;
+      const mime = recordedAudioBlob.type || 'audio/webm';
+      const ext = mime.includes('mp4') ? 'mp4' : mime.includes('aac') ? 'aac' : 'webm';
+      const fileName = `voice_${Date.now()}_${user.id.slice(0, 8)}.${ext}`;
+
       const { error: uploadError } = await supabase.storage
         .from('resources')
         .upload(fileName, recordedAudioBlob, { 
-          contentType: recordedAudioBlob.type || 'audio/webm',
+          contentType: mime,
           upsert: true 
         });
 
-      let finalUrl = recordedAudioUrl || '';
-      if (!uploadError) {
-        const { data } = supabase.storage.from('resources').getPublicUrl(fileName);
-        if (data?.publicUrl) finalUrl = data.publicUrl;
+      if (uploadError) {
+        console.error("Storage upload error:", uploadError);
+        throw uploadError;
       }
 
-      await sendMessageWithStatus('audio', '🎤 Voice message', finalUrl);
-      cancelVoiceRecord();
-    } catch (err) {
-      console.error("Failed to upload voice note:", err);
-      if (recordedAudioUrl) {
-        await sendMessageWithStatus('audio', '🎤 Voice message', recordedAudioUrl);
+      const { data } = supabase.storage.from('resources').getPublicUrl(fileName);
+      const finalUrl = data?.publicUrl || '';
+
+      if (finalUrl) {
+        await sendMessageWithStatus('audio', '🎤 Voice message', finalUrl);
       }
+      cancelVoiceRecord();
+    } catch (err: any) {
+      console.error("Failed to upload voice note:", err);
       cancelVoiceRecord();
     } finally {
       setIsUploading(false);

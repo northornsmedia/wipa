@@ -30,59 +30,64 @@ function VoiceNotePlayer({ audioUrl, isMe }: { audioUrl: string; isMe: boolean }
   const [currentTime, setCurrentTime] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    const audio = new Audio(audioUrl);
-    audioRef.current = audio;
-
-    audio.onloadedmetadata = () => {
-      if (isFinite(audio.duration) && !isNaN(audio.duration) && audio.duration > 0) {
-        setDuration(audio.duration);
-      } else {
-        // Force browser to calculate duration for streaming WebM blobs
-        audio.currentTime = 1e6;
-        audio.ontimeupdate = () => {
-          audio.ontimeupdate = null;
-          audio.currentTime = 0;
-          if (isFinite(audio.duration) && !isNaN(audio.duration) && audio.duration > 0) {
-            setDuration(audio.duration);
-          }
-        };
-      }
-    };
-
-    audio.ontimeupdate = () => {
-      if (isFinite(audio.duration) && audio.duration > 0) {
-        setCurrentTime(audio.currentTime);
-        setProgress(Math.min(100, Math.max(0, (audio.currentTime / audio.duration) * 100)));
-        if (!isFinite(duration) || duration <= 0) {
-          setDuration(audio.duration);
-        }
-      } else if (isFinite(audio.currentTime)) {
-        setCurrentTime(audio.currentTime);
-      }
-    };
-
-    audio.onended = () => {
-      setIsPlaying(false);
-      setProgress(0);
-      setCurrentTime(0);
-    };
-
-    return () => {
-      audio.pause();
-      audioRef.current = null;
-    };
-  }, [audioUrl]);
-
   const togglePlay = () => {
-    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    if (!audio) return;
+    
     if (isPlaying) {
-      audioRef.current.pause();
+      audio.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play();
-      setIsPlaying(true);
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch(err => {
+            console.warn("Audio playback interrupted or failed:", err);
+            setIsPlaying(false);
+          });
+      }
     }
+  };
+
+  const handleTimeUpdate = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (isFinite(audio.duration) && audio.duration > 0) {
+      setCurrentTime(audio.currentTime);
+      setProgress(Math.min(100, Math.max(0, (audio.currentTime / audio.duration) * 100)));
+      if (!isFinite(duration) || duration <= 0) {
+        setDuration(audio.duration);
+      }
+    } else if (isFinite(audio.currentTime)) {
+      setCurrentTime(audio.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (isFinite(audio.duration) && !isNaN(audio.duration) && audio.duration > 0) {
+      setDuration(audio.duration);
+    } else {
+      audio.currentTime = 1e6;
+      const onEndCheck = () => {
+        audio.removeEventListener('timeupdate', onEndCheck);
+        audio.currentTime = 0;
+        if (isFinite(audio.duration) && !isNaN(audio.duration) && audio.duration > 0) {
+          setDuration(audio.duration);
+        }
+      };
+      audio.addEventListener('timeupdate', onEndCheck);
+    }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setProgress(0);
+    setCurrentTime(0);
   };
 
   const formatTime = (secs: number) => {
@@ -94,6 +99,16 @@ function VoiceNotePlayer({ audioUrl, isMe }: { audioUrl: string; isMe: boolean }
 
   return (
     <div className="flex items-center gap-2.5 py-1 min-w-[200px] sm:min-w-[230px]">
+      <audio
+        ref={audioRef}
+        src={audioUrl}
+        preload="metadata"
+        playsInline
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={handleEnded}
+        className="hidden"
+      />
       <button
         type="button"
         onClick={togglePlay}
