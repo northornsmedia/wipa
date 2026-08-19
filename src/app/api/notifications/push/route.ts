@@ -32,13 +32,13 @@ export async function POST(req: Request) {
     const supabase = getSupabaseServerClient();
 
     let targetRecipientIds: string[] = [];
-    if (recipientId) {
+    if (recipientId && recipientId !== 'undefined' && recipientId !== 'null' && recipientId !== senderId) {
       targetRecipientIds.push(recipientId);
     }
 
     // If conversationId is provided, look up all other participants in the conversation
     if (conversationId) {
-      const { data: participants } = await supabase
+      const { data: participants, error: pError } = await supabase
         .from('conversation_participants')
         .select('user_id')
         .eq('conversation_id', conversationId);
@@ -46,10 +46,12 @@ export async function POST(req: Request) {
       if (participants && participants.length > 0) {
         const others = participants
           .map((p: any) => p.user_id)
-          .filter((uid: string) => !senderId || uid !== senderId);
+          .filter((uid: string) => uid && uid !== senderId && uid !== 'undefined' && uid !== 'null');
         targetRecipientIds = Array.from(new Set([...targetRecipientIds, ...others]));
       }
     }
+
+    console.log(`[Push Notification] Conversation: ${conversationId}, Sender: ${senderId}, Target Recipients:`, targetRecipientIds);
 
     if (targetRecipientIds.length === 0) {
       return NextResponse.json({ message: 'No recipients found for push notification', sentCount: 0 });

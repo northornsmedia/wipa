@@ -774,20 +774,28 @@ function MessagesContent() {
       await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeChatId);
 
       // Asynchronously trigger native background push notification for recipients
-      fetch('/api/notifications/push', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        keepalive: true,
-        body: JSON.stringify({
-          recipientId: activeChat?.participantId || null,
-          conversationId: activeChatId,
-          senderId: user.id,
-          senderName: user.name || user.email?.split('@')[0] || 'Member',
-          senderAvatar: user.avatar_url || null,
-          messageText: text,
-          mediaType: type,
-        }),
-      }).catch(pushErr => console.warn('Background push delivery trigger failed:', pushErr));
+      try {
+        const pushEndpoint = typeof window !== 'undefined' ? `${window.location.origin}/api/notifications/push` : '/api/notifications/push';
+        fetch(pushEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          keepalive: true,
+          body: JSON.stringify({
+            recipientId: activeChat?.participantId || null,
+            conversationId: activeChatId,
+            senderId: user.id,
+            senderName: user.name || user.email?.split('@')[0] || 'Member',
+            senderAvatar: user.avatar_url || null,
+            messageText: text,
+            mediaType: type,
+          }),
+        }).then(async (res) => {
+          const resData = await res.json().catch(() => ({}));
+          console.log("[Push Notification Result]:", res.status, resData);
+        }).catch(pushErr => console.warn('Background push delivery trigger failed:', pushErr));
+      } catch (err) {
+        console.warn('Push error:', err);
+      }
     } catch (err: any) {
       console.error("Message send failed:", err);
       // Mark message as failed
