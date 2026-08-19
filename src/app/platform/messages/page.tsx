@@ -184,8 +184,23 @@ function MessagesContent() {
         parsed.sort((a, b) => (b.rawTimestamp || 0) - (a.rawTimestamp || 0));
 
         if (parsed.length > 0) {
-          setConversations(parsed);
-          useAppStore.getState().setCachedConversations(parsed);
+          setConversations(prev => {
+            const existingMessagesMap: Record<string, ChatMessage[]> = {};
+            prev.forEach(chat => {
+              if (chat.messages && chat.messages.length > 0) {
+                existingMessagesMap[String(chat.id)] = chat.messages;
+              }
+            });
+
+            const merged = parsed.map(c => ({
+              ...c,
+              messages: existingMessagesMap[String(c.id)] || []
+            }));
+
+            useAppStore.getState().setCachedConversations(merged);
+            return merged;
+          });
+
           if (!activeChatIdRef.current && !targetUserId) {
             setActiveChatId(String(parsed[0].id));
           }

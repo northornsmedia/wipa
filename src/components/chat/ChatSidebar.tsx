@@ -118,7 +118,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = React.memo(({
             onClick={() => onSelectChat(String(chat.id))}
             className={`flex items-center gap-3.5 p-4 cursor-pointer transition-all duration-200 ${
               String(activeChatId) === String(chat.id) 
-                ? 'bg-[#5a32fa]/10 dark:bg-[#5a32fa]/15 border-l-4 border-[#5a32fa]' 
+                ? 'md:bg-[#5a32fa]/10 md:dark:bg-[#5a32fa]/15 md:border-l-4 md:border-[#5a32fa] bg-transparent hover:bg-gray-50 dark:hover:bg-white/5' 
                 : 'hover:bg-gray-50 dark:hover:bg-white/5'
             }`}
           >
