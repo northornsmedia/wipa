@@ -66,6 +66,7 @@ function MessagesContent() {
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const recordStartTimeRef = useRef<number>(0);
+  const lastSendTimestampRef = useRef<number>(0);
 
   // Scroll and tracking refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -784,6 +785,7 @@ function MessagesContent() {
     }
     if (!newMessage.trim() || !activeChat) return;
     
+    lastSendTimestampRef.current = Date.now();
     const msgText = newMessage.trim();
     setNewMessage("");
 
@@ -860,6 +862,10 @@ function MessagesContent() {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
+    }
+    // Block ghost click immediately following message send
+    if (Date.now() - lastSendTimestampRef.current < 650) {
+      return;
     }
     if (isVoiceRecording || recordedAudioBlob) return;
 
@@ -1358,18 +1364,11 @@ function MessagesContent() {
                     {/* Right Corner Action: Dynamic Switcher (Mic vs Send) */}
                     {newMessage.trim() ? (
                       <button 
+                        key="chat-send-btn"
                         type="button"
-                        onPointerDown={(e) => {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }}
-                        onTouchStart={(e) => {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }}
                         onMouseDown={(e) => {
+                          // Prevent button touch from stealing text input focus
                           e.preventDefault();
-                          handleSendMessage();
                         }}
                         onClick={(e) => {
                           e.preventDefault();
@@ -1382,6 +1381,7 @@ function MessagesContent() {
                       </button>
                     ) : (
                       <button 
+                        key="chat-mic-btn"
                         type="button"
                         onClick={startVoiceRecord}
                         aria-label="Record voice message"
