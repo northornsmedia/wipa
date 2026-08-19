@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import AnimatedGradientBackground from '@/components/ui/animated-gradient-background';
 
 interface MobilePullToRefreshProps {
@@ -14,11 +14,10 @@ interface MobilePullToRefreshProps {
 export default function MobilePullToRefresh({
   children,
   onRefresh,
-  pullThreshold = 75,
+  pullThreshold = 65,
 }: MobilePullToRefreshProps) {
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [startY, setStartY] = useState(0);
   const isPullingRef = useRef(false);
   const startYRef = useRef(0);
 
@@ -27,7 +26,6 @@ export default function MobilePullToRefresh({
       if (window.scrollY <= 1 && !isRefreshing) {
         isPullingRef.current = true;
         startYRef.current = e.touches[0].clientY;
-        setStartY(e.touches[0].clientY);
       } else {
         isPullingRef.current = false;
       }
@@ -40,19 +38,17 @@ export default function MobilePullToRefresh({
       const rawDelta = currentY - startYRef.current;
 
       if (rawDelta > 0 && window.scrollY <= 1) {
-        // Prevent mobile Chrome / Safari from taking over with their native loader!
         if (e.cancelable) {
           e.preventDefault();
         }
 
-        // Apply smooth rubber-band resistance curve
-        const dampened = Math.min(120, Math.pow(rawDelta, 0.82) * 2.2);
+        // Natural smooth resistance
+        const dampened = Math.min(85, Math.pow(rawDelta, 0.8) * 1.8);
         setPullDistance(dampened);
 
-        // Haptic feedback tick
         if (dampened >= pullThreshold && typeof window !== 'undefined' && 'vibrate' in navigator) {
           try {
-            navigator.vibrate?.(12);
+            navigator.vibrate?.(8);
           } catch {}
         }
       } else {
@@ -68,21 +64,15 @@ export default function MobilePullToRefresh({
         setIsRefreshing(true);
         setPullDistance(pullThreshold);
 
-        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-          try {
-            navigator.vibrate?.([15, 35, 15]);
-          } catch {}
-        }
-
         try {
           if (onRefresh) {
             await onRefresh();
           } else {
-            await new Promise((resolve) => setTimeout(resolve, 800));
+            await new Promise((resolve) => setTimeout(resolve, 750));
             window.location.reload();
           }
         } catch (err) {
-          console.error("Pull to refresh error:", err);
+          console.error("Refresh error:", err);
         } finally {
           setIsRefreshing(false);
           setPullDistance(0);
@@ -92,7 +82,6 @@ export default function MobilePullToRefresh({
       }
     };
 
-    // Attach touch listeners with passive: false to allow e.preventDefault()
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('touchend', handleTouchEnd);
@@ -111,173 +100,113 @@ export default function MobilePullToRefresh({
 
   return (
     <div className="relative w-full min-h-screen overflow-x-hidden touch-pan-y">
-      {/* FLOATING PULL-DOWN CAT MASCOT DRAWER (Mobile Only) */}
+      {/* ULTRA-MINIMAL FLOATING PULL BADGE (Instagram/Threads Style) */}
       <AnimatePresence>
-        {(pullDistance > 10 || isRefreshing) && (
+        {(pullDistance > 8 || isRefreshing) && (
           <motion.div
-            initial={{ opacity: 0, y: -60 }}
+            initial={{ opacity: 0, scale: 0.6, y: -20 }}
             animate={{
               opacity: 1,
-              y: 0,
+              scale: isRefreshing ? 1 : 0.7 + progress * 0.35,
+              y: isRefreshing ? 16 : Math.max(8, pullDistance * 0.65),
+              rotate: isRefreshing ? 0 : progress * 240,
             }}
-            exit={{ opacity: 0, y: -60 }}
-            transition={{ type: 'spring', stiffness: 450, damping: 30 }}
-            className="fixed top-14 inset-x-0 mx-auto w-[92%] max-w-sm z-50 md:hidden pointer-events-none"
+            exit={{ opacity: 0, scale: 0.5, y: -20 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+            className="fixed top-12 left-1/2 -translate-x-1/2 z-50 md:hidden pointer-events-none"
           >
-            <div className="relative overflow-hidden rounded-3xl p-3.5 bg-slate-950/95 border border-[#5a32fa]/40 shadow-2xl shadow-[#5a32fa]/30 backdrop-blur-xl flex items-center justify-between gap-3">
+            {/* Sleek 42px Circular Capsule */}
+            <div className="relative w-11 h-11 rounded-full p-0.5 bg-slate-950/90 border border-white/20 shadow-xl shadow-black/40 backdrop-blur-md flex items-center justify-center overflow-hidden">
               
-              {/* Dynamic Breathing Gradient Background */}
-              <div className="absolute inset-0 opacity-60 pointer-events-none">
+              {/* Subtle Breathing Gradient Aura inside */}
+              <div className="absolute inset-0 opacity-80 pointer-events-none rounded-full overflow-hidden">
                 <AnimatedGradientBackground
                   startingGap={90}
                   Breathing={true}
-                  animationSpeed={0.06}
+                  animationSpeed={0.08}
                   gradientColors={[
                     "#5a32fa",
                     "#ff90e8",
                     "#ffc900",
                     "#00d26a",
-                    "#7952ff",
-                    "#0f172a",
-                    "#050811"
+                    "#0a0a0f"
                   ]}
-                  gradientStops={[15, 30, 48, 65, 80, 92, 100]}
+                  gradientStops={[20, 45, 65, 85, 100]}
                 />
               </div>
 
-              {/* Cat Avatar Mascot Icon */}
-              <div className="relative z-10 flex items-center gap-3">
-                <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
-                  
-                  {/* Glowing Aura Ring */}
+              {/* Minimal Animated Mascot / Spinner Center */}
+              <div className="relative z-10 w-7 h-7 flex items-center justify-center text-white">
+                {isRefreshing ? (
+                  <RefreshCw size={15} className="animate-spin text-white drop-shadow" />
+                ) : (
                   <motion.div
                     animate={{
-                      scale: isRefreshing ? [1, 1.25, 1] : 1 + progress * 0.25,
-                      rotate: isRefreshing ? 360 : progress * 180,
+                      rotate: isReady ? [0, -12, 12, -6, 0] : 0,
+                      scale: isReady ? 1.15 : 1,
                     }}
-                    transition={isRefreshing ? { repeat: Infinity, duration: 1.5, ease: 'linear' } : {}}
-                    className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-[#5a32fa] via-[#ff90e8] to-[#00d26a] opacity-70 blur-sm"
-                  />
-
-                  <motion.div
-                    animate={{
-                      scale: isRefreshing ? [1, 1.08, 1] : 0.85 + progress * 0.25,
-                      rotate: isReady ? [0, -6, 6, -3, 0] : 0,
-                    }}
-                    transition={{ repeat: isRefreshing ? Infinity : 0, duration: 0.8 }}
-                    className="w-11 h-11 rounded-2xl bg-white dark:bg-[#151c2c] border border-white/40 shadow-md flex items-center justify-center relative overflow-hidden"
+                    className="flex items-center justify-center text-white"
                   >
-                    {/* SVG Cat Mascot */}
-                    <svg viewBox="0 0 64 64" className="w-8 h-8">
+                    {/* Cute Minimal Cat Face SVG */}
+                    <svg viewBox="0 0 32 32" className="w-5 h-5 drop-shadow">
                       {/* Ears */}
-                      <path d="M14 26 L22 10 L30 24 Z" fill="#ff90e8" />
-                      <path d="M17 24 L22 14 L27 23 Z" fill="#ffffff" opacity="0.6" />
-                      <path d="M50 26 L42 10 L34 24 Z" fill="#ff90e8" />
-                      <path d="M47 24 L42 14 L37 23 Z" fill="#ffffff" opacity="0.6" />
-
+                      <polygon points="7,13 11,5 15,12" fill="#ff90e8" />
+                      <polygon points="25,13 21,5 17,12" fill="#ff90e8" />
                       {/* Head */}
-                      <circle cx="32" cy="36" r="20" fill="#5a32fa" />
-
+                      <circle cx="16" cy="18" r="10" fill="#ffffff" />
                       {/* Eyes */}
-                      {isReady || isRefreshing ? (
+                      {isReady ? (
                         <>
-                          <path d="M22 34 Q26 28 30 34" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                          <path d="M34 34 Q38 28 42 34" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+                          <path d="M11 17 Q13 14 15 17" stroke="#151c2c" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                          <path d="M17 17 Q19 14 21 17" stroke="#151c2c" strokeWidth="1.5" strokeLinecap="round" fill="none" />
                         </>
                       ) : (
                         <>
-                          <circle cx="25" cy="33" r="3.5" fill="#ffffff" />
-                          <circle cx="26" cy="32" r="1.5" fill="#151c2c" />
-                          <circle cx="39" cy="33" r="3.5" fill="#ffffff" />
-                          <circle cx="40" cy="32" r="1.5" fill="#151c2c" />
+                          <circle cx="12.5" cy="17" r="1.5" fill="#151c2c" />
+                          <circle cx="19.5" cy="17" r="1.5" fill="#151c2c" />
                         </>
                       )}
-
-                      {/* Blushing Cheeks */}
-                      <ellipse cx="20" cy="40" rx="3.5" ry="2" fill="#ff90e8" opacity="0.9" />
-                      <ellipse cx="44" cy="40" rx="3.5" ry="2" fill="#ff90e8" opacity="0.9" />
-
-                      {/* Nose & Mouth */}
-                      <polygon points="32,38 30,35 34,35" fill="#ffc900" />
-                      <path d="M30 40 Q32 43 34 40" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" fill="none" />
-
-                      {/* Whiskers */}
-                      <line x1="12" y1="36" x2="20" y2="38" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
-                      <line x1="12" y1="42" x2="20" y2="41" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
-                      <line x1="52" y1="36" x2="44" y2="38" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
-                      <line x1="52" y1="42" x2="44" y2="41" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+                      {/* Nose */}
+                      <polygon points="16,20 15,18.5 17,18.5" fill="#5a32fa" />
+                      {/* Cheeks */}
+                      <ellipse cx="10" cy="20" rx="1.5" ry="1" fill="#ff90e8" opacity="0.8" />
+                      <ellipse cx="22" cy="20" rx="1.5" ry="1" fill="#ff90e8" opacity="0.8" />
                     </svg>
-
-                    {/* Sparkle Badge */}
-                    {isReady && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute top-0.5 right-0.5 text-yellow-300"
-                      >
-                        <Sparkles size={11} className="animate-spin" />
-                      </motion.div>
-                    )}
                   </motion.div>
-                </div>
-
-                {/* Text Description */}
-                <div>
-                  <h4 className="text-xs font-black text-white tracking-wide flex items-center gap-1.5">
-                    {isRefreshing ? (
-                      <>
-                        <RefreshCw size={12} className="animate-spin text-[#ff90e8]" />
-                        Updating WIPA Feed
-                      </>
-                    ) : isReady ? (
-                      <>Release to Refresh 🐾</>
-                    ) : (
-                      <>Pull down to refresh</>
-                    )}
-                  </h4>
-                  <p className="text-[10px] text-gray-300 font-medium">
-                    {isRefreshing ? 'Fetching latest posts & updates...' : 'Release whenever you are ready'}
-                  </p>
-                </div>
+                )}
               </div>
 
-              {/* Progress Indicator Gauge */}
-              <div className="relative z-10 w-9 h-9 flex items-center justify-center shrink-0">
-                <svg viewBox="0 0 36 36" className="w-8 h-8 transform -rotate-90">
+              {/* Ultra-fine circular SVG stroke gauge */}
+              <svg viewBox="0 0 36 36" className="absolute inset-0 w-full h-full transform -rotate-90 pointer-events-none">
+                <path
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none"
+                  stroke="rgba(255, 255, 255, 0.1)"
+                  strokeWidth="2.5"
+                />
+                {!isRefreshing && (
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
-                    stroke="rgba(255, 255, 255, 0.15)"
+                    stroke="#ff90e8"
                     strokeWidth="3"
-                  />
-                  <path
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="url(#pullProgressGradient)"
-                    strokeWidth="3.5"
                     strokeDasharray={`${progress * 100}, 100`}
                     strokeLinecap="round"
                   />
-                  <defs>
-                    <linearGradient id="pullProgressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#ff90e8" />
-                      <stop offset="100%" stopColor="#5a32fa" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
+                )}
+              </svg>
 
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* MAIN CONTENT SLIDE DOWN EFFECT */}
+      {/* Smooth Subtle Page Bounce */}
       <motion.div
         animate={{
-          y: isRefreshing ? 70 : pullDistance * 0.45,
+          y: isRefreshing ? 38 : pullDistance * 0.28,
         }}
-        transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 35 }}
         className="w-full min-h-screen"
       >
         {children}
