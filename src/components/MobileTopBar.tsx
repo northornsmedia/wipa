@@ -77,7 +77,7 @@ export default function MobileTopBar() {
     }
   };
 
-  if (pathname === '/platform/create-post') {
+  if (pathname !== '/platform') {
     return null;
   }
 
