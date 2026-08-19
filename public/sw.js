@@ -81,8 +81,23 @@ self.addEventListener('fetch', (event) => {
 
 // --- Native Background Push Notifications (Android & iOS Web Push) ---
 
+const reportSWLog = (eventName, metadata = {}) => {
+  try {
+    fetch('/api/telemetry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_name: eventName,
+        page_route: '/service-worker',
+        page_title: 'Service Worker Background Execution',
+        metadata
+      })
+    }).catch(() => {});
+  } catch (e) {}
+};
+
 self.addEventListener('push', (event) => {
-  console.log('[SW_PUSH_DEBUG] push_event_received');
+  reportSWLog('sw_push_event_received', { timestamp: Date.now() });
 
   let data = {
     title: 'New Message • WIPA',
@@ -97,12 +112,12 @@ self.addEventListener('push', (event) => {
     if (event.data) {
       const json = event.data.json();
       data = { ...data, ...json };
-      console.log('[SW_PUSH_DEBUG] payload_parsed', data);
+      reportSWLog('sw_payload_parsed', { title: data.title, body: data.body });
     }
   } catch (err) {
     if (event.data) {
       data.body = event.data.text();
-      console.log('[SW_PUSH_DEBUG] payload_text_parsed', data.body);
+      reportSWLog('sw_payload_text_parsed', { body: data.body });
     }
   }
 
@@ -117,15 +132,15 @@ self.addEventListener('push', (event) => {
     }
   };
 
-  console.log('[SW_PUSH_DEBUG] show_notification_started title=', data.title);
+  reportSWLog('sw_show_notification_started', { title: data.title });
 
   const showPromise = self.registration
     .showNotification(data.title || 'WIPA', notificationOptions)
     .then(() => {
-      console.log('[SW_PUSH_DEBUG] show_notification_resolved');
+      reportSWLog('sw_show_notification_resolved', { title: data.title });
     })
     .catch((err) => {
-      console.error('[SW_PUSH_DEBUG] show_notification_rejected:', err);
+      reportSWLog('sw_show_notification_rejected', { error: err?.message || String(err) });
     });
 
   event.waitUntil(showPromise);
