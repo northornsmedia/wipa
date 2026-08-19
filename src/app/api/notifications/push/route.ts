@@ -5,7 +5,7 @@ import { getSupabaseServerClient } from '@/lib/supabase-server';
 // Configure WebPush with VAPID keys
 const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || '';
-const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:admin@wipa.org';
+const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:connect@northonsprmarketing.com';
 
 if (vapidPublicKey && vapidPrivateKey) {
   try {
