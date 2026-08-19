@@ -932,7 +932,7 @@ function MessagesContent() {
               </div>
 
               {/* Chat Input Bar */}
-              <div className="p-4 border-t border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] shrink-0">
+              <div className="p-4 pb-[max(env(safe-area-inset-bottom,0px),1rem)] md:pb-4 border-t border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] shrink-0">
                 <form onSubmit={handleSendMessage} className="flex items-center gap-2">
                   <div className="relative">
                     <button 

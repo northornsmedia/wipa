@@ -34,7 +34,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({
   onClearChat
 }) => {
   return (
-    <div className="px-4 sm:px-6 py-3.5 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-white dark:bg-[#0f172a] shrink-0 z-10 select-none">
+    <div className="px-4 sm:px-6 pt-[max(env(safe-area-inset-top,0px),1rem)] md:pt-3.5 pb-3.5 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-white dark:bg-[#0f172a] shrink-0 z-10 select-none">
       <div className="flex items-center gap-3">
         {/* Mobile WhatsApp Back Arrow */}
         <button 
