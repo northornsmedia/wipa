@@ -1,7 +1,17 @@
 'use server';
 
-import { supabase } from '@/lib/supabase';
+import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { supabase as browserSupabase } from '@/lib/supabase';
 import { redisSafeGet, redisSafeSet, REDIS_KEYS } from '@/lib/redis';
+
+function getDbClient() {
+  try {
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return getSupabaseServerClient();
+    }
+  } catch (e) {}
+  return browserSupabase;
+}
 
 export async function searchProfiles(searchQuery: string, currentUserEmail?: string | null): Promise<any[]> {
   if (!searchQuery?.trim()) {
@@ -22,7 +32,8 @@ export async function searchProfiles(searchQuery: string, currentUserEmail?: str
     }
 
     // 2. Fetch from Supabase
-    const { data, error } = await supabase
+    const db = getDbClient();
+    const { data, error } = await db
       .from('profiles')
       .select('*')
       .ilike('full_name', `%${cleanQuery}%`)
@@ -60,9 +71,10 @@ export async function getProfileByIdOrMemberId(identifier: string): Promise<any 
     }
 
     // 2. Fetch from Supabase
+    const db = getDbClient();
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanId);
     
-    let query = supabase.from('profiles').select('*');
+    let query = db.from('profiles').select('*');
     if (isUUID) {
       query = query.eq('id', cleanId);
     } else {
@@ -73,7 +85,7 @@ export async function getProfileByIdOrMemberId(identifier: string): Promise<any 
 
     // Secondary fallback: if not found by member_id, check if identifier matches full_name or email
     if (!data && !isUUID) {
-      const { data: fallbackData } = await supabase
+      const { data: fallbackData } = await db
         .from('profiles')
         .select('*')
         .or(`full_name.ilike.%${cleanId}%,email.ilike.%${cleanId}%`)
