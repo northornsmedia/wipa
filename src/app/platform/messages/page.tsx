@@ -395,6 +395,20 @@ function MessagesContent() {
           
           setConversations(prev => prev.map(chat => String(chat.id) === currentChatId ? { ...chat, messages: msgs, unread: 0 } : chat));
           
+          // Guarantee instant snap to bottom after messages load
+          requestAnimationFrame(() => {
+            if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+            messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+          });
+          setTimeout(() => {
+            if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+            messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+          }, 60);
+          setTimeout(() => {
+            if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+            messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+          }, 200);
+
           // Mark all incoming messages as read in Supabase DB
           await supabase.from('messages')
             .update({ is_read: true, read_at: new Date().toISOString() })
@@ -572,39 +586,46 @@ function MessagesContent() {
     }, 2500);
   };
 
-  // Instant scroll to bottom on initial open / conversation switch, smooth scroll on new messages
-  useEffect(() => {
-    if (!activeChatId || !activeChat) return;
-
-    const chatIdKey = String(activeChatId);
-    const isFirstTime = !initialScrolledRef.current[chatIdKey];
-
-    if (isFirstTime && activeChat.messages.length > 0) {
-      // Instant snap to bottom
-      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
-      initialScrolledRef.current[chatIdKey] = true;
-    } else {
-      // Smooth scroll if user was already near bottom
-      const container = scrollContainerRef.current;
-      if (container) {
-        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
-        if (isNearBottom) {
-          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
+  const scrollToBottom = useCallback((behavior: 'auto' | 'smooth' = 'auto') => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }
-  }, [activeChatId, activeChat?.messages.length]);
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior });
+    }
+  }, []);
+
+  // Always snap directly to the latest/last message on opening a chat or switching conversations
+  useEffect(() => {
+    if (!activeChatId) return;
+
+    // Instant immediate scroll
+    scrollToBottom('auto');
+
+    // Re-verify across render ticks so images, bubbles, and layouts are fully accounted for
+    const r1 = requestAnimationFrame(() => scrollToBottom('auto'));
+    const t1 = setTimeout(() => scrollToBottom('auto'), 40);
+    const t2 = setTimeout(() => scrollToBottom('auto'), 120);
+    const t3 = setTimeout(() => scrollToBottom('auto'), 300);
+
+    return () => {
+      cancelAnimationFrame(r1);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [activeChatId, showMobileChat, activeChat?.messages.length, scrollToBottom]);
 
   // Scroll container scroll listener to toggle floating "Scroll to bottom" pill
   const handleScroll = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
-    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
+    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 160;
     setShowScrollBottomPill(!isNearBottom);
   };
 
   const scrollToBottomSmooth = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    scrollToBottom('smooth');
     setShowScrollBottomPill(false);
   };
 
