@@ -109,6 +109,42 @@ function MessagesContent() {
     };
   }, []);
 
+  // iOS Safari Visual Viewport Synchronizer (Keeps Chat Header permanently locked & Caret perfectly aligned)
+  useEffect(() => {
+    if (!showMobileChat) return;
+
+    const updateViewport = () => {
+      if (typeof window !== 'undefined' && window.visualViewport) {
+        const vv = window.visualViewport;
+        document.documentElement.style.setProperty('--chat-viewport-height', `${vv.height}px`);
+        document.documentElement.style.setProperty('--chat-viewport-top', `${vv.offsetTop}px`);
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+      }
+    };
+
+    if (typeof window !== 'undefined' && window.visualViewport) {
+      updateViewport();
+      window.visualViewport.addEventListener('resize', updateViewport);
+      window.visualViewport.addEventListener('scroll', updateViewport);
+    }
+
+    const prevOverflow = document.body.style.overflow;
+    const prevPosition = document.body.style.position;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      if (typeof window !== 'undefined' && window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', updateViewport);
+        window.visualViewport.removeEventListener('scroll', updateViewport);
+      }
+      document.documentElement.style.removeProperty('--chat-viewport-height');
+      document.documentElement.style.removeProperty('--chat-viewport-top');
+      document.body.style.overflow = prevOverflow;
+      document.body.style.position = prevPosition;
+    };
+  }, [showMobileChat]);
+
   // Load real conversations directly from Supabase DB with real avatar URLs and latest messages
   const fetchConversations = useCallback(async () => {
     if (!user?.id) return;
@@ -1158,7 +1194,18 @@ function MessagesContent() {
         />
 
         {/* Right Pane: Active Chat Window */}
-        <div className={`bg-white dark:bg-[#0f172a] md:rounded-3xl border-0 md:border border-gray-200 dark:border-white/10 md:shadow-xl flex-col overflow-hidden ${!showMobileChat ? 'hidden md:flex flex-1 h-full min-h-0 relative' : 'flex fixed inset-0 z-[100] h-[100dvh] max-h-[100dvh] md:relative md:flex-1 md:inset-auto md:z-auto md:h-full min-h-0'}`}>
+        <div 
+          style={showMobileChat ? {
+            height: 'var(--chat-viewport-height, 100dvh)',
+            top: 'var(--chat-viewport-top, 0px)',
+            maxHeight: 'var(--chat-viewport-height, 100dvh)',
+          } : undefined}
+          className={`bg-white dark:bg-[#0f172a] md:rounded-3xl border-0 md:border border-gray-200 dark:border-white/10 md:shadow-xl flex-col overflow-hidden ${
+            !showMobileChat 
+              ? 'hidden md:flex flex-1 h-full min-h-0 relative' 
+              : 'flex fixed inset-x-0 bottom-auto z-[100] md:relative md:flex-1 md:inset-auto md:z-auto md:h-full min-h-0'
+          }`}
+        >
           
           {activeChat ? (
             <>
@@ -1377,7 +1424,27 @@ function MessagesContent() {
                       type="text" 
                       placeholder="Type a message..."
                       value={newMessage}
-                      onFocus={() => setIsAttachmentMenuOpen(false)}
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="sentences"
+                      spellCheck={false}
+                      onFocus={() => {
+                        setIsAttachmentMenuOpen(false);
+                        if (typeof window !== 'undefined') {
+                          window.scrollTo(0, 0);
+                          document.body.scrollTop = 0;
+                          requestAnimationFrame(() => {
+                            window.scrollTo(0, 0);
+                            document.body.scrollTop = 0;
+                            scrollToBottom('auto');
+                          });
+                          setTimeout(() => {
+                            window.scrollTo(0, 0);
+                            document.body.scrollTop = 0;
+                            scrollToBottom('auto');
+                          }, 80);
+                        }
+                      }}
                       onChange={(e) => {
                         setNewMessage(e.target.value);
                         handleTypingEvent();
@@ -1388,7 +1455,7 @@ function MessagesContent() {
                           handleSendMessage();
                         }
                       }}
-                      className="flex-1 min-w-0 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-[16px] sm:text-xs leading-normal caret-[#5a32fa] transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
+                      className="flex-1 min-w-0 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-[16px] leading-normal caret-[#5a32fa] transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
                     />
 
                     {/* Right Corner Action: Dynamic Switcher (Mic vs Send) */}
