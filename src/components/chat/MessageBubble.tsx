@@ -1,5 +1,5 @@
-import React from 'react';
-import { FileText, MapPin, Play } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { FileText, MapPin, Play, Pause } from 'lucide-react';
 import { MessageStatusTick, MessageStatus } from './MessageStatusTick';
 
 export type MediaType = 'text' | 'image' | 'video' | 'document' | 'location' | 'audio';
@@ -21,6 +21,101 @@ export interface ChatMessage {
   read_at?: string | null;
   temp_id?: string;
   error?: string;
+}
+
+function VoiceNotePlayer({ audioUrl, isMe }: { audioUrl: string; isMe: boolean }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const audio = new Audio(audioUrl);
+    audioRef.current = audio;
+
+    audio.onloadedmetadata = () => {
+      setDuration(audio.duration || 0);
+    };
+
+    audio.ontimeupdate = () => {
+      if (audio.duration) {
+        setCurrentTime(audio.currentTime);
+        setProgress((audio.currentTime / audio.duration) * 100);
+      }
+    };
+
+    audio.onended = () => {
+      setIsPlaying(false);
+      setProgress(0);
+      setCurrentTime(0);
+    };
+
+    return () => {
+      audio.pause();
+      audioRef.current = null;
+    };
+  }, [audioUrl]);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const formatTime = (secs: number) => {
+    if (isNaN(secs) || secs <= 0) return '0:00';
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
+  return (
+    <div className="flex items-center gap-2.5 py-1 min-w-[200px] sm:min-w-[230px]">
+      <button
+        type="button"
+        onClick={togglePlay}
+        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-transform active:scale-90 shadow-sm ${
+          isMe 
+            ? 'bg-white text-[#5a32fa]' 
+            : 'bg-[#5a32fa] text-white'
+        }`}
+      >
+        {isPlaying ? <Pause size={14} className="fill-current" /> : <Play size={14} className="fill-current ml-0.5" />}
+      </button>
+
+      <div className="flex-1 flex flex-col justify-center min-w-0">
+        {/* Animated Waveform Visualizer */}
+        <div className="flex items-center gap-0.5 h-6 cursor-pointer" onClick={togglePlay}>
+          {[40, 75, 55, 90, 60, 100, 45, 80, 65, 95, 50, 85, 70, 40, 90, 60].map((h, i) => {
+            const barProgress = (i / 16) * 100;
+            const isPlayed = progress >= barProgress;
+            return (
+              <span
+                key={i}
+                className={`flex-1 rounded-full transition-all duration-100 ${
+                  isPlayed 
+                    ? isMe ? 'bg-white' : 'bg-[#5a32fa]' 
+                    : isMe ? 'bg-white/40' : 'bg-gray-300 dark:bg-white/20'
+                }`}
+                style={{ height: `${h}%` }}
+              />
+            );
+          })}
+        </div>
+
+        <div className={`flex justify-between items-center text-[10px] font-mono mt-0.5 ${isMe ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 interface MessageBubbleProps {
@@ -116,9 +211,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
 
         {/* 5. Voice Note Audio */}
         {message.type === 'audio' && message.mediaUrl && (
-          <div className="mb-1 w-full min-w-[200px] max-w-[260px] py-1">
-            <audio src={message.mediaUrl} controls className="w-full h-8" preload="metadata" />
-          </div>
+          <VoiceNotePlayer audioUrl={message.mediaUrl} isMe={isMe} />
         )}
 
         {/* 6. Standard Text Message */}

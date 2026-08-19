@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { 
   Paperclip, Send, Camera, Mic, MapPin, Image as ImageIcon, Video, FileText, 
-  X, Square, WifiOff, Sparkles, ChevronDown, Loader2
+  X, Square, WifiOff, Sparkles, ChevronDown, Loader2, Play, Pause, Trash2
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -51,10 +51,21 @@ function MessagesContent() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
 
-  // Voice recording state
+  // Voice recording & preview state
   const [isVoiceRecording, setIsVoiceRecording] = useState(false);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [recordedAudioBlob, setRecordedAudioBlob] = useState<Blob | null>(null);
+  const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
+  const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
+  const [previewProgress, setPreviewProgress] = useState(0);
+  const [previewCurrentTime, setPreviewCurrentTime] = useState(0);
+  const [previewTotalDuration, setPreviewTotalDuration] = useState(0);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<BlobPart[]>([]);
+  const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const previewAudioRef = useRef<HTMLAudioElement | null>(null);
+  const recordStartTimeRef = useRef<number>(0);
 
   // Scroll and tracking refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -837,14 +848,36 @@ function MessagesContent() {
     }
   };
 
-  // --- Voice Recording ---
-  const startVoiceRecord = async () => {
-    setIsAttachmentMenuOpen(false);
+  // --- Voice Recording & Preview Handlers ---
+  const formatDuration = (seconds: number) => {
+    if (isNaN(seconds) || seconds <= 0) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
+  const startVoiceRecord = async (e?: React.SyntheticEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (isVoiceRecording || recordedAudioBlob) return;
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/mp4')
+        ? 'audio/mp4'
+        : '';
+      const mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
+      recordStartTimeRef.current = Date.now();
+
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(50);
+      }
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -853,23 +886,141 @@ function MessagesContent() {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType || 'audio/webm' });
         const audioUrl = URL.createObjectURL(audioBlob);
-        sendMessageWithStatus('audio', 'Voice Message', audioUrl);
+        setRecordedAudioBlob(audioBlob);
+        setRecordedAudioUrl(audioUrl);
+        setIsVoiceRecording(false);
+        if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
         stream.getTracks().forEach(track => track.stop());
+
+        // Preload preview duration
+        const tempAudio = new Audio(audioUrl);
+        tempAudio.onloadedmetadata = () => {
+          setPreviewTotalDuration(tempAudio.duration || 0);
+        };
       };
 
-      mediaRecorder.start();
+      mediaRecorder.start(100);
       setIsVoiceRecording(true);
+      setRecordingDuration(0);
+
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingDuration(prev => prev + 1);
+      }, 1000);
     } catch (err) {
-      alert('Microphone access denied or not available.');
+      console.error("Microphone access error:", err);
+      alert("Microphone permission is required to record voice messages.");
     }
   };
 
-  const stopVoiceRecord = () => {
-    if (mediaRecorderRef.current && isVoiceRecording) {
+  const stopVoiceRecord = (e?: React.SyntheticEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!mediaRecorderRef.current || mediaRecorderRef.current.state === 'inactive') return;
+    mediaRecorderRef.current.stop();
+  };
+
+  const cancelVoiceRecord = (e?: React.SyntheticEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.onstop = () => {
+        mediaRecorderRef.current?.stream.getTracks().forEach(t => t.stop());
+      };
       mediaRecorderRef.current.stop();
-      setIsVoiceRecording(false);
+    }
+    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+    if (recordedAudioUrl) URL.revokeObjectURL(recordedAudioUrl);
+    if (previewAudioRef.current) {
+      previewAudioRef.current.pause();
+      previewAudioRef.current = null;
+    }
+    setIsVoiceRecording(false);
+    setRecordedAudioBlob(null);
+    setRecordedAudioUrl(null);
+    setRecordingDuration(0);
+    setIsPreviewPlaying(false);
+    setPreviewProgress(0);
+    setPreviewCurrentTime(0);
+    setPreviewTotalDuration(0);
+  };
+
+  const togglePlayPreview = (e?: React.SyntheticEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!recordedAudioUrl) return;
+
+    if (!previewAudioRef.current) {
+      const audio = new Audio(recordedAudioUrl);
+      previewAudioRef.current = audio;
+
+      audio.onloadedmetadata = () => {
+        setPreviewTotalDuration(audio.duration || 0);
+      };
+
+      audio.ontimeupdate = () => {
+        if (audio.duration) {
+          setPreviewCurrentTime(audio.currentTime);
+          setPreviewProgress((audio.currentTime / audio.duration) * 100);
+        }
+      };
+
+      audio.onended = () => {
+        setIsPreviewPlaying(false);
+        setPreviewProgress(0);
+        setPreviewCurrentTime(0);
+      };
+    }
+
+    if (isPreviewPlaying) {
+      previewAudioRef.current.pause();
+      setIsPreviewPlaying(false);
+    } else {
+      previewAudioRef.current.play();
+      setIsPreviewPlaying(true);
+    }
+  };
+
+  const handleSendVoiceNote = async (e?: React.SyntheticEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!recordedAudioBlob || !activeChatId || !user?.id) return;
+    
+    setIsUploading(true);
+    try {
+      const fileName = `voice_${Date.now()}_${user.id.slice(0, 8)}.webm`;
+      const { error: uploadError } = await supabase.storage
+        .from('resources')
+        .upload(fileName, recordedAudioBlob, { 
+          contentType: recordedAudioBlob.type || 'audio/webm',
+          upsert: true 
+        });
+
+      let finalUrl = recordedAudioUrl || '';
+      if (!uploadError) {
+        const { data } = supabase.storage.from('resources').getPublicUrl(fileName);
+        if (data?.publicUrl) finalUrl = data.publicUrl;
+      }
+
+      await sendMessageWithStatus('audio', '🎤 Voice message', finalUrl);
+      cancelVoiceRecord();
+    } catch (err) {
+      console.error("Failed to upload voice note:", err);
+      if (recordedAudioUrl) {
+        await sendMessageWithStatus('audio', '🎤 Voice message', recordedAudioUrl);
+      }
+      cancelVoiceRecord();
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -1057,106 +1208,195 @@ function MessagesContent() {
 
               {/* Chat Input Bar */}
               <div className="sticky bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pb-[max(env(safe-area-inset-bottom,0px),1rem)] md:pb-4 border-t border-gray-100 dark:border-white/10 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-xl shrink-0 w-full">
-                <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                  <div ref={attachmentMenuRef} className="relative">
-                    <button 
-                      type="button" 
-                      onClick={() => setIsAttachmentMenuOpen(!isAttachmentMenuOpen)}
-                      className={`w-10 h-10 flex items-center justify-center shrink-0 rounded-2xl border transition-colors ${
-                        isAttachmentMenuOpen 
-                          ? 'border-[#5a32fa] text-[#5a32fa] bg-[#5a32fa]/10' 
-                          : 'border-gray-200 dark:border-white/10 text-gray-400 hover:text-gray-700 dark:hover:text-white'
-                      }`}
-                    >
-                      <Paperclip size={18} />
-                    </button>
+                {isVoiceRecording ? (
+                  /* 1. Live Recording Mode */
+                  <div className="flex items-center justify-between gap-3 px-3.5 py-2.5 bg-rose-500/10 dark:bg-rose-500/20 border border-rose-500/30 rounded-2xl animate-in fade-in duration-150">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+                      <span className="text-rose-600 dark:text-rose-400 font-mono font-bold text-xs tracking-wider">
+                        {formatDuration(recordingDuration)}
+                      </span>
+                    </div>
 
-                    {/* Attachment Menu Popover */}
-                    {isAttachmentMenuOpen && (
-                      <div className="absolute bottom-[calc(100%+12px)] left-0 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl py-2 w-52 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                        <button type="button" onClick={openCamera} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                          <Camera size={16} /> Take Photo
-                        </button>
-                        <button type="button" onClick={startVoiceRecord} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                          <Mic size={16} /> Voice Note
-                        </button>
-                        <button type="button" onClick={handleLocationShare} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                          <MapPin size={16} /> Share Location
-                        </button>
-                        <div className="h-px bg-gray-100 dark:bg-white/10 my-1"></div>
-                        <button type="button" onClick={() => imageInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                          <ImageIcon size={16} /> Image File
-                        </button>
-                        <button type="button" onClick={() => videoInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                          <Video size={16} /> Video File
-                        </button>
-                        <button type="button" onClick={() => docInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                          <FileText size={16} /> PDF / Document
-                        </button>
-                      </div>
-                    )}
+                    {/* Animated Soundwave Oscillators */}
+                    <div className="flex items-center gap-1">
+                      <span className="w-1 h-3 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                      <span className="w-1 h-5 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                      <span className="w-1 h-7 bg-rose-500 rounded-full animate-bounce" />
+                      <span className="w-1 h-4 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.2s]" />
+                      <span className="w-1 h-6 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.1s]" />
+                      <span className="w-1 h-3 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.35s]" />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={cancelVoiceRecord}
+                        className="p-2 rounded-xl text-gray-500 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                        title="Cancel recording"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={stopVoiceRecord}
+                        className="px-3.5 py-1.5 rounded-xl bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform"
+                      >
+                        <Square size={12} className="fill-white" /> Stop
+                      </button>
+                    </div>
                   </div>
-
-                  {/* Hidden inputs */}
-                  <input type="file" ref={imageInputRef} accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'image')} />
-                  <input type="file" ref={videoInputRef} accept="video/*" className="hidden" onChange={(e) => handleFileUpload(e, 'video')} />
-                  <input type="file" ref={docInputRef} accept=".pdf,.doc,.docx,.txt" className="hidden" onChange={(e) => handleFileUpload(e, 'document')} />
-
-                  <input 
-                    ref={textInputRef}
-                    type="text" 
-                    placeholder="Type a message..."
-                    value={newMessage}
-                    onFocus={() => setIsAttachmentMenuOpen(false)}
-                    onChange={(e) => {
-                      setNewMessage(e.target.value);
-                      handleTypingEvent();
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
-                    className="flex-1 min-w-0 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-[16px] sm:text-xs leading-normal caret-[#5a32fa] transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
-                  />
-
-                  {isVoiceRecording ? (
-                    <button 
-                      type="button" 
-                      onClick={stopVoiceRecord}
-                      className="px-4 py-2.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold flex items-center gap-1.5 animate-pulse shadow-md"
-                    >
-                      <Square size={14} className="fill-white" /> Stop Recording
-                    </button>
-                  ) : (
-                    <button 
+                ) : recordedAudioBlob ? (
+                  /* 2. Voice Note Review & Preview Player Mode */
+                  <div className="flex items-center justify-between gap-3 px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl animate-in fade-in duration-150">
+                    <button
                       type="button"
-                      onPointerDown={(e) => {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }}
-                      onTouchStart={(e) => {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }}
-                      aria-label="Send message"
-                      className={`w-10 h-10 flex items-center justify-center rounded-2xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white transition-all shadow-md shadow-[#5a32fa]/30 shrink-0 ${
-                        !newMessage.trim() && !isUploading ? 'opacity-40 cursor-default' : 'active:scale-95'
-                      }`}
+                      onClick={cancelVoiceRecord}
+                      className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors shrink-0"
+                      title="Discard recording"
                     >
-                      <Send size={16} />
+                      <Trash2 size={18} />
                     </button>
-                  )}
-                </form>
+
+                    <button
+                      type="button"
+                      onClick={togglePlayPreview}
+                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#5a32fa] text-white shadow-sm shrink-0 active:scale-95 transition-transform"
+                    >
+                      {isPreviewPlaying ? <Pause size={15} className="fill-white" /> : <Play size={15} className="fill-white ml-0.5" />}
+                    </button>
+
+                    {/* Progress Track & Duration */}
+                    <div className="flex-1 flex flex-col justify-center min-w-0">
+                      <div className="w-full bg-gray-200 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
+                        <div 
+                          className="bg-[#5a32fa] h-full transition-all duration-100 rounded-full"
+                          style={{ width: `${previewProgress}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] text-gray-400 mt-1 font-mono">
+                        <span>{formatDuration(previewCurrentTime)}</span>
+                        <span>{formatDuration(previewTotalDuration || recordingDuration)}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleSendVoiceNote}
+                      disabled={isUploading}
+                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shrink-0 active:scale-95 transition-transform"
+                      title="Send voice note"
+                    >
+                      {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                    </button>
+                  </div>
+                ) : (
+                  /* 3. Standard Typing Bar with Attachment Clip & Right-Corner Action Switcher */
+                  <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                    <div ref={attachmentMenuRef} className="relative">
+                      <button 
+                        type="button" 
+                        onClick={() => setIsAttachmentMenuOpen(!isAttachmentMenuOpen)}
+                        className={`w-10 h-10 flex items-center justify-center shrink-0 rounded-2xl border transition-colors ${
+                          isAttachmentMenuOpen 
+                            ? 'border-[#5a32fa] text-[#5a32fa] bg-[#5a32fa]/10' 
+                            : 'border-gray-200 dark:border-white/10 text-gray-400 hover:text-gray-700 dark:hover:text-white'
+                        }`}
+                      >
+                        <Paperclip size={18} />
+                      </button>
+
+                      {/* Attachment Menu Popover (WITHOUT Voice Note) */}
+                      {isAttachmentMenuOpen && (
+                        <div className="absolute bottom-[calc(100%+12px)] left-0 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl py-2 w-52 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                          <button type="button" onClick={openCamera} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
+                            <Camera size={16} /> Take Photo
+                          </button>
+                          <button type="button" onClick={handleLocationShare} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
+                            <MapPin size={16} /> Share Location
+                          </button>
+                          <div className="h-px bg-gray-100 dark:bg-white/10 my-1"></div>
+                          <button type="button" onClick={() => imageInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
+                            <ImageIcon size={16} /> Image File
+                          </button>
+                          <button type="button" onClick={() => videoInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
+                            <Video size={16} /> Video File
+                          </button>
+                          <button type="button" onClick={() => docInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
+                            <FileText size={16} /> PDF / Document
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Hidden inputs */}
+                    <input type="file" ref={imageInputRef} accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'image')} />
+                    <input type="file" ref={videoInputRef} accept="video/*" className="hidden" onChange={(e) => handleFileUpload(e, 'video')} />
+                    <input type="file" ref={docInputRef} accept=".pdf,.doc,.docx,.txt" className="hidden" onChange={(e) => handleFileUpload(e, 'document')} />
+
+                    <input 
+                      ref={textInputRef}
+                      type="text" 
+                      placeholder="Type a message..."
+                      value={newMessage}
+                      onFocus={() => setIsAttachmentMenuOpen(false)}
+                      onChange={(e) => {
+                        setNewMessage(e.target.value);
+                        handleTypingEvent();
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }
+                      }}
+                      className="flex-1 min-w-0 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-[16px] sm:text-xs leading-normal caret-[#5a32fa] transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
+                    />
+
+                    {/* Right Corner Action: Dynamic Switcher (Mic vs Send) */}
+                    {newMessage.trim() ? (
+                      <button 
+                        type="button"
+                        onPointerDown={(e) => {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }}
+                        onTouchStart={(e) => {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }}
+                        aria-label="Send message"
+                        className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white transition-all shadow-md shadow-[#5a32fa]/30 shrink-0 active:scale-95"
+                      >
+                        <Send size={16} />
+                      </button>
+                    ) : (
+                      <button 
+                        type="button"
+                        onPointerDown={startVoiceRecord}
+                        onPointerUp={stopVoiceRecord}
+                        onTouchStart={startVoiceRecord}
+                        onTouchEnd={stopVoiceRecord}
+                        onMouseDown={startVoiceRecord}
+                        onMouseUp={stopVoiceRecord}
+                        onClick={startVoiceRecord}
+                        aria-label="Record voice message"
+                        title="Hold or tap to record voice message"
+                        className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-600 dark:text-gray-300 transition-all shrink-0 active:scale-90 active:bg-rose-500 active:text-white"
+                      >
+                        <Mic size={18} />
+                      </button>
+                    )}
+                  </form>
+                )}
               </div>
             </>
           ) : (
