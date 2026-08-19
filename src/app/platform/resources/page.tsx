@@ -394,24 +394,27 @@ export default function ResourcesPage() {
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
       {/* Main Content */}
-      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
+      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 pt-4 sm:pt-6 md:pt-8">
         
         {/* Header Section */}
-        <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-black flex items-center gap-4 text-transparent bg-clip-text bg-gradient-to-r from-[#131313] via-[#5a32fa] to-[#ff90e8] tracking-tight">
-              <div className="bg-[#5a32fa]/10 p-2.5 rounded-2xl flex items-center justify-center shrink-0">
-                <BookOpen size={32} className="text-[#5a32fa]" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 p-2 sm:p-2.5 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-[#5a32fa] dark:text-[#ff90e8]" />
               </div>
-              Resource Library
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 font-medium mt-3 text-lg">Access exclusive guides, templates, webinars, and reports.</p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+                Resource Library
+              </h1>
+            </div>
+            <p className="text-gray-500 dark:text-gray-400 font-medium mt-2 text-xs sm:text-sm md:text-base max-w-xl">
+              Access exclusive guides, templates, webinars, and reports.
+            </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <button className="group relative flex items-center gap-2 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white px-7 py-3.5 rounded-2xl font-bold shadow-lg shadow-[#5a32fa]/25 hover:shadow-xl hover:shadow-[#5a32fa]/40 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-              <div className="absolute inset-0 bg-white dark:bg-[#0f172a]/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-              <Plus size={20} strokeWidth={3} className="relative z-10 group-hover:rotate-90 transition-transform duration-300" />
+          <div className="flex items-center">
+            <button className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#5a32fa] to-[#ff2a5f] text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold shadow-md shadow-[#5a32fa]/20 hover:shadow-lg hover:shadow-[#5a32fa]/30 active:scale-95 transition-all overflow-hidden">
+              <Plus size={16} strokeWidth={2.8} className="relative z-10 group-hover:rotate-90 transition-transform duration-300" />
               <span className="relative z-10">Upload Resource</span>
             </button>
           </div>
