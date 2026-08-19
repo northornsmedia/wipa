@@ -30,6 +30,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isTogglingFollow, setIsTogglingFollow] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending_sent' | 'pending_received' | 'accepted'>('none');
   const [activeTab, setActiveTab] = useState<'activity' | 'about' | 'experience' | 'education' | 'skills'>('activity');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -70,7 +72,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     businessProfile: null as any
   });
 
-  const [stats, setStats] = useState({ connections: 84, followers: 310, posts: 0 });
+  const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -110,30 +112,59 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             businessProfile: null
           });
 
-          // Fetch posts by this author
-          const { data: postsData } = await supabase
-            .from('feed_posts')
-            .select(`
-              *,
-              author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, role, is_wipa_recommended)
-            `)
-            .eq('author_id', resolvedId)
-            .order('created_at', { ascending: false });
+          // Fetch real counts: connections, followers, posts
+          const [postsRes, connCountRes, followCountRes] = await Promise.all([
+            supabase
+              .from('feed_posts')
+              .select(`
+                *,
+                author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, role, is_wipa_recommended)
+              `)
+              .eq('author_id', resolvedId)
+              .order('created_at', { ascending: false }),
+            supabase
+              .from('connections')
+              .select('id', { count: 'exact', head: true })
+              .or(`requester_id.eq.${resolvedId},recipient_id.eq.${resolvedId}`)
+              .eq('status', 'accepted'),
+            supabase
+              .from('follows')
+              .select('id', { count: 'exact', head: true })
+              .eq('following_id', resolvedId)
+          ]);
 
-          if (postsData) {
-            setUserPosts(postsData);
-            setStats(prev => ({ ...prev, posts: postsData.length }));
+          if (postsRes.data) {
+            setUserPosts(postsRes.data);
           }
 
-          // Fetch connection status if current user is logged in
-          if (user?.id && user.id !== resolvedId) {
-            const { data: conn } = await supabase
-              .from('connections')
-              .select('*')
-              .or(`and(requester_id.eq.${user.id},recipient_id.eq.${resolvedId}),and(requester_id.eq.${resolvedId},recipient_id.eq.${user.id})`)
-              .maybeSingle();
+          setStats({
+            posts: postsRes.data?.length || 0,
+            connections: connCountRes.count || 0,
+            followers: followCountRes.count || 0
+          });
 
-            if (conn) {
+          // Fetch connection and follow status if current user is logged in
+          if (user?.id && user.id !== resolvedId) {
+            const [connRes, followRes, likesRes] = await Promise.all([
+              supabase
+                .from('connections')
+                .select('*')
+                .or(`and(requester_id.eq.${user.id},recipient_id.eq.${resolvedId}),and(requester_id.eq.${resolvedId},recipient_id.eq.${user.id})`)
+                .maybeSingle(),
+              supabase
+                .from('follows')
+                .select('id')
+                .eq('follower_id', user.id)
+                .eq('following_id', resolvedId)
+                .maybeSingle(),
+              supabase
+                .from('feed_likes')
+                .select('post_id')
+                .eq('user_id', user.id)
+            ]);
+
+            if (connRes.data) {
+              const conn = connRes.data;
               if (conn.status === 'accepted') {
                 setConnectionStatus('accepted');
               } else if (conn.requester_id === user.id) {
@@ -143,14 +174,10 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
               }
             }
 
-            // Fetch liked posts
-            const { data: likesData } = await supabase
-              .from('feed_likes')
-              .select('post_id')
-              .eq('user_id', user.id);
+            setIsFollowing(Boolean(followRes.data));
 
-            if (likesData) {
-              setLikedPostIds(new Set(likesData.map(l => l.post_id)));
+            if (likesRes.data) {
+              setLikedPostIds(new Set(likesRes.data.map(l => l.post_id)));
             }
           }
         } else {
@@ -158,7 +185,6 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
         }
       } catch (err) {
         console.error("Error fetching member profile:", err);
-        setNotFound(true);
       } finally {
         setIsLoading(false);
       }
@@ -166,6 +192,45 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
 
     fetchProfile();
   }, [profileId, user?.id]);
+
+  const handleToggleFollow = async () => {
+    if (!user?.id || isTogglingFollow || !profileData.id) return;
+    setIsTogglingFollow(true);
+    const currentlyFollowing = isFollowing;
+
+    try {
+      if (currentlyFollowing) {
+        await supabase
+          .from('follows')
+          .delete()
+          .eq('follower_id', user.id)
+          .eq('following_id', profileData.id);
+        setIsFollowing(false);
+        setStats(prev => ({ ...prev, followers: Math.max(0, prev.followers - 1) }));
+      } else {
+        await supabase
+          .from('follows')
+          .insert({
+            follower_id: user.id,
+            following_id: profileData.id
+          });
+        await supabase.from('notifications').insert({
+          user_id: profileData.id,
+          actor_id: user.id,
+          type: 'new_follower',
+          content: `${user.name || 'Someone'} started following you!`,
+          link: `/platform/profile/${user.id}`,
+          is_read: false
+        });
+        setIsFollowing(true);
+        setStats(prev => ({ ...prev, followers: prev.followers + 1 }));
+      }
+    } catch (err) {
+      console.error("Failed to toggle follow:", err);
+    } finally {
+      setIsTogglingFollow(false);
+    }
+  };
 
   const handleConnect = async () => {
     if (!user?.id || !profileData.id || profileData.id === user.id) return;
@@ -331,7 +396,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                       connectionStatus === 'accepted'
                         ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
                         : connectionStatus === 'pending_sent'
-                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-500'
+                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-not-allowed'
                         : 'bg-[#5a32fa] hover:bg-[#4a24db] text-white'
                     }`}
                   >
@@ -347,13 +412,46 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                   </button>
                 )}
 
-                {/* Direct Message Button */}
-                <Link 
-                  href={`/platform/messages?user=${profileData.id}`}
-                  className="px-4 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold text-sm flex items-center gap-2 transition-all"
-                >
-                  <MessageSquare size={16} /> Message
-                </Link>
+                {/* Follow / Following Action Button */}
+                {user?.id !== profileData.id && (
+                  <button 
+                    onClick={handleToggleFollow}
+                    disabled={isTogglingFollow}
+                    className={`px-4 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 shadow-sm transition-all border ${
+                      isFollowing
+                        ? 'bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#ff90e8] border-[#5a32fa]/30 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-300'
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700 hover:border-[#5a32fa] hover:text-[#5a32fa]'
+                    }`}
+                  >
+                    {isTogglingFollow ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : isFollowing ? (
+                      <><Users size={16} /> Following</>
+                    ) : (
+                      <><UserPlus size={16} /> Follow</>
+                    )}
+                  </button>
+                )}
+
+                {/* Direct Message Button (Gated by Accepted Connection) */}
+                {user?.id !== profileData.id && (
+                  connectionStatus === 'accepted' ? (
+                    <Link 
+                      href={`/platform/messages?userId=${profileData.id}`}
+                      className="px-4 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold text-sm flex items-center gap-2 transition-all shadow-sm"
+                    >
+                      <MessageSquare size={16} /> Message
+                    </Link>
+                  ) : (
+                    <button 
+                      onClick={() => alert("You must connect with " + profileData.name + " before sending direct messages.")}
+                      className="px-4 py-2.5 rounded-full bg-gray-100 dark:bg-gray-800/60 text-gray-400 dark:text-gray-500 font-semibold text-sm flex items-center gap-2 border border-dashed border-gray-300 dark:border-gray-700 cursor-not-allowed"
+                      title="Connect with member to unlock messaging"
+                    >
+                      <MessageSquare size={16} className="opacity-40" /> Message
+                    </button>
+                  )
+                )}
 
                 <button 
                   onClick={() => setIsShareModalOpen(true)}

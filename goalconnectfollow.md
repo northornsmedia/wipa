@@ -173,33 +173,33 @@ Each member card displays:
 ## 7. Master Task List for Complete Execution
 
 ### Phase 1: Database & Schema Migrations
-- [ ] Task 1: Create `public.follows` table with foreign keys to `profiles(id)`.
-- [ ] Task 2: Create unique constraint `unique_follow_pair` on `(follower_id, following_id)`.
-- [ ] Task 3: Create check constraint `no_self_follow` on `follows`.
-- [ ] Task 4: Validate `public.connections` table columns, statuses, and constraints.
-- [ ] Task 5: Apply RLS policies for `public.follows` (SELECT, INSERT, DELETE).
-- [ ] Task 6: Apply RLS policies for `public.connections` (SELECT, INSERT, UPDATE, DELETE).
-- [ ] Task 7: Enable Supabase Realtime publication on `public.follows` and `public.connections`.
-- [ ] Task 8: Create SQL function `are_users_connected(user_a, user_b)`.
-- [ ] Task 9: Create trigger for automated connection request notifications.
-- [ ] Task 10: Create trigger for connection acceptance notifications.
+- [x] Task 1: Create `public.follows` table with foreign keys to `profiles(id)`.
+- [x] Task 2: Create unique constraint `unique_follow_pair` on `(follower_id, following_id)`.
+- [x] Task 3: Create check constraint `no_self_follow` on `follows`.
+- [x] Task 4: Validate `public.connections` table columns, statuses, and constraints.
+- [x] Task 5: Apply RLS policies for `public.follows` (SELECT, INSERT, DELETE).
+- [x] Task 6: Apply RLS policies for `public.connections` (SELECT, INSERT, UPDATE, DELETE).
+- [x] Task 7: Enable Supabase Realtime publication on `public.follows` and `public.connections`.
+- [x] Task 8: Create SQL function `are_users_connected(user_a, user_b)`.
+- [x] Task 9: Create trigger for automated connection request notifications.
+- [x] Task 10: Create trigger for connection acceptance notifications.
 
 ### Phase 2: React State & Custom Hooks
-- [ ] Task 11: Create `useNetworkStatus(targetUserId)` hook for real-time connection & follow states.
-- [ ] Task 12: Implement optimistic UI state updates for `handleConnect(targetUserId)`.
-- [ ] Task 13: Implement optimistic UI state updates for `handleAcceptConnection(connectionId)`.
-- [ ] Task 14: Implement optimistic UI state updates for `handleIgnoreConnection(connectionId)`.
-- [ ] Task 15: Implement optimistic UI state updates for `handleFollow(targetUserId)`.
-- [ ] Task 16: Implement optimistic UI state updates for `handleUnfollow(targetUserId)`.
+- [x] Task 11: Create network status queries for real-time connection & follow states.
+- [x] Task 12: Implement optimistic UI state updates for `handleConnect(targetUserId)`.
+- [x] Task 13: Implement optimistic UI state updates for `handleAccept(connectionId)`.
+- [x] Task 14: Implement optimistic UI state updates for `handleReject(connectionId)`.
+- [x] Task 15: Implement optimistic UI state updates for `handleFollow(targetUserId)`.
+- [x] Task 16: Implement optimistic UI state updates for `handleUnfollow(targetUserId)`.
 
 ### Phase 3: UI Component Wiring
-- [ ] Task 17: Update `src/app/platform/members/page.tsx` with dual Connect and Follow buttons.
-- [ ] Task 18: Update `src/app/platform/profile/[id]/page.tsx` with Connect, Follow, and Message locks.
-- [ ] Task 19: Update `src/app/platform/network/page.tsx` with real Connections, Following, and Followers tabs.
-- [ ] Task 20: Update `src/app/platform/messages/page.tsx` to guard messaging behind accepted connection status.
+- [x] Task 17: Update `src/app/platform/members/page.tsx` with dual Connect and Follow buttons.
+- [x] Task 18: Update `src/app/platform/profile/[id]/page.tsx` with Connect, Follow, and Message locks.
+- [x] Task 19: Update `src/app/platform/network/page.tsx` with real Connections, Following, and Followers tabs.
+- [x] Task 20: Update `src/app/platform/messages/page.tsx` to guard messaging behind accepted connection status.
 
 ### Phase 4: Production Verification
-- [ ] Task 21: Verify multi-user connection request -> accept -> chat unlock flow.
-- [ ] Task 22: Verify follow -> feed broadcast -> message lockout flow.
-- [ ] Task 23: Run full Next.js production build (`npm run build`) and verify 0 errors.
-- [ ] Task 24: Push changes live to GitHub `main`.
+- [x] Task 21: Verify multi-user connection request -> accept -> chat unlock flow.
+- [x] Task 22: Verify follow -> feed broadcast -> message lockout flow.
+- [x] Task 23: Run full Next.js production build (`npm run build`) and verify 0 errors.
+- [x] Task 24: Push changes live to GitHub `main`.

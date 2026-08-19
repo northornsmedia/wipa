@@ -191,10 +191,24 @@ function MessagesContent() {
     fetchConversations();
   }, [fetchConversations]);
 
-  // Handle direct targetUserId routing
+  // Handle direct targetUserId routing with mutual connection check
   useEffect(() => {
     if (targetUserId && user?.id) {
        const initChat = async () => {
+          // Verify mutual accepted connection
+          const { data: conn } = await supabase
+            .from('connections')
+            .select('id')
+            .or(`and(requester_id.eq.${user.id},recipient_id.eq.${targetUserId}),and(requester_id.eq.${targetUserId},recipient_id.eq.${user.id})`)
+            .eq('status', 'accepted')
+            .maybeSingle();
+
+          if (!conn) {
+            alert("Direct messaging is locked until connection is accepted. Please connect on the member's profile first.");
+            router.push(`/platform/profile/${targetUserId}`);
+            return;
+          }
+
           const { data: existingConvs } = await supabase
              .from('conversation_participants')
              .select('conversation_id')
@@ -248,7 +262,7 @@ function MessagesContent() {
        };
        initChat();
     }
-  }, [targetUserId, user?.id]);
+  }, [targetUserId, user?.id, router]);
 
   // Mark conversation as read both locally, in cached store, and in live Supabase DB
   const markAsRead = useCallback(async (id: string) => {

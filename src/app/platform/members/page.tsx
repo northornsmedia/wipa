@@ -27,7 +27,9 @@ export default function MembersDirectoryPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [connectionStatuses, setConnectionStatuses] = useState<Record<string, 'pending' | 'accepted' | 'none'>>({});
+  const [followStatuses, setFollowStatuses] = useState<Record<string, boolean>>({});
   const [isConnecting, setIsConnecting] = useState<Record<string, boolean>>({});
+  const [isFollowingMap, setIsFollowingMap] = useState<Record<string, boolean>>({});
   const [filter, setFilter] = useState<'all' | 'recommended'>('all');
 
   useEffect(() => {
@@ -81,22 +83,34 @@ export default function MembersDirectoryPage() {
         
         setMembers(combined);
         
-        // Also fetch connections involving this user
+        // Fetch connections & follows involving this user
         if (user?.id && data.length > 0) {
-          const { data: connections } = await supabase
-            .from('connections')
-            .select('*')
-            .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`);
+          const [connRes, followRes] = await Promise.all([
+            supabase
+              .from('connections')
+              .select('*')
+              .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`),
+            supabase
+              .from('follows')
+              .select('following_id')
+              .eq('follower_id', user.id)
+          ]);
             
-          if (connections) {
+          if (connRes.data) {
             const statuses: Record<string, 'pending' | 'accepted' | 'none'> = {};
-            
-            connections.forEach(conn => {
+            connRes.data.forEach(conn => {
               const otherId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
               statuses[otherId] = conn.status;
             });
-            
             setConnectionStatuses(statuses);
+          }
+
+          if (followRes.data) {
+            const fStatuses: Record<string, boolean> = {};
+            followRes.data.forEach(f => {
+              fStatuses[f.following_id] = true;
+            });
+            setFollowStatuses(fStatuses);
           }
         }
       }
@@ -167,6 +181,43 @@ export default function MembersDirectoryPage() {
       console.error(err);
     } finally {
       setIsConnecting(prev => ({ ...prev, [targetId]: false }));
+    }
+  };
+
+  const handleToggleFollow = async (targetId: string) => {
+    if (!user?.id || isFollowingMap[targetId]) return;
+    setIsFollowingMap(prev => ({ ...prev, [targetId]: true }));
+    const isCurrentlyFollowing = Boolean(followStatuses[targetId]);
+
+    try {
+      if (isCurrentlyFollowing) {
+        await supabase
+          .from('follows')
+          .delete()
+          .eq('follower_id', user.id)
+          .eq('following_id', targetId);
+        setFollowStatuses(prev => ({ ...prev, [targetId]: false }));
+      } else {
+        await supabase
+          .from('follows')
+          .insert({
+            follower_id: user.id,
+            following_id: targetId
+          });
+        await supabase.from('notifications').insert({
+          user_id: targetId,
+          actor_id: user.id,
+          type: 'new_follower',
+          content: `${user.name || 'Someone'} started following you!`,
+          link: `/platform/profile/${user.id}`,
+          is_read: false
+        });
+        setFollowStatuses(prev => ({ ...prev, [targetId]: true }));
+      }
+    } catch (err) {
+      console.error("Failed to toggle follow:", err);
+    } finally {
+      setIsFollowingMap(prev => ({ ...prev, [targetId]: false }));
     }
   };
 
@@ -279,39 +330,47 @@ export default function MembersDirectoryPage() {
                   </div>
                   
                   {member.type !== 'business' && (
-                    <div className="mt-auto flex gap-3">
-                      {connectionStatuses[member.id] === 'accepted' ? (
-                        <Link 
-                          href={`/platform/messages?userId=${member.id}`}
-                          className="flex-1 bg-[#5a32fa] text-white font-bold py-3 px-4 rounded-xl border border-gray-200 dark:border-white/20 hover:bg-[#4a26d2] transition-colors flex items-center justify-center gap-2"
+                    <div className="mt-auto flex flex-col gap-2">
+                      <div className="flex gap-2">
+                        {/* 1. Connect / Connected Message Action */}
+                        {connectionStatuses[member.id] === 'accepted' ? (
+                          <Link 
+                            href={`/platform/messages?userId=${member.id}`}
+                            className="flex-1 bg-[#5a32fa] text-white font-bold py-2.5 px-4 rounded-xl hover:bg-[#4a26d2] transition-all flex items-center justify-center gap-1.5 text-xs shadow-sm"
+                          >
+                            <MessageSquare size={16} /> Message
+                          </Link>
+                        ) : connectionStatuses[member.id] === 'pending' ? (
+                          <button 
+                            disabled
+                            className="flex-1 bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 font-bold py-2.5 px-4 rounded-xl border border-gray-200 dark:border-white/10 flex items-center justify-center gap-1.5 text-xs cursor-not-allowed"
+                          >
+                            <CheckCircle2 size={16} /> Pending
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => handleConnect(member.id)}
+                            disabled={isConnecting[member.id]}
+                            className="flex-1 bg-[#131313] dark:bg-white dark:text-black text-white font-bold py-2.5 px-4 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all flex items-center justify-center gap-1.5 text-xs disabled:opacity-50"
+                          >
+                            <UserPlus size={16} /> {isConnecting[member.id] ? 'Sending...' : 'Connect'}
+                          </button>
+                        )}
+
+                        {/* 2. Asymmetric 1-Way Follow / Following Action */}
+                        <button
+                          onClick={() => handleToggleFollow(member.id)}
+                          disabled={isFollowingMap[member.id]}
+                          className={`px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all border shrink-0 ${
+                            followStatuses[member.id]
+                              ? 'bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#a855f7] border-[#5a32fa]/30 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-300'
+                              : 'bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-white/10 hover:border-[#5a32fa] hover:text-[#5a32fa]'
+                          }`}
                         >
-                          <MessageSquare size={18} /> Message
-                        </Link>
-                      ) : connectionStatuses[member.id] === 'pending' ? (
-                        <button 
-                          disabled
-                          className="flex-1 bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 font-bold py-3 px-4 rounded-xl border border-gray-200 dark:border-white/20 flex items-center justify-center gap-2 cursor-not-allowed"
-                        >
-                          <CheckCircle2 size={18} /> Request Sent
+                          <Users size={15} />
+                          <span>{followStatuses[member.id] ? 'Following' : 'Follow'}</span>
                         </button>
-                      ) : (
-                        <button 
-                          onClick={() => handleConnect(member.id)}
-                          disabled={isConnecting[member.id]}
-                          className="flex-1 bg-[#131313] text-white font-bold py-3 px-4 rounded-xl border border-gray-200 dark:border-white/20 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <UserPlus size={18} /> {isConnecting[member.id] ? 'Connecting...' : 'Connect'}
-                        </button>
-                      )}
-                      
-                      {connectionStatuses[member.id] !== 'accepted' && (
-                        <Link 
-                          href={`/platform/messages?userId=${member.id}`}
-                          className="w-12 flex items-center justify-center bg-[#fbe8d5] text-[#131313] font-bold rounded-xl border border-gray-200 dark:border-white/20 hover:bg-[#f6d5b3] transition-colors shrink-0"
-                        >
-                          <Mail size={18} />
-                        </Link>
-                      )}
+                      </div>
                     </div>
                   )}
                 </div>

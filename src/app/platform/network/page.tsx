@@ -1,199 +1,306 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { 
-  Calendar, LayoutGrid, Users, Mail, UsersRound, FileText, Briefcase, GraduationCap,
-  BadgeCheck, ThumbsUp, MessageCircle, UserPlus, UserMinus, Search, MoreHorizontal, ArrowLeft, Filter
+  UsersRound, Search, MoreHorizontal, ArrowLeft, Filter,
+  MessageCircle, UserPlus, UserMinus, UserCheck, Check, X, Users
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AdSlot from '@/components/AdSlot';
 
-const COUNTRIES = ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France'];
+const COUNTRIES = ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'India', 'Japan'];
 const PRACTICE_AREAS = ['Patent Prosecution', 'Trademark Law', 'IP Litigation', 'Tech Licensing', 'Copyright Law', 'Brand Protection'];
 const INDUSTRIES = ['Technology', 'Pharmaceuticals', 'Manufacturing', 'Entertainment', 'Automotive', 'Academia'];
 
 export default function NetworkPage() {
   const { user } = useAppStore();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'Connections' | 'Followers' | 'Following'>('Connections');
+  const [activeTab, setActiveTab] = useState<'Connections' | 'Following' | 'Followers'>('Connections');
   const [network, setNetwork] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [invitations, setInvitations] = useState<any[]>([]);
   const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  
-  useEffect(() => {
-    if (user?.id) {
-      const fetchInvitations = async () => {
-        const { data } = await supabase
-          .from('connections')
-          .select(`
-            id,
-            requester_id,
-            status,
-            requester:profiles!requester_id(id, full_name, avatar_url)
-          `)
-          .eq('recipient_id', user.id)
-          .eq('status', 'pending');
-          
-        if (data) {
-          setInvitations(data);
-        }
-      };
-
-      const fetchNetwork = async () => {
-        const { data: acceptedConnections } = await supabase
-          .from('connections')
-          .select(`
-            id,
-            requester:profiles!requester_id(id, full_name, avatar_url, country, practice_area),
-            recipient:profiles!recipient_id(id, full_name, avatar_url, country, practice_area)
-          `)
-          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-          .eq('status', 'accepted')
-          .range((page - 1) * 20, page * 20 - 1);
-
-        if (acceptedConnections) {
-          if (acceptedConnections.length < 20) setHasMore(false);
-          const formattedNetwork = acceptedConnections.map(conn => {
-            const req: any = Array.isArray(conn.requester) ? conn.requester[0] : conn.requester;
-            const rec: any = Array.isArray(conn.recipient) ? conn.recipient[0] : conn.recipient;
-            const isRequester = req.id === user.id;
-            const otherPerson = isRequester ? rec : req;
-            
-            return {
-              id: otherPerson.id,
-              name: otherPerson.full_name || 'Anonymous User',
-              role: 'WIPA Member',
-              avatarColor: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
-              initial: otherPerson.full_name?.charAt(0).toUpperCase() || 'U',
-              isConnection: true,
-              isFollowing: true,
-              country: otherPerson.country || COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)],
-              practiceArea: otherPerson.practice_area || PRACTICE_AREAS[Math.floor(Math.random() * PRACTICE_AREAS.length)],
-              industrySector: INDUSTRIES[Math.floor(Math.random() * INDUSTRIES.length)],
-              mutualConnections: Math.floor(Math.random() * 50)
-            };
-          });
-          setNetwork(prev => page === 1 ? formattedNetwork : [...prev, ...formattedNetwork]);
-        } else {
-          setHasMore(false);
-        }
-      };
-
-      const fetchSuggestions = async () => {
-        const { data: allProfiles } = await supabase
-          .from('profiles')
-          .select('id, full_name, role, avatar_url, country, practice_area')
-          .neq('id', user.id)
-          .limit(10);
-          
-        if (allProfiles) {
-          // Filter out existing connections and pending requests
-          const { data: myConnections } = await supabase
-            .from('connections')
-            .select('requester_id, recipient_id')
-            .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`);
-            
-          const connectedIds = new Set();
-          if (myConnections) {
-            myConnections.forEach(c => {
-              connectedIds.add(c.requester_id);
-              connectedIds.add(c.recipient_id);
-            });
-          }
-          
-          const filtered = allProfiles
-            .filter(p => !connectedIds.has(p.id))
-            .map(p => ({
-              id: p.id,
-              name: p.full_name || 'Anonymous User',
-              role: p.role || 'WIPA Member',
-              avatarUrl: p.avatar_url,
-              color: ['#5a32fa', '#ff90e8', '#00d26a', '#ffc900'][Math.floor(Math.random() * 4)],
-              initial: (p.full_name || 'A').charAt(0).toUpperCase()
-            }));
-            
-          setSuggestions(filtered.slice(0, 5));
-        }
-      };
-
-      fetchInvitations();
-      fetchNetwork();
-      fetchSuggestions();
-    }
-  }, [user?.id, page]);
-
-  const handleAccept = async (connectionId: string) => {
-    await supabase
-      .from('connections')
-      .update({ status: 'accepted' })
-      .eq('id', connectionId);
-      
-    const invite = invitations.find(i => i.id === connectionId);
-    if (invite && user?.id) {
-      await supabase.from('notifications').insert({
-        user_id: invite.requester_id,
-        actor_id: user.id,
-        type: 'connection_accepted'
-      });
-    }
-    
-    setInvitations(invitations.filter(i => i.id !== connectionId));
-  };
-
-  const handleReject = async (connectionId: string) => {
-    await supabase
-      .from('connections')
-      .delete()
-      .eq('id', connectionId);
-      
-    setInvitations(invitations.filter(i => i.id !== connectionId));
-  };
-  
-  const handleConnect = async (targetId: string) => {
-    if (!user?.id) return;
-    const { error } = await supabase.from('connections').insert({
-      requester_id: user.id,
-      recipient_id: targetId,
-      status: 'pending'
-    });
-    
-    if (!error) {
-      await supabase.from('notifications').insert({
-        user_id: targetId,
-        actor_id: user.id,
-        type: 'connection_request'
-      });
-      setSuggestions(suggestions.filter(s => s.id !== targetId));
-    }
-  };
+  const [counts, setCounts] = useState({ connections: 0, following: 0, followers: 0 });
+  const [loading, setLoading] = useState(true);
   
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedPracticeArea, setSelectedPracticeArea] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('');
   const [isFilterTrayOpen, setIsFilterTrayOpen] = useState(false);
 
-  const toggleConnection = (id: number) => {
-    setNetwork(network.map(person => 
-      person.id === id ? { ...person, isConnection: !person.isConnection } : person
-    ));
+  // Fetch pending invitations & overall tab counts
+  const fetchCountsAndInvitations = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      // 1. Pending incoming connection invitations
+      const { data: invData } = await supabase
+        .from('connections')
+        .select(`
+          id,
+          requester_id,
+          status,
+          requester:profiles!requester_id(id, full_name, avatar_url, role, practice_area)
+        `)
+        .eq('recipient_id', user.id)
+        .eq('status', 'pending');
+        
+      if (invData) {
+        setInvitations(invData);
+      }
+
+      // 2. Exact Counts for tabs
+      const [connCount, followingCount, followersCount] = await Promise.all([
+        supabase
+          .from('connections')
+          .select('id', { count: 'exact', head: true })
+          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+          .eq('status', 'accepted'),
+        supabase
+          .from('follows')
+          .select('id', { count: 'exact', head: true })
+          .eq('follower_id', user.id),
+        supabase
+          .from('follows')
+          .select('id', { count: 'exact', head: true })
+          .eq('following_id', user.id)
+      ]);
+
+      setCounts({
+        connections: connCount.count || 0,
+        following: followingCount.count || 0,
+        followers: followersCount.count || 0
+      });
+    } catch (err) {
+      console.error("Error fetching network counts:", err);
+    }
+  }, [user?.id]);
+
+  // Fetch items for the currently selected tab
+  const fetchTabContent = useCallback(async () => {
+    if (!user?.id) return;
+    setLoading(true);
+
+    try {
+      if (activeTab === 'Connections') {
+        const { data } = await supabase
+          .from('connections')
+          .select(`
+            id,
+            requester:profiles!requester_id(id, full_name, avatar_url, country, practice_area, role),
+            recipient:profiles!recipient_id(id, full_name, avatar_url, country, practice_area, role)
+          `)
+          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+          .eq('status', 'accepted');
+
+        if (data) {
+          const formatted = data.map(conn => {
+            const req: any = Array.isArray(conn.requester) ? conn.requester[0] : conn.requester;
+            const rec: any = Array.isArray(conn.recipient) ? conn.recipient[0] : conn.recipient;
+            const isRequester = req?.id === user.id;
+            const other = isRequester ? rec : req;
+            if (!other) return null;
+
+            return {
+              id: other.id,
+              connectionId: conn.id,
+              name: other.full_name || 'Anonymous User',
+              role: other.practice_area || other.role || 'WIPA Member',
+              avatarUrl: other.avatar_url,
+              initial: (other.full_name || 'U').charAt(0).toUpperCase(),
+              country: other.country || 'Global',
+              practiceArea: other.practice_area || 'Intellectual Property',
+              isConnection: true,
+              isFollowing: true
+            };
+          }).filter(Boolean);
+
+          setNetwork(formatted);
+        }
+      } else if (activeTab === 'Following') {
+        const { data } = await supabase
+          .from('follows')
+          .select(`
+            id,
+            following:profiles!following_id(id, full_name, avatar_url, country, practice_area, role)
+          `)
+          .eq('follower_id', user.id);
+
+        if (data) {
+          const formatted = data.map(f => {
+            const other: any = Array.isArray(f.following) ? f.following[0] : f.following;
+            if (!other) return null;
+
+            return {
+              id: other.id,
+              followId: f.id,
+              name: other.full_name || 'Anonymous User',
+              role: other.practice_area || other.role || 'WIPA Member',
+              avatarUrl: other.avatar_url,
+              initial: (other.full_name || 'U').charAt(0).toUpperCase(),
+              country: other.country || 'Global',
+              practiceArea: other.practice_area || 'Intellectual Property',
+              isConnection: false,
+              isFollowing: true
+            };
+          }).filter(Boolean);
+
+          setNetwork(formatted);
+        }
+      } else if (activeTab === 'Followers') {
+        const { data } = await supabase
+          .from('follows')
+          .select(`
+            id,
+            follower:profiles!follower_id(id, full_name, avatar_url, country, practice_area, role)
+          `)
+          .eq('following_id', user.id);
+
+        if (data) {
+          const formatted = data.map(f => {
+            const other: any = Array.isArray(f.follower) ? f.follower[0] : f.follower;
+            if (!other) return null;
+
+            return {
+              id: other.id,
+              followId: f.id,
+              name: other.full_name || 'Anonymous User',
+              role: other.practice_area || other.role || 'WIPA Member',
+              avatarUrl: other.avatar_url,
+              initial: (other.full_name || 'U').charAt(0).toUpperCase(),
+              country: other.country || 'Global',
+              practiceArea: other.practice_area || 'Intellectual Property',
+              isConnection: false,
+              isFollowing: false
+            };
+          }).filter(Boolean);
+
+          setNetwork(formatted);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load tab content:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id, activeTab]);
+
+  useEffect(() => {
+    fetchCountsAndInvitations();
+    fetchTabContent();
+  }, [fetchCountsAndInvitations, fetchTabContent]);
+
+  // Handle Accept connection request
+  const handleAccept = async (connectionId: string) => {
+    const invite = invitations.find(i => i.id === connectionId);
+    try {
+      await supabase
+        .from('connections')
+        .update({ status: 'accepted', updated_at: new Date().toISOString() })
+        .eq('id', connectionId);
+        
+      if (invite && user?.id) {
+        await supabase.from('notifications').insert({
+          user_id: invite.requester_id,
+          actor_id: user.id,
+          type: 'connection_accepted',
+          content: `${user.name || 'Someone'} accepted your connection request! You can now chat directly.`,
+          link: `/platform/messages?userId=${user.id}`,
+          is_read: false
+        });
+      }
+      
+      setInvitations(prev => prev.filter(i => i.id !== connectionId));
+      fetchCountsAndInvitations();
+      fetchTabContent();
+    } catch (err) {
+      console.error("Failed to accept connection:", err);
+    }
   };
 
-  const toggleFollow = (id: number) => {
-    setNetwork(network.map(person => 
-      person.id === id ? { ...person, isFollowing: !person.isFollowing } : person
-    ));
+  // Handle Ignore connection request
+  const handleReject = async (connectionId: string) => {
+    try {
+      await supabase
+        .from('connections')
+        .delete()
+        .eq('id', connectionId);
+        
+      setInvitations(prev => prev.filter(i => i.id !== connectionId));
+      fetchCountsAndInvitations();
+    } catch (err) {
+      console.error("Failed to reject connection:", err);
+    }
+  };
+
+  // Remove connection
+  const handleRemoveConnection = async (targetId: string, connectionId?: string) => {
+    if (!user?.id || !confirm("Are you sure you want to remove this connection?")) return;
+    try {
+      if (connectionId) {
+        await supabase.from('connections').delete().eq('id', connectionId);
+      } else {
+        await supabase
+          .from('connections')
+          .delete()
+          .or(`and(requester_id.eq.${user.id},recipient_id.eq.${targetId}),and(requester_id.eq.${targetId},recipient_id.eq.${user.id})`);
+      }
+      setNetwork(prev => prev.filter(p => p.id !== targetId));
+      setCounts(prev => ({ ...prev, connections: Math.max(0, prev.connections - 1) }));
+    } catch (err) {
+      console.error("Failed to remove connection:", err);
+    }
+  };
+
+  // Unfollow user
+  const handleUnfollow = async (targetId: string) => {
+    if (!user?.id) return;
+    try {
+      await supabase
+        .from('follows')
+        .delete()
+        .eq('follower_id', user.id)
+        .eq('following_id', targetId);
+      setNetwork(prev => prev.filter(p => p.id !== targetId));
+      setCounts(prev => ({ ...prev, following: Math.max(0, prev.following - 1) }));
+    } catch (err) {
+      console.error("Failed to unfollow:", err);
+    }
+  };
+
+  // Send connection request
+  const handleConnect = async (targetId: string) => {
+    if (!user?.id) return;
+    try {
+      const { error } = await supabase.from('connections').insert({
+        requester_id: user.id,
+        recipient_id: targetId,
+        status: 'pending'
+      });
+      
+      if (!error) {
+        await supabase.from('notifications').insert({
+          user_id: targetId,
+          actor_id: user.id,
+          type: 'connection_request',
+          content: `${user.name || 'Someone'} sent you a connection request!`,
+          link: `/platform/profile/${user.id}`,
+          is_read: false
+        });
+        alert("Connection request sent!");
+      }
+    } catch (err) {
+      console.error("Failed to send connection request:", err);
+    }
   };
 
   const hasActiveFilters = Boolean(selectedCountry || selectedPracticeArea || selectedIndustry);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#070b14] flex flex-col">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#070b14] flex flex-col font-sans">
 
       {/* MAIN SCROLLABLE CONTENT */}
       <div className="flex-1 w-full max-w-[1400px] mx-auto p-3 sm:p-6 lg:p-8 pb-28 md:pb-12">
@@ -208,74 +315,87 @@ export default function NetworkPage() {
                 My Network
               </h1>
               <p className="text-gray-500 dark:text-gray-400 font-medium text-xs sm:text-sm mt-1">
-                Manage your connections and discover IP leaders worldwide.
+                Manage your 2-way mutual connections and asymmetric follow stream.
               </p>
             </div>
           </div>
 
-          {/* Pending Invitations */}
+          {/* Pending Invitations Banner */}
           {invitations.length > 0 && (
-            <div className="mb-5 sm:mb-8">
-              <h2 className="text-sm sm:text-lg font-bold text-gray-900 dark:text-white mb-2.5 flex items-center justify-between">
-                <span>Pending Invitations</span>
-                <span className="bg-[#5a32fa] text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full">{invitations.length}</span>
+            <div className="mb-5 sm:mb-8 bg-white dark:bg-[#151c2c] border border-gray-200/80 dark:border-white/10 shadow-sm p-4 sm:p-6 rounded-3xl">
+              <h2 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-3 flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <span>Pending Connection Requests</span>
+                  <span className="bg-[#5a32fa] text-white text-[10px] sm:text-xs font-black px-2.5 py-0.5 rounded-full">{invitations.length}</span>
+                </span>
               </h2>
               <div className="flex flex-col gap-2.5">
-                {invitations.map((invite) => (
-                  <div key={invite.id} className="bg-white dark:bg-[#151c2c] border border-gray-100 dark:border-white/5 shadow-sm p-3 sm:p-4 rounded-2xl flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] rounded-full flex items-center justify-center font-bold text-sm text-white shrink-0 shadow-sm">
-                        {invite.requester.full_name?.charAt(0) || 'U'}
+                {invitations.map((invite) => {
+                  const req = Array.isArray(invite.requester) ? invite.requester[0] : invite.requester;
+                  return (
+                    <div key={invite.id} className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 p-3 sm:p-4 rounded-2xl flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        {req?.avatar_url ? (
+                          <img src={req.avatar_url} alt={req.full_name} className="w-11 h-11 rounded-full object-cover shrink-0 shadow-sm" />
+                        ) : (
+                          <div className="w-11 h-11 bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] rounded-full flex items-center justify-center font-bold text-sm text-white shrink-0 shadow-sm">
+                            {req?.full_name?.charAt(0) || 'U'}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <Link href={`/platform/profile/${req?.id}`} className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white hover:underline truncate block">
+                            {req?.full_name || 'Anonymous User'}
+                          </Link>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{req?.practice_area || req?.role || 'WIPA Member'}</p>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <Link href={`/platform/profile/${invite.requester.id}`} className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white hover:underline truncate block">
-                          {invite.requester.full_name || 'Anonymous User'}
-                        </Link>
-                        <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 truncate">Sent you a connection request</p>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button 
+                          onClick={() => handleAccept(invite.id)}
+                          className="px-3.5 py-1.5 bg-[#00d26a] text-white font-bold text-xs rounded-xl shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-1"
+                        >
+                          <Check size={14} /> Accept
+                        </button>
+                        <button 
+                          onClick={() => handleReject(invite.id)}
+                          className="px-3.5 py-1.5 bg-gray-200 dark:bg-white/10 text-gray-700 dark:text-gray-300 font-bold text-xs rounded-xl hover:bg-gray-300 dark:hover:bg-white/20 active:scale-95 transition-all flex items-center gap-1"
+                        >
+                          <X size={14} /> Ignore
+                        </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button 
-                        onClick={() => handleAccept(invite.id)}
-                        className="px-3 py-1.5 bg-[#00d26a] text-white font-bold text-xs rounded-xl shadow-sm hover:opacity-90 active:scale-95 transition-all"
-                      >
-                        Accept
-                      </button>
-                      <button 
-                        onClick={() => handleReject(invite.id)}
-                        className="px-3 py-1.5 bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 font-bold text-xs rounded-xl hover:bg-gray-200 dark:hover:bg-white/10 active:scale-95 transition-all"
-                      >
-                        Ignore
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
 
-          {/* Compact Mobile Tabs + Search + Filter Strip */}
-          <div className="space-y-2.5 mb-4 sm:mb-6">
-            {/* 1. Category Segmented Pills */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                {(['Connections', 'Following', 'Followers'] as const).map((tab) => (
-                  <button 
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-3.5 py-1.5 rounded-full font-bold text-xs whitespace-nowrap active:scale-95 transition-all ${
-                      activeTab === tab 
-                        ? 'bg-[#5a32fa] text-white shadow-sm shadow-[#5a32fa]/30' 
-                        : 'bg-white dark:bg-[#151c2c] text-gray-600 dark:text-gray-300 border border-gray-200/80 dark:border-white/5'
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
+          {/* Tab Navigation: Connections vs. Following vs. Followers */}
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+              {[
+                { id: 'Connections', label: 'Connections', count: counts.connections },
+                { id: 'Following', label: 'Following', count: counts.following },
+                { id: 'Followers', label: 'Followers', count: counts.followers }
+              ].map((tab) => (
+                <button 
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`px-4 py-2 rounded-2xl font-bold text-xs whitespace-nowrap active:scale-95 transition-all flex items-center gap-2 ${
+                    activeTab === tab.id 
+                      ? 'bg-[#5a32fa] text-white shadow-md shadow-[#5a32fa]/30' 
+                      : 'bg-white dark:bg-[#151c2c] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:border-[#5a32fa]/50'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300'}`}>
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
             </div>
 
-            {/* 2. Search Bar + Filter Trigger */}
+            {/* Search Bar + Filter Trigger */}
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
                 <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -283,14 +403,14 @@ export default function NetworkPage() {
                   type="text" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search network members..."
-                  className="w-full pl-9 pr-3.5 py-2 sm:py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-xs sm:text-sm transition-all bg-white dark:bg-[#151c2c] text-gray-900 dark:text-white shadow-sm"
+                  placeholder={`Search ${activeTab.toLowerCase()}...`}
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-xs sm:text-sm transition-all bg-white dark:bg-[#151c2c] text-gray-900 dark:text-white shadow-sm"
                 />
               </div>
 
               <button
                 onClick={() => setIsFilterTrayOpen(!isFilterTrayOpen)}
-                className={`px-3 py-2 sm:py-2.5 rounded-2xl border flex items-center gap-1.5 text-xs font-bold transition-all active:scale-95 shrink-0 ${
+                className={`px-3.5 py-2.5 rounded-2xl border flex items-center gap-1.5 text-xs font-bold transition-all active:scale-95 shrink-0 ${
                   hasActiveFilters
                     ? 'bg-[#5a32fa] text-white border-[#5a32fa] shadow-sm'
                     : 'bg-white dark:bg-[#151c2c] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-white/10 shadow-sm'
@@ -299,14 +419,14 @@ export default function NetworkPage() {
                 <Filter size={14} />
                 <span>Filters</span>
                 {hasActiveFilters && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#00d26a]" />
+                  <span className="w-2 h-2 rounded-full bg-[#00d26a]" />
                 )}
               </button>
             </div>
 
-            {/* 3. Collapsible Filter Row (Modern Compact Layout) */}
+            {/* Collapsible Filter Row */}
             {isFilterTrayOpen && (
-              <div className="p-3 bg-white dark:bg-[#151c2c] rounded-2xl border border-gray-200 dark:border-white/10 space-y-2 animate-in fade-in zoom-in-95 duration-150 shadow-sm">
+              <div className="p-3.5 bg-white dark:bg-[#151c2c] rounded-2xl border border-gray-200 dark:border-white/10 space-y-2 animate-in fade-in zoom-in-95 duration-150 shadow-sm">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <select 
                     value={selectedCountry}
@@ -348,79 +468,100 @@ export default function NetworkPage() {
           </div>
 
           {/* Network Member Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
-            {network.filter(person => {
-              if (activeTab === 'Connections' && !person.isConnection) return false;
-              if (activeTab === 'Following' && !person.isFollowing) return false;
-              if (activeTab === 'Followers' && !person.isConnection) return false; // Mock logic
-              if (searchQuery && !person.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-              if (selectedCountry && person.country !== selectedCountry) return false;
-              if (selectedPracticeArea && person.practiceArea !== selectedPracticeArea) return false;
-              if (selectedIndustry && person.industrySector !== selectedIndustry) return false;
-              return true;
-            }).length === 0 ? (
-              <div className="sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#151c2c] rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm p-10 text-center flex flex-col items-center">
-                <UsersRound size={44} className="text-gray-300 dark:text-gray-600 mb-3" />
-                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1">No {activeTab.toLowerCase()} found</h3>
-                <p className="text-gray-500 dark:text-gray-400 font-medium text-xs sm:text-sm">Try clearing your filters or searching a different name.</p>
-              </div>
-            ) : network.filter(person => {
-              if (activeTab === 'Connections' && !person.isConnection) return false;
-              if (activeTab === 'Following' && !person.isFollowing) return false;
-              if (activeTab === 'Followers' && !person.isConnection) return false; // Mock logic
-              if (searchQuery && !person.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-              if (selectedCountry && person.country !== selectedCountry) return false;
-              if (selectedPracticeArea && person.practiceArea !== selectedPracticeArea) return false;
-              if (selectedIndustry && person.industrySector !== selectedIndustry) return false;
-              return true; 
-            }).map((person) => (
-              <div key={person.id} className="bg-white dark:bg-[#151c2c] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-3.5 flex items-center justify-between gap-3 transition-all hover:border-[#5a32fa]/30">
-                
-                <Link href={`/platform/profile/${person.id}`} className="flex items-center gap-3 min-w-0 flex-1 group">
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 shadow-sm ring-2 ring-white dark:ring-[#0f172a]">
-                    {person.initial}
-                  </div>
-                  
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-[#5a32fa] transition-colors">
-                      {person.name}
-                    </h3>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-                      {person.practiceArea || person.role}
-                    </p>
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500 truncate block">
-                      {person.country} • {person.mutualConnections} mutual
-                    </span>
-                  </div>
-                </Link>
-
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <Link href={`/platform/messages?userId=${person.id}`}>
-                    <button className="flex items-center gap-1 bg-[#5a32fa] hover:bg-[#4a24db] text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm shadow-[#5a32fa]/30 active:scale-95 transition-all">
-                      <MessageCircle size={13} />
-                      <span>Message</span>
-                    </button>
-                  </Link>
-                  <button 
-                    onClick={() => activeTab === 'Following' ? toggleFollow(person.id) : toggleConnection(person.id)}
-                    className="p-1.5 text-gray-400 hover:text-rose-500 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-                    title="Remove connection"
-                  >
-                    <UserMinus size={15} />
-                  </button>
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#5a32fa]"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {network.filter(person => {
+                if (searchQuery && !person.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+                if (selectedCountry && person.country !== selectedCountry) return false;
+                if (selectedPracticeArea && person.practiceArea !== selectedPracticeArea) return false;
+                return true;
+              }).length === 0 ? (
+                <div className="sm:col-span-2 lg:col-span-3 bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm p-12 text-center flex flex-col items-center">
+                  <UsersRound size={48} className="text-gray-300 dark:text-gray-600 mb-3" />
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1">No {activeTab.toLowerCase()} found</h3>
+                  <p className="text-gray-500 dark:text-gray-400 font-medium text-xs sm:text-sm">
+                    {activeTab === 'Connections' 
+                      ? 'Discover and connect with IP leaders to unlock direct 1-on-1 messaging.'
+                      : activeTab === 'Following'
+                      ? 'Follow IP attorneys and thought leaders to see their articles in your feed.'
+                      : 'When others follow your public profile and posts, they will appear here.'}
+                  </p>
                 </div>
-              </div>
-            ))}
-          </div>
+              ) : network.filter(person => {
+                if (searchQuery && !person.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+                if (selectedCountry && person.country !== selectedCountry) return false;
+                if (selectedPracticeArea && person.practiceArea !== selectedPracticeArea) return false;
+                return true; 
+              }).map((person) => (
+                <div key={person.id} className="bg-white dark:bg-[#151c2c] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-4 flex items-center justify-between gap-3 transition-all hover:border-[#5a32fa]/30">
+                  
+                  <Link href={`/platform/profile/${person.id}`} className="flex items-center gap-3 min-w-0 flex-1 group">
+                    {person.avatarUrl ? (
+                      <img src={person.avatarUrl} alt={person.name} className="w-11 h-11 rounded-full object-cover shrink-0 shadow-sm" />
+                    ) : (
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+                        {person.initial}
+                      </div>
+                    )}
+                    
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-[#5a32fa] transition-colors">
+                        {person.name}
+                      </h3>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                        {person.practiceArea || person.role}
+                      </p>
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500 truncate block">
+                        {person.country}
+                      </span>
+                    </div>
+                  </Link>
 
-          {hasMore && network.length > 0 && (
-            <div className="flex justify-center mt-6 pb-6">
-              <button 
-                onClick={() => setPage(p => p + 1)}
-                className="px-5 py-2 bg-white dark:bg-[#151c2c] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-xl font-bold text-xs hover:bg-gray-50 transition-colors shadow-sm"
-              >
-                Load More
-              </button>
+                  {/* Actions by Tab */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {activeTab === 'Connections' && (
+                      <>
+                        <Link href={`/platform/messages?userId=${person.id}`}>
+                          <button className="flex items-center gap-1 bg-[#5a32fa] hover:bg-[#4a24db] text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm shadow-[#5a32fa]/30 active:scale-95 transition-all">
+                            <MessageCircle size={13} />
+                            <span>Message</span>
+                          </button>
+                        </Link>
+                        <button 
+                          onClick={() => handleRemoveConnection(person.id, person.connectionId)}
+                          className="p-1.5 text-gray-400 hover:text-rose-500 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                          title="Remove connection"
+                        >
+                          <UserMinus size={15} />
+                        </button>
+                      </>
+                    )}
+
+                    {activeTab === 'Following' && (
+                      <button 
+                        onClick={() => handleUnfollow(person.id)}
+                        className="flex items-center gap-1 bg-gray-100 dark:bg-white/10 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-xl font-bold text-xs border border-gray-200 dark:border-white/10 transition-colors"
+                      >
+                        <span>Unfollow</span>
+                      </button>
+                    )}
+
+                    {activeTab === 'Followers' && (
+                      <button 
+                        onClick={() => handleConnect(person.id)}
+                        className="flex items-center gap-1 bg-[#5a32fa] hover:bg-[#4a24db] text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm active:scale-95 transition-all"
+                      >
+                        <UserPlus size={13} />
+                        <span>Connect</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
           
@@ -434,72 +575,8 @@ export default function NetworkPage() {
               <AdSlot slotId="network_sidebar" />
             </div>
 
-            {/* Incoming Requests */}
-            <div className="bg-white dark:bg-[#0f172a] p-6 rounded-[1.5rem] border border-gray-100 dark:border-white/10 shadow-sm flex flex-col max-h-[500px]">
-              <div className="flex justify-between items-center mb-6 shrink-0">
-                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Invitations</h3>
-                <span className="bg-[#5a32fa] text-white text-xs font-bold px-2 py-1 rounded-md border border-gray-100 dark:border-white/10">{invitations.length}</span>
-              </div>
-              <div className="space-y-4 overflow-y-auto no-scrollbar pr-2 -mr-2">
-                {invitations.length === 0 ? (
-                  <p className="text-sm text-gray-500">No pending invitations.</p>
-                ) : invitations.map((inv: any) => (
-                  <div key={inv.id} className="flex gap-4 items-start group">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border border-gray-100 dark:border-white/10 shrink-0" style={{ backgroundColor: inv.color, color: inv.color === '#5a32fa' ? 'white' : '#131313' }}>
-                      {inv.icon}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">{inv.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-3">{inv.role}</p>
-                      <div className="flex gap-2">
-                        <button className="flex-1 bg-[#131313] text-white text-xs font-bold py-2 rounded-xl border border-gray-100 dark:border-white/10 hover:bg-[#5a32fa] hover:border-[#5a32fa] transition-colors shadow-sm">
-                          Accept
-                        </button>
-                        <button className="flex-1 bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 text-xs font-bold py-2 rounded-xl border-2 border-gray-200 dark:border-white/20 hover:border-gray-900 transition-colors">
-                          Ignore
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Suggested Connections */}
-            <div className="bg-white dark:bg-[#0f172a] p-6 rounded-[1.5rem] border border-gray-100 dark:border-white/10 shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Suggested for you</h3>
-                <button className="text-sm font-bold text-[#5a32fa] hover:underline">See all</button>
-              </div>
-              <div className="space-y-5">
-                {suggestions.length === 0 ? (
-                  <p className="text-sm text-gray-500">No new suggestions at the moment.</p>
-                ) : suggestions.map((person) => (
-                  <div key={person.id} className="flex items-center gap-4 group">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl border border-gray-100 dark:border-white/10" style={{ backgroundColor: person.color, color: person.color === '#5a32fa' ? 'white' : '#131313' }}>
-                      {person.avatarUrl ? (
-                        <img src={person.avatarUrl} alt={person.name} className="w-full h-full rounded-full object-cover" />
-                      ) : person.initial}
-                    </div>
-                    <div className="flex-1">
-                      <Link href={`/platform/profile/${person.id}`}>
-                        <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors cursor-pointer">{person.name}</p>
-                      </Link>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{person.role}</p>
-                    </div>
-                    <button 
-                      onClick={() => handleConnect(person.id)}
-                      className="w-10 h-10 rounded-xl border-2 border-gray-200 dark:border-white/20 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:border-[#131313] hover:text-[#131313] hover:bg-gray-50 dark:bg-white/5 transition-colors shrink-0"
-                    >
-                      <UserPlus size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
           </div>
-          
+
         </div>
       </div>
 
