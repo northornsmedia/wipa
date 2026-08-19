@@ -522,14 +522,13 @@ export default function PlatformHeader() {
                   </span>
                 )}
               </Link>
-              <Link prefetch={false} href="/platform/profile" className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
-                {user?.avatar_url ? (
+              <Link prefetch={false} href="/platform/profile" className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                {user?.avatar_url && (
                   <img src={user.avatar_url} alt={user?.name || 'User'} className="w-8 h-8 rounded-full object-cover" />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-[#b892ff] text-white flex items-center justify-center font-bold text-sm">
-                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
                 )}
+                <span className="text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#5a32fa] transition-colors">
+                  {user?.name || 'My Profile'}
+                </span>
               </Link>
               <button onClick={handleLogout} className="text-gray-400 hover:text-red-500 transition-colors ml-2" title="Log out">
                 <LogOut size={20} />

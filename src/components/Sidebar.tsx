@@ -316,16 +316,15 @@ export default function Sidebar() {
         </div>
       </div>
       
-        <div className="px-4 py-4 border-t border-gray-100 dark:border-white/10">
-          <div className="flex items-center gap-3">
-            {user?.avatar_url ? (
-              <img src={user.avatar_url} alt={user?.name || 'User'} className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-white/20" />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-[#131313] text-white flex items-center justify-center text-lg font-bold">
-                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-              </div>
+        <div className="px-5 py-4 border-t border-gray-100 dark:border-white/10">
+          <Link href="/platform/profile" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            {user?.avatar_url && (
+              <img src={user.avatar_url} alt={user?.name || 'User'} className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-white/20" />
             )}
-          </div>
+            <span className="text-sm font-bold text-gray-900 dark:text-white truncate">
+              {user?.name || 'My Profile'}
+            </span>
+          </Link>
         </div>
 
         </div>
