@@ -330,7 +330,11 @@ export default function CreatePostPage() {
             disabled={isAiGenerating}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#5a32fa]/10 via-[#ff90e8]/10 to-purple-500/10 border border-[#5a32fa]/30 text-[#5a32fa] dark:text-[#ff90e8] text-xs font-bold shrink-0 active:scale-95 transition-transform"
           >
-            {isAiGenerating ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+            {isAiGenerating ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <img src="/lexiq.png" alt="LexIQ AI" className="w-4 h-4 object-contain rounded-full" />
+            )}
             <span>{isAiGenerating ? 'Drafting...' : 'AI Assist'}</span>
           </button>
 
@@ -515,14 +519,14 @@ export default function CreatePostPage() {
             <FileText size={20} />
           </button>
 
-          {/* LexIQ AI Sparkle */}
+          {/* LexIQ AI Button */}
           <button
             type="button"
             onClick={handleAiDraft}
-            className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa]/10 to-[#ff90e8]/10 text-[#5a32fa] dark:text-[#ff90e8] border border-[#5a32fa]/20 flex items-center justify-center active:scale-90 transition-transform"
-            title="AI Post Assistant"
+            className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa]/10 to-[#ff90e8]/10 text-[#5a32fa] dark:text-[#ff90e8] border border-[#5a32fa]/20 flex items-center justify-center active:scale-90 transition-transform p-2 overflow-hidden shadow-sm"
+            title="LexIQ AI Post Assistant"
           >
-            <Sparkles size={18} />
+            <img src="/lexiq.png" alt="LexIQ AI" className="w-full h-full object-contain" />
           </button>
         </div>
 

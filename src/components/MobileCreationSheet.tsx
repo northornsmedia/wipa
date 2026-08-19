@@ -41,7 +41,7 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
       id: 'lexiq',
       title: 'Ask LexIQ AI Assistant',
       desc: 'Research IP case law, patent drafting & legal analysis',
-      icon: Sparkles,
+      image: '/lexiq.png',
       color: 'from-[#5a32fa] via-purple-600 to-[#ff90e8]',
       bg: 'bg-gradient-to-tr from-[#5a32fa]/20 via-[#ff90e8]/20 to-purple-500/20 text-[#5a32fa] dark:text-[#ff90e8] border border-[#5a32fa]/30',
       action: 'open_lexiq',
@@ -149,8 +149,12 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
                         : 'bg-gray-50 dark:bg-white/[0.03] border-gray-100 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/15'
                     }`}
                   >
-                    <div className={`w-10 h-10 rounded-2xl ${item.bg} flex items-center justify-center shrink-0 shadow-sm`}>
-                      <Icon size={18} />
+                    <div className={`w-10 h-10 rounded-2xl ${item.bg} flex items-center justify-center shrink-0 shadow-sm overflow-hidden p-1.5`}>
+                      {item.image ? (
+                        <img src={item.image} alt={item.title} className="w-full h-full object-contain" />
+                      ) : (
+                        Icon && <Icon size={18} />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
