@@ -35,13 +35,30 @@ function VoiceNotePlayer({ audioUrl, isMe }: { audioUrl: string; isMe: boolean }
     audioRef.current = audio;
 
     audio.onloadedmetadata = () => {
-      setDuration(audio.duration || 0);
+      if (isFinite(audio.duration) && !isNaN(audio.duration) && audio.duration > 0) {
+        setDuration(audio.duration);
+      } else {
+        // Force browser to calculate duration for streaming WebM blobs
+        audio.currentTime = 1e6;
+        audio.ontimeupdate = () => {
+          audio.ontimeupdate = null;
+          audio.currentTime = 0;
+          if (isFinite(audio.duration) && !isNaN(audio.duration) && audio.duration > 0) {
+            setDuration(audio.duration);
+          }
+        };
+      }
     };
 
     audio.ontimeupdate = () => {
-      if (audio.duration) {
+      if (isFinite(audio.duration) && audio.duration > 0) {
         setCurrentTime(audio.currentTime);
-        setProgress((audio.currentTime / audio.duration) * 100);
+        setProgress(Math.min(100, Math.max(0, (audio.currentTime / audio.duration) * 100)));
+        if (!isFinite(duration) || duration <= 0) {
+          setDuration(audio.duration);
+        }
+      } else if (isFinite(audio.currentTime)) {
+        setCurrentTime(audio.currentTime);
       }
     };
 
@@ -69,7 +86,7 @@ function VoiceNotePlayer({ audioUrl, isMe }: { audioUrl: string; isMe: boolean }
   };
 
   const formatTime = (secs: number) => {
-    if (isNaN(secs) || secs <= 0) return '0:00';
+    if (!isFinite(secs) || isNaN(secs) || secs <= 0) return '0:00';
     const m = Math.floor(secs / 60);
     const s = Math.floor(secs % 60);
     return `${m}:${s < 10 ? '0' : ''}${s}`;

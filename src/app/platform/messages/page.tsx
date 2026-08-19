@@ -852,7 +852,7 @@ function MessagesContent() {
 
   // --- Voice Recording & Preview Handlers ---
   const formatDuration = (seconds: number) => {
-    if (isNaN(seconds) || seconds <= 0) return '0:00';
+    if (!isFinite(seconds) || isNaN(seconds) || seconds <= 0) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
@@ -900,10 +900,14 @@ function MessagesContent() {
         if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
         stream.getTracks().forEach(track => track.stop());
 
-        // Preload preview duration
+        // Preload preview duration with fallback
+        const recordedSeconds = Math.max(1, Math.round((Date.now() - recordStartTimeRef.current) / 1000));
+        setPreviewTotalDuration(recordedSeconds);
         const tempAudio = new Audio(audioUrl);
         tempAudio.onloadedmetadata = () => {
-          setPreviewTotalDuration(tempAudio.duration || 0);
+          if (isFinite(tempAudio.duration) && !isNaN(tempAudio.duration) && tempAudio.duration > 0) {
+            setPreviewTotalDuration(tempAudio.duration);
+          }
         };
       };
 
@@ -970,13 +974,18 @@ function MessagesContent() {
       previewAudioRef.current = audio;
 
       audio.onloadedmetadata = () => {
-        setPreviewTotalDuration(audio.duration || 0);
+        if (isFinite(audio.duration) && !isNaN(audio.duration) && audio.duration > 0) {
+          setPreviewTotalDuration(audio.duration);
+        }
       };
 
       audio.ontimeupdate = () => {
-        if (audio.duration) {
+        const total = isFinite(audio.duration) && audio.duration > 0 ? audio.duration : previewTotalDuration || recordingDuration;
+        if (total > 0) {
           setPreviewCurrentTime(audio.currentTime);
-          setPreviewProgress((audio.currentTime / audio.duration) * 100);
+          setPreviewProgress(Math.min(100, Math.max(0, (audio.currentTime / total) * 100)));
+        } else {
+          setPreviewCurrentTime(audio.currentTime);
         }
       };
 
