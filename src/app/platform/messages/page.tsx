@@ -2,52 +2,20 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { 
-  ArrowLeft, Search, Paperclip, Send, MoreHorizontal, BadgeCheck, 
-  Camera, Mic, MapPin, Image as ImageIcon, Video, FileText, 
-  X, Play, Square, Check, CheckCheck, Clock, AlertCircle, RefreshCw,
-  WifiOff, Sparkles, Phone, VideoIcon, ChevronDown
+  Paperclip, Send, Camera, Mic, MapPin, Image as ImageIcon, Video, FileText, 
+  X, Square, WifiOff, Sparkles, ChevronDown
 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { Suspense } from 'react';
+import { MessageStatusTick, MessageStatus } from '@/components/chat/MessageStatusTick';
+import { MessageBubble, ChatMessage, MediaType } from '@/components/chat/MessageBubble';
+import { ChatHeader } from '@/components/chat/ChatHeader';
+import { ChatSidebar, SidebarChat } from '@/components/chat/ChatSidebar';
 
-export type MessageStatus = 'queued' | 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
-export type MediaType = 'text' | 'image' | 'video' | 'document' | 'location' | 'audio';
-
-export type Message = {
-  id: string;
-  conversation_id?: string;
-  text?: string;
-  sender: 'me' | 'them';
-  sender_id?: string;
-  time: string;
-  created_at?: string;
-  type?: MediaType;
-  mediaUrl?: string;
-  mediaName?: string;
-  status?: MessageStatus;
-  is_read?: boolean;
-  delivered_at?: string | null;
-  read_at?: string | null;
-  temp_id?: string;
-  error?: string;
-};
-
-export type Chat = {
-  id: string;
-  name: string;
-  role: string;
-  avatarUrl?: string | null;
-  initial: string;
-  color: string;
-  unread: number;
-  lastMessage: string;
-  lastTime: string;
-  isOnline?: boolean;
-  isTyping?: boolean;
-  messages: Message[];
+export type Chat = SidebarChat & {
+  messages: ChatMessage[];
   participantId?: string;
 };
 
@@ -68,6 +36,7 @@ function MessagesContent() {
   const [isOnline, setIsOnline] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [showScrollBottomPill, setShowScrollBottomPill] = useState(false);
+  const [lightboxImageUrl, setLightboxImageUrl] = useState<string | null>(null);
 
   // Attachment refs
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -258,7 +227,7 @@ function MessagesContent() {
         .order('created_at', { ascending: true });
         
       if (data) {
-        const msgs: Message[] = data.map(m => {
+        const msgs: ChatMessage[] = data.map(m => {
           const isMe = m.sender_id === user.id;
           let calculatedStatus: MessageStatus = 'sent';
           if (isMe) {
@@ -333,7 +302,7 @@ function MessagesContent() {
             return;
           }
 
-          const msg: Message = {
+          const msg: ChatMessage = {
              id: String(m.id),
              conversation_id: String(m.conversation_id),
              text: m.content,
@@ -500,7 +469,7 @@ function MessagesContent() {
     const isRecipientOnline = activeChat?.isOnline ?? false;
     const initialStatus: MessageStatus = !isOnline ? 'queued' : (isRecipientOnline ? 'delivered' : 'sent');
 
-    const newMsg: Message = {
+    const newMsg: ChatMessage = {
       id: clientMsgId,
       conversation_id: activeChatId,
       text,
@@ -588,7 +557,7 @@ function MessagesContent() {
   };
 
   // Retry sending failed message
-  const handleRetryMessage = async (msg: Message) => {
+  const handleRetryMessage = async (msg: ChatMessage) => {
     if (!activeChatId || !user?.id) return;
 
     // Set to sending
@@ -777,15 +746,6 @@ function MessagesContent() {
     setShowMobileChat(true);
   };
 
-  const filteredConversations = conversations.filter(c => {
-    const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.lastMessage?.toLowerCase().includes(searchQuery.toLowerCase());
-    if (!matchesSearch) return false;
-    if (chatFilter === 'unread') return c.unread > 0;
-    if (chatFilter === 'groups') return c.role?.toLowerCase().includes('group') || c.name?.toLowerCase().includes('group');
-    if (chatFilter === 'direct') return !c.role?.toLowerCase().includes('group') && !c.name?.toLowerCase().includes('group');
-    return true;
-  });
-
   return (
     <div className="h-[calc(100vh-73px)] overflow-hidden bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col font-sans">
 
@@ -801,128 +761,16 @@ function MessagesContent() {
       <div className="flex-1 flex w-full p-0 md:p-6 lg:p-8 min-h-0 md:gap-6 bg-white dark:bg-[#0f172a] md:bg-transparent">
         
         {/* Left Pane: Conversations List */}
-        <div className={`w-full md:w-[350px] lg:w-[400px] bg-white dark:bg-[#0f172a] md:rounded-3xl border-0 md:border border-gray-200 dark:border-white/10 md:shadow-xl flex-col overflow-hidden shrink-0 h-full min-h-0 ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
-          
-          {/* Top Bar with Back Button to Platform */}
-          <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-white/10 space-y-3">
-            <div className="relative flex items-center justify-between h-10">
-              <Link 
-                href="/platform" 
-                className="flex items-center justify-center w-9 h-9 rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-700 dark:text-gray-200 transition-all duration-200 shadow-sm active:scale-90 z-10 shrink-0"
-                title="Back to Feed"
-              >
-                <ArrowLeft size={18} />
-              </Link>
-              
-              <h2 className="absolute inset-0 flex items-center justify-center text-lg sm:text-xl font-black text-gray-900 dark:text-white tracking-tight pointer-events-none">
-                Messages
-              </h2>
-
-              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#9b7aff] z-10 shrink-0">
-                {conversations.length} Active
-              </span>
-            </div>
-
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Search messages & contacts..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-xs transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
-              />
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-            </div>
-
-            {/* Quick Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1">
-              {[
-                { id: 'all', label: 'All' },
-                { id: 'unread', label: 'Unread', count: conversations.filter(c => c.unread > 0).length },
-                { id: 'direct', label: 'Direct' },
-                { id: 'groups', label: 'Groups' }
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setChatFilter(tab.id as any)}
-                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all whitespace-nowrap active:scale-95 flex items-center gap-1.5 ${
-                    chatFilter === tab.id
-                      ? 'bg-[#5a32fa] text-white shadow-sm'
-                      : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200'
-                  }`}
-                >
-                  <span>{tab.label}</span>
-                  {tab.count !== undefined && tab.count > 0 && (
-                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${chatFilter === tab.id ? 'bg-white/20 text-white' : 'bg-[#5a32fa] text-white'}`}>
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Conversations List */}
-          <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-gray-50 dark:divide-white/5">
-            {filteredConversations.map(chat => (
-              <div 
-                key={chat.id}
-                onClick={() => markAsRead(String(chat.id))}
-                className={`flex items-center gap-3.5 p-4 cursor-pointer transition-all duration-200 ${
-                  String(activeChatId) === String(chat.id) 
-                    ? 'bg-[#5a32fa]/10 dark:bg-[#5a32fa]/15 border-l-4 border-[#5a32fa]' 
-                    : 'hover:bg-gray-50 dark:hover:bg-white/5'
-                }`}
-              >
-                <div className="relative shrink-0">
-                  {chat.avatarUrl ? (
-                    <img 
-                      src={chat.avatarUrl} 
-                      alt={chat.name} 
-                      className="w-12 h-12 rounded-2xl object-cover shadow-sm border border-gray-200 dark:border-white/10"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-base shadow-sm" style={{ backgroundColor: chat.color }}>
-                      {chat.initial}
-                    </div>
-                  )}
-                  {chat.isOnline && (
-                    <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-[#0f172a] rounded-full"></span>
-                  )}
-                  {chat.unread > 0 && (
-                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-500 border-2 border-white dark:border-[#0f172a] rounded-full animate-pulse"></span>
-                  )}
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center mb-1">
-                    <h3 className={`font-bold text-sm truncate ${chat.unread > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-200'}`}>
-                      {chat.name}
-                    </h3>
-                    <span className={`text-[11px] whitespace-nowrap ml-2 font-mono ${chat.unread > 0 ? 'font-bold text-[#5a32fa]' : 'text-gray-400'}`}>
-                      {chat.lastTime}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className={`text-xs truncate pr-2 ${chat.unread > 0 ? 'font-bold text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
-                      {chat.isTyping ? <span className="text-[#5a32fa] font-bold animate-pulse">typing...</span> : chat.lastMessage}
-                    </p>
-                    {chat.unread > 0 && (
-                      <span className="bg-[#5a32fa] text-white text-[10px] font-black px-2 py-0.5 rounded-full min-w-[18px] text-center flex items-center justify-center shrink-0">
-                        {chat.unread}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-            {filteredConversations.length === 0 && (
-              <div className="p-8 text-center text-gray-500 dark:text-gray-400 font-medium text-xs">
-                No conversations found.
-              </div>
-            )}
-          </div>
-        </div>
+        <ChatSidebar 
+          conversations={conversations}
+          activeChatId={activeChatId}
+          onSelectChat={markAsRead}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          chatFilter={chatFilter}
+          onFilterChange={setChatFilter}
+          showMobileChat={showMobileChat}
+        />
 
         {/* Right Pane: Active Chat Window */}
         <div className={`bg-white dark:bg-[#0f172a] md:rounded-3xl border-0 md:border border-gray-200 dark:border-white/10 md:shadow-xl flex-col overflow-hidden ${!showMobileChat ? 'hidden md:flex flex-1 h-full min-h-0 relative' : 'flex fixed inset-0 z-[100] md:relative md:flex-1 md:inset-auto md:z-auto h-full min-h-0'}`}>
@@ -930,83 +778,21 @@ function MessagesContent() {
           {activeChat ? (
             <>
               {/* Chat Header */}
-              <div className="px-6 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-white dark:bg-[#0f172a] shrink-0 z-10">
-                <div className="flex items-center gap-3">
-                  {/* WhatsApp-Style Mobile Back Button */}
-                  <button 
-                    onClick={() => setShowMobileChat(false)}
-                    className="md:hidden w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-900 dark:text-white transition-colors"
-                  >
-                    <ArrowLeft size={20} />
-                  </button>
-
-                  <div className="relative shrink-0">
-                    {activeChat.avatarUrl ? (
-                      <img 
-                        src={activeChat.avatarUrl} 
-                        alt={activeChat.name} 
-                        className="w-11 h-11 rounded-2xl object-cover shadow-sm border border-gray-200 dark:border-white/10"
-                      />
-                    ) : (
-                      <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-sm shrink-0" style={{ backgroundColor: activeChat.color }}>
-                        {activeChat.initial}
-                      </div>
-                    )}
-                    {activeChat.isOnline && (
-                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-[#0f172a] rounded-full"></span>
-                    )}
-                  </div>
-                  <div>
-                    <h2 className="font-bold text-base text-gray-900 dark:text-white flex items-center gap-1.5 leading-none">
-                      {activeChat.name}
-                      <BadgeCheck size={16} className="text-[#5a32fa]" />
-                    </h2>
-                    <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 mt-1">
-                      {activeChat.isTyping ? (
-                        <span className="text-[#5a32fa] dark:text-[#a855f7] font-bold animate-pulse">typing...</span>
-                      ) : activeChat.isOnline ? (
-                        <span className="text-emerald-500 font-bold">● Online</span>
-                      ) : (
-                        <span>Offline • {activeChat.role}</span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-2 relative">
-                  {activeChat.participantId && (
-                    <Link 
-                      href={`/platform/profile/${activeChat.participantId}`} 
-                      className="hidden sm:inline-flex items-center gap-1 px-3.5 py-2 border border-gray-200 dark:border-white/10 rounded-xl font-bold text-xs text-gray-700 dark:text-gray-200 hover:border-[#5a32fa] hover:text-[#5a32fa] transition-colors"
-                    >
-                      View Profile
-                    </Link>
-                  )}
-                  <button 
-                    onClick={() => setIsChatOptionsOpen(!isChatOptionsOpen)}
-                    className="w-10 h-10 flex items-center justify-center border border-gray-200 dark:border-white/10 rounded-2xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
-                  >
-                    <MoreHorizontal size={18} />
-                  </button>
-                  
-                  {isChatOptionsOpen && (
-                    <div className="absolute top-12 right-0 w-48 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/10 rounded-2xl shadow-xl py-2 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                      <button 
-                        onClick={() => { setIsChatOptionsOpen(false); alert("User blocked!"); }}
-                        className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
-                      >
-                        Block User
-                      </button>
-                      <button 
-                        onClick={() => { setIsChatOptionsOpen(false); alert("Chat cleared!"); }}
-                        className="w-full text-left px-4 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-                      >
-                        Clear Chat
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <ChatHeader 
+                name={activeChat.name}
+                role={activeChat.role}
+                avatarUrl={activeChat.avatarUrl}
+                initial={activeChat.initial}
+                color={activeChat.color}
+                isOnline={activeChat.isOnline}
+                isTyping={activeChat.isTyping}
+                participantId={activeChat.participantId}
+                onBackMobile={() => setShowMobileChat(false)}
+                onOptionsToggle={() => setIsChatOptionsOpen(!isChatOptionsOpen)}
+                isOptionsOpen={isChatOptionsOpen}
+                onBlockUser={() => { setIsChatOptionsOpen(false); alert("User blocked!"); }}
+                onClearChat={() => { setIsChatOptionsOpen(false); alert("Chat cleared!"); }}
+              />
 
               {/* Chat Messages Body */}
               <div 
@@ -1014,108 +800,14 @@ function MessagesContent() {
                 onScroll={handleScroll}
                 className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#f8f9fa] dark:bg-[#0a0f1d] space-y-4 relative"
               >
-                {activeChat.messages.map((msg) => {
-                  const isMe = msg.sender === "me";
-                  
-                  return (
-                    <div key={msg.id} className={`flex flex-col max-w-[85%] sm:max-w-[70%] ${isMe ? 'self-end items-end ml-auto' : 'self-start items-start mr-auto'}`}>
-                      
-                      {/* Bubble */}
-                      <div 
-                        className={`px-4 py-3 rounded-2xl text-xs sm:text-sm font-medium leading-relaxed shadow-sm transition-all ${
-                          isMe 
-                            ? 'bg-gradient-to-r from-[#5a32fa] to-[#6e46ff] text-white rounded-tr-none' 
-                            : 'bg-white dark:bg-[#131b2e] text-gray-900 dark:text-white border border-gray-200/70 dark:border-white/10 rounded-tl-none'
-                        }`}
-                      >
-                        {/* Media Attachments */}
-                        {msg.type === 'image' && msg.mediaUrl && (
-                          <div className="rounded-xl overflow-hidden border border-white/10 mb-2 max-h-64 aspect-video bg-black/10">
-                            <img src={msg.mediaUrl} alt="Attached" className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                        {msg.type === 'video' && msg.mediaUrl && (
-                          <div className="rounded-xl overflow-hidden border border-white/10 mb-2 max-h-64 aspect-video bg-black">
-                            <video src={msg.mediaUrl} controls className="w-full h-full object-contain" />
-                          </div>
-                        )}
-                        {msg.type === 'document' && (
-                          <div className="flex items-center gap-3 bg-black/20 p-3 rounded-xl border border-white/10 mb-2">
-                            <FileText size={20} className="text-amber-400 shrink-0" />
-                            <span className="font-bold text-xs truncate max-w-[200px]">{msg.text || msg.mediaName || 'Document'}</span>
-                          </div>
-                        )}
-                        {msg.type === 'location' && msg.mediaUrl && (
-                          <div className="flex flex-col gap-1.5 mb-1">
-                            <div className="flex items-center gap-1.5 font-bold text-xs"><MapPin size={14} /> Shared Location</div>
-                            <a href={msg.mediaUrl} target="_blank" rel="noreferrer" className="text-xs underline font-medium hover:opacity-80 transition-opacity">{msg.text}</a>
-                          </div>
-                        )}
-                        {msg.type === 'audio' && msg.mediaUrl && (
-                          <div className="mb-1 w-full max-w-[240px]">
-                            <audio src={msg.mediaUrl} controls className="w-full h-8" />
-                          </div>
-                        )}
-
-                        {(!msg.type || msg.type === 'text') && (
-                          <span className="whitespace-pre-wrap break-words">{msg.text}</span>
-                        )}
-                      </div>
-
-                      {/* Timestamp & WhatsApp Status Ticks */}
-                      <div className="flex items-center gap-1.5 mt-1 px-1">
-                        <span className="text-[10px] font-mono text-gray-400">
-                          {msg.time}
-                        </span>
-
-                        {isMe && (
-                          <div className="flex items-center">
-                            {/* Queued / Sending: Clock icon */}
-                            {(msg.status === 'queued' || msg.status === 'sending') && (
-                              <span title={msg.status === 'queued' ? 'In Queue' : 'Sending...'}>
-                                <Clock size={12} className="text-gray-400 animate-spin" />
-                              </span>
-                            )}
-
-                            {/* Sent: 1 Single Grey Tick (Recipient is offline) */}
-                            {msg.status === 'sent' && (
-                              <span title="Sent to server">
-                                <Check size={14} className="text-gray-400" />
-                              </span>
-                            )}
-
-                            {/* Delivered: 2 Double Grey Ticks (Recipient is online/delivered) */}
-                            {msg.status === 'delivered' && (
-                              <span title="Delivered">
-                                <CheckCheck size={14} className="text-gray-400" />
-                              </span>
-                            )}
-
-                            {/* Read / Seen: 2 Double Purple Ticks */}
-                            {msg.status === 'read' && (
-                              <span title="Seen by recipient">
-                                <CheckCheck size={14} className="text-[#5a32fa] dark:text-[#a855f7] font-black" />
-                              </span>
-                            )}
-
-                            {/* Failed / Dropped: Red Alert + Retry Button */}
-                            {msg.status === 'failed' && (
-                              <button
-                                onClick={() => handleRetryMessage(msg)}
-                                className="flex items-center gap-1 text-[10px] font-bold text-rose-500 hover:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full transition-colors ml-1"
-                                title="Click to retry sending"
-                              >
-                                <AlertCircle size={12} />
-                                <span>Failed • Retry</span>
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                    </div>
-                  );
-                })}
+                {activeChat.messages.map((msg) => (
+                  <MessageBubble 
+                    key={msg.id}
+                    message={msg}
+                    onRetry={handleRetryMessage}
+                    onImageClick={setLightboxImageUrl}
+                  />
+                ))}
                 <div ref={messagesEndRef} className="h-0 w-0 pointer-events-none" />
 
                 {/* Floating "Scroll to Bottom" button */}
@@ -1223,6 +915,26 @@ function MessagesContent() {
         </div>
 
       </div>
+
+      {/* Lightbox Fullscreen Image Modal */}
+      {lightboxImageUrl && (
+        <div 
+          onClick={() => setLightboxImageUrl(null)}
+          className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer animate-in fade-in duration-150"
+        >
+          <button 
+            onClick={() => setLightboxImageUrl(null)}
+            className="absolute top-4 right-4 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          >
+            <X size={22} />
+          </button>
+          <img 
+            src={lightboxImageUrl} 
+            alt="Fullscreen view" 
+            className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl"
+          />
+        </div>
+      )}
 
       {/* Camera Capture Modal */}
       {isCameraOpen && (
