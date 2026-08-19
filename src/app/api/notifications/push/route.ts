@@ -105,6 +105,7 @@ export async function POST(req: Request) {
     console.log(`[CHAT_PUSH_DEBUG] payload title="${title}" body="${bodyText}" conversationId="${conversationId}"`);
 
     const expiredEndpoints: string[] = [];
+    const errorLogs: any[] = [];
     let sentCount = 0;
 
     // 3. Dispatch push to all active endpoints in parallel
@@ -128,6 +129,12 @@ export async function POST(req: Request) {
         sentCount++;
         console.log(`[CHAT_PUSH_DEBUG] push_result platform=${sub.device_type} status=${res.statusCode}`);
       } catch (pushErr: any) {
+        errorLogs.push({
+          platform: sub.device_type,
+          statusCode: pushErr?.statusCode || null,
+          message: pushErr?.message || String(pushErr),
+          body: pushErr?.body || null
+        });
         console.error(`[CHAT_PUSH_DEBUG] push_result_error platform=${sub.device_type} status=${pushErr?.statusCode} body=${pushErr?.body || pushErr?.message}`);
         // If subscription is expired or unregistered by browser/OS, mark for deletion
         if (pushErr?.statusCode === 404 || pushErr?.statusCode === 410) {
@@ -158,10 +165,13 @@ export async function POST(req: Request) {
         subscriptionsCount: subscriptions.length,
         sentCount,
         expiredCount: expiredEndpoints.length,
+        errorLogs,
+        hasVapidPublicKey: !!vapidPublicKey,
+        hasVapidPrivateKey: !!vapidPrivateKey
       }
     });
 
-    return NextResponse.json({ success: true, sentCount, prunedCount: expiredEndpoints.length });
+    return NextResponse.json({ success: true, sentCount, prunedCount: expiredEndpoints.length, errorLogs });
   } catch (err: any) {
     console.error('[CHAT_PUSH_DEBUG] Internal error:', err);
     return NextResponse.json({ error: err?.message || 'Internal server error' }, { status: 500 });
