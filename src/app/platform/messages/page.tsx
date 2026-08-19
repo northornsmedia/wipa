@@ -43,6 +43,7 @@ function MessagesContent() {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const docInputRef = useRef<HTMLInputElement>(null);
+  const textInputRef = useRef<HTMLInputElement>(null);
 
   // Camera state
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -706,6 +707,12 @@ function MessagesContent() {
     
     const msgText = newMessage.trim();
     setNewMessage("");
+
+    // Keep input focused so mobile virtual keyboard stays open
+    if (textInputRef.current) {
+      textInputRef.current.focus();
+    }
+
     await sendMessageWithStatus('text', msgText);
   };
 
@@ -972,6 +979,7 @@ function MessagesContent() {
                   <input type="file" ref={docInputRef} accept=".pdf,.doc,.docx,.txt" className="hidden" onChange={(e) => handleFileUpload(e, 'document')} />
 
                   <input 
+                    ref={textInputRef}
                     type="text" 
                     placeholder="Type a message..."
                     value={newMessage}
@@ -993,6 +1001,15 @@ function MessagesContent() {
                   ) : (
                     <button 
                       type="submit" 
+                      onMouseDown={(e) => {
+                        // Prevent click from stealing focus from text input
+                        e.preventDefault();
+                      }}
+                      onTouchStart={(e) => {
+                        // Prevent mobile touch from blurring input
+                        e.preventDefault();
+                        handleSendMessage();
+                      }}
                       disabled={!newMessage.trim() && !isUploading}
                       className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white disabled:opacity-40 transition-all shadow-md shadow-[#5a32fa]/30 shrink-0"
                     >
