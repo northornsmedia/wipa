@@ -2,16 +2,25 @@ import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
 
-const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
-const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || '';
-const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:connect@northonsprmarketing.com';
+const rawPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
+const rawPrivateKey = process.env.VAPID_PRIVATE_KEY || '';
+const rawSubject = process.env.VAPID_SUBJECT || 'mailto:connect@northonsprmarketing.com';
+
+const vapidPublicKey = rawPublicKey.trim().replace(/^['"]|['"]$/g, '');
+const vapidPrivateKey = rawPrivateKey.trim().replace(/^['"]|['"]$/g, '');
+let vapidSubject = rawSubject.trim().replace(/^['"]|['"]$/g, '');
+if (vapidSubject && !vapidSubject.startsWith('mailto:') && !vapidSubject.startsWith('https://')) {
+  vapidSubject = `mailto:${vapidSubject}`;
+}
 
 export async function POST(req: Request) {
   try {
-    try {
-      webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
-    } catch (vErr) {
-      console.warn('VAPID set details warning:', vErr);
+    if (vapidPublicKey && vapidPrivateKey) {
+      try {
+        webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
+      } catch (vErr) {
+        console.warn('VAPID set details warning:', vErr);
+      }
     }
 
     const body = await req.json();
