@@ -5,6 +5,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import Sidebar from "@/components/Sidebar";
 import ThemeWrapper from "@/components/ThemeWrapper";
 import WelcomeBackSplash from "@/components/WelcomeBackSplash";
+import { PushNotificationPrompt } from "@/components/chat/PushNotificationPrompt";
 
 export default function PlatformLayout({
   children,
@@ -15,6 +16,8 @@ export default function PlatformLayout({
     <ThemeWrapper>
       <div className="font-sans flex flex-col flex-1 min-h-screen w-full max-w-full min-w-0 overflow-x-hidden box-border">
         <AuthGuard>
+          {/* Push Notification Opt-in Modal */}
+          <PushNotificationPrompt />
           {/* Desktop Header */}
           <PlatformHeader />
           {/* Mobile Top App Bar */}
