@@ -4,14 +4,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Globe, Plus, BookOpen, User, Sparkles, MessageSquare } from 'lucide-react';
+import { Home, Plus, BookOpen, User, MessageSquare } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import MobileCreationSheet from './MobileCreationSheet';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const user = useAppStore((state) => state.user);
-  const setIsLexIQOpen = useAppStore((state) => state.setIsLexIQOpen);
   const [isCreationOpen, setIsCreationOpen] = useState(false);
 
   const isActive = (path: string) => {
@@ -21,16 +20,6 @@ export default function MobileBottomNav() {
 
   return (
     <>
-      {/* Floating LexIQ AI Assistant Trigger (FAB) on mobile */}
-      <button
-        onClick={() => setIsLexIQOpen(true)}
-        aria-label="Ask LexIQ AI"
-        style={{ bottom: 'calc(76px + env(safe-area-inset-bottom, 0px))' }}
-        className="md:hidden fixed right-3.5 z-40 w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa] via-purple-600 to-[#ff90e8] text-white flex items-center justify-center shadow-md shadow-[#5a32fa]/30 active:scale-90 transition-transform ring-2 ring-white/60 dark:ring-[#0b0f19]/60"
-      >
-        <Sparkles size={18} className="text-white" />
-      </button>
-
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 min-h-[calc(4rem+env(safe-area-inset-bottom,0px))] bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800/80 px-2 flex items-center justify-around pb-safe transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.06)] w-full max-w-full box-border">
         {/* 1. Feed / Home */}
         <Link

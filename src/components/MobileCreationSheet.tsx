@@ -3,8 +3,9 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Edit3, Video, MessageSquare, Mic, Briefcase, Calendar, Sparkles } from 'lucide-react';
+import { X, Edit3, Video, MessageSquare, Mic, Briefcase, Sparkles, Bot } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAppStore } from '@/store/useAppStore';
 
 interface MobileCreationSheetProps {
   isOpen: boolean;
@@ -14,16 +15,33 @@ interface MobileCreationSheetProps {
 
 export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }: MobileCreationSheetProps) {
   const router = useRouter();
+  const setIsLexIQOpen = useAppStore((state) => state.setIsLexIQOpen);
 
-  const handleAction = (path: string, actionType?: string) => {
+  const handleAction = (item: any) => {
     onClose();
-    if (actionType && onSelectAction) {
-      onSelectAction(actionType);
+    if (item.action === 'open_lexiq') {
+      setIsLexIQOpen(true);
+      return;
     }
-    router.push(path);
+    if (item.action && onSelectAction) {
+      onSelectAction(item.action);
+    }
+    if (item.path) {
+      router.push(item.path);
+    }
   };
 
   const actionItems = [
+    {
+      id: 'lexiq',
+      title: 'Ask LexIQ AI Assistant',
+      desc: 'Research IP case law, patent drafting & legal analysis',
+      icon: Sparkles,
+      color: 'from-[#5a32fa] via-purple-600 to-[#ff90e8]',
+      bg: 'bg-gradient-to-tr from-[#5a32fa]/20 via-[#ff90e8]/20 to-purple-500/20 text-[#5a32fa] dark:text-[#ff90e8] border border-[#5a32fa]/30',
+      action: 'open_lexiq',
+      highlight: true
+    },
     {
       id: 'post',
       title: 'Create a Post',
@@ -91,19 +109,19 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 26, stiffness: 280 }}
-            className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#151c2c] rounded-t-3xl border-t border-gray-200 dark:border-gray-800 p-6 pb-10 shadow-2xl max-h-[85vh] overflow-y-auto"
+            className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#151c2c] rounded-t-3xl border-t border-gray-200 dark:border-gray-800 p-5 pb-10 shadow-2xl max-h-[85vh] overflow-y-auto"
           >
             {/* Grab Handle */}
-            <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-5" />
+            <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-4" />
 
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
                 <span className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm shadow-md">
                   <Sparkles size={16} />
                 </span>
                 <div>
                   <h3 className="text-lg font-black text-gray-900 dark:text-white">Create & Publish</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Select what you would like to share with WIPA</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Select what you would like to share or explore</p>
                 </div>
               </div>
               <button
@@ -114,21 +132,32 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
               </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-2.5">
+            <div className="grid grid-cols-1 gap-2">
               {actionItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => handleAction(item.path, item.action)}
-                    className="w-full flex items-center gap-4 p-3.5 rounded-2xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/15 transition-all text-left active:scale-[0.98]"
+                    onClick={() => handleAction(item)}
+                    className={`w-full flex items-center gap-3.5 p-3 rounded-2xl border transition-all text-left active:scale-[0.98] ${
+                      item.highlight
+                        ? 'bg-gradient-to-r from-[#5a32fa]/10 via-[#ff90e8]/10 to-purple-500/10 border-[#5a32fa]/30 shadow-sm'
+                        : 'bg-gray-50 dark:bg-white/[0.03] border-gray-100 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/15'
+                    }`}
                   >
-                    <div className={`w-11 h-11 rounded-2xl ${item.bg} flex items-center justify-center shrink-0 shadow-sm`}>
-                      <Icon size={20} />
+                    <div className={`w-10 h-10 rounded-2xl ${item.bg} flex items-center justify-center shrink-0 shadow-sm`}>
+                      <Icon size={18} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-bold text-gray-900 dark:text-white">{item.title}</h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{item.desc}</p>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{item.title}</h4>
+                        {item.highlight && (
+                          <span className="px-1.5 py-0.2 rounded-md bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white text-[9px] font-black uppercase tracking-wider">
+                            AI
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{item.desc}</p>
                     </div>
                   </button>
                 );
