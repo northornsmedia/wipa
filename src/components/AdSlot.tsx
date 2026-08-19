@@ -210,20 +210,20 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
           )}
         </div>
 
-        {/* Banner Asset (100% Uncropped in Phone Frame) */}
+        {/* Banner Asset (Flush on mobile, rounded on desktop) */}
         {ad.banner_image_url && (
-          <div className="w-full max-w-full min-w-0 px-3 sm:px-0 my-2 box-border">
+          <div className="w-full max-w-full min-w-0 my-2.5 box-border">
             <a
               href={ad.target_url || "#"}
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleAdClick}
-              className="w-full max-w-full min-w-0 rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5 block box-border"
+              className="w-full max-w-full min-w-0 overflow-hidden bg-slate-900/5 dark:bg-black/40 flex items-center justify-center border-y sm:border border-gray-100 dark:border-white/5 sm:rounded-2xl shadow-sm block box-border"
             >
               <img 
                 src={ad.banner_image_url} 
                 alt={ad.headline} 
-                className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl transition-opacity hover:opacity-98 block mx-auto" 
+                className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-cover sm:rounded-2xl transition-opacity hover:opacity-98 block mx-auto" 
               />
             </a>
           </div>

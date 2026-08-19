@@ -1039,7 +1039,7 @@ export default function PlatformPage() {
                       </div>
                     {/* Dynamic Sponsored Native Content Placement after every 4 posts */}
                     {(index + 1) % 4 === 0 && (
-                      <div className="w-full max-w-full min-w-0 shrink-0 px-3 sm:px-0 mb-3 box-border">
+                      <div className="w-full max-w-full min-w-0 shrink-0 box-border">
                         <AdSlot placement="feed_native" />
                       </div>
                     )}
