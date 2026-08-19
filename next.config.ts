@@ -27,7 +27,7 @@ const securityHeaders = [
   },
   {
     key: 'Content-Security-Policy',
-    value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src * blob: data:; media-src *; connect-src *; font-src 'self' data: https:; frame-ancestors 'self';",
+    value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src * blob: data:; media-src * blob: data: https:; worker-src 'self' blob:; connect-src *; font-src 'self' data: https:; frame-ancestors 'self';",
   },
 ];
 
