@@ -63,12 +63,20 @@ export default function LoginPage() {
     setError(null);
     setMessage(null);
 
-    const cleanEmail = email.trim().toLowerCase();
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: cleanEmail,
+    const cleanEmail = email.trim();
+    let authRes = await supabase.auth.signInWithPassword({
+      email: cleanEmail.toLowerCase(),
       password: password,
     });
+
+    if (authRes.error && cleanEmail !== cleanEmail.toLowerCase()) {
+      authRes = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password: password,
+      });
+    }
+
+    const { data, error } = authRes;
 
     if (error) {
       if (error.message.includes("Invalid login credentials") || error.message.includes("invalid_grant")) {
@@ -157,6 +165,9 @@ export default function LoginPage() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
                   className="w-full bg-transparent rounded-full py-3 px-5 text-[#1a1a1a] placeholder-gray-400 font-medium border-[1.5px] border-black/20 focus:border-black outline-none transition-colors shadow-sm"
                   required
                 />
@@ -173,6 +184,9 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
                   className="w-full bg-transparent rounded-full py-3 pl-5 pr-12 text-[#1a1a1a] placeholder-gray-400 font-medium border-[1.5px] border-black/20 focus:border-black outline-none transition-colors shadow-sm"
                   required
                 />

@@ -10,7 +10,13 @@ let browserClient: ReturnType<typeof createClient> | undefined;
 export const getSupabaseBrowserClient = (): any => {
   if (browserClient) return browserClient;
   
-  browserClient = createClient(supabaseUrl, supabaseAnonKey);
+  browserClient = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    }
+  });
   return browserClient;
 };
 
