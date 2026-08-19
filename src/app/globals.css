@@ -278,6 +278,13 @@ img, video {
   scrollbar-width: none;
 }
 
+/* Mobile Font Scale: 2% increase across all typography on mobile screens */
+@media (max-width: 767px) {
+  html {
+    font-size: 102%;
+  }
+}
+
 /* Zero-Latency Page Transition Smoothness */
 @view-transition {
   navigation: auto;
