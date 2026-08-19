@@ -107,8 +107,10 @@ self.addEventListener('push', (event) => {
     icon: data.icon || '/icon-192.png',
     badge: data.badge || '/icon-192.png',
     vibrate: [200, 100, 200],
-    tag: data.tag || 'wipa-message',
+    tag: data.tag || `wipa-msg-${Date.now()}`,
     renotify: true,
+    silent: false,
+    timestamp: data.timestamp || Date.now(),
     requireInteraction: false,
     data: {
       url: data.url || '/platform/messages'

@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       icon: senderAvatar || '/icon-192.png',
       badge: '/icon-192.png',
       url: targetUrl,
-      tag: `wipa-chat-${conversationId || recipientId}`,
+      tag: `wipa-msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       timestamp: Date.now(),
     });
 
@@ -91,8 +91,12 @@ export async function POST(req: Request) {
 
       try {
         await webpush.sendNotification(pushSubscription, payload, {
-          TTL: 86400, // 24 hours
+          TTL: 300, // 5 minutes immediate high-priority delivery window
           urgency: 'high',
+          headers: {
+            'Urgency': 'high',
+            'Topic': 'chat-message',
+          },
         });
         sentCount++;
       } catch (pushErr: any) {
