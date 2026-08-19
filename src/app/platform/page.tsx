@@ -371,47 +371,6 @@ export default function PlatformPage() {
               <div className="md:hidden w-full max-w-full overflow-hidden bg-white dark:bg-[#0f172a] border-b border-gray-100 dark:border-white/5 sticky top-0 z-20 backdrop-blur-md">
                 {/* 1. Stories Carousel */}
                 <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
-
-                {/* 2. Sleek Filter Pills & Quick Search */}
-                <div className="flex items-center justify-between gap-2 px-3 pb-2.5">
-                  <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                    {['Latest', 'Trending', 'Following', 'Saved'].map((tab) => (
-                      <button 
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`px-3.5 py-1 rounded-full text-xs font-bold whitespace-nowrap active:scale-95 transition-all ${
-                          activeTab === tab 
-                            ? 'bg-[#5a32fa] text-white shadow-sm shadow-[#5a32fa]/30' 
-                            : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300'
-                        }`}
-                      >
-                        {tab}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 3. Compact 1-Line Quick Composer Strip */}
-                <div className="px-3 pb-3">
-                  <div 
-                    onClick={() => setIsCreatePostModalOpen(true)}
-                    className="flex items-center gap-2.5 py-2 px-3.5 bg-gray-50 dark:bg-white/5 rounded-full border border-gray-100 dark:border-white/10 active:scale-98 transition-all cursor-pointer shadow-sm"
-                  >
-                    <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 ring-1 ring-[#5a32fa]">
-                      {user?.avatar_url ? (
-                        <img src={user.avatar_url} alt={user?.name || 'User'} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-[10px]">
-                          {user?.name?.charAt(0) || 'U'}
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-xs text-gray-400 dark:text-gray-500 font-medium flex-1 truncate">
-                      Share an IP insight, news, or question...
-                    </span>
-                    <ImageIcon size={16} className="text-[#00d26a] shrink-0" />
-                  </div>
-                </div>
               </div>
               
               {/* DESKTOP PREMIUM HERO BANNER (DESKTOP ONLY) */}
