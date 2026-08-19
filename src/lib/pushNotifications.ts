@@ -91,11 +91,7 @@ export async function subscribeToPushNotifications(userId: string): Promise<{
     };
   }
 
-  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-  if (!vapidPublicKey) {
-    console.warn("NEXT_PUBLIC_VAPID_PUBLIC_KEY is not configured in environment variables.");
-    return { success: false, error: 'VAPID public key missing' };
-  }
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BPaCaAoYnDsPS5QjqvRTRzJ3e-fg3v_KG7WHgUVbZkiAI6PFRl-M1IsWAB1vW2EN09T7zlyVR5G1lqIw8NZIMR8';
 
   try {
     // 1. Request native permission from browser / OS

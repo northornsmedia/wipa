@@ -2,21 +2,18 @@ import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
 
-// Configure WebPush with VAPID keys
-const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
-const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || '';
+const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BPaCaAoYnDsPS5QjqvRTRzJ3e-fg3v_KG7WHgUVbZkiAI6PFRl-M1IsWAB1vW2EN09T7zlyVR5G1lqIw8NZIMR8';
+const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || 'Z1HOxyw5LFt4B6KzBWViJgZYptP9M2_TV3Wgt7WhRnM';
 const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:connect@northonsprmarketing.com';
-
-if (vapidPublicKey && vapidPrivateKey) {
-  try {
-    webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
-  } catch (err) {
-    console.error('Failed to configure webpush VAPID details:', err);
-  }
-}
 
 export async function POST(req: Request) {
   try {
+    try {
+      webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
+    } catch (vErr) {
+      console.warn('VAPID set details warning:', vErr);
+    }
+
     const body = await req.json();
     const { 
       recipientId, 
@@ -30,11 +27,6 @@ export async function POST(req: Request) {
 
     if (!recipientId && !conversationId) {
       return NextResponse.json({ error: 'recipientId or conversationId is required' }, { status: 400 });
-    }
-
-    if (!vapidPublicKey || !vapidPrivateKey) {
-      console.warn('VAPID keys not configured. Push notification skipped.');
-      return NextResponse.json({ error: 'VAPID keys not configured' }, { status: 500 });
     }
 
     const supabase = getSupabaseServerClient();
