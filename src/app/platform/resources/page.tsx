@@ -232,23 +232,38 @@ export default function ResourcesPage() {
 
   if (isGenerating) {
     return (
-      <div className="w-full min-h-[calc(100vh-73px)] flex items-center justify-center bg-white dark:bg-[#0f172a] overflow-hidden relative z-10">
+      <div className="w-full min-h-[calc(100vh-73px)] flex flex-col items-center justify-center bg-white dark:bg-[#0f172a] overflow-hidden relative z-10 px-4">
         <style dangerouslySetInnerHTML={{ __html: `
           .loader-wrapper {
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 120px;
+            height: 70px;
             width: auto;
-            margin: 2rem;
+            max-width: 95vw;
+            margin: 0 auto;
 
             font-family: "Poppins", sans-serif;
-            font-size: 1.6em;
-            font-weight: 600;
+            font-size: 0.82rem;
+            font-weight: 700;
             user-select: none;
+            text-align: center;
+            white-space: nowrap;
+          }
 
-            scale: 2;
+          @media (min-width: 480px) {
+            .loader-wrapper {
+              font-size: 1.05rem;
+              height: 85px;
+            }
+          }
+
+          @media (min-width: 768px) {
+            .loader-wrapper {
+              font-size: 1.35rem;
+              height: 100px;
+            }
           }
 
           .loader {
@@ -263,9 +278,9 @@ export default function ResourcesPage() {
             mask: repeating-linear-gradient(
               90deg,
               transparent 0,
-              transparent 6px,
-              black 7px,
-              black 8px
+              transparent 4px,
+              black 5px,
+              black 6px
             );
           }
 
