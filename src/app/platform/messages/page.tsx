@@ -634,10 +634,12 @@ function MessagesContent() {
       return nextList;
     });
 
-    // Instantly scroll to bottom for sender's own message
+    // Instantly scroll container to bottom for sender's own message without triggering window scroll
     setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 50);
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      }
+    }, 20);
 
     if (!isOnline) {
       // Offline: left in queue
@@ -737,16 +739,28 @@ function MessagesContent() {
   };
 
   const handleSendMessage = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (!newMessage.trim() || !activeChat) return;
     
     const msgText = newMessage.trim();
     setNewMessage("");
 
-    // Keep input focused so mobile virtual keyboard stays open
+    // Keep input focused continuously across render frames so mobile keyboard never collapses
     if (textInputRef.current) {
       textInputRef.current.focus();
     }
+    requestAnimationFrame(() => {
+      textInputRef.current?.focus();
+    });
+    setTimeout(() => {
+      textInputRef.current?.focus();
+    }, 10);
+    setTimeout(() => {
+      textInputRef.current?.focus();
+    }, 50);
 
     await sendMessageWithStatus('text', msgText);
   };
@@ -1047,6 +1061,12 @@ function MessagesContent() {
                       setNewMessage(e.target.value);
                       handleTypingEvent();
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
                     className="flex-1 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-xs transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
                   />
 
@@ -1060,18 +1080,27 @@ function MessagesContent() {
                     </button>
                   ) : (
                     <button 
-                      type="submit" 
-                      onMouseDown={(e) => {
-                        // Prevent click from stealing focus from text input
-                        e.preventDefault();
-                      }}
-                      onTouchStart={(e) => {
-                        // Prevent mobile touch from blurring input
+                      type="button"
+                      onPointerDown={(e) => {
                         e.preventDefault();
                         handleSendMessage();
                       }}
-                      disabled={!newMessage.trim() && !isUploading}
-                      className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white disabled:opacity-40 transition-all shadow-md shadow-[#5a32fa]/30 shrink-0"
+                      onTouchStart={(e) => {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }}
+                      aria-label="Send message"
+                      className={`w-10 h-10 flex items-center justify-center rounded-2xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white transition-all shadow-md shadow-[#5a32fa]/30 shrink-0 ${
+                        !newMessage.trim() && !isUploading ? 'opacity-40 cursor-default' : 'active:scale-95'
+                      }`}
                     >
                       <Send size={16} />
                     </button>
