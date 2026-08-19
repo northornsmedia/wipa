@@ -777,6 +777,7 @@ function MessagesContent() {
       fetch('/api/notifications/push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
         body: JSON.stringify({
           recipientId: activeChat?.participantId || null,
           conversationId: activeChatId,
