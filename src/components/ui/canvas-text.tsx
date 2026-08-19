@@ -142,6 +142,7 @@ export function CanvasText({
       ctx.save();
 
       const numLines = Math.max(Math.floor(height / (lineGap || 10)), 5);
+      const effectiveIntensity = Math.min(curveIntensity || 60, Math.max(height * 0.7, 15), Math.max(width * 0.25, 20));
 
       for (let i = 0; i <= numLines + 4; i++) {
         const color = resolveColor(activePalette[i % activePalette.length], container);
@@ -154,11 +155,11 @@ export function CanvasText({
         ctx.beginPath();
 
         const cp1x = width * 0.25;
-        const cp1y = baseY + Math.sin(waveOffset) * (curveIntensity || 60);
+        const cp1y = baseY + Math.sin(waveOffset) * effectiveIntensity;
         const cp2x = width * 0.75;
-        const cp2y = baseY + Math.cos(waveOffset + Math.PI / 2) * (curveIntensity || 60);
+        const cp2y = baseY + Math.cos(waveOffset + Math.PI / 2) * effectiveIntensity;
         const endX = width;
-        const endY = baseY + Math.sin(waveOffset + Math.PI) * (curveIntensity * 0.5);
+        const endY = baseY + Math.sin(waveOffset + Math.PI) * (effectiveIntensity * 0.5);
 
         ctx.moveTo(0, baseY);
         ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, endY);

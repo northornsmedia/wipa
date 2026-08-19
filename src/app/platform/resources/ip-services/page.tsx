@@ -146,12 +146,12 @@ export default function IPServicesPage() {
             Skip
           </button>
 
-          <div className="relative z-10 flex flex-col items-center justify-center p-4">
-            <h2 className={cn("group relative mx-auto text-center text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white flex flex-wrap items-center justify-center gap-x-3 gap-y-2")}>
-              <span className="text-slate-600 dark:text-slate-300">Sponsored by</span>
+          <div className="relative z-10 flex flex-col items-center justify-center p-4 max-w-full">
+            <h2 className={cn("group relative mx-auto text-center font-black tracking-tight text-slate-900 dark:text-white flex flex-col sm:flex-row items-center justify-center gap-x-3 gap-y-2 max-w-full px-2")}>
+              <span className="text-slate-500 dark:text-slate-400 text-xs sm:text-lg font-bold uppercase tracking-wider">Sponsored by</span>
               <CanvasText
                 text="PSS Solutions"
-                className="font-black"
+                className="font-black text-3xl sm:text-5xl md:text-6xl tracking-tight"
                 lightColors={[
                   "#0284c7",
                   "#2563eb",
@@ -171,8 +171,8 @@ export default function IPServicesPage() {
                   "#06b6d4"
                 ]}
                 lineGap={6}
-                lineWidth={2.2}
-                curveIntensity={45}
+                lineWidth={1.8}
+                curveIntensity={25}
                 animationDuration={4}
               />
             </h2>
