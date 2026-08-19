@@ -63,8 +63,21 @@ function MessagesContent() {
   const initialScrolledRef = useRef<Record<string, boolean>>({});
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const activeChannelRef = useRef<any>(null);
+  const attachmentMenuRef = useRef<HTMLDivElement>(null);
 
   const activeChat = conversations.find(c => String(c.id) === String(activeChatId));
+
+  // Auto close attachment menu when clicking or tapping outside
+  useEffect(() => {
+    if (!isAttachmentMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent | TouchEvent | PointerEvent) => {
+      if (attachmentMenuRef.current && !attachmentMenuRef.current.contains(e.target as Node)) {
+        setIsAttachmentMenuOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
+  }, [isAttachmentMenuOpen]);
 
   useEffect(() => {
     activeChatIdRef.current = activeChatId ? String(activeChatId) : null;
@@ -980,7 +993,10 @@ function MessagesContent() {
               {/* Chat Messages Body */}
               <div 
                 ref={scrollContainerRef}
-                onScroll={handleScroll}
+                onScroll={() => {
+                  handleScroll();
+                  if (isAttachmentMenuOpen) setIsAttachmentMenuOpen(false);
+                }}
                 className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#f8f9fa] dark:bg-[#0a0f1d] space-y-4 relative"
               >
                 {isLoadingMessages && activeChat.messages.length === 0 ? (
@@ -1042,7 +1058,7 @@ function MessagesContent() {
               {/* Chat Input Bar */}
               <div className="sticky bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pb-[max(env(safe-area-inset-bottom,0px),1rem)] md:pb-4 border-t border-gray-100 dark:border-white/10 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-xl shrink-0 w-full">
                 <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                  <div className="relative">
+                  <div ref={attachmentMenuRef} className="relative">
                     <button 
                       type="button" 
                       onClick={() => setIsAttachmentMenuOpen(!isAttachmentMenuOpen)}
@@ -1091,6 +1107,7 @@ function MessagesContent() {
                     type="text" 
                     placeholder="Type a message..."
                     value={newMessage}
+                    onFocus={() => setIsAttachmentMenuOpen(false)}
                     onChange={(e) => {
                       setNewMessage(e.target.value);
                       handleTypingEvent();
