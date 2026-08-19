@@ -24,11 +24,8 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
       setIsLexIQOpen(true);
       return;
     }
-    if (item.action === 'open_composer' || item.id === 'post') {
-      setIsCreatePostOpen(true);
-      if (typeof window !== 'undefined' && window.location.pathname !== '/platform') {
-        router.push('/platform');
-      }
+    if (item.id === 'post' || item.path === '/platform/create-post') {
+      router.push('/platform/create-post');
       return;
     }
     if (item.action && onSelectAction) {
@@ -57,8 +54,7 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
       icon: Edit3,
       color: 'from-[#5a32fa] to-indigo-600',
       bg: 'bg-[#5a32fa]/10 text-[#5a32fa]',
-      path: '/platform',
-      action: 'open_composer'
+      path: '/platform/create-post'
     },
     {
       id: 'webinar',
