@@ -875,6 +875,30 @@ function MessagesContent() {
     setIsCameraOpen(false);
   };
 
+  const handleDeleteChat = async (chatId: string) => {
+    try {
+      // 1. Delete messages, participants, and conversation in Supabase
+      await supabase.from('messages').delete().eq('conversation_id', chatId);
+      await supabase.from('conversation_participants').delete().eq('conversation_id', chatId);
+      await supabase.from('conversations').delete().eq('id', chatId);
+
+      // 2. Remove from local state
+      setConversations(prev => {
+        const next = prev.filter(c => String(c.id) !== String(chatId));
+        useAppStore.getState().setCachedConversations(next);
+        return next;
+      });
+
+      // 3. Reset active chat if deleted
+      if (String(activeChatId) === String(chatId)) {
+        setActiveChatId(null);
+        setShowMobileChat(false);
+      }
+    } catch (err) {
+      console.error("Failed to delete conversation:", err);
+    }
+  };
+
   return (
     <div className="h-[calc(100vh-73px)] overflow-hidden bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col font-sans">
 
@@ -894,6 +918,7 @@ function MessagesContent() {
           conversations={conversations}
           activeChatId={activeChatId}
           onSelectChat={markAsRead}
+          onDeleteChat={handleDeleteChat}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           chatFilter={chatFilter}
