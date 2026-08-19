@@ -412,17 +412,17 @@ export default function ResourcesPage() {
       <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 pt-4 sm:pt-6 md:pt-8">
         
         {/* Header Section */}
-        <div className="mb-3 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
+        <div className="mb-4 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="w-full sm:w-auto">
+            <div className="flex items-center justify-center sm:justify-start gap-3">
               <div className="hidden sm:flex w-10 h-10 sm:w-12 sm:h-12 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 p-2 sm:p-2.5 rounded-2xl items-center justify-center shrink-0 shadow-sm">
                 <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-[#5a32fa] dark:text-[#ff90e8]" />
               </div>
-              <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+              <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight text-center sm:text-left">
                 Resource Library
               </h1>
             </div>
-            <p className="hidden sm:block text-gray-500 dark:text-gray-400 font-medium mt-2 text-xs sm:text-sm md:text-base max-w-xl">
+            <p className="hidden sm:block text-gray-500 dark:text-gray-400 font-medium mt-2 text-xs sm:text-sm md:text-base max-w-xl text-center sm:text-left">
               Access exclusive guides, templates, webinars, and reports.
             </p>
           </div>
