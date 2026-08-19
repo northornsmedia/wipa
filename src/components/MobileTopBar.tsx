@@ -77,8 +77,8 @@ export default function MobileTopBar() {
     }
   };
 
-  // Hide only on full-screen standalone pages that have their own custom top header
-  const isFullScreenModalPage = pathname === '/platform/create-post';
+  // Hide on full-screen standalone pages that have their own custom top header
+  const isFullScreenModalPage = pathname === '/platform/create-post' || pathname.startsWith('/platform/messages');
   if (isFullScreenModalPage) {
     return null;
   }

@@ -25,7 +25,7 @@ export default function MobileBottomNav() {
     return pathname.startsWith(path);
   };
 
-  if (pathname === '/platform/create-post') {
+  if (pathname === '/platform/create-post' || pathname.startsWith('/platform/messages')) {
     return null;
   }
 
