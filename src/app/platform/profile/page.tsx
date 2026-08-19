@@ -357,14 +357,14 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#0b0f19] text-gray-900 dark:text-gray-100 font-sans pb-20">
       
       {/* Top Banner & Header Container */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4">
+      <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 pt-0 sm:pt-4">
         
         {/* ================= HERO PROFILE CARD (FB + LINKEDIN HYBRID) ================= */}
-        <div className="bg-white dark:bg-[#151c2c] rounded-2xl md:rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden mb-6">
+        <div className="bg-white dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-3xl border-x-0 sm:border-x border-b sm:border-y border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden mb-4 sm:mb-6">
           
           {/* Cover Photo */}
           <div 
-            className="h-44 sm:h-64 md:h-80 w-full relative bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] overflow-hidden"
+            className="h-48 sm:h-64 md:h-80 w-full relative bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] overflow-hidden"
             style={{ 
               backgroundImage: (user?.cover_url || coverImage) ? `url(${user?.cover_url || coverImage})` : undefined,
               backgroundSize: 'cover',
@@ -571,7 +571,7 @@ export default function ProfilePage() {
         </div>
 
         {/* ================= 2-COLUMN MAIN CONTENT (LINKEDIN/FB GRID) ================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="px-3 sm:px-0 grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* ================= LEFT / MAIN CONTENT STREAM (2 COLS) ================= */}
           <div className="lg:col-span-2 space-y-6">

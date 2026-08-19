@@ -252,22 +252,24 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   return (
     <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#0b0f19] text-gray-900 dark:text-gray-100 font-sans pb-20">
       
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4">
+      <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 pt-0 sm:pt-4">
         
         {/* Back navigation button */}
-        <button 
-          onClick={() => router.back()}
-          className="mb-3 inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-[#5a32fa] transition-colors"
-        >
-          <ArrowLeft size={16} /> Back to Network
-        </button>
+        <div className="px-3 sm:px-0 pt-3 sm:pt-0">
+          <button 
+            onClick={() => router.back()}
+            className="mb-3 inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-[#5a32fa] transition-colors"
+          >
+            <ArrowLeft size={16} /> Back to Network
+          </button>
+        </div>
 
         {/* ================= HERO PROFILE CARD ================= */}
-        <div className="bg-white dark:bg-[#151c2c] rounded-2xl md:rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden mb-6">
+        <div className="bg-white dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-3xl border-x-0 sm:border-x border-b sm:border-y border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden mb-4 sm:mb-6">
           
           {/* Cover Photo */}
           <div 
-            className="h-44 sm:h-64 md:h-80 w-full relative bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] overflow-hidden"
+            className="h-48 sm:h-64 md:h-80 w-full relative bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] overflow-hidden"
             style={{ 
               backgroundImage: profileData.coverUrl ? `url(${profileData.coverUrl})` : undefined,
               backgroundSize: 'cover',
