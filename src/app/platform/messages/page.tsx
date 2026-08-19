@@ -592,18 +592,20 @@ function MessagesContent() {
           
           {/* Top Bar with Back Button to Platform */}
           <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-white/10 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Link 
-                  href="/platform" 
-                  className="flex items-center justify-center w-9 h-9 rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-700 dark:text-gray-200 transition-all duration-200 shadow-sm active:scale-90"
-                  title="Back to Feed"
-                >
-                  <ArrowLeft size={18} />
-                </Link>
-                <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Messages</h2>
-              </div>
-              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#9b7aff]">
+            <div className="relative flex items-center justify-between h-10">
+              <Link 
+                href="/platform" 
+                className="flex items-center justify-center w-9 h-9 rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-700 dark:text-gray-200 transition-all duration-200 shadow-sm active:scale-90 z-10 shrink-0"
+                title="Back to Feed"
+              >
+                <ArrowLeft size={18} />
+              </Link>
+              
+              <h2 className="absolute inset-0 flex items-center justify-center text-lg sm:text-xl font-black text-gray-900 dark:text-white tracking-tight pointer-events-none">
+                Messages
+              </h2>
+
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#9b7aff] z-10 shrink-0">
                 {conversations.length} Active
               </span>
             </div>
