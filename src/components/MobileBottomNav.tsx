@@ -18,6 +18,10 @@ export default function MobileBottomNav() {
     return pathname.startsWith(path);
   };
 
+  if (pathname === '/platform/create-post') {
+    return null;
+  }
+
   return (
     <>
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 min-h-[calc(4rem+env(safe-area-inset-bottom,0px))] bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800/80 px-2 flex items-center justify-around pb-safe transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.06)] w-full max-w-full box-border">

@@ -77,6 +77,10 @@ export default function MobileTopBar() {
     }
   };
 
+  if (pathname === '/platform/create-post') {
+    return null;
+  }
+
   return (
     <>
       <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-all w-full max-w-full box-border">
