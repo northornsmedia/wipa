@@ -20,15 +20,16 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { 
       recipientId, 
+      conversationId,
+      senderId,
       senderName, 
       messageText, 
       mediaType, 
-      conversationId,
       senderAvatar 
     } = body;
 
-    if (!recipientId) {
-      return NextResponse.json({ error: 'recipientId is required' }, { status: 400 });
+    if (!recipientId && !conversationId) {
+      return NextResponse.json({ error: 'recipientId or conversationId is required' }, { status: 400 });
     }
 
     if (!vapidPublicKey || !vapidPrivateKey) {
@@ -38,11 +39,35 @@ export async function POST(req: Request) {
 
     const supabase = getSupabaseServerClient();
 
-    // 1. Fetch all active push subscriptions for the recipient
+    let targetRecipientIds: string[] = [];
+    if (recipientId) {
+      targetRecipientIds.push(recipientId);
+    }
+
+    // If conversationId is provided, look up all other participants in the conversation
+    if (conversationId) {
+      const { data: participants } = await supabase
+        .from('conversation_participants')
+        .select('user_id')
+        .eq('conversation_id', conversationId);
+
+      if (participants && participants.length > 0) {
+        const others = participants
+          .map((p: any) => p.user_id)
+          .filter((uid: string) => !senderId || uid !== senderId);
+        targetRecipientIds = Array.from(new Set([...targetRecipientIds, ...others]));
+      }
+    }
+
+    if (targetRecipientIds.length === 0) {
+      return NextResponse.json({ message: 'No recipients found for push notification', sentCount: 0 });
+    }
+
+    // 1. Fetch all active push subscriptions for the recipient(s)
     const { data: subscriptions, error: subError } = await supabase
       .from('push_subscriptions')
       .select('*')
-      .eq('user_id', recipientId);
+      .in('user_id', targetRecipientIds);
 
     if (subError) {
       console.error('Failed to query push_subscriptions:', subError);

@@ -773,21 +773,20 @@ function MessagesContent() {
 
       await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeChatId);
 
-      // Asynchronously trigger native background push notification for recipient's lock screen
-      if (activeChat?.participantId) {
-        fetch('/api/notifications/push', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            recipientId: activeChat.participantId,
-            senderName: user.name || user.email?.split('@')[0] || 'Member',
-            senderAvatar: user.avatar_url || null,
-            messageText: text,
-            mediaType: type,
-            conversationId: activeChatId,
-          }),
-        }).catch(pushErr => console.warn('Background push delivery trigger failed:', pushErr));
-      }
+      // Asynchronously trigger native background push notification for recipients
+      fetch('/api/notifications/push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipientId: activeChat?.participantId || null,
+          conversationId: activeChatId,
+          senderId: user.id,
+          senderName: user.name || user.email?.split('@')[0] || 'Member',
+          senderAvatar: user.avatar_url || null,
+          messageText: text,
+          mediaType: type,
+        }),
+      }).catch(pushErr => console.warn('Background push delivery trigger failed:', pushErr));
     } catch (err: any) {
       console.error("Message send failed:", err);
       // Mark message as failed
