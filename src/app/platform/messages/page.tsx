@@ -13,6 +13,7 @@ import { MessageStatusTick, MessageStatus } from '@/components/chat/MessageStatu
 import { MessageBubble, ChatMessage, MediaType } from '@/components/chat/MessageBubble';
 import { ChatHeader } from '@/components/chat/ChatHeader';
 import { ChatSidebar, SidebarChat } from '@/components/chat/ChatSidebar';
+import { PushNotificationPrompt } from '@/components/chat/PushNotificationPrompt';
 
 export type Chat = SidebarChat & {
   messages: ChatMessage[];
@@ -771,6 +772,22 @@ function MessagesContent() {
       }));
 
       await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeChatId);
+
+      // Asynchronously trigger native background push notification for recipient's lock screen
+      if (activeChat?.participantId) {
+        fetch('/api/notifications/push', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            recipientId: activeChat.participantId,
+            senderName: user.name || user.email?.split('@')[0] || 'Member',
+            senderAvatar: user.avatar_url || null,
+            messageText: text,
+            mediaType: type,
+            conversationId: activeChatId,
+          }),
+        }).catch(pushErr => console.warn('Background push delivery trigger failed:', pushErr));
+      }
     } catch (err: any) {
       console.error("Message send failed:", err);
       // Mark message as failed
@@ -1180,6 +1197,9 @@ function MessagesContent() {
           <span>You&apos;re currently offline. Messages will be queued and sent automatically when connected.</span>
         </div>
       )}
+
+      {/* Lock-Screen Push Notifications Opt-In Banner */}
+      <PushNotificationPrompt />
 
       {/* Main Messaging UI */}
       <div className="flex-1 flex w-full p-0 md:p-6 lg:p-8 min-h-0 md:gap-6 bg-white dark:bg-[#0f172a] md:bg-transparent">

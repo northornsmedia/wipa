@@ -78,3 +78,72 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
+// --- Native Background Push Notifications (Android & iOS Web Push) ---
+
+self.addEventListener('push', (event) => {
+  let data = {
+    title: 'New Message • WIPA',
+    body: 'You have a new message.',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    url: '/platform/messages',
+    tag: 'wipa-chat-message'
+  };
+
+  try {
+    if (event.data) {
+      const json = event.data.json();
+      data = { ...data, ...json };
+    }
+  } catch (err) {
+    if (event.data) {
+      data.body = event.data.text();
+    }
+  }
+
+  const notificationOptions = {
+    body: data.body,
+    icon: data.icon || '/icon-192.png',
+    badge: data.badge || '/icon-192.png',
+    vibrate: [200, 100, 200],
+    tag: data.tag || 'wipa-message',
+    renotify: true,
+    requireInteraction: false,
+    data: {
+      url: data.url || '/platform/messages'
+    },
+    actions: [
+      { action: 'open', title: 'Open Chat' }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, notificationOptions)
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const targetUrl = event.notification.data?.url || '/platform/messages';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // If a window is already open, focus it and navigate
+      for (const client of clientList) {
+        if ('focus' in client) {
+          client.focus();
+          if ('navigate' in client && targetUrl) {
+            return client.navigate(targetUrl);
+          }
+          return client;
+        }
+      }
+      // If no window is open, launch a new window straight to the chat
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
