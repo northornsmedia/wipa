@@ -224,14 +224,14 @@ export default function Home() {
                 {/* Item 1 - Orange Pill */}
                 <motion.div variants={{ hidden: { y: 50, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } } }} className="relative w-20 h-40 md:w-32 md:h-64 rounded-full bg-[#f99d3e] border border-black/10 overflow-hidden flex-shrink-0 flex items-end justify-center">
                   <div className="w-full h-full relative">
-                     <Image src="/avatar_1.png" alt="User 1" fill className="object-cover object-top mix-blend-multiply grayscale scale-[1.15]" />
+                     <Image src="/avatar_1.png" alt="User 1" fill sizes="(max-width: 768px) 80px, 128px" className="object-cover object-top mix-blend-multiply grayscale scale-[1.15]" />
                   </div>
                 </motion.div>
                 
                 {/* Item 2 - Purple Pill */}
                 <motion.div variants={{ hidden: { y: 50, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } } }} className="relative w-28 h-40 md:w-44 md:h-64 rounded-full bg-[#b892ff] border border-black/10 overflow-hidden flex-shrink-0 flex items-end justify-center">
                    <div className="w-full h-full relative">
-                     <Image src="/avatar_2.png" alt="User 2" fill className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
+                     <Image src="/avatar_2.png" alt="User 2" fill sizes="(max-width: 768px) 112px, 176px" className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
                   </div>
                 </motion.div>
 
@@ -239,14 +239,14 @@ export default function Home() {
                 <motion.div variants={{ hidden: { y: 50, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } } }} className="relative w-32 h-40 md:w-52 md:h-64 bg-[#ff5241] flex-shrink-0 flex items-end justify-center group" style={{ clipPath: 'url(#peanut-clip)' }}>
                    <div className="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)]"></div>
                    <div className="w-full h-full relative">
-                     <Image src="/avatar_1.png" alt="User 3" fill className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
+                     <Image src="/avatar_1.png" alt="User 3" fill sizes="(max-width: 768px) 128px, 208px" className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
                   </div>
                 </motion.div>
 
                 {/* Item 4 - Yellow Arch */}
                 <motion.div variants={{ hidden: { y: 50, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } } }} className="relative w-28 h-40 md:w-44 md:h-64 rounded-t-full bg-[#ffd05b] border border-black/10 border-b-0 overflow-hidden flex-shrink-0 flex items-end justify-center">
                   <div className="w-full h-full relative">
-                     <Image src="/avatar_2.png" alt="User 4" fill className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
+                     <Image src="/avatar_2.png" alt="User 4" fill sizes="(max-width: 768px) 112px, 176px" className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
                   </div>
                 </motion.div>
 
@@ -254,21 +254,21 @@ export default function Home() {
                 <motion.div variants={{ hidden: { y: 50, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } } }} className="relative w-32 h-40 md:w-52 md:h-64 bg-[#48d29b] flex-shrink-0 flex items-end justify-center group" style={{ clipPath: 'url(#peanut-clip)' }}>
                    <div className="absolute inset-0 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)]"></div>
                    <div className="w-full h-full relative">
-                     <Image src="/avatar_1.png" alt="User 5" fill className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
+                     <Image src="/avatar_1.png" alt="User 5" fill sizes="(max-width: 768px) 128px, 208px" className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
                   </div>
                 </motion.div>
 
                 {/* Item 6 - Blue Pill */}
                 <motion.div variants={{ hidden: { y: 50, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } } }} className="relative w-28 h-40 md:w-44 md:h-64 rounded-full bg-[#6eb4ff] border border-black/10 overflow-hidden flex-shrink-0 flex items-end justify-center">
                    <div className="w-full h-full relative">
-                     <Image src="/avatar_2.png" alt="User 6" fill className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
+                     <Image src="/avatar_2.png" alt="User 6" fill sizes="(max-width: 768px) 112px, 176px" className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
                   </div>
                 </motion.div>
 
                 {/* Item 7 - Peach Arch */}
                 <motion.div variants={{ hidden: { y: 50, opacity: 0 }, visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } } }} className="relative w-28 h-40 md:w-44 md:h-64 rounded-t-full bg-[#ff9882] border border-black/10 border-b-0 overflow-hidden flex-shrink-0 flex items-end justify-center">
                    <div className="w-full h-full relative">
-                     <Image src="/avatar_1.png" alt="User 7" fill className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
+                     <Image src="/avatar_1.png" alt="User 7" fill sizes="(max-width: 768px) 112px, 176px" className="object-cover object-top mix-blend-multiply grayscale scale-[1.1]" />
                   </div>
                 </motion.div>
               </div>
@@ -326,7 +326,7 @@ export default function Home() {
             
             {/* Card 1 */}
             <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[1.5rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-black/10">
-              <Image src="/course_finance_1783622322975.png" alt="Finance Course" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+              <Image src="/course_finance_1783622322975.png" alt="Finance Course" fill sizes="(max-width: 768px) 300px, 350px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
               <div className="absolute bottom-0 left-0 p-8 w-full z-10">
                 <h3 className="text-white font-serif text-2xl mb-2 leading-snug">IP Leadership Masterclass</h3>
@@ -339,7 +339,7 @@ export default function Home() {
 
             {/* Card 2 */}
             <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[1.5rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-black/10">
-              <Image src="/course_yoga_1783622333453.png" alt="Yoga Course" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+              <Image src="/course_yoga_1783622333453.png" alt="Yoga Course" fill sizes="(max-width: 768px) 300px, 350px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
               <div className="absolute bottom-0 left-0 p-8 w-full z-10">
                 <h3 className="text-white font-serif text-2xl mb-2 leading-snug">Global Trademarks Webinar</h3>
@@ -352,7 +352,7 @@ export default function Home() {
 
             {/* Card 3 */}
             <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[1.5rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-black/10">
-              <Image src="/course_speaking_1783622343431.png" alt="Speaking Course" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+              <Image src="/course_speaking_1783622343431.png" alt="Speaking Course" fill sizes="(max-width: 768px) 300px, 350px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
               <div className="absolute bottom-0 left-0 p-8 w-full z-10">
                 <h3 className="text-white font-serif text-2xl mb-2 leading-snug">AI in Intellectual Property</h3>
@@ -365,7 +365,7 @@ export default function Home() {
 
             {/* Card 4 */}
             <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[1.5rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-black/10">
-              <Image src="/course_marketing_1783622354038.png" alt="Marketing Course" fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+              <Image src="/course_marketing_1783622354038.png" alt="Marketing Course" fill sizes="(max-width: 768px) 300px, 350px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
               <div className="absolute bottom-0 left-0 p-8 w-full z-10">
                 <h3 className="text-white font-serif text-2xl mb-2 leading-snug">Women in IP Networking Event</h3>
@@ -499,7 +499,7 @@ export default function Home() {
               {/* Member 5 */}
               <div className="w-[280px] md:w-[320px] snap-start flex-shrink-0 group cursor-pointer">
                 <div className="w-full aspect-[4/4.5] rounded-[1.5rem] bg-[#ff6b6b] mb-5 overflow-hidden relative border border-black">
-                  <Image src="/avatar_1.png" alt="Eleanor Pena" fill className="object-cover object-bottom mix-blend-multiply grayscale group-hover:scale-105 transition-transform duration-700" />
+                  <Image src="/avatar_1.png" alt="Eleanor Pena" fill sizes="(max-width: 768px) 280px, 320px" className="object-cover object-bottom mix-blend-multiply grayscale group-hover:scale-105 transition-transform duration-700" />
                 </div>
                 <span className="inline-block border border-black rounded-full px-3 py-1 text-xs mb-3 font-medium">California</span>
                 <h3 className="font-serif text-2xl font-bold text-[#1a1a1a] mb-1">Eleanor Pena</h3>
@@ -509,7 +509,7 @@ export default function Home() {
               {/* Member 6 */}
               <div className="w-[280px] md:w-[320px] snap-start flex-shrink-0 group cursor-pointer">
                 <div className="w-full aspect-[4/4.5] rounded-[1.5rem] bg-[#6eb4ff] mb-5 overflow-hidden relative border border-black">
-                  <Image src="/avatar_2.png" alt="Albert Flores" fill className="object-cover object-bottom mix-blend-multiply grayscale group-hover:scale-105 transition-transform duration-700" />
+                  <Image src="/avatar_2.png" alt="Albert Flores" fill sizes="(max-width: 768px) 280px, 320px" className="object-cover object-bottom mix-blend-multiply grayscale group-hover:scale-105 transition-transform duration-700" />
                 </div>
                 <span className="inline-block border border-black rounded-full px-3 py-1 text-xs mb-3 font-medium">Texas</span>
                 <h3 className="font-serif text-2xl font-bold text-[#1a1a1a] mb-1">Albert Flores</h3>
@@ -545,7 +545,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl p-4 pr-6 flex items-center justify-between gap-4 border border-black/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full overflow-hidden relative flex-shrink-0 bg-yellow-100 border border-black/10">
-                  <Image src="/team_2_1783622628114.png" alt="User" fill className="object-cover object-top mix-blend-multiply" />
+                  <Image src="/team_2_1783622628114.png" alt="User" fill sizes="64px" className="object-cover object-top mix-blend-multiply" />
                 </div>
                 <div>
                   <h4 className="font-serif text-[#1a1a1a] text-lg font-bold mb-1 leading-snug max-w-md">Best practices for filing patents internationally across different jurisdictions?</h4>
@@ -561,7 +561,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl p-4 pr-6 flex items-center justify-between gap-4 border border-black/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full overflow-hidden relative flex-shrink-0 bg-purple-100 border border-black/10">
-                  <Image src="/team_1_1783622614612.png" alt="User" fill className="object-cover object-top mix-blend-multiply" />
+                  <Image src="/team_1_1783622614612.png" alt="User" fill sizes="64px" className="object-cover object-top mix-blend-multiply" />
                 </div>
                 <div>
                   <h4 className="font-serif text-[#1a1a1a] text-lg font-bold mb-1 leading-snug max-w-md">How is AI impacting copyright laws and creator rights in Europe?</h4>
@@ -577,7 +577,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl p-4 pr-6 flex items-center justify-between gap-4 border border-black/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full overflow-hidden relative flex-shrink-0 bg-orange-100 border border-black/10">
-                  <Image src="/team_4_1783622650804.png" alt="User" fill className="object-cover object-top mix-blend-multiply" />
+                  <Image src="/team_4_1783622650804.png" alt="User" fill sizes="64px" className="object-cover object-top mix-blend-multiply" />
                 </div>
                 <div>
                   <h4 className="font-serif text-[#1a1a1a] text-lg font-bold mb-1 leading-snug max-w-md">Looking for a co-counsel or referral in Japan for a trademark dispute.</h4>
@@ -593,7 +593,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl p-4 pr-6 flex items-center justify-between gap-4 border border-black/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full overflow-hidden relative flex-shrink-0 bg-green-100 border border-black/10">
-                  <Image src="/avatar_1.png" alt="User" fill className="object-cover object-top mix-blend-multiply grayscale" />
+                  <Image src="/avatar_1.png" alt="User" fill sizes="64px" className="object-cover object-top mix-blend-multiply grayscale" />
                 </div>
                 <div>
                   <h4 className="font-serif text-[#1a1a1a] text-lg font-bold mb-1 leading-snug max-w-md">Looking for a co-counsel or referral in Japan for a trademark dispute.</h4>
@@ -609,7 +609,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl p-4 pr-6 flex items-center justify-between gap-4 border border-black/10 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full overflow-hidden relative flex-shrink-0 bg-pink-100 border border-black/10">
-                  <Image src="/team_3_1783622639486.png" alt="User" fill className="object-cover object-top mix-blend-multiply" />
+                  <Image src="/team_3_1783622639486.png" alt="User" fill sizes="64px" className="object-cover object-top mix-blend-multiply" />
                 </div>
                 <div>
                   <h4 className="font-serif text-[#1a1a1a] text-lg font-bold mb-1 leading-snug max-w-md">Looking for a co-counsel or referral in Japan for a trademark dispute.</h4>
@@ -652,7 +652,7 @@ export default function Home() {
             {/* Author */}
             <div className="flex items-center gap-5 w-full md:w-auto">
               <div className="w-16 h-20 md:w-20 md:h-24 bg-[#f99d3e] rounded-t-full rounded-b-2xl overflow-hidden relative border border-black flex-shrink-0">
-                <Image src="/avatar_1.png" alt="Leslie Alexander" fill className="object-cover object-top mix-blend-multiply grayscale" />
+                <Image src="/avatar_1.png" alt="Leslie Alexander" fill sizes="(max-width: 768px) 64px, 80px" className="object-cover object-top mix-blend-multiply grayscale" />
               </div>
               <div>
                 <h4 className="font-bold text-[#1a1a1a] text-lg md:text-xl mb-1">Leslie Alexander</h4>
