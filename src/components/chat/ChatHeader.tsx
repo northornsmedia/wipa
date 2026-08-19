@@ -35,66 +35,104 @@ export const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({
 }) => {
   return (
     <div className="px-4 sm:px-6 pt-[max(env(safe-area-inset-top,0px),1rem)] md:pt-3.5 pb-3.5 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-white dark:bg-[#0f172a] shrink-0 z-10 select-none">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         {/* Mobile WhatsApp Back Arrow */}
         <button 
           onClick={onBackMobile}
-          className="md:hidden w-9 h-9 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-900 dark:text-white transition-colors active:scale-95"
+          className="md:hidden w-9 h-9 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-900 dark:text-white transition-colors active:scale-95 shrink-0"
           aria-label="Back to conversations list"
         >
           <ArrowLeft size={18} />
         </button>
 
-        {/* Real Profile Avatar with Online Presence Dot */}
-        <div className="relative shrink-0">
-          {avatarUrl ? (
-            <img 
-              src={avatarUrl} 
-              alt={name} 
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl object-cover shadow-sm border border-gray-200 dark:border-white/10"
-              loading="eager"
-            />
-          ) : (
-            <div 
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-sm shrink-0" 
-              style={{ backgroundColor: color }}
-            >
-              {initial}
+        {/* Real Profile Avatar & Title - Clickable to Profile */}
+        {participantId ? (
+          <Link
+            href={`/platform/profile/${participantId}`}
+            prefetch={true}
+            className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-85 transition-opacity cursor-pointer group"
+          >
+            {/* Real Profile Avatar with Online Presence Dot */}
+            <div className="relative shrink-0">
+              {avatarUrl ? (
+                <img 
+                  src={avatarUrl} 
+                  alt={name} 
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl object-cover shadow-sm border border-gray-200 dark:border-white/10 group-hover:scale-105 transition-transform" 
+                  loading="eager"
+                />
+              ) : (
+                <div 
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-sm shrink-0 group-hover:scale-105 transition-transform" 
+                  style={{ backgroundColor: color }}
+                >
+                  {initial}
+                </div>
+              )}
+              {isOnline && (
+                <span 
+                  className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-[#0f172a] rounded-full shadow-sm"
+                  title="Online"
+                />
+              )}
             </div>
-          )}
-          {isOnline && (
-            <span 
-              className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-[#0f172a] rounded-full shadow-sm"
-              title="Online"
-            />
-          )}
-        </div>
 
-        {/* Title, Badge & Dynamic Presence Text */}
-        <div className="min-w-0">
-          <h2 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white flex items-center gap-1.5 leading-tight truncate">
-            <span className="truncate">{name}</span>
-            <BadgeCheck size={16} className="text-[#5a32fa] shrink-0" />
-          </h2>
-          <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 leading-tight mt-0.5 truncate">
-            {isTyping ? (
-              <span className="text-[#5a32fa] dark:text-[#ff90e8] font-bold flex items-center gap-1">
-                <span>typing</span>
-                <span className="flex items-center gap-0.5 mt-0.5">
-                  <span className="w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.3s]" />
-                  <span className="w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.15s]" />
-                  <span className="w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce" />
-                </span>
-              </span>
-            ) : isOnline ? (
-              <span className="text-emerald-500 font-bold">
-                ● Online
-              </span>
-            ) : (
-              <span>Offline • {role}</span>
-            )}
-          </p>
-        </div>
+            {/* Title, Badge & Dynamic Presence Text */}
+            <div className="min-w-0 flex-1">
+              <h2 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white flex items-center gap-1.5 leading-tight truncate group-hover:text-[#5a32fa] dark:group-hover:text-[#ff90e8] transition-colors">
+                <span className="truncate">{name}</span>
+                <BadgeCheck size={16} className="text-[#5a32fa] shrink-0" />
+              </h2>
+              <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 leading-tight mt-0.5 truncate">
+                {isTyping ? (
+                  <span className="text-[#5a32fa] dark:text-[#ff90e8] font-bold flex items-center gap-1">
+                    <span>typing</span>
+                    <span className="flex items-center gap-0.5 mt-0.5">
+                      <span className="w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.3s]" />
+                      <span className="w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.15s]" />
+                      <span className="w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce" />
+                    </span>
+                  </span>
+                ) : isOnline ? (
+                  <span className="text-emerald-500 font-bold">
+                    ● Online
+                  </span>
+                ) : (
+                  <span>Offline • {role}</span>
+                )}
+              </p>
+            </div>
+          </Link>
+        ) : (
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="relative shrink-0">
+              {avatarUrl ? (
+                <img 
+                  src={avatarUrl} 
+                  alt={name} 
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl object-cover shadow-sm border border-gray-200 dark:border-white/10" 
+                  loading="eager"
+                />
+              ) : (
+                <div 
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-sm shrink-0" 
+                  style={{ backgroundColor: color }}
+                >
+                  {initial}
+                </div>
+              )}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <h2 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white flex items-center gap-1.5 leading-tight truncate">
+                <span className="truncate">{name}</span>
+              </h2>
+              <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 leading-tight mt-0.5 truncate">
+                <span>{role}</span>
+              </p>
+            </div>
+          </div>
+        )}
       </div>
       
       {/* Action Controls */}
