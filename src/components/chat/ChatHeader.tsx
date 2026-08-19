@@ -78,8 +78,13 @@ export const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({
           </h2>
           <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 leading-tight mt-0.5 truncate">
             {isTyping ? (
-              <span className="text-[#5a32fa] dark:text-[#a855f7] font-bold animate-pulse">
-                typing...
+              <span className="text-[#5a32fa] dark:text-[#ff90e8] font-bold flex items-center gap-1">
+                <span>typing</span>
+                <span className="flex items-center gap-0.5 mt-0.5">
+                  <span className="w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.3s]" />
+                  <span className="w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.15s]" />
+                  <span className="w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce" />
+                </span>
               </span>
             ) : isOnline ? (
               <span className="text-emerald-500 font-bold">

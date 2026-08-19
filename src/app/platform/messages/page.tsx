@@ -62,6 +62,7 @@ function MessagesContent() {
   const activeChatIdRef = useRef<string | null>(null);
   const initialScrolledRef = useRef<Record<string, boolean>>({});
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const activeChannelRef = useRef<any>(null);
 
   const activeChat = conversations.find(c => String(c.id) === String(activeChatId));
 
@@ -393,6 +394,7 @@ function MessagesContent() {
         presence: { key: user.id }
       }
     });
+    activeChannelRef.current = channel;
 
     channel
       // 1. Listen for new incoming messages
@@ -510,9 +512,40 @@ function MessagesContent() {
        
     return () => { 
       isSubscribed = false;
+      activeChannelRef.current = null;
       supabase.removeChannel(channel); 
     };
   }, [activeChatId, user?.id, activeChat?.participantId]);
+
+  // Realtime typing broadcast handler
+  const handleTypingEvent = () => {
+    if (!activeChannelRef.current || !user?.id) return;
+
+    try {
+      activeChannelRef.current.send({
+        type: 'broadcast',
+        event: 'typing',
+        payload: { userId: user.id, isTyping: true }
+      });
+    } catch (e) {
+      console.warn("Typing broadcast error:", e);
+    }
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Auto clear typing state after 2.5 seconds of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      try {
+        activeChannelRef.current?.send({
+          type: 'broadcast',
+          event: 'typing',
+          payload: { userId: user.id, isTyping: false }
+        });
+      } catch (e) {}
+    }, 2500);
+  };
 
   // Instant scroll to bottom on initial open / conversation switch, smooth scroll on new messages
   useEffect(() => {
@@ -550,25 +583,7 @@ function MessagesContent() {
     setShowScrollBottomPill(false);
   };
 
-  // Typing broadcast emitter
-  const handleTypingEvent = () => {
-    if (!activeChatId || !user?.id) return;
-    const channel = supabase.channel(`chat:${activeChatId}`);
-    channel.send({
-      type: 'broadcast',
-      event: 'typing',
-      payload: { userId: user.id, isTyping: true }
-    });
 
-    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-    typingTimeoutRef.current = setTimeout(() => {
-      channel.send({
-        type: 'broadcast',
-        event: 'typing',
-        payload: { userId: user.id, isTyping: false }
-      });
-    }, 2000);
-  };
 
   // Clean up media streams
   useEffect(() => {
@@ -991,6 +1006,25 @@ function MessagesContent() {
                     />
                   ))
                 )}
+
+                {/* WhatsApp-Style Bouncy Dots Typing Bubble */}
+                {activeChat.isTyping && (
+                  <div className="flex items-end gap-2.5 my-2 animate-in fade-in slide-in-from-bottom-2 duration-150">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm overflow-hidden mb-0.5">
+                      {activeChat.avatarUrl ? (
+                        <img src={activeChat.avatarUrl} alt={activeChat.name} className="w-full h-full object-cover" />
+                      ) : (
+                        activeChat.initial || 'U'
+                      )}
+                    </div>
+                    <div className="bg-gray-100 dark:bg-[#1a2333] border border-gray-200/80 dark:border-white/10 px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.3s]" />
+                      <span className="w-2 h-2 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.15s]" />
+                      <span className="w-2 h-2 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce" />
+                    </div>
+                  </div>
+                )}
+
                 <div ref={messagesEndRef} className="h-0 w-0 pointer-events-none" />
 
                 {/* Floating "Scroll to Bottom" button */}
