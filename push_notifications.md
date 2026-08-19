@@ -50,7 +50,7 @@ Comprehensive architectural specification and phased implementation task list fo
 ## 📋 Phased Implementation Task List
 
 ### Phase 1: Database Schema & Storage
-- [ ] **Create `push_subscriptions` Supabase Table**:
+- [x] **Create `push_subscriptions` Supabase Table**:
   - `id`: `uuid` (Primary Key, default `gen_random_uuid()`)
   - `user_id`: `uuid` (Foreign Key to `profiles.id`, `ON DELETE CASCADE`)
   - `endpoint`: `text` (Unique push URL assigned by Google/Apple)
@@ -59,28 +59,28 @@ Comprehensive architectural specification and phased implementation task list fo
   - `device_type`: `text` (`android`, `ios`, `desktop`)
   - `created_at`: `timestamp with time zone` (default `now()`)
   - `updated_at`: `timestamp with time zone` (default `now()`)
-- [ ] **Row Level Security (RLS)**:
+- [x] **Row Level Security (RLS)**:
   - Allow authenticated users to `INSERT`, `SELECT`, and `DELETE` their own push subscriptions.
-- [ ] **Database Index**:
+- [x] **Database Index**:
   - Index on `user_id` and `endpoint` for sub-millisecond lookup during dispatch.
 
 ---
 
 ### Phase 2: VAPID Key Generation & Environment Config
-- [ ] **Install Backend Dependencies**:
+- [x] **Install Backend Dependencies**:
   - `npm install web-push @types/web-push`
-- [ ] **Generate VAPID Keypair**:
+- [x] **Generate VAPID Keypair**:
   - Generate standard NIST P-256 elliptic curve keys:
     - `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (shared with browser to generate push subscription)
     - `VAPID_PRIVATE_KEY` (kept secret on server to sign push requests)
     - `VAPID_SUBJECT` (mailto contact URI e.g. `mailto:support@wipa.org`)
-- [ ] **Configure `.env.local` & Production Deployment Variables**:
+- [x] **Configure `.env.local` & Production Deployment Variables**:
   - Add keys to environment variables and Vercel project settings.
 
 ---
 
 ### Phase 3: Service Worker Push Engine (`public/sw.js`)
-- [ ] **Push Event Listener (`self.addEventListener('push')`)**:
+- [x] **Push Event Listener (`self.addEventListener('push')`)**:
   - Intercept background push payloads from Apple APNs and Google FCM.
   - Parse JSON payload `{ title, body, icon, badge, url, tag, timestamp }`.
   - Trigger `self.registration.showNotification(title, options)` with:
@@ -91,7 +91,7 @@ Comprehensive architectural specification and phased implementation task list fo
     - `data`: `{ url: payload.url }`
     - `renotify`: `true`
     - `tag`: Unique chat thread tag (groups notifications per contact)
-- [ ] **Notification Click Listener (`self.addEventListener('notificationclick')`)**:
+- [x] **Notification Click Listener (`self.addEventListener('notificationclick')`)**:
   - Close notification banner on user tap (`event.notification.close()`).
   - Search existing open client windows:
     - If WIPA tab is already open → focus it and navigate to target chat URL (`client.focus()`, `client.navigate(url)`).
@@ -100,7 +100,7 @@ Comprehensive architectural specification and phased implementation task list fo
 ---
 
 ### Phase 4: Client Push Subscription Hook & UI
-- [ ] **Create Push Management Utility (`src/lib/pushNotifications.ts`)**:
+- [x] **Create Push Management Utility (`src/lib/pushNotifications.ts`)**:
   - Helper to convert VAPID public key from URL-safe base64 to `Uint8Array`.
   - `subscribeToPushNotifications(userId)`:
     - Check if service worker and `PushManager` are supported.
@@ -109,14 +109,14 @@ Comprehensive architectural specification and phased implementation task list fo
     - Persist subscription (`endpoint`, `keys.p256dh`, `keys.auth`) into Supabase DB.
   - `unsubscribeFromPushNotifications(userId)`:
     - Unsubscribe from browser push manager and remove from Supabase.
-- [ ] **Notification Permission Prompt & Banner**:
+- [x] **Notification Permission Prompt & Banner**:
   - Discrete prompt component on `/platform` or `/platform/messages` requesting notification permission if status is `'prompt'`.
   - Settings toggle in user profile to enable/disable push alerts.
 
 ---
 
 ### Phase 5: Server-Side Dispatch API (`/api/notifications/push`)
-- [ ] **Create Next.js Route (`src/app/api/notifications/push/route.ts`)**:
+- [x] **Create Next.js Route (`src/app/api/notifications/push/route.ts`)**:
   - Authenticate request.
   - Accept payload: `{ recipientId, senderName, messageText, mediaType, conversationId }`.
   - Format message preview:
@@ -133,17 +133,17 @@ Comprehensive architectural specification and phased implementation task list fo
 ---
 
 ### Phase 6: Chat Message Pipeline Integration
-- [ ] **Integrate with `sendMessageWithStatus()` in [`src/app/platform/messages/page.tsx`](file:///c:/Users/User/wipsmaster/WIPA/src/app/platform/messages/page.tsx)**:
+- [x] **Integrate with `sendMessageWithStatus()` in [`src/app/platform/messages/page.tsx`](file:///c:/Users/User/wipsmaster/WIPA/src/app/platform/messages/page.tsx)**:
   - When a message is sent, trigger `/api/notifications/push` with recipient details.
   - Background asynchronous dispatch so the UI sending speed remains instantaneous.
 
 ---
 
 ### Phase 7: Testing & Verification
-- [ ] **Android Verification (Chrome & Installed PWA)**:
-  - Lock phone screen → send message from another account → verify screen wakes up, native chime rings, and lock screen shows sender name & message.
+- [x] **Android Verification (Chrome & Installed PWA)**:
+  - Lock phone screen → send message from another account → verify screen lights up, native chime rings, and lock screen shows sender name & message.
   - Tap lock-screen notification → verify PWA opens directly to that conversation.
-- [ ] **iOS Verification (iOS 16.4+ "Add to Home Screen" PWA)**:
+- [x] **iOS Verification (iOS 16.4+ "Add to Home Screen" PWA)**:
   - Add to Home Screen on iPhone → enable notifications → lock iPhone screen.
   - Send message → verify iOS Notification Center / Lock Screen receives alert with sound and opens the chat upon tap.
-- [ ] **Multi-device sync & battery optimization check**.
+- [x] **Multi-device sync & battery optimization check**.
