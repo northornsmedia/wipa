@@ -24,9 +24,9 @@ export default function PWARegister() {
       const isIosDevice = /iphone|ipad|ipod/.test(userAgent) && !(window as any).MSStream;
       setIsIOS(isIosDevice);
 
-      // Register Service Worker
+      // Register Service Worker immediately without waiting for un-fired load event
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
+        const registerSW = () => {
           navigator.serviceWorker
             .register('/sw.js')
             .then((reg) => {
@@ -35,7 +35,13 @@ export default function PWARegister() {
             .catch((err) => {
               console.warn('WIPA Service Worker Registration Error:', err);
             });
-        });
+        };
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+          registerSW();
+        } else {
+          window.addEventListener('load', registerSW);
+        }
       }
 
       // Intercept beforeinstallprompt for Chrome / Android / Desktop

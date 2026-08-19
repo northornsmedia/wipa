@@ -105,7 +105,11 @@ export async function subscribeToPushNotifications(userId: string): Promise<{
     }
 
     // 2. Ensure Service Worker is registered and ready
-    const registration = await navigator.serviceWorker.ready;
+    let registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) {
+      registration = await navigator.serviceWorker.register('/sw.js');
+    }
+    await navigator.serviceWorker.ready;
 
     // 3. Check existing subscription or create new
     let subscription = await registration.pushManager.getSubscription();
