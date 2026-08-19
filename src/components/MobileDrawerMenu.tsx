@@ -157,8 +157,8 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
                 className="w-full p-3.5 rounded-2xl bg-gradient-to-r from-[#5a32fa]/15 via-[#ff90e8]/15 to-purple-500/15 border border-[#5a32fa]/30 flex items-center justify-between text-left active:scale-[0.98] transition-transform shadow-sm"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center shadow-md">
-                    <Sparkles size={20} />
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#5a32fa]/20 via-[#ff90e8]/20 to-purple-500/20 border border-[#5a32fa]/30 flex items-center justify-center shadow-md p-1.5 overflow-hidden">
+                    <img src="/lexiq.png" alt="LexIQ AI" className="w-full h-full object-contain" />
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1">

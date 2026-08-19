@@ -19,7 +19,15 @@ export type SiriWaveVariant = "wave" | "fluid-dots"
 
 const VERTEX_SHADER = `attribute vec2 aPos; void main(){ gl_Position=vec4(aPos,0.0,1.0); }`
 
-const WAVE_SHADER = `precision highp float;
+const PRECISION_HEADER = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+`
+
+const WAVE_SHADER = PRECISION_HEADER + `
 uniform vec2 iResolution; uniform float iTime;
 const float PI = 3.14159265359;
 const float AMPLITUDE   = 0.45;
@@ -116,7 +124,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
 }
 void main(){ mainImage(gl_FragColor, gl_FragCoord.xy); }`
 
-const FLUID_DOTS_SHADER = `precision highp float;
+const FLUID_DOTS_SHADER = PRECISION_HEADER + `
 uniform vec2 iResolution; uniform float iTime;
 const float TAU = 6.28318530718;
 const int   N   = 6;
@@ -285,77 +293,114 @@ export function SiriWave({
   React.useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const gl = canvas.getContext("webgl", { alpha: true }) // Added { alpha: true } to ensure transparency is allowed
+    let gl: WebGLRenderingContext | null = null
+    try {
+      gl = canvas.getContext("webgl", { alpha: true }) || (canvas.getContext("experimental-webgl", { alpha: true }) as WebGLRenderingContext)
+    } catch (e) {
+      return
+    }
     if (!gl) return
 
-    const compile = (type: number, src: string) => {
-      const shader = gl.createShader(type)!
-      gl.shaderSource(shader, src)
-      gl.compileShader(shader)
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        const log = gl.getShaderInfoLog(shader)
-        gl.deleteShader(shader)
-        throw new Error(log ?? "shader compile error")
-      }
-      return shader
-    }
-
-    const program = gl.createProgram()!
-    const vs = compile(gl.VERTEX_SHADER, VERTEX_SHADER)
-    const fs = compile(gl.FRAGMENT_SHADER, FRAGMENT_SHADERS[variant])
-    gl.attachShader(program, vs)
-    gl.attachShader(program, fs)
-    gl.linkProgram(program)
-    gl.useProgram(program)
-
-    const buffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 3, -1, -1, 3]),
-      gl.STATIC_DRAW,
-    )
-    const aPos = gl.getAttribLocation(program, "aPos")
-    gl.enableVertexAttribArray(aPos)
-    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0)
-
-    const uResolution = gl.getUniformLocation(program, "iResolution")
-    const uTime = gl.getUniformLocation(program, "iTime")
-
-    const dim = Math.round(size * renderScale)
-    canvas.width = dim
-    canvas.height = dim
-    gl.viewport(0, 0, dim, dim)
-
-    const start =
-      typeof performance !== "undefined" ? performance.now() : Date.now()
     let raf = 0
-    const frame = () => {
-      const now =
+    let program: WebGLProgram | null = null
+    let vs: WebGLShader | null = null
+    let fs: WebGLShader | null = null
+    let buffer: WebGLBuffer | null = null
+
+    try {
+      const compile = (type: number, src: string) => {
+        if (!gl) return null
+        const shader = gl.createShader(type)
+        if (!shader) return null
+        gl.shaderSource(shader, src)
+        gl.compileShader(shader)
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          const log = gl.getShaderInfoLog(shader)
+          console.warn("SiriWave shader compile warning:", log)
+          gl.deleteShader(shader)
+          return null
+        }
+        return shader
+      }
+
+      program = gl.createProgram()
+      if (!program) return
+
+      vs = compile(gl.VERTEX_SHADER, VERTEX_SHADER)
+      fs = compile(gl.FRAGMENT_SHADER, FRAGMENT_SHADERS[variant])
+      if (!vs || !fs) {
+        if (vs) gl.deleteShader(vs)
+        if (fs) gl.deleteShader(fs)
+        if (program) gl.deleteProgram(program)
+        return
+      }
+
+      gl.attachShader(program, vs)
+      gl.attachShader(program, fs)
+      gl.linkProgram(program)
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.warn("SiriWave program link warning:", gl.getProgramInfoLog(program))
+        return
+      }
+      gl.useProgram(program)
+
+      buffer = gl.createBuffer()
+      if (!buffer) return
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([-1, -1, 3, -1, -1, 3]),
+        gl.STATIC_DRAW,
+      )
+      const aPos = gl.getAttribLocation(program, "aPos")
+      if (aPos >= 0) {
+        gl.enableVertexAttribArray(aPos)
+        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0)
+      }
+
+      const uResolution = gl.getUniformLocation(program, "iResolution")
+      const uTime = gl.getUniformLocation(program, "iTime")
+
+      const dim = Math.round(size * renderScale)
+      canvas.width = dim
+      canvas.height = dim
+      gl.viewport(0, 0, dim, dim)
+
+      const start =
         typeof performance !== "undefined" ? performance.now() : Date.now()
-      const t = (now - start) / 1000
       
-      gl.clearColor(0, 0, 0, 0); // Clear with transparent background
-      gl.clear(gl.COLOR_BUFFER_BIT);
+      const frame = () => {
+        if (!gl || !program) return
+        const now =
+          typeof performance !== "undefined" ? performance.now() : Date.now()
+        const t = (now - start) / 1000
+        
+        gl.clearColor(0, 0, 0, 0); // Clear with transparent background
+        gl.clear(gl.COLOR_BUFFER_BIT);
 
-      gl.uniform2f(uResolution, dim, dim)
-      gl.uniform1f(uTime, t)
-      
-      // Enable blending to respect the transparent background
-      gl.enable(gl.BLEND);
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        if (uResolution) gl.uniform2f(uResolution, dim, dim)
+        if (uTime) gl.uniform1f(uTime, t)
+        
+        // Enable blending to respect the transparent background
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-      gl.drawArrays(gl.TRIANGLES, 0, 3)
-      raf = requestAnimationFrame(frame)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+        raf = requestAnimationFrame(frame)
+      }
+      frame()
+    } catch (err) {
+      console.warn("SiriWave init caught error:", err)
     }
-    frame()
 
     return () => {
-      cancelAnimationFrame(raf)
-      gl.deleteProgram(program)
-      gl.deleteShader(vs)
-      gl.deleteShader(fs)
-      gl.deleteBuffer(buffer)
+      if (raf) cancelAnimationFrame(raf)
+      if (gl) {
+        if (program) gl.deleteProgram(program)
+        if (vs) gl.deleteShader(vs)
+        if (fs) gl.deleteShader(fs)
+        if (buffer) gl.deleteBuffer(buffer)
+      }
     }
   }, [variant, size, renderScale])
 
