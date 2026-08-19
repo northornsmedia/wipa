@@ -8,7 +8,9 @@ import {
   BadgeCheck, MapPin, Link as LinkIcon, Users, Mail, MessageSquare, Briefcase, GraduationCap,
   Hash, ThumbsUp, Share2, Send, UserPlus, X, PlayCircle, Star, Copy, Globe2,
   CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, ArrowLeft, Loader2,
-  FileText, ArrowUpRight
+  FileText, ArrowUpRight, Heart, Bookmark, ShieldCheck, Check, MoreHorizontal, Eye,
+  TrendingUp, Search, Image as ImageIcon, Video, Award, Gift, Sparkles, Folder,
+  Lightbulb, HelpCircle, Headphones, Calendar
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
