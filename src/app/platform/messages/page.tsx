@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { 
   ArrowLeft, Search, Paperclip, Send, MoreHorizontal, BadgeCheck, 
   Camera, Mic, MapPin, Image as ImageIcon, Video, FileText, 
   X, Play, Square, Check, CheckCheck, Clock, AlertCircle, RefreshCw,
-  WifiOff, Sparkles, Phone, VideoIcon
+  WifiOff, Sparkles, Phone, VideoIcon, ChevronDown
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -13,28 +13,40 @@ import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { Suspense } from 'react';
 
-type MessageStatus = 'queued' | 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
+export type MessageStatus = 'queued' | 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
+export type MediaType = 'text' | 'image' | 'video' | 'document' | 'location' | 'audio';
 
-type Message = {
-  id: string | number;
+export type Message = {
+  id: string;
+  conversation_id?: string;
   text?: string;
   sender: 'me' | 'them';
+  sender_id?: string;
   time: string;
-  type?: 'text' | 'image' | 'video' | 'document' | 'location' | 'audio';
+  created_at?: string;
+  type?: MediaType;
   mediaUrl?: string;
+  mediaName?: string;
   status?: MessageStatus;
+  is_read?: boolean;
+  delivered_at?: string | null;
+  read_at?: string | null;
+  temp_id?: string;
   error?: string;
 };
 
-type Chat = {
-  id: string | number;
+export type Chat = {
+  id: string;
   name: string;
   role: string;
+  avatarUrl?: string | null;
   initial: string;
   color: string;
   unread: number;
   lastMessage: string;
   lastTime: string;
+  isOnline?: boolean;
+  isTyping?: boolean;
   messages: Message[];
   participantId?: string;
 };
@@ -44,8 +56,9 @@ function MessagesContent() {
   const { user, cachedConversations, setCachedConversations } = useAppStore();
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get('userId');
+  
   const [conversations, setConversations] = useState<Chat[]>(() => cachedConversations || []);
-  const [activeChatId, setActiveChatId] = useState<string | number | null>(() => (cachedConversations && cachedConversations.length > 0 ? cachedConversations[0].id : null));
+  const [activeChatId, setActiveChatId] = useState<string | null>(() => (cachedConversations && cachedConversations.length > 0 ? String(cachedConversations[0].id) : null));
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,9 +67,7 @@ function MessagesContent() {
   const [isChatOptionsOpen, setIsChatOptionsOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const activeChat = conversations.find(c => c.id === activeChatId);
+  const [showScrollBottomPill, setShowScrollBottomPill] = useState(false);
 
   // Attachment refs
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -74,6 +85,19 @@ function MessagesContent() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<BlobPart[]>([]);
 
+  // Scroll and tracking refs
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const activeChatIdRef = useRef<string | null>(null);
+  const initialScrolledRef = useRef<Record<string, boolean>>({});
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const activeChat = conversations.find(c => String(c.id) === String(activeChatId));
+
+  useEffect(() => {
+    activeChatIdRef.current = activeChatId ? String(activeChatId) : null;
+  }, [activeChatId]);
+
   // Network online/offline listener
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -88,18 +112,11 @@ function MessagesContent() {
     };
   }, []);
 
-  // Use a ref to access the latest activeChatId inside the global listener
-  const activeChatIdRef = useRef<string | number | null>(null);
-  useEffect(() => {
-    activeChatIdRef.current = activeChatId;
-  }, [activeChatId]);
-
-  // Load real conversations directly from Supabase DB on first load
+  // Load real conversations directly from Supabase DB with real avatar URLs
   useEffect(() => {
     if (!user?.id) return;
     const fetchConversations = async () => {
       try {
-        // 1. Fetch conversations where current user is a participant
         const { data: myConvs, error: convErr } = await supabase
           .from('conversation_participants')
           .select(`
@@ -111,7 +128,7 @@ function MessagesContent() {
               is_group,
               conversation_participants (
                 user_id,
-                profiles:profiles!conversation_participants_user_id_fkey (id, full_name, avatar_url, role)
+                profiles:profiles!conversation_participants_user_id_fkey (id, full_name, avatar_url, role, practice_area)
               )
             )
           `)
@@ -137,11 +154,12 @@ function MessagesContent() {
             .map((c: any) => {
               const conv = c.conversations;
               const other = conv.conversation_participants?.find((p: any) => p.user_id !== user.id)?.profiles || {};
-              const title = conv.is_group ? conv.name : (other.full_name || 'Direct Message');
+              const title = conv.is_group ? (conv.name || 'Group Chat') : (other.full_name || 'Direct Message');
               return {
-                id: conv.id,
+                id: String(conv.id),
                 name: title,
-                role: other.role || 'Member',
+                role: other.practice_area || other.role || 'Member',
+                avatarUrl: other.avatar_url || null,
                 initial: title.charAt(0).toUpperCase() || 'U',
                 color: '#5a32fa',
                 unread: unreadMap[conv.id] || 0,
@@ -156,7 +174,7 @@ function MessagesContent() {
             setConversations(parsed);
             useAppStore.getState().setCachedConversations(parsed);
             if (!activeChatIdRef.current && !targetUserId) {
-              setActiveChatId(parsed[0].id);
+              setActiveChatId(String(parsed[0].id));
             }
           }
         }
@@ -186,7 +204,7 @@ function MessagesContent() {
                 .in('conversation_id', convIds);
                 
              if (otherMatches && otherMatches.length > 0) {
-                matchedConvId = otherMatches[0].conversation_id;
+                matchedConvId = String(otherMatches[0].conversation_id);
              }
           }
           
@@ -203,9 +221,10 @@ function MessagesContent() {
                 const { data: profile } = await supabase.from('profiles').select('*').eq('id', targetUserId).single();
                 if (profile) {
                   const newChat: Chat = {
-                     id: newConv.id,
+                     id: String(newConv.id),
                      name: profile.full_name || 'User',
-                     role: profile.practice_area || 'WIPA Member',
+                     role: profile.practice_area || profile.role || 'WIPA Member',
+                     avatarUrl: profile.avatar_url || null,
                      initial: profile.full_name?.charAt(0)?.toUpperCase() || 'U',
                      color: '#5a32fa',
                      unread: 0,
@@ -215,7 +234,7 @@ function MessagesContent() {
                      participantId: targetUserId
                   };
                   setConversations(prev => [newChat, ...prev]);
-                  setActiveChatId(newConv.id);
+                  setActiveChatId(String(newConv.id));
                   setShowMobileChat(true);
                 }
              }
@@ -225,33 +244,56 @@ function MessagesContent() {
     }
   }, [targetUserId, user?.id]);
 
-  // Fetch messages for active chat and subscribe
+  // Fetch messages for active chat, handle realtime (INSERT, UPDATE, Presence, Broadcast)
   useEffect(() => {
     if (!activeChatId || !user?.id) return;
     
+    const currentChatId = String(activeChatId);
+
     const fetchMessages = async () => {
       const { data } = await supabase
         .from('messages')
         .select('*')
-        .eq('conversation_id', activeChatId)
+        .eq('conversation_id', currentChatId)
         .order('created_at', { ascending: true });
         
       if (data) {
-        const msgs: Message[] = data.map(m => ({
-          id: m.id,
-          text: m.content,
-          sender: m.sender_id === user.id ? 'me' : 'them',
-          time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          type: 'text',
-          status: m.sender_id === user.id ? (m.is_read ? 'read' : 'delivered') : undefined
-        }));
+        const msgs: Message[] = data.map(m => {
+          const isMe = m.sender_id === user.id;
+          let calculatedStatus: MessageStatus = 'sent';
+          if (isMe) {
+            if (m.is_read) {
+              calculatedStatus = 'read';
+            } else if (m.delivered_at || activeChat?.isOnline) {
+              calculatedStatus = 'delivered';
+            } else {
+              calculatedStatus = 'sent';
+            }
+          }
+
+          return {
+            id: String(m.id),
+            conversation_id: String(m.conversation_id),
+            text: m.content,
+            sender: isMe ? 'me' : 'them',
+            sender_id: m.sender_id,
+            time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            created_at: m.created_at,
+            type: (m.media_type as MediaType) || 'text',
+            mediaUrl: m.media_url,
+            is_read: m.is_read,
+            delivered_at: m.delivered_at,
+            read_at: m.read_at,
+            status: calculatedStatus
+          };
+        });
         
-        setConversations(prev => prev.map(chat => chat.id === activeChatId ? { ...chat, messages: msgs, unread: 0 } : chat));
+        setConversations(prev => prev.map(chat => String(chat.id) === currentChatId ? { ...chat, messages: msgs, unread: 0 } : chat));
         
-        // Mark all as read
+        // Mark all as read immediately since user opened the chat
         supabase.from('messages')
-          .update({ is_read: true })
-          .eq('conversation_id', activeChatId)
+          .update({ is_read: true, read_at: new Date().toISOString() })
+          .eq('conversation_id', currentChatId)
           .eq('is_read', false)
           .neq('sender_id', user.id)
           .then();
@@ -259,29 +301,180 @@ function MessagesContent() {
     };
     fetchMessages();
     
-    const channel = supabase.channel(`messages:${activeChatId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${activeChatId}` }, payload => {
+    // Realtime channel with Presence and Broadcast
+    const channel = supabase.channel(`chat:${currentChatId}`, {
+      config: {
+        presence: { key: user.id }
+      }
+    });
+
+    channel
+      // 1. Listen for new incoming messages
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'messages', 
+        filter: `conversation_id=eq.${currentChatId}` 
+      }, payload => {
           const m = payload.new;
-          if (m.sender_id === user.id) return; // ignore our own
+          if (m.sender_id === user.id) {
+            // Confirmed sent on server
+            setConversations(prev => prev.map(chat => {
+              if (String(chat.id) !== currentChatId) return chat;
+              return {
+                ...chat,
+                messages: chat.messages.map(msg => (msg.id === String(m.id) || msg.temp_id === String(m.id)) ? {
+                  ...msg,
+                  id: String(m.id),
+                  status: m.is_read ? 'read' : (m.delivered_at || chat.isOnline ? 'delivered' : 'sent')
+                } : msg)
+              };
+            }));
+            return;
+          }
+
           const msg: Message = {
-             id: m.id,
+             id: String(m.id),
+             conversation_id: String(m.conversation_id),
              text: m.content,
              sender: 'them',
+             sender_id: m.sender_id,
              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-             type: 'text'
+             created_at: m.created_at,
+             type: (m.media_type as MediaType) || 'text',
+             mediaUrl: m.media_url,
+             is_read: true,
+             status: 'read'
           };
-          setConversations(prev => prev.map(chat => chat.id === activeChatId ? { ...chat, messages: [...chat.messages, msg] } : chat));
-          
-          // Mark as read immediately since we are viewing the chat
-          supabase.from('messages').update({ is_read: true }).eq('id', m.id).then();
-       }).subscribe();
-       
-    return () => { supabase.removeChannel(channel); };
-  }, [activeChatId, user?.id]);
 
+          setConversations(prev => prev.map(chat => {
+            if (String(chat.id) !== currentChatId) return chat;
+            return { 
+              ...chat, 
+              messages: [...chat.messages, msg],
+              lastMessage: m.content || 'Media message',
+              lastTime: msg.time
+            };
+          }));
+          
+          // Mark as read on server immediately since we are viewing the chat
+          supabase.from('messages').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', m.id).then();
+       })
+       // 2. Listen for UPDATE events (Live Read Receipts - turning double grey ticks into double purple ticks!)
+       .on('postgres_changes', {
+         event: 'UPDATE',
+         schema: 'public',
+         table: 'messages',
+         filter: `conversation_id=eq.${currentChatId}`
+       }, payload => {
+          const updated = payload.new;
+          setConversations(prev => prev.map(chat => {
+            if (String(chat.id) !== currentChatId) return chat;
+            return {
+              ...chat,
+              messages: chat.messages.map(msg => msg.id === String(updated.id) ? {
+                ...msg,
+                is_read: updated.is_read,
+                read_at: updated.read_at,
+                delivered_at: updated.delivered_at,
+                status: updated.is_read ? 'read' : (updated.delivered_at ? 'delivered' : 'sent')
+              } : msg)
+            };
+          }));
+       })
+       // 3. Presence Tracking (Online / Offline state of recipient)
+       .on('presence', { event: 'sync' }, () => {
+          const state = channel.presenceState();
+          const onlineUserIds = Object.keys(state);
+          const isOtherOnline = activeChat?.participantId ? onlineUserIds.includes(activeChat.participantId) : false;
+          setConversations(prev => prev.map(chat => {
+            if (String(chat.id) !== currentChatId) return chat;
+            return {
+              ...chat,
+              isOnline: isOtherOnline,
+              // If other comes online, upgrade sent ticks to delivered
+              messages: chat.messages.map(msg => (msg.sender === 'me' && msg.status === 'sent' && isOtherOnline) ? {
+                ...msg,
+                status: 'delivered'
+              } : msg)
+            };
+          }));
+       })
+       // 4. Typing broadcast
+       .on('broadcast', { event: 'typing' }, ({ payload }) => {
+          if (payload.userId !== user.id) {
+            setConversations(prev => prev.map(chat => {
+              if (String(chat.id) !== currentChatId) return chat;
+              return { ...chat, isTyping: Boolean(payload.isTyping) };
+            }));
+          }
+       })
+       .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            await channel.track({ userId: user.id, online_at: new Date().toISOString() });
+          }
+       });
+       
+    return () => { 
+      supabase.removeChannel(channel); 
+    };
+  }, [activeChatId, user?.id, activeChat?.participantId]);
+
+  // Instant scroll to bottom on initial open / conversation switch, smooth scroll on new messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChat?.messages]);
+    if (!activeChatId || !activeChat) return;
+
+    const chatIdKey = String(activeChatId);
+    const isFirstTime = !initialScrolledRef.current[chatIdKey];
+
+    if (isFirstTime) {
+      // Instant snap to bottom
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      initialScrolledRef.current[chatIdKey] = true;
+    } else {
+      // Smooth scroll if user was already near bottom
+      const container = scrollContainerRef.current;
+      if (container) {
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
+        if (isNearBottom) {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+  }, [activeChatId, activeChat?.messages.length]);
+
+  // Scroll container scroll listener to toggle floating "Scroll to bottom" pill
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
+    setShowScrollBottomPill(!isNearBottom);
+  };
+
+  const scrollToBottomSmooth = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setShowScrollBottomPill(false);
+  };
+
+  // Typing broadcast emitter
+  const handleTypingEvent = () => {
+    if (!activeChatId || !user?.id) return;
+    const channel = supabase.channel(`chat:${activeChatId}`);
+    channel.send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { userId: user.id, isTyping: true }
+    });
+
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      channel.send({
+        type: 'broadcast',
+        event: 'typing',
+        payload: { userId: user.id, isTyping: false }
+      });
+    }, 2000);
+  };
 
   // Clean up media streams
   useEffect(() => {
@@ -299,24 +492,31 @@ function MessagesContent() {
     }
   }, [isCameraOpen]);
 
-  // Append message locally and try to sync to Supabase
-  const sendMessageWithStatus = async (type: Message['type'], text?: string, mediaUrl?: string) => {
-    const tempId = `temp_${Date.now()}`;
-    const initialStatus: MessageStatus = !isOnline ? 'queued' : 'sending';
+  // Append message locally and sync to Supabase with client-generated UUID
+  const sendMessageWithStatus = async (type: MediaType, text?: string, mediaUrl?: string) => {
+    if (!activeChatId || !user?.id) return;
+    
+    const clientMsgId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const isRecipientOnline = activeChat?.isOnline ?? false;
+    const initialStatus: MessageStatus = !isOnline ? 'queued' : (isRecipientOnline ? 'delivered' : 'sent');
 
     const newMsg: Message = {
-      id: tempId,
+      id: clientMsgId,
+      conversation_id: activeChatId,
       text,
       sender: "me",
+      sender_id: user.id,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      created_at: new Date().toISOString(),
       type,
       mediaUrl,
-      status: initialStatus
+      status: initialStatus,
+      is_read: false
     };
 
     // Optimistically update UI
     setConversations(prev => prev.map(chat => {
-      if (chat.id === activeChatId) {
+      if (String(chat.id) === String(activeChatId)) {
         let lastMsgPreview = text || "Sent an attachment";
         if (type === 'image') lastMsgPreview = "Sent an image 📸";
         if (type === 'video') lastMsgPreview = "Sent a video 🎥";
@@ -334,28 +534,38 @@ function MessagesContent() {
       return chat;
     }));
 
-    if (!activeChatId || !user?.id) return;
+    // Instantly scroll to bottom for sender's own message
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
 
     if (!isOnline) {
-      // Leave as queued
+      // Offline: left in queue
       return;
     }
 
     try {
       const { data, error } = await supabase.from('messages').insert({
+        id: clientMsgId,
         conversation_id: activeChatId,
         sender_id: user.id,
-        content: text || (mediaUrl ? `[Media: ${type}]` : "")
+        content: text || (mediaUrl ? `[Media: ${type}]` : ""),
+        media_type: type,
+        media_url: mediaUrl || null,
+        delivered_at: isRecipientOnline ? new Date().toISOString() : null
       }).select().single();
 
       if (error) throw error;
 
-      // Update message to sent/delivered
+      // Update message status
       setConversations(prev => prev.map(chat => {
-        if (chat.id === activeChatId) {
+        if (String(chat.id) === String(activeChatId)) {
           return {
             ...chat,
-            messages: chat.messages.map(m => m.id === tempId ? { ...m, id: data.id, status: 'sent' } : m)
+            messages: chat.messages.map(m => m.id === clientMsgId ? { 
+              ...m, 
+              status: isRecipientOnline ? 'delivered' : 'sent' 
+            } : m)
           };
         }
         return chat;
@@ -366,10 +576,10 @@ function MessagesContent() {
       console.error("Message send failed:", err);
       // Mark message as failed
       setConversations(prev => prev.map(chat => {
-        if (chat.id === activeChatId) {
+        if (String(chat.id) === String(activeChatId)) {
           return {
             ...chat,
-            messages: chat.messages.map(m => m.id === tempId ? { ...m, status: 'failed', error: err.message } : m)
+            messages: chat.messages.map(m => m.id === clientMsgId ? { ...m, status: 'failed', error: err.message } : m)
           };
         }
         return chat;
@@ -383,7 +593,7 @@ function MessagesContent() {
 
     // Set to sending
     setConversations(prev => prev.map(chat => {
-      if (chat.id === activeChatId) {
+      if (String(chat.id) === String(activeChatId)) {
         return {
           ...chat,
           messages: chat.messages.map(m => m.id === msg.id ? { ...m, status: 'sending', error: undefined } : m)
@@ -394,25 +604,28 @@ function MessagesContent() {
 
     try {
       const { data, error } = await supabase.from('messages').insert({
+        id: msg.id,
         conversation_id: activeChatId,
         sender_id: user.id,
-        content: msg.text || ""
+        content: msg.text || "",
+        media_type: msg.type || 'text',
+        media_url: msg.mediaUrl || null
       }).select().single();
 
       if (error) throw error;
 
       setConversations(prev => prev.map(chat => {
-        if (chat.id === activeChatId) {
+        if (String(chat.id) === String(activeChatId)) {
           return {
             ...chat,
-            messages: chat.messages.map(m => m.id === msg.id ? { ...m, id: data.id, status: 'sent' } : m)
+            messages: chat.messages.map(m => m.id === msg.id ? { ...m, status: 'sent' } : m)
           };
         }
         return chat;
       }));
     } catch (err: any) {
       setConversations(prev => prev.map(chat => {
-        if (chat.id === activeChatId) {
+        if (String(chat.id) === String(activeChatId)) {
           return {
             ...chat,
             messages: chat.messages.map(m => m.id === msg.id ? { ...m, status: 'failed', error: err.message } : m)
@@ -556,11 +769,11 @@ function MessagesContent() {
     setIsCameraOpen(false);
   };
 
-  const markAsRead = (id: string | number) => {
+  const markAsRead = (id: string) => {
     setConversations(conversations.map(chat => 
-      chat.id === id ? { ...chat, unread: 0 } : chat
+      String(chat.id) === String(id) ? { ...chat, unread: 0 } : chat
     ));
-    setActiveChatId(id);
+    setActiveChatId(String(id));
     setShowMobileChat(true);
   };
 
@@ -574,7 +787,7 @@ function MessagesContent() {
   });
 
   return (
-    <div className="h-[calc(100vh-73px)] overflow-hidden bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
+    <div className="h-[calc(100vh-73px)] overflow-hidden bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col font-sans">
 
       {/* Offline / Queued Connection Alert Banner */}
       {!isOnline && (
@@ -654,19 +867,30 @@ function MessagesContent() {
             {filteredConversations.map(chat => (
               <div 
                 key={chat.id}
-                onClick={() => markAsRead(chat.id)}
+                onClick={() => markAsRead(String(chat.id))}
                 className={`flex items-center gap-3.5 p-4 cursor-pointer transition-all duration-200 ${
-                  activeChatId === chat.id 
+                  String(activeChatId) === String(chat.id) 
                     ? 'bg-[#5a32fa]/10 dark:bg-[#5a32fa]/15 border-l-4 border-[#5a32fa]' 
                     : 'hover:bg-gray-50 dark:hover:bg-white/5'
                 }`}
               >
                 <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-base shadow-sm" style={{ backgroundColor: chat.color }}>
-                    {chat.initial}
-                  </div>
+                  {chat.avatarUrl ? (
+                    <img 
+                      src={chat.avatarUrl} 
+                      alt={chat.name} 
+                      className="w-12 h-12 rounded-2xl object-cover shadow-sm border border-gray-200 dark:border-white/10"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-base shadow-sm" style={{ backgroundColor: chat.color }}>
+                      {chat.initial}
+                    </div>
+                  )}
+                  {chat.isOnline && (
+                    <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-[#0f172a] rounded-full"></span>
+                  )}
                   {chat.unread > 0 && (
-                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-[#0f172a] rounded-full animate-pulse"></span>
+                    <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-500 border-2 border-white dark:border-[#0f172a] rounded-full animate-pulse"></span>
                   )}
                 </div>
                 
@@ -681,7 +905,7 @@ function MessagesContent() {
                   </div>
                   <div className="flex justify-between items-center">
                     <p className={`text-xs truncate pr-2 ${chat.unread > 0 ? 'font-bold text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
-                      {chat.lastMessage}
+                      {chat.isTyping ? <span className="text-[#5a32fa] font-bold animate-pulse">typing...</span> : chat.lastMessage}
                     </p>
                     {chat.unread > 0 && (
                       <span className="bg-[#5a32fa] text-white text-[10px] font-black px-2 py-0.5 rounded-full min-w-[18px] text-center flex items-center justify-center shrink-0">
@@ -716,8 +940,21 @@ function MessagesContent() {
                     <ArrowLeft size={20} />
                   </button>
 
-                  <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-sm shrink-0" style={{ backgroundColor: activeChat.color }}>
-                    {activeChat.initial}
+                  <div className="relative shrink-0">
+                    {activeChat.avatarUrl ? (
+                      <img 
+                        src={activeChat.avatarUrl} 
+                        alt={activeChat.name} 
+                        className="w-11 h-11 rounded-2xl object-cover shadow-sm border border-gray-200 dark:border-white/10"
+                      />
+                    ) : (
+                      <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-sm shrink-0" style={{ backgroundColor: activeChat.color }}>
+                        {activeChat.initial}
+                      </div>
+                    )}
+                    {activeChat.isOnline && (
+                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-[#0f172a] rounded-full"></span>
+                    )}
                   </div>
                   <div>
                     <h2 className="font-bold text-base text-gray-900 dark:text-white flex items-center gap-1.5 leading-none">
@@ -725,7 +962,13 @@ function MessagesContent() {
                       <BadgeCheck size={16} className="text-[#5a32fa]" />
                     </h2>
                     <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400 mt-1">
-                      {isOnline ? "● Online" : "○ Offline"} • {activeChat.role}
+                      {activeChat.isTyping ? (
+                        <span className="text-[#5a32fa] dark:text-[#a855f7] font-bold animate-pulse">typing...</span>
+                      ) : activeChat.isOnline ? (
+                        <span className="text-emerald-500 font-bold">● Online</span>
+                      ) : (
+                        <span>Offline • {activeChat.role}</span>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -766,12 +1009,16 @@ function MessagesContent() {
               </div>
 
               {/* Chat Messages Body */}
-              <div className="flex-1 overflow-y-auto p-6 bg-[#f8f9fa] dark:bg-[#0a0f1d] space-y-4">
+              <div 
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#f8f9fa] dark:bg-[#0a0f1d] space-y-4 relative"
+              >
                 {activeChat.messages.map((msg) => {
                   const isMe = msg.sender === "me";
                   
                   return (
-                    <div key={msg.id} className={`flex flex-col max-w-[80%] sm:max-w-[70%] ${isMe ? 'self-end items-end ml-auto' : 'self-start items-start mr-auto'}`}>
+                    <div key={msg.id} className={`flex flex-col max-w-[85%] sm:max-w-[70%] ${isMe ? 'self-end items-end ml-auto' : 'self-start items-start mr-auto'}`}>
                       
                       {/* Bubble */}
                       <div 
@@ -783,15 +1030,19 @@ function MessagesContent() {
                       >
                         {/* Media Attachments */}
                         {msg.type === 'image' && msg.mediaUrl && (
-                          <img src={msg.mediaUrl} alt="Attached" className="max-w-full h-auto rounded-xl border border-white/10 mb-2 max-h-64 object-cover" />
+                          <div className="rounded-xl overflow-hidden border border-white/10 mb-2 max-h-64 aspect-video bg-black/10">
+                            <img src={msg.mediaUrl} alt="Attached" className="w-full h-full object-cover" />
+                          </div>
                         )}
                         {msg.type === 'video' && msg.mediaUrl && (
-                          <video src={msg.mediaUrl} controls className="max-w-full h-auto rounded-xl border border-white/10 mb-2 max-h-64" />
+                          <div className="rounded-xl overflow-hidden border border-white/10 mb-2 max-h-64 aspect-video bg-black">
+                            <video src={msg.mediaUrl} controls className="w-full h-full object-contain" />
+                          </div>
                         )}
                         {msg.type === 'document' && (
                           <div className="flex items-center gap-3 bg-black/20 p-3 rounded-xl border border-white/10 mb-2">
-                            <FileText size={20} className="text-amber-400" />
-                            <span className="font-bold text-xs truncate max-w-[200px]">{msg.text}</span>
+                            <FileText size={20} className="text-amber-400 shrink-0" />
+                            <span className="font-bold text-xs truncate max-w-[200px]">{msg.text || msg.mediaName || 'Document'}</span>
                           </div>
                         )}
                         {msg.type === 'location' && msg.mediaUrl && (
@@ -807,7 +1058,7 @@ function MessagesContent() {
                         )}
 
                         {(!msg.type || msg.type === 'text') && (
-                          <span className="whitespace-pre-wrap">{msg.text}</span>
+                          <span className="whitespace-pre-wrap break-words">{msg.text}</span>
                         )}
                       </div>
 
@@ -826,24 +1077,24 @@ function MessagesContent() {
                               </span>
                             )}
 
-                            {/* Sent: Single grey check */}
+                            {/* Sent: 1 Single Grey Tick (Recipient is offline) */}
                             {msg.status === 'sent' && (
                               <span title="Sent to server">
                                 <Check size={14} className="text-gray-400" />
                               </span>
                             )}
 
-                            {/* Delivered: Double grey checks */}
+                            {/* Delivered: 2 Double Grey Ticks (Recipient is online/delivered) */}
                             {msg.status === 'delivered' && (
                               <span title="Delivered">
                                 <CheckCheck size={14} className="text-gray-400" />
                               </span>
                             )}
 
-                            {/* Read: Double blue checks */}
+                            {/* Read / Seen: 2 Double Purple Ticks */}
                             {msg.status === 'read' && (
-                              <span title="Read">
-                                <CheckCheck size={14} className="text-sky-400 font-bold" />
+                              <span title="Seen by recipient">
+                                <CheckCheck size={14} className="text-[#5a32fa] dark:text-[#a855f7] font-black" />
                               </span>
                             )}
 
@@ -865,7 +1116,18 @@ function MessagesContent() {
                     </div>
                   );
                 })}
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} className="h-0 w-0 pointer-events-none" />
+
+                {/* Floating "Scroll to Bottom" button */}
+                {showScrollBottomPill && (
+                  <button 
+                    onClick={scrollToBottomSmooth}
+                    className="sticky bottom-2 ml-auto left-full -translate-x-4 bg-white dark:bg-[#151c2c] border border-gray-200 dark:border-white/10 text-gray-800 dark:text-white p-2.5 rounded-full shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center z-20"
+                    title="Scroll to latest message"
+                  >
+                    <ChevronDown size={18} />
+                  </button>
+                )}
               </div>
 
               {/* Chat Input Bar */}
@@ -919,7 +1181,10 @@ function MessagesContent() {
                     type="text" 
                     placeholder="Type a message..."
                     value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
+                    onChange={(e) => {
+                      setNewMessage(e.target.value);
+                      handleTypingEvent();
+                    }}
                     className="flex-1 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-xs transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
                   />
 
