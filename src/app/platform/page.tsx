@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import { useAppStore } from '@/store/useAppStore';
 import { 
@@ -48,6 +48,45 @@ export default function PlatformPage() {
   const [userBusiness, setUserBusiness] = useState<any>(null);
   const [postAsId, setPostAsId] = useState<string>('user'); // 'user' or business.id
   const [trendingForums, setTrendingForums] = useState<any[]>([]);
+  const [animatingHeartPostIds, setAnimatingHeartPostIds] = useState<Set<string>>(new Set());
+  const lastTapMapRef = useRef<Record<string, number>>({});
+
+  const handlePostDoubleTap = (postId: string) => {
+    if (!user) return;
+    const now = Date.now();
+    const lastTap = lastTapMapRef.current[postId] || 0;
+
+    if (now - lastTap < 380) {
+      // Double tap detected!
+      lastTapMapRef.current[postId] = 0;
+
+      // Haptic vibration feedback on touch devices
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate([35, 25, 35]);
+      }
+
+      // 1. Auto-like if not already liked (Double tap NEVER unlikes)
+      if (!dbLikedPostIds.has(postId)) {
+        const newLiked = new Set(dbLikedPostIds);
+        newLiked.add(postId);
+        setDbLikedPostIds(newLiked);
+        setFeedPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p));
+        supabase.from('feed_likes').insert({ post_id: postId, user_id: user.id }).then();
+      }
+
+      // 2. Trigger Big Heart Animation overlay
+      setAnimatingHeartPostIds(prev => new Set(prev).add(postId));
+      setTimeout(() => {
+        setAnimatingHeartPostIds(prev => {
+          const next = new Set(prev);
+          next.delete(postId);
+          return next;
+        });
+      }, 950);
+    } else {
+      lastTapMapRef.current[postId] = now;
+    }
+  };
 
   const toggleExpandPost = (postId: string) => {
     setExpandedPosts(prev => {
@@ -766,8 +805,23 @@ export default function PlatformPage() {
                     
                   return (
                     <React.Fragment key={post.id}>
-                    <div className="w-full max-w-full min-w-0 bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3.5 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border">
-                      
+                    <div 
+                      onClick={() => handlePostDoubleTap(post.id)}
+                      className="w-full max-w-full min-w-0 bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3.5 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border relative overflow-hidden select-none"
+                    >
+                      {/* Big Instagram-Style Double-Tap Heart Animation */}
+                      {animatingHeartPostIds.has(post.id) && (
+                        <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center animate-in zoom-in-50 duration-200">
+                          <div className="relative flex items-center justify-center animate-bounce">
+                            <div className="absolute w-36 h-36 bg-gradient-to-tr from-rose-500 to-pink-500 rounded-full blur-2xl opacity-70 animate-ping"></div>
+                            <Heart 
+                              size={100} 
+                              className="fill-rose-500 text-white drop-shadow-[0_12px_35px_rgba(244,63,94,0.9)] scale-125 transform transition-transform duration-300 stroke-[2.5]"
+                            />
+                          </div>
+                        </div>
+                      )}
+
                       {/* Post Header */}
                       <div className="w-full max-w-full min-w-0 flex items-center justify-between mb-3 px-3 sm:px-0 box-border">
                         <div className="flex items-center gap-2.5">
