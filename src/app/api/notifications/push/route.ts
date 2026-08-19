@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
 
-const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || 'BPaCaAoYnDsPS5QjqvRTRzJ3e-fg3v_KG7WHgUVbZkiAI6PFRl-M1IsWAB1vW2EN09T7zlyVR5G1lqIw8NZIMR8';
-const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || 'Z1HOxyw5LFt4B6KzBWViJgZYptP9M2_TV3Wgt7WhRnM';
+const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
+const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || '';
 const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:connect@northonsprmarketing.com';
 
 export async function POST(req: Request) {
@@ -51,9 +51,10 @@ export async function POST(req: Request) {
       }
     }
 
-    console.log(`[Push Notification] Conversation: ${conversationId}, Sender: ${senderId}, Target Recipients:`, targetRecipientIds);
+    console.log(`[CHAT_PUSH_DEBUG] recipients_resolved senderId=${senderId} conversationId=${conversationId} recipients=`, targetRecipientIds);
 
     if (targetRecipientIds.length === 0) {
+      console.warn(`[CHAT_PUSH_DEBUG] No recipients resolved for conversationId=${conversationId}`);
       return NextResponse.json({ message: 'No recipients found for push notification', sentCount: 0 });
     }
 
@@ -64,9 +65,15 @@ export async function POST(req: Request) {
       .in('user_id', targetRecipientIds);
 
     if (subError) {
-      console.error('Failed to query push_subscriptions:', subError);
+      console.error('[CHAT_PUSH_DEBUG] Failed to query push_subscriptions:', subError);
       return NextResponse.json({ error: 'Database query failed' }, { status: 500 });
     }
+
+    console.log(`[CHAT_PUSH_DEBUG] subscriptions_found count=${subscriptions?.length || 0}`, subscriptions?.map((s: any) => ({
+      userId: s.user_id,
+      device_type: s.device_type,
+      endpointHost: s.endpoint ? new URL(s.endpoint).hostname : 'unknown'
+    })));
 
     if (!subscriptions || subscriptions.length === 0) {
       return NextResponse.json({ message: 'No registered push subscriptions found for recipient', sentCount: 0 });
@@ -95,6 +102,8 @@ export async function POST(req: Request) {
       timestamp: Date.now(),
     });
 
+    console.log(`[CHAT_PUSH_DEBUG] payload title="${title}" body="${bodyText}" conversationId="${conversationId}"`);
+
     const expiredEndpoints: string[] = [];
     let sentCount = 0;
 
@@ -108,14 +117,18 @@ export async function POST(req: Request) {
         },
       };
 
+      const endpointHost = sub.endpoint ? new URL(sub.endpoint).hostname : 'unknown';
+      console.log(`[CHAT_PUSH_DEBUG] push_attempt platform=${sub.device_type} endpointHost=${endpointHost}`);
+
       try {
-        await webpush.sendNotification(pushSubscription, payload, {
+        const res = await webpush.sendNotification(pushSubscription, payload, {
           TTL: 300, // 5 minutes immediate high-priority delivery window
           urgency: 'high',
         });
         sentCount++;
+        console.log(`[CHAT_PUSH_DEBUG] push_result platform=${sub.device_type} status=${res.statusCode}`);
       } catch (pushErr: any) {
-        console.warn(`Push delivery failed for endpoint ${sub.endpoint.slice(0, 30)}...:`, pushErr?.statusCode || pushErr?.message);
+        console.error(`[CHAT_PUSH_DEBUG] push_result_error platform=${sub.device_type} status=${pushErr?.statusCode} body=${pushErr?.body || pushErr?.message}`);
         // If subscription is expired or unregistered by browser/OS, mark for deletion
         if (pushErr?.statusCode === 404 || pushErr?.statusCode === 410) {
           expiredEndpoints.push(sub.endpoint);
@@ -135,7 +148,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, sentCount, prunedCount: expiredEndpoints.length });
   } catch (err: any) {
-    console.error('Push notification dispatch error:', err);
+    console.error('[CHAT_PUSH_DEBUG] Internal error:', err);
     return NextResponse.json({ error: err?.message || 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,5 +1,5 @@
 // WIPA PWA Service Worker
-const CACHE_NAME = 'wipa-cache-v1';
+const CACHE_NAME = 'wipa-cache-v2';
 const OFFLINE_URL = '/platform';
 
 const STATIC_ASSETS = [
@@ -82,6 +82,8 @@ self.addEventListener('fetch', (event) => {
 // --- Native Background Push Notifications (Android & iOS Web Push) ---
 
 self.addEventListener('push', (event) => {
+  console.log('[SW_PUSH_DEBUG] push_event_received');
+
   let data = {
     title: 'New Message • WIPA',
     body: 'You have a new message.',
@@ -95,34 +97,38 @@ self.addEventListener('push', (event) => {
     if (event.data) {
       const json = event.data.json();
       data = { ...data, ...json };
+      console.log('[SW_PUSH_DEBUG] payload_parsed', data);
     }
   } catch (err) {
     if (event.data) {
       data.body = event.data.text();
+      console.log('[SW_PUSH_DEBUG] payload_text_parsed', data.body);
     }
   }
 
+  // Minimal notification options for iOS WebKit & Android
   const notificationOptions = {
-    body: data.body,
+    body: data.body || 'You have a new message',
     icon: data.icon || '/icon-192.png',
     badge: data.badge || '/icon-192.png',
-    vibrate: [200, 100, 200],
-    tag: data.tag || `wipa-msg-${Date.now()}`,
-    renotify: true,
-    silent: false,
-    timestamp: data.timestamp || Date.now(),
-    requireInteraction: false,
+    tag: data.tag || 'wipa-chat-message',
     data: {
       url: data.url || '/platform/messages'
-    },
-    actions: [
-      { action: 'open', title: 'Open Chat' }
-    ]
+    }
   };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, notificationOptions)
-  );
+  console.log('[SW_PUSH_DEBUG] show_notification_started title=', data.title);
+
+  const showPromise = self.registration
+    .showNotification(data.title || 'WIPA', notificationOptions)
+    .then(() => {
+      console.log('[SW_PUSH_DEBUG] show_notification_resolved');
+    })
+    .catch((err) => {
+      console.error('[SW_PUSH_DEBUG] show_notification_rejected:', err);
+    });
+
+  event.waitUntil(showPromise);
 });
 
 self.addEventListener('notificationclick', (event) => {

@@ -775,6 +775,7 @@ function MessagesContent() {
 
       // Asynchronously trigger native background push notification for recipients
       try {
+        console.log(`[CHAT_PUSH_DEBUG] message_created conversationId=${activeChatId} senderId=${user.id} messageId=${clientMsgId}`);
         const pushEndpoint = typeof window !== 'undefined' ? `${window.location.origin}/api/notifications/push` : '/api/notifications/push';
         fetch(pushEndpoint, {
           method: 'POST',
@@ -791,10 +792,10 @@ function MessagesContent() {
           }),
         }).then(async (res) => {
           const resData = await res.json().catch(() => ({}));
-          console.log("[Push Notification Result]:", res.status, resData);
-        }).catch(pushErr => console.warn('Background push delivery trigger failed:', pushErr));
+          console.log("[CHAT_PUSH_DEBUG] api_response status=", res.status, resData);
+        }).catch(pushErr => console.warn('[CHAT_PUSH_DEBUG] fetch_failed:', pushErr));
       } catch (err) {
-        console.warn('Push error:', err);
+        console.warn('[CHAT_PUSH_DEBUG] dispatch_error:', err);
       }
     } catch (err: any) {
       console.error("Message send failed:", err);
