@@ -13,6 +13,29 @@ import { supabase } from '@/lib/supabase';
 import { optimizeFeedUpload } from '@/lib/feedPerformance';
 
 const POPULAR_TOPICS = ['Patents', 'Trademarks', 'AI Law', 'Copyright', 'Litigation', 'Career Advice'];
+const POST_DRAFT_KEY = 'wipa_create_post_draft';
+
+const isNetworkFailure = (error: unknown) => {
+  const message = String((error as any)?.message || error || '').toLowerCase();
+  return error instanceof TypeError || /load failed|failed to fetch|network|fetch failed|connection/.test(message);
+};
+
+async function withNetworkRetry<T>(operation: () => Promise<T>, attempts = 3): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      const result: any = await operation();
+      if (!result?.error || !isNetworkFailure(result.error) || attempt === attempts - 1) return result;
+      lastError = result.error;
+    } catch (error) {
+      lastError = error;
+      if (!isNetworkFailure(error) || attempt === attempts - 1) throw error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 600 * (attempt + 1)));
+  }
+  throw lastError;
+}
+
 const EMOJIS = ['💡', '⚖️', '📜', '✨', '🚀', '💼', '🎯', '🤝', '🔥', '👏', '🎉', '📈'];
 
 export default function CreatePostPage() {
@@ -45,13 +68,22 @@ export default function CreatePostPage() {
   const videoInputRef = useRef<HTMLInputElement>(null);
   const docInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const uploadedMediaRef = useRef<{ fingerprint: string; publicUrl: string } | null>(null);
+  const pendingPostIdRef = useRef<string | null>(null);
 
   // Auto-focus textarea on load
   useEffect(() => {
+    const savedDraft = localStorage.getItem(POST_DRAFT_KEY);
+    if (savedDraft) setPostContent(savedDraft);
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
   }, []);
+
+  useEffect(() => {
+    if (postContent.trim()) localStorage.setItem(POST_DRAFT_KEY, postContent);
+    else localStorage.removeItem(POST_DRAFT_KEY);
+  }, [postContent]);
 
   const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video' | 'doc') => {
     const file = e.target.files?.[0];
@@ -108,31 +140,49 @@ export default function CreatePostPage() {
     let docName = attachedMedia?.name || null;
 
     try {
+      if (!navigator.onLine) {
+        setUploadError('You are offline. Your draft is safe—reconnect and tap Share again.');
+        return;
+      }
+
+      const { data: sessionData } = await withNetworkRetry(() => supabase.auth.getSession());
+      if (!sessionData?.session) {
+        setUploadError('Your session expired. Please sign in again; your draft has been saved.');
+        return;
+      }
+
       // 1. Upload media if present
       if (attachedMedia?.file) {
         const uploadFile = attachedMedia.type === 'image'
           ? await optimizeFeedUpload(attachedMedia.file)
           : attachedMedia.file;
-        const safeName = uploadFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-        const fileName = `${user.id}/${Date.now()}-${safeName}`;
-        
-        const { error: uploadErr } = await supabase.storage
-          .from('feed-media')
-          .upload(fileName, uploadFile, {
-            upsert: false,
-            cacheControl: '31536000',
-            contentType: uploadFile.type || undefined,
-          });
+        const fingerprint = `${uploadFile.name}:${uploadFile.size}:${uploadFile.lastModified}`;
 
-        if (uploadErr) {
-          setUploadError('Failed to upload file: ' + uploadErr.message);
-          setIsPublishing(false);
-          return;
-        }
+        if (uploadedMediaRef.current?.fingerprint === fingerprint) {
+          mediaUrls = [uploadedMediaRef.current.publicUrl];
+        } else {
+          const safeName = uploadFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+          const fileName = `${user.id}/pending-${crypto.randomUUID()}-${safeName}`;
+          const { error: uploadErr } = await withNetworkRetry(() => supabase.storage
+            .from('feed-media')
+            .upload(fileName, uploadFile, {
+              upsert: true,
+              cacheControl: '31536000',
+              contentType: uploadFile.type || undefined,
+            }));
 
-        const { data: urlData } = supabase.storage.from('feed-media').getPublicUrl(fileName);
-        if (urlData?.publicUrl) {
-          mediaUrls = [urlData.publicUrl];
+          if (uploadErr) {
+            setUploadError(isNetworkFailure(uploadErr)
+              ? 'Connection interrupted while uploading. Your draft is safe—tap Share to retry.'
+              : 'Could not upload this file: ' + uploadErr.message);
+            return;
+          }
+
+          const { data: urlData } = supabase.storage.from('feed-media').getPublicUrl(fileName);
+          if (urlData?.publicUrl) {
+            mediaUrls = [urlData.publicUrl];
+            uploadedMediaRef.current = { fingerprint, publicUrl: urlData.publicUrl };
+          }
         }
       }
 
@@ -148,18 +198,22 @@ export default function CreatePostPage() {
       }
 
       // 2. Insert into feed_posts
-      const { error } = await supabase.from('feed_posts').insert({
+      const postId = pendingPostIdRef.current || crypto.randomUUID();
+      pendingPostIdRef.current = postId;
+      const { error } = await withNetworkRetry(() => supabase.from('feed_posts').insert({
+        id: postId,
         author_id: user.id,
         content: finalContent,
         privacy: postPrivacy,
         media_urls: mediaUrls,
         media_type: mediaType,
         document_name: docName
-      });
+      }));
 
-      if (error) {
-        setUploadError('Failed to publish post: ' + error.message);
-        setIsPublishing(false);
+      if (error && error.code !== '23505') {
+        setUploadError(isNetworkFailure(error)
+          ? 'Connection interrupted. Your draft is safe—check your internet and tap Share again.'
+          : 'Could not publish this post: ' + error.message);
         return;
       }
 
@@ -179,6 +233,8 @@ export default function CreatePostPage() {
 
       setIsPublishing(false);
       setPublishSuccess(true);
+      pendingPostIdRef.current = null;
+      localStorage.removeItem(POST_DRAFT_KEY);
       
       setTimeout(() => {
         router.push('/platform');
@@ -186,7 +242,10 @@ export default function CreatePostPage() {
 
     } catch (err: any) {
       console.error(err);
-      setUploadError(err.message || 'Something went wrong while publishing.');
+      setUploadError(isNetworkFailure(err)
+        ? 'Connection interrupted. Your draft is safe—check your internet and tap Share again.'
+        : 'Something went wrong while publishing. Your draft is safe; please try again.');
+    } finally {
       setIsPublishing(false);
     }
   };
