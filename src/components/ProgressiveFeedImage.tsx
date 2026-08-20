@@ -17,12 +17,9 @@ export default function ProgressiveFeedImage({
   const [failed, setFailed] = useState(false);
 
   return (
-    <div className="relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-black/40 sm:aspect-video">
-      {!loaded && !failed && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 dark:from-white/5 dark:via-white/10 dark:to-white/5" />
-      )}
+    <div className="w-full overflow-hidden rounded-xl">
       {failed ? (
-        <div className="px-6 text-center text-xs font-medium text-gray-400">Image could not be loaded</div>
+        <div className="px-6 py-8 text-center text-xs font-medium text-gray-400">Image could not be loaded</div>
       ) : (
         <img
           src={src}
@@ -33,7 +30,7 @@ export default function ProgressiveFeedImage({
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
           onClick={onClick}
-          className={`h-full w-full object-contain transition-opacity duration-300 md:cursor-pointer ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`block h-auto w-full transition-opacity duration-200 md:cursor-pointer ${loaded ? 'opacity-100' : 'opacity-0'}`}
         />
       )}
     </div>

@@ -1066,7 +1066,7 @@ export default function PlatformPage() {
                             }
 
                             return (
-                              <div key={mIdx} className="w-full max-w-full rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 border border-gray-100 dark:border-white/5 shadow-sm p-0.5 min-w-0">
+                              <div key={mIdx} className="w-full max-w-full min-w-0 overflow-hidden rounded-xl">
                                 <ProgressiveFeedImage
                                   src={url}
                                   alt={`${authorName}'s post attachment`}
