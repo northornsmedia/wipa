@@ -20,7 +20,7 @@ export default function WipaCinematicSplash({ preview = false }: { preview?: boo
 
       <div className="relative z-10 flex h-28 items-center justify-center" aria-label="WIPA">
         <motion.span
-          className="block text-[4.3rem] font-black leading-none tracking-[-.09em]"
+          className="block text-[4.3rem] font-black leading-none"
           initial={{ opacity: 0, scaleX: .18, scaleY: .35, x: 24, transformOrigin: 'left bottom' }}
           animate={{ opacity: 1, scaleX: 1, scaleY: 1, x: 0 }}
           transition={{ delay: .35, duration: .85, ease }}
@@ -29,8 +29,8 @@ export default function WipaCinematicSplash({ preview = false }: { preview?: boo
         </motion.span>
 
         <motion.div
-          className="relative overflow-hidden text-[4.3rem] font-black leading-none tracking-[-.09em]"
-          initial={{ width: 0 }} animate={{ width: '2.32em' }}
+          className="relative ml-[.1em] overflow-hidden text-[4.3rem] font-black leading-none tracking-[.04em]"
+          initial={{ width: 0 }} animate={{ width: '2.5em' }}
           transition={{ delay: 1.35, duration: 1.15, ease }}
         >
           <span className="block -translate-y-[1px]">IPA</span>
