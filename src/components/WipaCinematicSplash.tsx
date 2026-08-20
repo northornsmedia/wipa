@@ -19,18 +19,14 @@ export default function WipaCinematicSplash({ preview = false }: { preview?: boo
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(2,5,75,.42)_80%)]" />
 
       <div className="relative z-10 flex h-28 items-center justify-center" aria-label="WIPA">
-        <div className="relative flex items-end gap-[3px] pr-1">
-          {[18, 30, 44, 58].map((height, index) => (
-            <motion.span
-              key={height}
-              className="block w-[7px] bg-white"
-              style={{ height }}
-              initial={{ opacity: 0, scaleY: 0, x: 24 - index * 8, y: 18 - index * 6 }}
-              animate={{ opacity: 1, scaleY: 1, x: 0, y: 0 }}
-              transition={{ delay: .35 + index * .13, duration: .55, ease }}
-            />
-          ))}
-        </div>
+        <motion.span
+          className="block text-[4.3rem] font-black leading-none tracking-[-.09em]"
+          initial={{ opacity: 0, scaleX: .18, scaleY: .35, x: 24, transformOrigin: 'left bottom' }}
+          animate={{ opacity: 1, scaleX: 1, scaleY: 1, x: 0 }}
+          transition={{ delay: .35, duration: .85, ease }}
+        >
+          W
+        </motion.span>
 
         <motion.div
           className="relative overflow-hidden text-[4.3rem] font-black leading-none tracking-[-.09em]"
@@ -49,22 +45,7 @@ export default function WipaCinematicSplash({ preview = false }: { preview?: boo
           ))}
         </motion.div>
 
-        <motion.span
-          className="mb-[45px] ml-3 h-3 w-3 rounded-full bg-[#ff3b8d] shadow-[0_0_16px_4px_rgba(255,59,141,.45)]"
-          initial={{ opacity: 0, scale: 0, x: -22 }}
-          animate={{ opacity: 1, scale: [0, 1.35, 1], x: 0 }}
-          transition={{ delay: 2.35, duration: .62, ease }}
-        />
       </div>
-
-      <motion.p
-        className="absolute mt-32 text-[10px] font-semibold uppercase tracking-[.34em] text-white/65"
-        initial={{ opacity: 0, y: 8, letterSpacing: '.1em' }}
-        animate={{ opacity: 1, y: 0, letterSpacing: '.34em' }}
-        transition={{ delay: 2.75, duration: .8, ease }}
-      >
-        Connect · Create · Lead
-      </motion.p>
 
       <motion.div
         className="pointer-events-none absolute inset-y-0 w-16 bg-gradient-to-r from-transparent via-white/10 to-transparent blur-xl"
