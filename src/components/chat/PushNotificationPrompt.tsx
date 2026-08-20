@@ -1,76 +1,71 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Bell, Check, Share, PlusSquare, Smartphone, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Bell, Check, Loader2, Settings, X } from 'lucide-react';
 import { getPushSubscriptionStatus, subscribeToPushNotifications } from '@/lib/pushNotifications';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 
+type PromptMode = 'hidden' | 'ask' | 'denied' | 'success';
+
+const DISMISSED_KEY = 'wipa_push_prompt_dismissed';
+const DENIED_NOTICE_KEY = 'wipa_push_denied_notice_seen';
+
 export const PushNotificationPrompt: React.FC = () => {
   const { user } = useAppStore();
-  const [showModal, setShowModal] = useState(false);
-  const [isIosSafariBrowser, setIsIosSafariBrowser] = useState(false);
+  const [mode, setMode] = useState<PromptMode>('hidden');
   const [isEnabling, setIsEnabling] = useState(false);
-  const [enabledSuccess, setEnabledSuccess] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(user?.id || null);
 
   useEffect(() => {
-    let isMounted = true;
+    let cancelled = false;
+    let hideTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const initCheck = async () => {
-      if (typeof window === 'undefined') return;
-
-      // 1. Resolve user ID directly from Supabase session if store is still loading
+    const checkPermission = async () => {
       let activeUserId = user?.id || null;
       if (!activeUserId) {
         const { data: { user: authUser } } = await supabase.auth.getUser();
         activeUserId = authUser?.id || null;
       }
+      if (cancelled || !activeUserId) return;
+      setCurrentUserId(activeUserId);
 
-      if (activeUserId && isMounted) {
-        setCurrentUserId(activeUserId);
+      const status = await getPushSubscriptionStatus();
+      if (cancelled) return;
+
+      if (status.permission === 'granted') {
+        void subscribeToPushNotifications(activeUserId);
+        return;
       }
 
-      const ua = navigator.userAgent.toLowerCase();
-      const isIos = /iphone|ipad|ipod/.test(ua) || (typeof navigator !== 'undefined' && navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      const isStandalone = (window.navigator as any).standalone === true || window.matchMedia('(display-mode: standalone)').matches;
-
-      // Case A: iPhone/iPad inside regular Safari browser (NOT standalone PWA)
-      if (isIos && !isStandalone) {
-        if (isMounted) {
-          setIsIosSafariBrowser(true);
-          setShowModal(true);
+      if (status.permission === 'denied') {
+        if (!localStorage.getItem(DENIED_NOTICE_KEY)) {
+          localStorage.setItem(DENIED_NOTICE_KEY, '1');
+          setMode('denied');
+          hideTimer = setTimeout(() => setMode('hidden'), 6000);
         }
         return;
       }
 
-      // Case B: Android, Desktop, or iOS PWA installed on Home Screen
-      const status = await getPushSubscriptionStatus();
-      if (status.permission === 'granted') {
-        if (activeUserId) {
-          subscribeToPushNotifications(activeUserId).catch(() => {});
-        }
-        if (isMounted) setShowModal(false);
-      } else if (status.permission === 'denied') {
-        if (isMounted) setShowModal(false);
-      } else {
-        // Permission not yet granted -> Show modal
-        if (isMounted) {
-          setIsIosSafariBrowser(false);
-          setShowModal(true);
-        }
+      if (!localStorage.getItem(DISMISSED_KEY)) {
+        hideTimer = setTimeout(() => setMode('ask'), 1800);
       }
     };
 
-    initCheck();
-
+    void checkPermission();
     return () => {
-      isMounted = false;
+      cancelled = true;
+      if (hideTimer) clearTimeout(hideTimer);
     };
   }, [user?.id]);
 
-  const handleEnableNotifications = async () => {
-    let uid = currentUserId || user?.id;
+  const dismissForever = () => {
+    localStorage.setItem(DISMISSED_KEY, '1');
+    setMode('hidden');
+  };
+
+  const enableNotifications = async () => {
+    let uid = currentUserId || user?.id || null;
     if (!uid) {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       uid = authUser?.id || null;
@@ -78,126 +73,61 @@ export const PushNotificationPrompt: React.FC = () => {
     if (!uid) return;
 
     setIsEnabling(true);
-    try {
-      const result = await subscribeToPushNotifications(uid);
-      if (result.success) {
-        setEnabledSuccess(true);
-        setTimeout(() => {
-          setShowModal(false);
-        }, 1500);
-      } else {
-        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'denied') {
-          setShowModal(false);
-        }
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsEnabling(false);
+    const result = await subscribeToPushNotifications(uid);
+    setIsEnabling(false);
+
+    if (result.success) {
+      setMode('success');
+      setTimeout(() => setMode('hidden'), 1800);
+      return;
+    }
+
+    const status = await getPushSubscriptionStatus();
+    if (status.permission === 'denied') {
+      localStorage.setItem(DISMISSED_KEY, '1');
+      localStorage.setItem(DENIED_NOTICE_KEY, '1');
+      setMode('denied');
+      setTimeout(() => setMode('hidden'), 6000);
     }
   };
 
-  if (!showModal) return null;
+  if (mode === 'hidden') return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#1e293b] text-gray-900 dark:text-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-gray-100 dark:border-white/10 relative animate-in zoom-in-95 duration-200">
-        
-        {/* Close Button (allows user to temporarily dismiss if desired) */}
-        <button
-          onClick={() => setShowModal(false)}
-          className="absolute top-4 right-4 p-2 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-          title="Close"
-        >
-          <X size={18} />
-        </button>
-
-        {/* Top Animated Icon */}
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#5a32fa] to-[#8d6eff] flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#5a32fa]/30 text-white">
-          <Bell size={32} className="animate-bounce" />
+    <div className="pointer-events-none fixed inset-x-3 bottom-24 z-[80] flex justify-center md:bottom-6">
+      <div className="pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl border border-black/5 bg-white/95 px-3.5 py-3 text-slate-900 shadow-[0_10px_35px_rgba(15,23,42,0.18)] backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-200 dark:border-white/10 dark:bg-slate-900/95 dark:text-white">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#6600FF]/10 text-[#6600FF]">
+          {mode === 'denied' ? <Settings size={18} /> : mode === 'success' ? <Check size={19} /> : <Bell size={18} />}
         </div>
 
-        {isIosSafariBrowser ? (
-          /* --- iOS Safari Guide (Apple requires Add to Home Screen for Web Push) --- */
-          <div className="text-center">
-            <h3 className="text-xl font-black mb-1.5 tracking-tight">Enable iPhone Alerts 🔔</h3>
-            <p className="text-xs text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-              Apple requires adding WIPA to your Home Screen to unlock lock-screen ringtones &amp; message alerts.
-            </p>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold leading-tight">
+            {mode === 'ask' && 'Get message alerts'}
+            {mode === 'denied' && 'Notifications are off'}
+            {mode === 'success' && 'Notifications enabled'}
+          </p>
+          <p className="mt-0.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+            {mode === 'ask' && 'Know when someone messages you.'}
+            {mode === 'denied' && 'You can enable them anytime from your device Settings.'}
+            {mode === 'success' && 'You will receive new message alerts.'}
+          </p>
+        </div>
 
-            <div className="bg-gray-50 dark:bg-slate-800/80 rounded-2xl p-3.5 text-left text-xs space-y-3 mb-5 border border-gray-200/60 dark:border-white/5">
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-[#5a32fa] text-white flex items-center justify-center font-bold shrink-0 text-xs mt-0.5">
-                  1
-                </div>
-                <div>
-                  <p className="font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
-                    Tap the Share icon <Share size={14} className="text-[#5a32fa]" />
-                  </p>
-                  <p className="text-gray-500 dark:text-gray-400 text-[11px]">Located at the bottom bar of your Safari browser.</p>
-                </div>
-              </div>
+        {mode === 'ask' && (
+          <button
+            type="button"
+            onClick={() => void enableNotifications()}
+            disabled={isEnabling}
+            className="shrink-0 rounded-xl bg-[#6600FF] px-3 py-2 text-xs font-bold text-white active:scale-95 disabled:opacity-60"
+          >
+            {isEnabling ? <Loader2 size={15} className="animate-spin" /> : 'Enable'}
+          </button>
+        )}
 
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-[#5a32fa] text-white flex items-center justify-center font-bold shrink-0 text-xs mt-0.5">
-                  2
-                </div>
-                <div>
-                  <p className="font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
-                    Tap &quot;Add to Home Screen&quot; <PlusSquare size={14} className="text-[#5a32fa]" />
-                  </p>
-                  <p className="text-gray-500 dark:text-gray-400 text-[11px]">Scroll down in the menu and tap Add.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold shrink-0 text-xs mt-0.5">
-                  3
-                </div>
-                <div>
-                  <p className="font-bold text-gray-900 dark:text-white">Open from Home Screen &amp; Enable</p>
-                  <p className="text-gray-500 dark:text-gray-400 text-[11px]">Open the WIPA app on your screen to receive instant sound alerts!</p>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowModal(false)}
-              className="w-full py-3 px-5 rounded-2xl bg-gradient-to-r from-[#5a32fa] to-[#7952ff] hover:opacity-95 text-white font-bold text-sm shadow-md transition-transform active:scale-[0.98]"
-            >
-              I Understand / Got It
-            </button>
-          </div>
-        ) : (
-          /* --- Android / iOS PWA / Desktop Standard One-Tap Enable --- */
-          <div className="text-center">
-            <h3 className="text-xl font-black mb-1.5 tracking-tight">Turn On Message Alerts 🔔</h3>
-            <p className="text-xs text-gray-600 dark:text-gray-300 mb-5 leading-relaxed">
-              Hear notification sounds and see message previews even when your screen is locked.
-            </p>
-
-            {enabledSuccess ? (
-              <div className="w-full py-3.5 px-5 rounded-2xl bg-emerald-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg animate-in zoom-in-90 duration-200">
-                <Check size={20} />
-                <span>Notifications Enabled!</span>
-              </div>
-            ) : (
-              <button
-                onClick={handleEnableNotifications}
-                disabled={isEnabling}
-                className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-[#5a32fa] to-[#7952ff] hover:opacity-95 text-white font-bold text-sm shadow-lg shadow-[#5a32fa]/25 transition-transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {isEnabling ? (
-                  <span className="inline-block animate-pulse">Activating Device Ringtone...</span>
-                ) : (
-                  <>
-                    <Bell size={18} />
-                    <span>Enable Instant Alerts Now</span>
-                  </>
-                )}
-              </button>
-            )}
-          </div>
+        {mode === 'ask' && (
+          <button type="button" onClick={dismissForever} aria-label="Dismiss notification prompt" className="shrink-0 p-1 text-slate-400">
+            <X size={16} />
+          </button>
         )}
       </div>
     </div>
