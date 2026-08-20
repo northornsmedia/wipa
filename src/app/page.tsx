@@ -27,9 +27,13 @@ export default function Home() {
 
     // Verify the persisted session before exposing the public landing page.
     // The Capacitor app opens this route, so returning users should go straight home.
-    supabase.auth.getUser().then(({ data: { user: authUser }, error }) => {
+    const minimumSplash = new Promise((resolve) => setTimeout(resolve, 3200));
+
+    supabase.auth.getUser().then(async ({ data: { user: authUser }, error }) => {
       if (error || !authUser) {
         setUser(null);
+        await minimumSplash;
+        setShowSplash(false);
         return;
       }
       
@@ -38,7 +42,7 @@ export default function Home() {
         .select("full_name, avatar_url, cover_url, member_id")
         .eq("id", authUser.id)
         .single()
-        .then(({ data }) => {
+        .then(async ({ data }) => {
           setUser({
             name: data?.full_name || authUser.email?.split("@")[0] || "User",
             email: authUser.email!,
@@ -47,6 +51,7 @@ export default function Home() {
             cover_url: data?.cover_url || undefined,
             member_id: data?.member_id || undefined,
           });
+          await minimumSplash;
           router.replace('/platform');
         });
     });
@@ -81,14 +86,6 @@ export default function Home() {
       teamCarouselRef.current.scrollBy({ left: direction === 'left' ? -320 : 320, behavior: 'smooth' });
     }
   };
-
-  // Splash Screen Timer
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Word Cycler Timer
   useEffect(() => {

@@ -7,6 +7,7 @@ import TelemetryTracker from "@/components/TelemetryTracker";
 import PWARegister from "@/components/PWARegister";
 import { Suspense } from "react";
 import Script from 'next/script';
+import NativeBackHandler from '@/components/NativeBackHandler';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -65,6 +66,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <NativeBackHandler />
         <PWARegister />
         
         <Script id="clarity-script" strategy="afterInteractive">
