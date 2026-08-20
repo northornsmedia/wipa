@@ -9,10 +9,13 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import PublicHeader from '@/components/PublicHeader';
 import PublicFooter from '@/components/PublicFooter';
+import AppLaunchSplash from '@/components/AppLaunchSplash';
+import { useRouter } from 'next/navigation';
 
 const ROLLING_WORDS = ["Network", "Leadership", "Career", "Patents", "Knowledge"];
 
 export default function Home() {
+  const router = useRouter();
   const { isMenuOpen, toggleMenu, user, setUser } = useAppStore();
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [showSplash, setShowSplash] = useState(true);
@@ -22,7 +25,8 @@ export default function Home() {
     // Clear the TTS played flag so it plays again when navigating to the platform
     sessionStorage.removeItem('wipa_tts_played');
 
-    // Verify active session securely with the server
+    // Verify the persisted session before exposing the public landing page.
+    // The Capacitor app opens this route, so returning users should go straight home.
     supabase.auth.getUser().then(({ data: { user: authUser }, error }) => {
       if (error || !authUser) {
         setUser(null);
@@ -43,9 +47,10 @@ export default function Home() {
             cover_url: data?.cover_url || undefined,
             member_id: data?.member_id || undefined,
           });
+          router.replace('/platform');
         });
     });
-  }, [setUser]);
+  }, [router, setUser]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -100,19 +105,9 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#fbe8d5] bg-grid-pattern"
+            className="fixed inset-0 z-[100]"
           >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="flex items-center"
-            >
-              <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-[#131313] flex items-center">
-
-                <span>WIPA</span>
-              </h1>
-            </motion.div>
+            <AppLaunchSplash message="Connecting women shaping the future of IP…" />
           </motion.div>
         )}
       </AnimatePresence>

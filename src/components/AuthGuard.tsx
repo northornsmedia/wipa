@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
+import AppLaunchSplash from '@/components/AppLaunchSplash';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, setUser } = useAppStore();
@@ -106,11 +107,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   // Only show minimal subtle spinner if no user is cached and initial session check is running
   if (!mounted || isChecking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#0a0a0f]">
-        <div className="w-8 h-8 rounded-full border-2 border-[#5a32fa] border-t-transparent animate-spin"></div>
-      </div>
-    );
+    return <AppLaunchSplash message="Opening your platform…" />;
   }
 
   return <>{children}</>;

@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/store/useAppStore";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import AppLaunchSplash from "@/components/AppLaunchSplash";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
   const router = useRouter();
   const { setUser } = useAppStore();
 
@@ -26,11 +28,17 @@ export default function LoginPage() {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        router.push("/platform");
+        router.replace("/platform");
+        return;
       }
+      setCheckingSession(false);
     };
     checkSession();
   }, [router]);
+
+  if (checkingSession) {
+    return <AppLaunchSplash message="Checking your secure session…" />;
+  }
 
   const handleResetPassword = async (e: React.MouseEvent) => {
     e.preventDefault();
