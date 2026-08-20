@@ -16,6 +16,10 @@ import { supabase } from '@/lib/supabase';
 import AdSlot from '@/components/AdSlot';
 import FeedStoriesCarousel from '@/components/FeedStoriesCarousel';
 import MobileCommentDrawer from '@/components/MobileCommentDrawer';
+import ProgressiveFeedImage from '@/components/ProgressiveFeedImage';
+import { optimizeFeedUpload, readCachedFeed, writeCachedFeed } from '@/lib/feedPerformance';
+
+const FEED_PAGE_SIZE = 8;
 
 export default function PlatformPage() {
   const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode, isCreatePostOpen, setIsCreatePostOpen } = useAppStore();
@@ -30,8 +34,12 @@ export default function PlatformPage() {
   const [postContent, setPostContent] = useState('');
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishSuccess, setPublishSuccess] = useState(false);
-  const [feedPosts, setFeedPosts] = useState<any[]>(() => useAppStore.getState().cachedFeedPosts || []);
+  const [feedPosts, setFeedPosts] = useState<any[]>(() => (useAppStore.getState().cachedFeedPosts || []).slice(0, FEED_PAGE_SIZE));
   const [isLoadingFeed, setIsLoadingFeed] = useState(() => !(useAppStore.getState().cachedFeedPosts?.length > 0));
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreFeed, setHasMoreFeed] = useState(true);
+  const feedCursorRef = useRef<string | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
   const [dbLikedPostIds, setDbLikedPostIds] = useState<Set<string>>(new Set());
   const [activeCommentPost, setActiveCommentPost] = useState<any | null>(null);
   const [commentText, setCommentText] = useState('');
@@ -97,19 +105,47 @@ export default function PlatformPage() {
     });
   };
   
-  const fetchFeed = useCallback(async () => {
+  const fetchFeed = useCallback(async (append = false) => {
+    if (append) setIsLoadingMore(true);
+    else setIsLoadingFeed((current) => current);
+
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('feed_posts')
         .select(`
-          *,
+          id, author_id, content, media_urls, media_type, document_name, privacy,
+          likes_count, comments_count, comments_disabled, created_at,
           author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, practice_area, created_at, is_wipa_recommended)
         `)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(FEED_PAGE_SIZE);
+
+      if (append && feedCursorRef.current) query = query.lt('created_at', feedCursorRef.current);
+      const { data, error } = await query;
 
       if (data && Array.isArray(data)) {
-        setFeedPosts(data);
-        useAppStore.getState().setCachedFeedPosts(data);
+        const nextPage = data;
+        feedCursorRef.current = nextPage.length ? nextPage[nextPage.length - 1].created_at : feedCursorRef.current;
+        setHasMoreFeed(nextPage.length === FEED_PAGE_SIZE);
+        setFeedPosts((current) => {
+          const merged = append
+            ? [...current, ...nextPage.filter((post) => !current.some((existing) => existing.id === post.id))]
+            : nextPage;
+          useAppStore.getState().setCachedFeedPosts(merged.slice(0, FEED_PAGE_SIZE));
+          void writeCachedFeed(merged);
+          return merged;
+        });
+
+        if (user?.id && nextPage.length) {
+          const { data: likesData } = await supabase
+            .from('feed_likes')
+            .select('post_id')
+            .eq('user_id', user.id)
+            .in('post_id', nextPage.map((post) => post.id));
+          if (likesData) {
+            setDbLikedPostIds((current) => new Set([...current, ...likesData.map((like) => like.post_id)]));
+          }
+        }
       }
       if (error) {
         console.error("Error fetching feed:", error);
@@ -118,32 +154,32 @@ export default function PlatformPage() {
       console.error("Feed error:", err);
     }
 
-    if (user?.id) {
-      const { data: likesData } = await supabase
-        .from('feed_likes')
-        .select('post_id')
-        .eq('user_id', user.id);
-        
-      if (likesData) {
-        setDbLikedPostIds(new Set(likesData.map(l => l.post_id)));
-      }
-    }
-
-    const { data: trendingData } = await supabase
-      .from('forum_posts')
-      .select('id, title, created_at')
-      .order('created_at', { ascending: false })
-      .limit(3);
-    
-    if (trendingData) {
-      setTrendingForums(trendingData);
+    if (!append) {
+      const { data: trendingData } = await supabase
+        .from('forum_posts')
+        .select('id, title, created_at')
+        .order('created_at', { ascending: false })
+        .limit(3);
+      if (trendingData) setTrendingForums(trendingData);
     }
 
     setIsLoadingFeed(false);
+    setIsLoadingMore(false);
   }, [user?.id]);
 
   useEffect(() => {
-    fetchFeed();
+    let cancelled = false;
+    const hydrateThenRefresh = async () => {
+      if (feedPosts.length === 0) {
+        const cached = await readCachedFeed<any>();
+        if (!cancelled && cached.length) {
+          setFeedPosts(cached);
+          setIsLoadingFeed(false);
+        }
+      }
+      if (!cancelled) await fetchFeed(false);
+    };
+    void hydrateThenRefresh();
     
     // Fetch business profile if exists
     const fetchBusiness = async () => {
@@ -153,7 +189,21 @@ export default function PlatformPage() {
       }
     };
     fetchBusiness();
+    return () => { cancelled = true; };
   }, [fetchFeed, user?.business_profile_id]);
+
+  useEffect(() => {
+    const sentinel = loadMoreRef.current;
+    if (!sentinel || !hasMoreFeed || isLoadingMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) void fetchFeed(true);
+      },
+      { rootMargin: '700px 0px' }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [fetchFeed, hasMoreFeed, isLoadingMore]);
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -229,12 +279,18 @@ export default function PlatformPage() {
 
     try {
       if (attachedMedia?.file) {
-        const fileExt = attachedMedia.file.name.split('.').pop();
-        const safeName = attachedMedia.file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const uploadFile = attachedMedia.type === 'image'
+          ? await optimizeFeedUpload(attachedMedia.file)
+          : attachedMedia.file;
+        const safeName = uploadFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
         const fileName = `${authorId}/${Date.now()}-${safeName}`;
         const { error: uploadErr } = await supabase.storage
           .from('feed-media')
-          .upload(fileName, attachedMedia.file, { upsert: true });
+          .upload(fileName, uploadFile, {
+            upsert: false,
+            cacheControl: '31536000',
+            contentType: uploadFile.type || undefined,
+          });
 
         if (uploadErr) {
           console.error("Storage upload error:", uploadErr);
@@ -807,7 +863,7 @@ export default function PlatformPage() {
                     <React.Fragment key={post.id}>
                     <div 
                       onClick={() => handlePostDoubleTap(post.id)}
-                      className="w-full max-w-full min-w-0 bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3.5 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border relative overflow-hidden select-none"
+                      className="w-full max-w-full min-w-0 bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3.5 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border relative overflow-hidden select-none [content-visibility:auto] [contain-intrinsic-size:760px]"
                     >
                       {/* Big Instagram-Style Double-Tap Heart Animation */}
                       {animatingHeartPostIds.has(post.id) && (
@@ -828,7 +884,7 @@ export default function PlatformPage() {
                           <Link href={`/platform/profile/${post.author_id}`} className="shrink-0 hover:opacity-80 transition-opacity block">
                             <div className="p-0.5 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8]">
                               {author.avatar_url ? (
-                                <img src={author.avatar_url} alt={authorName} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-white dark:ring-[#0f172a]" />
+                                <img src={author.avatar_url} alt={authorName} loading={index < 2 ? 'eager' : 'lazy'} decoding="async" className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-white dark:ring-[#0f172a]" />
                               ) : (
                                 <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-[#0f172a]">
                                   {initial}
@@ -959,7 +1015,7 @@ export default function PlatformPage() {
                                     src={url} 
                                     controls 
                                     playsInline 
-                                    preload="metadata"
+                                    preload={index === 0 ? 'metadata' : 'none'}
                                     className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl block mx-auto" 
                                   />
                                 </div>
@@ -992,15 +1048,13 @@ export default function PlatformPage() {
                             }
 
                             return (
-                              <div key={mIdx} className="w-full max-w-full rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5 min-w-0">
-                                <img 
-                                  src={url} 
-                                  alt="Post attachment" 
-                                  className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl transition-all duration-300 md:cursor-pointer hover:opacity-98 block mx-auto"
+                              <div key={mIdx} className="w-full max-w-full rounded-2xl overflow-hidden bg-slate-900/5 dark:bg-black/40 border border-gray-100 dark:border-white/5 shadow-sm p-0.5 min-w-0">
+                                <ProgressiveFeedImage
+                                  src={url}
+                                  alt={`${authorName}'s post attachment`}
+                                  eager={index === 0 && mIdx === 0}
                                   onClick={() => {
-                                    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-                                      setPreviewModalImage(url);
-                                    }
+                                    if (typeof window !== 'undefined' && window.innerWidth >= 768) setPreviewModalImage(url);
                                   }}
                                 />
                               </div>
@@ -1103,6 +1157,12 @@ export default function PlatformPage() {
                     </React.Fragment>
                   );
                 })}
+                {feedPosts.length > 0 && (
+                  <div ref={loadMoreRef} className="flex min-h-16 items-center justify-center py-4" aria-live="polite">
+                    {isLoadingMore && <Loader2 size={24} className="animate-spin text-[#5a32fa]" />}
+                    {!hasMoreFeed && <span className="text-xs font-medium text-gray-400">You're all caught up</span>}
+                  </div>
+                )}
               </div>
 
               </div>

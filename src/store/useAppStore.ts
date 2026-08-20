@@ -204,6 +204,15 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'wipa-storage',
+      version: 2,
+      migrate: (persistedState: any) => ({
+        ...persistedState,
+        cachedFeedPosts: [],
+      }),
+      partialize: (state) => {
+        const { cachedFeedPosts: _cachedFeedPosts, ...persistedState } = state;
+        return persistedState;
+      },
     }
   )
 );

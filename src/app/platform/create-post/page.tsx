@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
+import { optimizeFeedUpload } from '@/lib/feedPerformance';
 
 const POPULAR_TOPICS = ['Patents', 'Trademarks', 'AI Law', 'Copyright', 'Litigation', 'Career Advice'];
 const EMOJIS = ['💡', '⚖️', '📜', '✨', '🚀', '💼', '🎯', '🤝', '🔥', '👏', '🎉', '📈'];
@@ -109,12 +110,19 @@ export default function CreatePostPage() {
     try {
       // 1. Upload media if present
       if (attachedMedia?.file) {
-        const safeName = attachedMedia.file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const uploadFile = attachedMedia.type === 'image'
+          ? await optimizeFeedUpload(attachedMedia.file)
+          : attachedMedia.file;
+        const safeName = uploadFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
         const fileName = `${user.id}/${Date.now()}-${safeName}`;
         
         const { error: uploadErr } = await supabase.storage
           .from('feed-media')
-          .upload(fileName, attachedMedia.file, { upsert: true });
+          .upload(fileName, uploadFile, {
+            upsert: false,
+            cacheControl: '31536000',
+            contentType: uploadFile.type || undefined,
+          });
 
         if (uploadErr) {
           setUploadError('Failed to upload file: ' + uploadErr.message);

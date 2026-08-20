@@ -15,6 +15,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { optimizeFeedUpload } from '@/lib/feedPerformance';
 
 const DEFAULT_MOCK_VIDEO = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
 
@@ -169,9 +170,11 @@ export default function ProfilePage() {
       setProfileData(prev => ({ ...prev, avatarUrl: url }));
 
       try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-        const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, file, { upsert: true });
+        const uploadFile = await optimizeFeedUpload(file, 512, 0.8);
+        const fileName = `${user.id}/${Date.now()}-${uploadFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, uploadFile, {
+          upsert: false, cacheControl: '31536000', contentType: uploadFile.type || undefined
+        });
         if (!uploadError) {
           const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
           await supabase.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', user.id);
@@ -188,9 +191,11 @@ export default function ProfilePage() {
     if (file && user?.id) {
       setIsUploadingCover(true);
       try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}-cover.${fileExt}`;
-        const { error: uploadError } = await supabase.storage.from('covers').upload(fileName, file, { upsert: true });
+        const uploadFile = await optimizeFeedUpload(file, 1600, 0.78);
+        const fileName = `${user.id}/${Date.now()}-cover-${uploadFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        const { error: uploadError } = await supabase.storage.from('covers').upload(fileName, uploadFile, {
+          upsert: false, cacheControl: '31536000', contentType: uploadFile.type || undefined
+        });
         if (!uploadError) {
           const { data } = supabase.storage.from('covers').getPublicUrl(fileName);
           await supabase.from('profiles').update({ cover_url: data.publicUrl }).eq('id', user.id);
@@ -212,7 +217,9 @@ export default function ProfilePage() {
       try {
         const fileExt = file.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}-intro.${fileExt}`;
-        const { error: uploadError } = await supabase.storage.from('feed-media').upload(fileName, file, { upsert: true });
+        const { error: uploadError } = await supabase.storage.from('feed-media').upload(fileName, file, {
+          upsert: false, cacheControl: '31536000', contentType: file.type || undefined
+        });
         
         let finalVideoUrl = URL.createObjectURL(file);
         if (!uploadError) {
@@ -291,12 +298,16 @@ export default function ProfilePage() {
       let docName = attachedMedia?.name || null;
 
       if (attachedMedia?.file) {
-        const fileExt = attachedMedia.file.name.split('.').pop();
-        const safeName = attachedMedia.file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const uploadFile = attachedMedia.type === 'image'
+          ? await optimizeFeedUpload(attachedMedia.file)
+          : attachedMedia.file;
+        const safeName = uploadFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
         const fileName = `${user.id}/${Date.now()}-${safeName}`;
         const { error: uploadErr } = await supabase.storage
           .from('feed-media')
-          .upload(fileName, attachedMedia.file, { upsert: true });
+          .upload(fileName, uploadFile, {
+            upsert: false, cacheControl: '31536000', contentType: uploadFile.type || undefined
+          });
 
         if (!uploadErr) {
           const { data: urlData } = supabase.storage.from('feed-media').getPublicUrl(fileName);

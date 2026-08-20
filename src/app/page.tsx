@@ -27,7 +27,7 @@ export default function Home() {
 
     // Verify the persisted session before exposing the public landing page.
     // The Capacitor app opens this route, so returning users should go straight home.
-    const minimumSplash = new Promise((resolve) => setTimeout(resolve, 3200));
+    const minimumSplash = new Promise((resolve) => setTimeout(resolve, 2600));
 
     supabase.auth.getUser().then(async ({ data: { user: authUser }, error }) => {
       if (error || !authUser) {

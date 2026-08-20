@@ -1,12 +1,13 @@
 // WIPA PWA Service Worker
-const CACHE_NAME = 'wipa-cache-v2';
+const CACHE_NAME = 'wipa-cache-v3';
+const IMAGE_CACHE_NAME = 'wipa-images-v1';
 const OFFLINE_URL = '/platform';
 
 const STATIC_ASSETS = [
   '/',
   '/platform',
   '/manifest.json',
-  '/mobilelogowipa.png',
+  '/wipaoffm.png',
   '/icon-192.png',
   '/icon-512.png',
   '/apple-touch-icon.png'
@@ -26,7 +27,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) {
+          if (key !== CACHE_NAME && key !== IMAGE_CACHE_NAME) {
             return caches.delete(key);
           }
         })
@@ -41,6 +42,29 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
+
+  // Stale-while-revalidate lets previously seen images paint immediately,
+  // including public Supabase Storage media and avatars.
+  if (event.request.destination === 'image') {
+    event.respondWith(
+      caches.open(IMAGE_CACHE_NAME).then(async (cache) => {
+        const cached = await cache.match(event.request);
+        const network = fetch(event.request)
+          .then((response) => {
+            if (response.ok || response.type === 'opaque') {
+              cache.put(event.request, response.clone()).then(async () => {
+                const keys = await cache.keys();
+                if (keys.length > 120) await cache.delete(keys[0]);
+              });
+            }
+            return response;
+          })
+          .catch(() => cached);
+        return cached || network;
+      })
+    );
+    return;
+  }
 
   // Exclude API calls, supabase auth, or chrome extensions from caching
   if (
