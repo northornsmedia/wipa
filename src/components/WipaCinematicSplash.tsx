@@ -6,18 +6,7 @@ const ease = [0.16, 1, 0.3, 1] as const;
 
 export default function WipaCinematicSplash({ preview = false }: { preview?: boolean }) {
   return (
-    <div className="relative flex min-h-[100dvh] w-full items-center justify-center overflow-hidden bg-[#071078] text-white">
-      <motion.div
-        className="absolute -left-1/2 -top-1/3 h-[85vh] w-[85vh] rounded-full bg-[#7819e8]/55 blur-[110px]"
-        animate={{ x: ['-8%', '12%', '-8%'], y: ['-5%', '8%', '-5%'], opacity: [.45, .7, .45] }}
-        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute -bottom-1/3 -right-1/2 h-[80vh] w-[80vh] rounded-full bg-[#3515bb]/50 blur-[120px]"
-        animate={{ scale: [1, 1.18, 1] }} transition={{ duration: 6, repeat: Infinity }}
-      />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(2,5,75,.42)_80%)]" />
-
+    <div className="relative flex min-h-[100dvh] w-full items-center justify-center overflow-hidden bg-[#6600FF] text-white">
       <div className="relative z-10 flex h-28 items-center justify-center" aria-label="WIPA">
         <motion.span
           className="block text-[4.3rem] font-black leading-none"
@@ -37,7 +26,7 @@ export default function WipaCinematicSplash({ preview = false }: { preview?: boo
           {[0, 1, 2, 3].map((slice) => (
             <motion.span
               key={slice}
-              className="absolute left-0 h-[9px] w-full bg-[#071078]"
+              className="absolute left-0 h-[9px] w-full bg-[#6600FF]"
               style={{ top: `${20 + slice * 18}%` }}
               initial={{ x: '-105%' }} animate={{ x: '110%' }}
               transition={{ delay: 1.15 + slice * .12, duration: .7, ease }}
