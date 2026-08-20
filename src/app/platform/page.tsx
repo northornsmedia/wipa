@@ -59,6 +59,10 @@ export default function PlatformPage() {
   const [trendingForums, setTrendingForums] = useState<any[]>([]);
   const [animatingHeartPostIds, setAnimatingHeartPostIds] = useState<Set<string>>(new Set());
   const lastTapMapRef = useRef<Record<string, number>>({});
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isPullRefreshing, setIsPullRefreshing] = useState(false);
+  const pullStartRef = useRef({ x: 0, y: 0, active: false });
+  const pullDistanceRef = useRef(0);
 
   const handlePostDoubleTap = (postId: string) => {
     if (!user) return;
@@ -167,6 +171,63 @@ export default function PlatformPage() {
     setIsLoadingFeed(false);
     setIsLoadingMore(false);
   }, [user?.id]);
+
+  const refreshFeedFromPull = useCallback(async () => {
+    if (isPullRefreshing) return;
+    setIsPullRefreshing(true);
+    setPullDistance(58);
+    pullDistanceRef.current = 58;
+    feedCursorRef.current = null;
+    setHasMoreFeed(true);
+    if (navigator.vibrate) navigator.vibrate(25);
+
+    await Promise.all([
+      fetchFeed(false),
+      new Promise((resolve) => setTimeout(resolve, 500)),
+    ]);
+
+    setIsPullRefreshing(false);
+    setPullDistance(0);
+    pullDistanceRef.current = 0;
+  }, [fetchFeed, isPullRefreshing]);
+
+  const handlePullStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (isPullRefreshing || isModalOpen || window.innerWidth >= 768 || window.scrollY > 1) return;
+    const target = event.target as HTMLElement;
+    if (target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    const touch = event.touches[0];
+    pullStartRef.current = { x: touch.clientX, y: touch.clientY, active: true };
+  };
+
+  const handlePullMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!pullStartRef.current.active || isPullRefreshing) return;
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - pullStartRef.current.x;
+    const deltaY = touch.clientY - pullStartRef.current.y;
+
+    if (deltaY <= 0 || Math.abs(deltaX) > deltaY || window.scrollY > 1) {
+      pullStartRef.current.active = false;
+      setPullDistance(0);
+      pullDistanceRef.current = 0;
+      return;
+    }
+
+    if (event.cancelable) event.preventDefault();
+    const resistedDistance = Math.min(104, deltaY * 0.42);
+    pullDistanceRef.current = resistedDistance;
+    setPullDistance(resistedDistance);
+  };
+
+  const handlePullEnd = () => {
+    if (!pullStartRef.current.active) return;
+    pullStartRef.current.active = false;
+    if (pullDistanceRef.current >= 68) {
+      void refreshFeedFromPull();
+    } else {
+      pullDistanceRef.current = 0;
+      setPullDistance(0);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -463,7 +524,30 @@ export default function PlatformPage() {
     : feedPosts;
 
   return (
-    <div className="w-full max-w-full font-sans flex flex-col min-h-screen overflow-x-hidden">
+    <div
+      className="relative w-full max-w-full font-sans flex flex-col min-h-screen overflow-x-hidden overscroll-y-contain"
+      onTouchStart={handlePullStart}
+      onTouchMove={handlePullMove}
+      onTouchEnd={handlePullEnd}
+      onTouchCancel={handlePullEnd}
+    >
+      <div
+        aria-hidden={pullDistance === 0 && !isPullRefreshing}
+        className="pointer-events-none fixed left-1/2 top-[max(14px,env(safe-area-inset-top))] z-[70] md:hidden"
+        style={{
+          opacity: Math.min(1, pullDistance / 34),
+          transform: `translate3d(-50%, ${Math.max(-52, pullDistance - 52)}px, 0) scale(${Math.min(1, 0.72 + pullDistance / 240)})`,
+          transition: pullStartRef.current.active ? 'none' : 'transform 240ms cubic-bezier(.2,.8,.2,1), opacity 180ms ease',
+        }}
+      >
+        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-black/5 bg-white/95 shadow-[0_5px_20px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/95">
+          <Loader2
+            size={20}
+            className={`text-[#6600FF] ${isPullRefreshing ? 'animate-spin' : ''}`}
+            style={!isPullRefreshing ? { transform: `rotate(${Math.min(300, pullDistance * 4)}deg)` } : undefined}
+          />
+        </div>
+      </div>
       <div className="w-full max-w-full bg-white dark:bg-[#0f172a] flex flex-col flex-1 min-w-0">
         
         {/* MAIN LAYOUT */}
