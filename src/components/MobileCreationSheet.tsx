@@ -1,9 +1,8 @@
 // @ts-nocheck
 'use client';
 
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Edit3, Video, MessageSquare, Mic, Briefcase, Sparkles, Bot } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { X, Edit3, Video, MessageSquare, Mic, Briefcase, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -16,7 +15,16 @@ interface MobileCreationSheetProps {
 export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }: MobileCreationSheetProps) {
   const router = useRouter();
   const setIsLexIQOpen = useAppStore((state) => state.setIsLexIQOpen);
-  const setIsCreatePostOpen = useAppStore((state) => state.setIsCreatePostOpen);
+
+  // Prevent the large feed behind the sheet from scrolling/repainting while open.
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
 
   const handleAction = (item: any) => {
     onClose();
@@ -94,26 +102,19 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
     }
   ];
 
+  if (!isOpen) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] md:hidden">
+        <div className="fixed inset-0 z-[100] md:hidden isolate">
           {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+          <div
+            onPointerDown={onClose}
+            className="absolute inset-0 bg-black/60 animate-in fade-in duration-100"
           />
 
           {/* Bottom Sheet */}
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 26, stiffness: 280 }}
-            className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#151c2c] rounded-t-3xl border-t border-gray-200 dark:border-gray-800 p-5 pb-10 shadow-2xl max-h-[85vh] overflow-y-auto"
+          <div
+            className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#151c2c] rounded-t-3xl border-t border-gray-200 dark:border-gray-800 p-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] shadow-xl max-h-[85dvh] overflow-y-auto overscroll-contain touch-pan-y animate-in slide-in-from-bottom-8 duration-150 ease-out [contain:layout_paint] [transform:translateZ(0)]"
           >
             {/* Grab Handle */}
             <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-4" />
@@ -171,9 +172,7 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         </div>
-      )}
-    </AnimatePresence>
   );
 }
