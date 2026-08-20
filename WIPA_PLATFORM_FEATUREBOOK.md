@@ -1,8 +1,10 @@
 # WIPA Platform Featurebook & Technical Whitepaper
 
-**Women’s IP World Alliance — Connect, Create, Learn, and Lead**  
-**Document version:** 1.0  
-**Prepared:** August 2026  
+**Women’s IP World Alliance — Connect, Create, Learn, and Lead**
+
+**Document version:** 1.0
+
+**Prepared:** August 2026
 **Platform:** WIPA Web, Progressive Web App, and Android application
 
 ---
