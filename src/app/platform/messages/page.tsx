@@ -1,9 +1,10 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { 
   Paperclip, Send, Camera, Mic, MapPin, Image as ImageIcon, Video, FileText, 
-  X, Square, WifiOff, Sparkles, ChevronDown, Loader2, Play, Pause, Trash2
+  X, Square, WifiOff, Sparkles, ChevronDown, Play, Pause, Trash2
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -1607,7 +1608,7 @@ export default function MessagesPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#5a32fa]"></div>
+        <Loader2 size={40} className="text-[#6600FF]" />
       </div>
     }>
       <MessagesContent />

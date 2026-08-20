@@ -1,10 +1,11 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowLeft, Save, Loader2, Users, Search, X, UserPlus, Shield } from 'lucide-react';
+import { ArrowLeft, Save, Users, Search, X, UserPlus, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EditBusinessProfilePage({ params }: { params: { slug: string } }) {

@@ -1,8 +1,9 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Loader2, ArrowLeft, Save, Building2 } from 'lucide-react';
+import { ArrowLeft, Save, Building2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EditFirmPage({ params }: { params: { id: string } }) {

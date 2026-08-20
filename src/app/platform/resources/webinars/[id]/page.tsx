@@ -1,5 +1,6 @@
 'use client';
 
+import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import React, { use, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
@@ -171,7 +172,7 @@ export default function WebinarDetailPage({ params }: { params: Promise<{ id: st
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0a0a0c]">
-        <div className="animate-spin w-10 h-10 border-4 border-[#ff2a5f] border-t-transparent rounded-full"></div>
+        <DotmCircular7 size={40} className="text-[#6600FF]" />
       </div>
     );
   }

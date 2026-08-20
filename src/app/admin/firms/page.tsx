@@ -1,8 +1,9 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Plus, Loader2, CheckCircle2, Star, Building2, Pencil, Trash } from 'lucide-react';
+import { Plus, CheckCircle2, Star, Building2, Pencil, Trash } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminFirmsPage() {

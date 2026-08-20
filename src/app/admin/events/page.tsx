@@ -1,8 +1,9 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Calendar, Plus, Loader2 } from 'lucide-react';
+import { Calendar, Plus } from 'lucide-react';
 
 export default function AdminEventsPage() {
   const [events, setEvents] = useState<any[]>([]);

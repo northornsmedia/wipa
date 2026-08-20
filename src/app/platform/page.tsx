@@ -1,5 +1,6 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import { useAppStore } from '@/store/useAppStore';
@@ -7,7 +8,7 @@ import {
   Search, Bell, LayoutGrid, BookOpen, Calendar, Users, Info, Settings, 
   Hash, BellOff, ArrowUpRight, CheckCircle2, Circle, Image as ImageIcon, Video, Smile,
   Bookmark, MoreVertical, Heart, MessageCircle, Gift, LogOut, Pencil, Copy, MessageSquareOff, Trash2, Globe, Lock, Shield,
-  FileText, Loader2, PlayCircle, Plus, Send, X, Mail, ThumbsUp, UsersRound, MessageSquare, Briefcase, GraduationCap, Home, Star, Paperclip,
+  FileText, PlayCircle, Plus, Send, X, Mail, ThumbsUp, UsersRound, MessageSquare, Briefcase, GraduationCap, Home, Star, Paperclip,
   Share2, Repeat2
 } from 'lucide-react';
 import Link from 'next/link';

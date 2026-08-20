@@ -1,10 +1,11 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { Building2, Briefcase, Monitor, MoreHorizontal, ArrowLeft, ArrowRight, Check, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Building2, Briefcase, Monitor, MoreHorizontal, ArrowLeft, ArrowRight, Check, Image as ImageIcon } from 'lucide-react';
 
 const STEPS = ['Business Type', 'Basic Info', 'Details', 'Branding', 'Review'];
 

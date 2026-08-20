@@ -1,11 +1,12 @@
 // @ts-nocheck
 'use client';
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useState, useRef, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { 
   BadgeCheck, User, Users, Mail, UserPlus, MessageSquare, Briefcase, GraduationCap,
   MapPin, Link as LinkIcon, Calendar, Edit3, Settings, Camera, ThumbsUp,
-  Share2, Copy, PlayCircle, Hash, ArrowUpRight, CheckCircle2, Loader2, Star,
+  Share2, Copy, PlayCircle, Hash, ArrowUpRight, CheckCircle2, Star,
   Folder, Lightbulb, HelpCircle, Headphones, Award, Gift, Sparkles, Plus,
   Image as ImageIcon, Video, Send, MoreHorizontal, Eye, TrendingUp, Search,
   Globe2, ShieldCheck, Check, Heart, MessageCircle, Repeat2, Bookmark, X,

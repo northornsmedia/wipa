@@ -1,12 +1,12 @@
 // @ts-nocheck
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   X, Image as ImageIcon, Video, FileText, Sparkles, 
-  Globe, Lock, MapPin, Users, Music, Smile, Loader2, 
-  Trash2, Check, ArrowLeft, Send, CheckCircle2, AlertCircle
+  Globe, Lock, MapPin, Users, Music, Smile, Trash2, Check, ArrowLeft, Send, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';

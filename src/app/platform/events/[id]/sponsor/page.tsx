@@ -1,9 +1,10 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowLeft, Check, Package, UploadCloud, FileText, Loader2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Check, Package, UploadCloud, FileText, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SponsorApplyPage({ params }: { params: { id: string } }) {

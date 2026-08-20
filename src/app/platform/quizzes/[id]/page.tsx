@@ -1,4 +1,5 @@
 'use client';
+import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
@@ -104,7 +105,7 @@ export default function QuizTakingPage({ params }: { params: { id: string } }) {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] dark:bg-[#0f172a]">
-        <div className="animate-spin w-16 h-16 border-4 border-[#5a32fa] border-t-transparent rounded-full"></div>
+        <DotmCircular7 size={40} className="text-[#6600FF]" />
       </div>
     );
   }

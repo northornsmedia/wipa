@@ -1,8 +1,9 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Loader2, CheckCircle2, Briefcase, Trash2 } from 'lucide-react';
+import { CheckCircle2, Briefcase, Trash2 } from 'lucide-react';
 
 export default function AdminBusinessProfilesPage() {
   const [businesses, setBusinesses] = useState<any[]>([]);

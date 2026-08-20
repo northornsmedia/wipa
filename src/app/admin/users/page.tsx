@@ -1,8 +1,9 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Users, Search, Loader2 } from 'lucide-react';
+import { Users, Search } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 
 export default function AdminUsersPage() {

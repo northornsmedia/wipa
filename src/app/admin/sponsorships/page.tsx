@@ -1,8 +1,9 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { DollarSign, Package, FileText, Check, X, Loader2, Plus, Edit } from 'lucide-react';
+import { DollarSign, Package, FileText, Check, X, Plus, Edit } from 'lucide-react';
 
 export default function AdminSponsorshipsPage() {
   const [activeTab, setActiveTab] = useState<'packages' | 'applications'>('applications');

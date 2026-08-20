@@ -1,5 +1,6 @@
 'use client';
 
+import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
@@ -57,7 +58,7 @@ export default function FirmProfilePage({ params }: { params: { slug: string } }
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#020617]"><div className="animate-spin w-12 h-12 border-4 border-[#5a32fa] border-t-transparent rounded-full"></div></div>;
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#020617]"><DotmCircular7 size={40} className="text-[#6600FF]" /></div>;
   }
 
   if (!firm) {

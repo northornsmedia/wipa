@@ -1,10 +1,11 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { Building2, ShieldCheck, Loader2 } from 'lucide-react';
+import { Building2, ShieldCheck } from 'lucide-react';
 
 export default function ClaimFirmPage() {
   const { user } = useAppStore();

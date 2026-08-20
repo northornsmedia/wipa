@@ -1,11 +1,12 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import Link from 'next/link';
-import { LayoutDashboard, Users, Calendar, Briefcase, FileText, ArrowLeft, Loader2, Building2, DollarSign } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, Briefcase, FileText, ArrowLeft, Building2, DollarSign } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAppStore();

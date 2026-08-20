@@ -1,14 +1,14 @@
 // @ts-nocheck
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useState, useEffect, use } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { 
   BadgeCheck, MapPin, Link as LinkIcon, Users, Mail, MessageSquare, Briefcase, GraduationCap,
   Hash, ThumbsUp, Share2, Send, UserPlus, X, PlayCircle, Star, Copy, Globe2,
-  CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, ArrowLeft, Loader2,
-  FileText, ArrowUpRight, Heart, Bookmark, ShieldCheck, Check, MoreHorizontal, Eye,
+  CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, ArrowLeft, FileText, ArrowUpRight, Heart, Bookmark, ShieldCheck, Check, MoreHorizontal, Eye,
   TrendingUp, Search, Image as ImageIcon, Video, Award, Gift, Sparkles, Folder,
   Lightbulb, HelpCircle, Headphones, Calendar
 } from 'lucide-react';

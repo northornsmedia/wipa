@@ -1,5 +1,6 @@
 'use client';
 
+import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import React, { useEffect, useState } from 'react';
 import { Search, Building2, Star, CheckCircle2, MapPin, ChevronRight, Filter } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -113,7 +114,7 @@ export default function IPFirmsPage() {
         {/* Results */}
         {loading ? (
           <div className="flex justify-center p-20">
-            <div className="animate-spin w-10 h-10 border-4 border-[#5a32fa] border-t-transparent rounded-full"></div>
+            <DotmCircular7 size={40} className="text-[#6600FF]" />
           </div>
         ) : filteredFirms.length === 0 ? (
           <div className="text-center bg-white dark:bg-[#0f172a] rounded-3xl p-16 border border-slate-200 dark:border-white/10 shadow-sm">

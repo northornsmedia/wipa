@@ -1,9 +1,10 @@
 // @ts-nocheck
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Loader2, MessageCircle, Heart, Star, ShieldCheck } from 'lucide-react';
+import { X, Send, MessageCircle, Heart, Star, ShieldCheck } from 'lucide-react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useAppStore } from '@/store/useAppStore';
 

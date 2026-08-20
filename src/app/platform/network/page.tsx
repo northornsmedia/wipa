@@ -1,5 +1,6 @@
 'use client';
 
+import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
@@ -470,7 +471,7 @@ export default function NetworkPage() {
           {/* Network Member Grid */}
           {loading ? (
             <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#5a32fa]"></div>
+              <DotmCircular7 size={40} className="text-[#6600FF]" />
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">

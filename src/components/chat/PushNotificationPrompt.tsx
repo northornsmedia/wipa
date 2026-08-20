@@ -1,7 +1,8 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useEffect, useState } from 'react';
-import { Bell, Check, Loader2, Settings, X } from 'lucide-react';
+import { Bell, Check, Settings, X } from 'lucide-react';
 import { getPushSubscriptionStatus, subscribeToPushNotifications } from '@/lib/pushNotifications';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';

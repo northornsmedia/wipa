@@ -1,8 +1,9 @@
 // @ts-nocheck
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Search, Mic, Play, Pause, ChevronDown, ListMusic, Headphones, PlayCircle, Clock, Volume2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Search, Mic, Play, Pause, ChevronDown, ListMusic, Headphones, PlayCircle, Clock, Volume2 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 

@@ -1,9 +1,10 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowLeft, CheckCircle2, MapPin, Globe, Mail, Phone, Users, Building2, Briefcase, Monitor, MoreHorizontal, Link as LinkIcon, Edit2, UserPlus, Star, Loader2, MessageCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MapPin, Globe, Mail, Phone, Users, Building2, Briefcase, Monitor, MoreHorizontal, Link as LinkIcon, Edit2, UserPlus, Star, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const TYPE_ICONS: Record<string, any> = {
@@ -75,7 +76,7 @@ export default function BusinessProfilePage({ params }: { params: { slug: string
   }, [params.slug, user]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#020617]"><div className="animate-spin w-12 h-12 border-4 border-[#5a32fa] border-t-transparent rounded-full"></div></div>;
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#020617]"><Loader2 size={40} className="text-[#6600FF]" /></div>;
   }
 
   if (!business) {

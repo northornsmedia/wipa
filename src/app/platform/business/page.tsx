@@ -1,10 +1,10 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
-import { Loader2 } from 'lucide-react';
 
 export default function BusinessRedirectPage() {
   const router = useRouter();

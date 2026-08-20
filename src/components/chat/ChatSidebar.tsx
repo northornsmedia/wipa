@@ -1,7 +1,8 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useState, useRef } from 'react';
-import { Search, ArrowLeft, Trash2, Loader2 } from 'lucide-react';
+import { Search, ArrowLeft, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 export interface SidebarChat {

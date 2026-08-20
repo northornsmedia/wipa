@@ -50,6 +50,7 @@
 }
 
 :root {
+  --color-dot-on: var(--foreground);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -289,4 +290,3 @@ img, video {
 @view-transition {
   navigation: auto;
 }
-

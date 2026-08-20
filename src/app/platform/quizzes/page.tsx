@@ -1,4 +1,5 @@
 'use client';
+import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
@@ -120,7 +121,7 @@ export default function QuizzesPage() {
         {/* Quizzes Grid */}
         {isLoading ? (
           <div className="py-24 text-center">
-            <div className="animate-spin w-12 h-12 border-4 border-[#5a32fa] border-t-transparent rounded-full mx-auto mb-4"></div>
+            <DotmCircular7 size={40} className="text-[#6600FF]" />
             <p className="text-gray-500 font-bold">Loading challenges...</p>
           </div>
         ) : filteredQuizzes.length === 0 ? (

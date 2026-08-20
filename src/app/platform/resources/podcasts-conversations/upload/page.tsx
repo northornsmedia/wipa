@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client';
 
+import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Mic, Upload, CheckCircle2, Lock, FileText, Send, User, XCircle } from 'lucide-react';
 import Link from 'next/link';
@@ -115,7 +116,7 @@ export default function PodcastUploadPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#121212] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-[#f59e0b]/20 border-t-[#f59e0b] rounded-full animate-spin"></div>
+        <DotmCircular7 size={40} className="text-[#6600FF]" />
       </div>
     );
   }
@@ -260,7 +261,7 @@ export default function PodcastUploadPage() {
                     className="w-full mt-4 flex items-center justify-center gap-3 bg-gradient-to-r from-[#f59e0b] to-[#ea580c] hover:from-[#ea580c] hover:to-[#c2410c] disabled:opacity-50 text-white py-4 md:py-5 rounded-2xl font-black text-lg shadow-[0_10px_30px_rgba(245,158,11,0.3)] hover:shadow-[0_15px_40px_rgba(245,158,11,0.4)] hover:-translate-y-1 transition-all duration-300"
                   >
                     {isSubmitting ? (
-                      <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <DotmCircular7 size={40} className="text-[#6600FF]" />
                     ) : (
                       <>
                         <Send size={20} /> Submit Application
@@ -435,7 +436,7 @@ export default function PodcastUploadPage() {
                   className="flex items-center gap-2 bg-[#f59e0b] hover:bg-[#d97706] disabled:opacity-50 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
                 >
                   {isSubmitting ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <DotmCircular7 size={40} className="text-[#6600FF]" />
                   ) : (
                     <>
                       <Upload size={18} /> Publish Episode

@@ -1,8 +1,9 @@
 // @ts-nocheck
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Play, Calendar, Clock, ChevronDown, MonitorPlay, Users, Filter, Tv, Eye, Plus, Loader2, Link as LinkIcon, X, Radio, Video, Sparkles, Check } from 'lucide-react';
+import { ArrowLeft, Search, Play, Calendar, Clock, ChevronDown, MonitorPlay, Users, Filter, Tv, Eye, Plus, Link as LinkIcon, X, Radio, Video, Sparkles, Check } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';

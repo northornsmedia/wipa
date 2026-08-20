@@ -1,8 +1,9 @@
 'use client';
 
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { ShieldCheck, Loader2, Check, X, ShieldAlert } from 'lucide-react';
+import { ShieldCheck, Check, X, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminFirmClaimsPage() {
