@@ -38,6 +38,7 @@ export default function PlatformPage() {
   const [feedPosts, setFeedPosts] = useState<any[]>(() => (useAppStore.getState().cachedFeedPosts || []).slice(0, FEED_PAGE_SIZE));
   const [isLoadingFeed, setIsLoadingFeed] = useState(() => !(useAppStore.getState().cachedFeedPosts?.length > 0));
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const isLoadingMoreRef = useRef(false);
   const [hasMoreFeed, setHasMoreFeed] = useState(true);
   const feedCursorRef = useRef<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -111,7 +112,11 @@ export default function PlatformPage() {
   };
   
   const fetchFeed = useCallback(async (append = false) => {
-    if (append) setIsLoadingMore(true);
+    if (append && isLoadingMoreRef.current) return;
+    if (append) {
+      isLoadingMoreRef.current = true;
+      setIsLoadingMore(true);
+    }
     else setIsLoadingFeed((current) => current);
 
     try {
@@ -169,6 +174,7 @@ export default function PlatformPage() {
     }
 
     setIsLoadingFeed(false);
+    isLoadingMoreRef.current = false;
     setIsLoadingMore(false);
   }, [user?.id]);
 
@@ -192,9 +198,17 @@ export default function PlatformPage() {
   }, [fetchFeed, isPullRefreshing]);
 
   const handlePullStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (isPullRefreshing || isModalOpen || window.innerWidth >= 768 || window.scrollY > 1) return;
+    if (isPullRefreshing || isModalOpen || window.innerWidth >= 768) return;
     const target = event.target as HTMLElement;
     if (target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    let scrollParent: HTMLElement | null = target;
+    while (scrollParent && scrollParent !== document.body) {
+      const style = window.getComputedStyle(scrollParent);
+      const canScroll = /(auto|scroll)/.test(style.overflowY) && scrollParent.scrollHeight > scrollParent.clientHeight + 2;
+      if (canScroll && scrollParent.scrollTop > 1) return;
+      scrollParent = scrollParent.parentElement;
+    }
+    if (Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop) > 1) return;
     const touch = event.touches[0];
     pullStartRef.current = { x: touch.clientX, y: touch.clientY, active: true };
   };
@@ -205,7 +219,7 @@ export default function PlatformPage() {
     const deltaX = touch.clientX - pullStartRef.current.x;
     const deltaY = touch.clientY - pullStartRef.current.y;
 
-    if (deltaY <= 0 || Math.abs(deltaX) > deltaY || window.scrollY > 1) {
+    if (deltaY <= 0 || Math.abs(deltaX) > deltaY || Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop) > 1) {
       pullStartRef.current.active = false;
       setPullDistance(0);
       pullDistanceRef.current = 0;
@@ -265,7 +279,7 @@ export default function PlatformPage() {
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [fetchFeed, hasMoreFeed, isLoadingMore]);
+  }, [fetchFeed, feedPosts.length, hasMoreFeed, isLoadingMore]);
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -525,7 +539,7 @@ export default function PlatformPage() {
 
   return (
     <div
-      className="relative w-full max-w-full font-sans flex flex-col min-h-screen overflow-x-hidden overscroll-y-contain"
+      className="relative w-full max-w-full font-sans flex flex-col min-h-screen overflow-x-clip overscroll-y-contain"
       onTouchStart={handlePullStart}
       onTouchMove={handlePullMove}
       onTouchEnd={handlePullEnd}
@@ -1262,6 +1276,15 @@ export default function PlatformPage() {
                 {feedPosts.length > 0 && (
                   <div ref={loadMoreRef} className="flex min-h-16 items-center justify-center py-4" aria-live="polite">
                     {isLoadingMore && <Loader2 size={24} className="animate-spin text-[#5a32fa]" />}
+                    {hasMoreFeed && !isLoadingMore && (
+                      <button
+                        type="button"
+                        onClick={() => void fetchFeed(true)}
+                        className="rounded-full px-5 py-2 text-xs font-semibold text-[#6600FF] transition-colors hover:bg-[#6600FF]/5 active:bg-[#6600FF]/10"
+                      >
+                        Load more posts
+                      </button>
+                    )}
                     {!hasMoreFeed && <span className="text-xs font-medium text-gray-400">You're all caught up</span>}
                   </div>
                 )}
