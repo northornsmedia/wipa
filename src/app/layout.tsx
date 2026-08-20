@@ -33,11 +33,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/mobilelogowipa.png", sizes: "192x192", type: "image/png" },
-      { url: "/mobilelogowipa.png", sizes: "512x512", type: "image/png" }
+      { url: "/wipaoffm.png", sizes: "192x192", type: "image/png" },
+      { url: "/wipaoffm.png", sizes: "512x512", type: "image/png" }
     ],
     apple: [
-      { url: "/mobilelogowipa.png", sizes: "180x180", type: "image/png" }
+      { url: "/wipaoffm.png", sizes: "180x180", type: "image/png" }
     ]
   }
 };
@@ -51,7 +51,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/mobilelogowipa.png" />
+        <link rel="apple-touch-icon" href="/wipaoffm.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
