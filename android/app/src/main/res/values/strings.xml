@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">WIPA</string>
+    <string name="title_activity_main">WIPA</string>
+    <string name="package_name">org.wipa.app</string>
+    <string name="custom_url_scheme">org.wipa.app</string>
+</resources>

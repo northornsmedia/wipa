@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { getFirebaseMessaging } from '@/lib/firebase-admin';
 
 const rawPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
 const rawPrivateKey = process.env.VAPID_PRIVATE_KEY || '';
@@ -67,24 +68,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: 'No recipients found for push notification', sentCount: 0 });
     }
 
-    // 1. Fetch all active push subscriptions for the recipient(s)
-    const { data: subscriptions, error: subError } = await supabase
+    // 1. Fetch browser Web Push subscriptions and native FCM tokens.
+    const { data: allSubscriptions, error: subError } = await supabase
       .from('push_subscriptions')
       .select('*')
       .in('user_id', targetRecipientIds);
+    const nativeTokens = (allSubscriptions || [])
+      .filter((row: any) => row.device_type === 'android-native' && row.endpoint?.startsWith('fcm:'))
+      .map((row: any) => ({ ...row, token: row.endpoint.slice(4) }));
+    const subscriptions = (allSubscriptions || []).filter(
+      (row: any) => !(row.device_type === 'android-native' && row.endpoint?.startsWith('fcm:'))
+    );
 
     if (subError) {
       console.error('[CHAT_PUSH_DEBUG] Failed to query push_subscriptions:', subError);
       return NextResponse.json({ error: 'Database query failed' }, { status: 500 });
     }
 
-    console.log(`[CHAT_PUSH_DEBUG] subscriptions_found count=${subscriptions?.length || 0}`, subscriptions?.map((s: any) => ({
+    console.log(`[CHAT_PUSH_DEBUG] subscriptions_found web=${subscriptions.length} native=${nativeTokens.length}`, subscriptions.map((s: any) => ({
       userId: s.user_id,
       device_type: s.device_type,
       endpointHost: s.endpoint ? new URL(s.endpoint).hostname : 'unknown'
     })));
 
-    if (!subscriptions || subscriptions.length === 0) {
+    if (subscriptions.length === 0 && nativeTokens.length === 0) {
       return NextResponse.json({ message: 'No registered push subscriptions found for recipient', sentCount: 0 });
     }
 
@@ -114,6 +121,7 @@ export async function POST(req: Request) {
     console.log(`[CHAT_PUSH_DEBUG] payload title="${title}" body="${bodyText}" conversationId="${conversationId}"`);
 
     const expiredEndpoints: string[] = [];
+    const expiredNativeTokens: string[] = [];
     const errorLogs: any[] = [];
     let sentCount = 0;
 
@@ -154,12 +162,60 @@ export async function POST(req: Request) {
 
     await Promise.allSettled(pushPromises);
 
-    // 4. Prune expired subscription endpoints from Supabase
+    // 4. Dispatch native Android notifications through Firebase Cloud Messaging.
+    if (nativeTokens.length > 0) {
+      try {
+        const messaging = getFirebaseMessaging();
+        if (!messaging) {
+          throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON is not configured');
+        }
+        const fcmResult = await messaging.sendEachForMulticast({
+          tokens: nativeTokens.map((row: any) => row.token),
+          notification: { title, body: bodyText },
+          data: {
+            url: targetUrl,
+            conversationId: conversationId || '',
+            senderId: senderId || '',
+          },
+          android: {
+            priority: 'high',
+            notification: {
+              channelId: 'wipa_messages',
+              sound: 'default',
+              icon: 'ic_launcher',
+            },
+          },
+        });
+        sentCount += fcmResult.successCount;
+        fcmResult.responses.forEach((response, index) => {
+          if (response.success) return;
+          const code = response.error?.code || 'unknown';
+          errorLogs.push({ platform: 'android-native', code, message: response.error?.message });
+          if (
+            code === 'messaging/registration-token-not-registered' ||
+            code === 'messaging/invalid-registration-token'
+          ) {
+            expiredNativeTokens.push(nativeTokens[index].token);
+          }
+        });
+      } catch (fcmError: any) {
+        console.error('[CHAT_PUSH_DEBUG] FCM dispatch failed:', fcmError);
+        errorLogs.push({ platform: 'android-native', message: fcmError?.message || String(fcmError) });
+      }
+    }
+
+    // 5. Prune expired browser subscriptions and native tokens from Supabase.
     if (expiredEndpoints.length > 0) {
       await supabase
         .from('push_subscriptions')
         .delete()
         .in('endpoint', expiredEndpoints);
+    }
+    if (expiredNativeTokens.length > 0) {
+      await supabase
+        .from('push_subscriptions')
+        .delete()
+        .in('endpoint', expiredNativeTokens.map((token) => `fcm:${token}`));
     }
 
     // Record server execution event in analytics_events for DB audit
@@ -172,15 +228,21 @@ export async function POST(req: Request) {
         senderId,
         targetRecipientIds,
         subscriptionsCount: subscriptions.length,
+        nativeTokensCount: nativeTokens.length,
         sentCount,
-        expiredCount: expiredEndpoints.length,
+        expiredCount: expiredEndpoints.length + expiredNativeTokens.length,
         errorLogs,
         hasVapidPublicKey: !!vapidPublicKey,
         hasVapidPrivateKey: !!vapidPrivateKey
       }
     });
 
-    return NextResponse.json({ success: true, sentCount, prunedCount: expiredEndpoints.length, errorLogs });
+    return NextResponse.json({
+      success: true,
+      sentCount,
+      prunedCount: expiredEndpoints.length + expiredNativeTokens.length,
+      errorLogs,
+    });
   } catch (err: any) {
     console.error('[CHAT_PUSH_DEBUG] Internal error:', err);
     return NextResponse.json({ error: err?.message || 'Internal server error' }, { status: 500 });

@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# Firebase Android configuration is installed locally during release builds
+/android/app/google-services.json
+
 # vercel
 .vercel
 

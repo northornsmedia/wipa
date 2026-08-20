@@ -1,4 +1,61 @@
 import { supabase } from './supabase';
+import { Capacitor } from '@capacitor/core';
+import { PushNotifications } from '@capacitor/push-notifications';
+
+let nativeTapListenerReady = false;
+
+async function ensureNativeTapListener() {
+  if (nativeTapListenerReady || !Capacitor.isNativePlatform()) return;
+  nativeTapListenerReady = true;
+  await PushNotifications.addListener('pushNotificationActionPerformed', ({ notification }) => {
+    const target = notification.data?.url || '/platform/messages';
+    window.location.assign(target);
+  });
+}
+
+async function registerNativePushToken(userId: string): Promise<string> {
+  await ensureNativeTapListener();
+  await PushNotifications.createChannel({
+    id: 'wipa_messages',
+    name: 'WIPA Messages',
+    description: 'New messages and community alerts',
+    importance: 5,
+    visibility: 1,
+    vibration: true,
+  });
+
+  const token = await new Promise<string>(async (resolve, reject) => {
+    const timeout = window.setTimeout(() => reject(new Error('Push registration timed out')), 15000);
+    const registration = await PushNotifications.addListener('registration', async ({ value }) => {
+      window.clearTimeout(timeout);
+      await registration.remove();
+      await registrationError.remove();
+      resolve(value);
+    });
+    const registrationError = await PushNotifications.addListener('registrationError', async ({ error }) => {
+      window.clearTimeout(timeout);
+      await registration.remove();
+      await registrationError.remove();
+      reject(new Error(error));
+    });
+    await PushNotifications.register();
+  });
+
+  const { error } = await supabase.from('push_subscriptions').upsert(
+    {
+      user_id: userId,
+      endpoint: `fcm:${token}`,
+      p256dh: 'native',
+      auth: 'native',
+      device_type: `${Capacitor.getPlatform()}-native`,
+      user_agent: navigator.userAgent,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'user_id,endpoint' }
+  );
+  if (error) throw error;
+  return token;
+}
 
 /**
  * Converts a base64 string to a Uint8Array for VAPID applicationServerKey
@@ -39,6 +96,15 @@ export async function getPushSubscriptionStatus(): Promise<{
   permission: NotificationPermission | 'unsupported';
   isSubscribed: boolean;
 }> {
+  if (Capacitor.isNativePlatform()) {
+    const status = await PushNotifications.checkPermissions();
+    return {
+      supported: true,
+      permission: status.receive === 'granted' ? 'granted' : status.receive === 'denied' ? 'denied' : 'default',
+      isSubscribed: status.receive === 'granted',
+    };
+  }
+
   if (
     typeof window === 'undefined' ||
     !('serviceWorker' in navigator) ||
@@ -78,6 +144,23 @@ export async function subscribeToPushNotifications(userId: string): Promise<{
   error?: string;
 }> {
   if (!userId) return { success: false, error: 'User ID is required' };
+
+  if (Capacitor.isNativePlatform()) {
+    try {
+      let permission = await PushNotifications.checkPermissions();
+      if (permission.receive === 'prompt' || permission.receive === 'prompt-with-rationale') {
+        permission = await PushNotifications.requestPermissions();
+      }
+      if (permission.receive !== 'granted') {
+        return { success: false, error: 'Permission was denied by user' };
+      }
+      await registerNativePushToken(userId);
+      return { success: true };
+    } catch (err: any) {
+      console.error('Native push registration failed:', err);
+      return { success: false, error: err?.message || 'Native push registration failed' };
+    }
+  }
 
   if (
     typeof window === 'undefined' ||
@@ -165,6 +248,19 @@ export async function subscribeToPushNotifications(userId: string): Promise<{
  * Unsubscribes the current device from push notifications and removes it from Supabase
  */
 export async function unsubscribeFromPushNotifications(userId: string): Promise<boolean> {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      if (userId) {
+        await supabase.from('push_subscriptions').delete().eq('user_id', userId).eq('device_type', 'android-native');
+      }
+      await PushNotifications.unregister();
+      return true;
+    } catch (err) {
+      console.error('Error unregistering native push:', err);
+      return false;
+    }
+  }
+
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return false;
 
   try {
