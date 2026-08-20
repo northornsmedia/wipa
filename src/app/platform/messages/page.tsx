@@ -25,9 +25,10 @@ function MessagesContent() {
   const { user, cachedConversations, setCachedConversations } = useAppStore();
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get('userId');
+  const targetConversationId = searchParams.get('chatId');
   
   const [conversations, setConversations] = useState<Chat[]>(() => cachedConversations || []);
-  const [activeChatId, setActiveChatId] = useState<string | null>(() => (cachedConversations && cachedConversations.length > 0 ? String(cachedConversations[0].id) : null));
+  const [activeChatId, setActiveChatId] = useState<string | null>(() => targetConversationId || (cachedConversations && cachedConversations.length > 0 ? String(cachedConversations[0].id) : null));
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -77,6 +78,7 @@ function MessagesContent() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const activeChannelRef = useRef<any>(null);
   const attachmentMenuRef = useRef<HTMLDivElement>(null);
+  const openedDeepLinkRef = useRef<string | null>(null);
 
   const activeChat = conversations.find(c => String(c.id) === String(activeChatId));
 
@@ -264,7 +266,7 @@ function MessagesContent() {
             return merged;
           });
 
-          if (!activeChatIdRef.current && !targetUserId) {
+          if (!activeChatIdRef.current && !targetUserId && !targetConversationId) {
             setActiveChatId(String(parsed[0].id));
           }
         }
@@ -272,7 +274,7 @@ function MessagesContent() {
     } catch (err) {
       console.error("Failed to load conversations from DB:", err);
     }
-  }, [user?.id, targetUserId]);
+  }, [user?.id, targetUserId, targetConversationId]);
 
   useEffect(() => {
     fetchConversations();
@@ -380,6 +382,19 @@ function MessagesContent() {
       }
     }
   }, [user?.id]);
+
+  // Notification deep links carry the conversation ID. Wait until the user's
+  // conversations have loaded before opening the mobile chat panel.
+  useEffect(() => {
+    if (!targetConversationId || openedDeepLinkRef.current === targetConversationId) return;
+    const conversationExists = conversations.some(
+      (chat) => String(chat.id) === String(targetConversationId)
+    );
+    if (!conversationExists) return;
+
+    openedDeepLinkRef.current = targetConversationId;
+    void markAsRead(targetConversationId);
+  }, [targetConversationId, conversations, markAsRead]);
 
   // Fetch messages for active chat, handle realtime (INSERT, UPDATE, Presence, Broadcast)
   useEffect(() => {
