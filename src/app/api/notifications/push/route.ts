@@ -96,7 +96,7 @@ export async function POST(req: Request) {
     }
 
     // 2. Format title and body preview
-    const title = senderName ? `${senderName} • WIPA` : 'New Message • WIPA';
+    const title = senderName || 'New message';
     let bodyText = messageText || 'Sent you a message';
     if (mediaType === 'audio') bodyText = '🎤 Voice message';
     else if (mediaType === 'image') bodyText = '📷 Photo';
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
       icon: senderAvatar || '/icon-192.png',
       badge: '/icon-192.png',
       url: targetUrl,
-      tag: `wipa-msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      tag: `wipa-msg-${conversationId || senderId || 'chat'}`,
       timestamp: Date.now(),
     });
 
@@ -171,19 +171,20 @@ export async function POST(req: Request) {
         }
         const fcmResult = await messaging.sendEachForMulticast({
           tokens: nativeTokens.map((row: any) => row.token),
-          notification: { title, body: bodyText },
           data: {
+            notificationType: 'message',
+            title,
+            body: bodyText,
             url: targetUrl,
             conversationId: conversationId || '',
             senderId: senderId || '',
+            senderName: senderName || 'New message',
+            senderAvatar: senderAvatar || '',
+            timestamp: String(Date.now()),
           },
           android: {
             priority: 'high',
-            notification: {
-              channelId: 'wipa_messages',
-              sound: 'default',
-              icon: 'ic_launcher',
-            },
+            ttl: 300000,
           },
         });
         sentCount += fcmResult.successCount;

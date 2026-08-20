@@ -100,7 +100,7 @@ self.addEventListener('push', (event) => {
   reportSWLog('sw_push_event_received', { timestamp: Date.now() });
 
   let data = {
-    title: 'New Message • WIPA',
+    title: 'New message',
     body: 'You have a new message.',
     icon: '/icon-192.png',
     badge: '/icon-192.png',

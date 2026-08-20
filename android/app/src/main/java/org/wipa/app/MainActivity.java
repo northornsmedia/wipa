@@ -2,6 +2,7 @@ package org.wipa.app;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -21,5 +22,29 @@ public class MainActivity extends BridgeActivity {
                 NOTIFICATION_PERMISSION_REQUEST
             );
         }
+
+        openPushDestination(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        openPushDestination(intent);
+    }
+
+    private void openPushDestination(Intent intent) {
+        if (intent == null) return;
+        String path = intent.getStringExtra("push_url");
+        if (path == null || path.isEmpty() || bridge == null) return;
+        String conversationId = intent.getStringExtra("conversation_id");
+        if (conversationId != null && !conversationId.isEmpty()) {
+            getSharedPreferences("wipa_notification_history", MODE_PRIVATE)
+                .edit()
+                .remove(WipaMessagingService.historyKey(conversationId))
+                .apply();
+        }
+        String destination = path.startsWith("http") ? path : "https://wipanorthon.vercel.app" + path;
+        bridge.getWebView().post(() -> bridge.getWebView().loadUrl(destination));
     }
 }
