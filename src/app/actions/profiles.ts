@@ -13,6 +13,79 @@ function getDbClient() {
   return browserSupabase;
 }
 
+export type GlobalSearchResult = {
+  id: string;
+  type: 'Person' | 'Firm' | 'Event' | 'Job';
+  title: string;
+  subtitle: string;
+  imageUrl?: string | null;
+  path: string;
+};
+
+export async function searchGlobal(searchQuery: string, currentUserId?: string | null): Promise<GlobalSearchResult[]> {
+  const cleanQuery = searchQuery
+    ?.trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s@.&'\-]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .slice(0, 80);
+  if (!cleanQuery || cleanQuery.length < 2) return [];
+
+  const cacheKey = REDIS_KEYS.globalSearch(cleanQuery);
+  const cached = await redisSafeGet<GlobalSearchResult[]>(cacheKey);
+  if (Array.isArray(cached)) {
+    return currentUserId ? cached.filter((item) => !(item.type === 'Person' && item.id === currentUserId)) : cached;
+  }
+
+  const db = getDbClient();
+  const pattern = `%${cleanQuery}%`;
+  const [profilesResult, firmsResult, eventsResult, jobsResult] = await Promise.all([
+    db.from('profiles')
+      .select('id, full_name, role, practice_area, company, avatar_url, member_id')
+      .or(`full_name.ilike.${pattern},practice_area.ilike.${pattern},company.ilike.${pattern},member_id.ilike.${pattern}`)
+      .limit(8),
+    db.from('business_profiles')
+      .select('id, name, slug, type, logo_url')
+      .or(`name.ilike.${pattern},type.ilike.${pattern}`)
+      .limit(5),
+    db.from('events')
+      .select('id, title, category, location, cover_image_url')
+      .or(`title.ilike.${pattern},category.ilike.${pattern},location.ilike.${pattern}`)
+      .limit(5),
+    db.from('jobs')
+      .select('id, title, company, location')
+      .eq('is_active', true)
+      .or(`title.ilike.${pattern},company.ilike.${pattern},location.ilike.${pattern}`)
+      .limit(5),
+  ]);
+
+  const results: GlobalSearchResult[] = [
+    ...(profilesResult.data || []).map((profile: any) => ({
+      id: String(profile.id), type: 'Person' as const, title: profile.full_name || 'WIPA Member',
+      subtitle: profile.practice_area || profile.role || profile.company || 'WIPA Member',
+      imageUrl: profile.avatar_url, path: `/platform/profile/${profile.id}`,
+    })),
+    ...(firmsResult.data || []).map((firm: any) => ({
+      id: String(firm.id), type: 'Firm' as const, title: firm.name || 'IP Firm',
+      subtitle: firm.type || 'Business profile', imageUrl: firm.logo_url,
+      path: `/platform/business/${firm.slug || firm.id}`,
+    })),
+    ...(eventsResult.data || []).map((event: any) => ({
+      id: String(event.id), type: 'Event' as const, title: event.title || 'WIPA Event',
+      subtitle: event.location || event.category || 'Event', imageUrl: event.cover_image_url,
+      path: `/platform/events/${event.id}`,
+    })),
+    ...(jobsResult.data || []).map((job: any) => ({
+      id: String(job.id), type: 'Job' as const, title: job.title || 'IP opportunity',
+      subtitle: [job.company, job.location].filter(Boolean).join(' · ') || 'Job listing',
+      path: '/platform/jobs',
+    })),
+  ];
+
+  await redisSafeSet(cacheKey, results, 120);
+  return currentUserId ? results.filter((item) => !(item.type === 'Person' && item.id === currentUserId)) : results;
+}
+
 export async function searchProfiles(searchQuery: string, currentUserEmail?: string | null): Promise<any[]> {
   if (!searchQuery?.trim()) {
     return [];

@@ -25,6 +25,7 @@ export default function PlatformPage() {
   const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode, isCreatePostOpen, setIsCreatePostOpen } = useAppStore();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Latest');
+  const [feedSearchQuery, setFeedSearchQuery] = useState('');
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
   const isModalOpen = isCreatePostModalOpen || isCreatePostOpen;
   const [isClosingModal, setIsClosingModal] = useState(false);
@@ -451,6 +452,16 @@ export default function PlatformPage() {
     router.push('/login');
   };
 
+  const normalizedFeedSearch = feedSearchQuery.trim().toLowerCase();
+  const visibleFeedPosts = normalizedFeedSearch
+    ? feedPosts.filter((post) => {
+        const author = post.author || {};
+        return [post.content, author.full_name, author.practice_area]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(normalizedFeedSearch));
+      })
+    : feedPosts;
+
   return (
     <div className="w-full max-w-full font-sans flex flex-col min-h-screen overflow-x-hidden">
       <div className="w-full max-w-full bg-white dark:bg-[#0f172a] flex flex-col flex-1 min-w-0">
@@ -549,6 +560,8 @@ export default function PlatformPage() {
                     <input 
                       type="text" 
                       placeholder="Search feeds..." 
+                      value={feedSearchQuery}
+                      onChange={(event) => setFeedSearchQuery(event.target.value)}
                       className="relative z-10 pl-11 pr-5 py-3 bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/50 focus:border-transparent transition-all shadow-sm font-medium placeholder:text-gray-400" 
                     />
                   </div>
@@ -847,7 +860,12 @@ export default function PlatformPage() {
                   <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-10 text-center border border-gray-100 dark:border-white/10">
                     <p className="text-gray-500 dark:text-gray-400 font-medium">No posts yet. Be the first to share something!</p>
                   </div>
-                ) : feedPosts.map((post, index) => {
+                ) : visibleFeedPosts.length === 0 ? (
+                  <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-10 text-center border border-gray-100 dark:border-white/10">
+                    <Search size={28} className="mx-auto mb-3 text-gray-300" />
+                    <p className="text-sm font-bold text-gray-500">No feed posts match “{feedSearchQuery}”</p>
+                  </div>
+                ) : visibleFeedPosts.map((post, index) => {
                   const isLiked = dbLikedPostIds.has(post.id);
                   const author = post.author || {};
                   const authorName = author.full_name || 'Anonymous User';

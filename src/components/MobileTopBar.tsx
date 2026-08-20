@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
-import { searchProfiles } from '@/app/actions/profiles';
+import { searchGlobal } from '@/app/actions/profiles';
 import MobileDrawerMenu from './MobileDrawerMenu';
 
 export default function MobileTopBar() {
@@ -18,6 +18,7 @@ export default function MobileTopBar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -44,18 +45,22 @@ export default function MobileTopBar() {
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
+      setIsSearching(false);
       return;
     }
     const timer = setTimeout(async () => {
+      setIsSearching(true);
       try {
-        const profiles = await searchProfiles(searchQuery);
-        setSearchResults(profiles || []);
+        const results = await searchGlobal(searchQuery, user?.id);
+        setSearchResults(results || []);
       } catch (err) {
         console.error('Search error:', err);
+      } finally {
+        setIsSearching(false);
       }
     }, 250);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, user?.id]);
 
   const handleSelectResult = (path: string) => {
     setIsSearchOpen(false);
@@ -206,25 +211,30 @@ export default function MobileTopBar() {
                   ))}
                 </div>
               </div>
+            ) : isSearching ? (
+              <div className="py-16 text-center text-xs font-bold text-gray-400">Searching WIPA…</div>
             ) : searchResults.length > 0 ? (
               <div className="space-y-2">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Practitioners & Members</p>
-                {searchResults.map((prof: any) => (
+                <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Search results</p>
+                {searchResults.map((result: any) => (
                   <button
-                    key={prof.id}
-                    onClick={() => handleSelectResult(prof.id ? `/platform/profile/${prof.id}` : `/platform/profile`)}
+                    key={`${result.type}-${result.id}`}
+                    onClick={() => handleSelectResult(result.path)}
                     className="w-full flex items-center gap-3 p-3 rounded-2xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 text-left"
                   >
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden">
-                      {prof.avatar_url ? (
-                        <img src={prof.avatar_url} alt={prof.full_name} className="w-full h-full object-cover" />
+                      {result.imageUrl ? (
+                        <img src={result.imageUrl} alt={result.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                       ) : (
-                        prof.full_name?.charAt(0) || 'U'
+                        result.title?.charAt(0) || 'W'
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-bold text-gray-900 dark:text-white truncate">{prof.full_name}</h4>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{prof.role || prof.company || 'WIPA Member'}</p>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs font-bold text-gray-900 dark:text-white truncate">{result.title}</h4>
+                        <span className="rounded-full bg-[#5a32fa]/10 px-2 py-0.5 text-[9px] font-bold text-[#5a32fa]">{result.type}</span>
+                      </div>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{result.subtitle}</p>
                     </div>
                   </button>
                 ))}

@@ -4,13 +4,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, Home, UsersRound, Globe, Briefcase, Calendar, Star, Bell, X, BookOpen, Sparkles
+  Search, Home, UsersRound, Globe, Briefcase, Calendar, Star, Bell, X, BookOpen, Sparkles, Building2
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { searchProfiles } from '@/app/actions/profiles';
+import { searchGlobal } from '@/app/actions/profiles';
 import LexIQChatCard from './LexIQChatCard';
 import SiriWave from '@/components/ui/siri-wave';
 import { LogOut } from 'lucide-react';
@@ -30,13 +30,6 @@ const navItems = [
   { name: 'Jobs', icon: Briefcase, path: '/platform/jobs' },
 ];
 
-const mockSearchData = [
-  { type: 'Event', title: 'Women in AI & IP Leadership Summit', icon: Calendar, path: '/platform/events' },
-  { type: 'Event', title: 'Global Trademark Trends 2025', icon: Calendar, path: '/platform/events' },
-  { type: 'Job', title: 'Senior Patent Attorney', icon: Briefcase, path: '/platform/jobs' },
-  { type: 'Job', title: 'IP Counsel - Startups', icon: Briefcase, path: '/platform/jobs' },
-];
-
 export default function PlatformHeader() {
   const pathname = usePathname();
   const router = useRouter();
@@ -47,6 +40,7 @@ export default function PlatformHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [dbResults, setDbResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const isLexIQOpen = useAppStore((state) => state.isLexIQOpen);
   const setIsLexIQOpen = useAppStore((state) => state.setIsLexIQOpen);
@@ -91,27 +85,25 @@ export default function PlatformHeader() {
   useEffect(() => {
     if (!searchQuery.trim()) {
       setDbResults([]);
+      setIsSearching(false);
       return;
     }
 
     const fetchDbResults = async () => {
       try {
-        const data = await searchProfiles(searchQuery);
-        setDbResults(data.map((profile: any) => ({
-          type: 'Person',
-          title: profile.full_name,
-          subtitle: profile.role || 'WIPA Member',
-          icon: UsersRound,
-          path: `/platform/profile/${profile.id}`
-        })));
+        setIsSearching(true);
+        const data = await searchGlobal(searchQuery, user?.id);
+        setDbResults(data);
       } catch (err) {
         console.error("Search error:", err);
+      } finally {
+        setIsSearching(false);
       }
     };
 
     const delay = setTimeout(fetchDbResults, 300);
     return () => clearTimeout(delay);
-  }, [searchQuery]);
+  }, [searchQuery, user?.id]);
 
   const [toastNotification, setToastNotification] = useState<{message: string, visible: boolean} | null>(null);
 
@@ -179,12 +171,7 @@ export default function PlatformHeader() {
     handleCloseSearch();
   };
 
-  const filteredMock = mockSearchData.filter(result => 
-    result.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    result.type.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  
-  const filteredResults = [...dbResults, ...filteredMock];
+  const filteredResults = dbResults;
 
   return (
     <>
@@ -569,13 +556,15 @@ export default function PlatformHeader() {
               ) : (
                 <>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-2">Search Results</p>
-                  {filteredResults.length > 0 ? (
+                  {isSearching ? (
+                    <div className="py-8 text-center text-sm font-bold text-gray-400">Searching WIPA…</div>
+                  ) : filteredResults.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {filteredResults.map((result, idx) => {
-                        const Icon = result.icon;
+                        const Icon = result.type === 'Person' ? UsersRound : result.type === 'Firm' ? Building2 : result.type === 'Event' ? Calendar : Briefcase;
                         return (
                           <button 
-                            key={idx} 
+                            key={`${result.type}-${result.id || idx}`}
                             onClick={() => handleResultClick(result.path)}
                             className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl transition-colors text-left border border-transparent hover:border-gray-100 dark:border-white/10 group"
                           >
@@ -584,7 +573,7 @@ export default function PlatformHeader() {
                             </div>
                             <div className="flex flex-col overflow-hidden">
                               <span className="font-bold text-gray-900 dark:text-white truncate group-hover:text-[#5a32fa] transition-colors">{result.title}</span>
-                              <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">{result.type}</span>
+                              <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium truncate">{result.type} · {result.subtitle}</span>
                             </div>
                           </button>
                         )

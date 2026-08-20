@@ -7,9 +7,9 @@ const ease = [0.16, 1, 0.3, 1] as const;
 export default function WipaCinematicSplash({ preview = false }: { preview?: boolean }) {
   return (
     <div className="relative flex min-h-[100dvh] w-full items-center justify-center overflow-hidden bg-[#6600FF] text-white">
-      <div className="relative z-10 flex h-28 items-center justify-center" aria-label="WIPA">
+      <div className="relative z-10 flex h-28 items-center justify-center text-[4.3rem] font-black leading-none" aria-label="WIPA">
         <motion.span
-          className="block text-[4.3rem] font-black leading-none"
+          className="block"
           initial={{ opacity: 0, scaleX: .18, scaleY: .35, x: 24, transformOrigin: 'left bottom' }}
           animate={{ opacity: 1, scaleX: 1, scaleY: 1, x: 0 }}
           transition={{ delay: .35, duration: .85, ease }}
@@ -17,12 +17,13 @@ export default function WipaCinematicSplash({ preview = false }: { preview?: boo
           W
         </motion.span>
 
-        <motion.div
-          className="relative ml-[.1em] overflow-hidden text-[4.3rem] font-black leading-none tracking-[.04em]"
-          initial={{ width: 0 }} animate={{ width: '2.5em' }}
+        <motion.span
+          className="relative ml-[.1em] block overflow-hidden tracking-[.04em]"
+          initial={{ clipPath: 'inset(0 100% 0 0)', opacity: 0 }}
+          animate={{ clipPath: 'inset(0 0% 0 0)', opacity: 1 }}
           transition={{ delay: 1.35, duration: 1.15, ease }}
         >
-          <span className="block -translate-y-[1px]">IPA</span>
+          <span className="block">IPA</span>
           {[0, 1, 2, 3].map((slice) => (
             <motion.span
               key={slice}
@@ -32,7 +33,7 @@ export default function WipaCinematicSplash({ preview = false }: { preview?: boo
               transition={{ delay: 1.15 + slice * .12, duration: .7, ease }}
             />
           ))}
-        </motion.div>
+        </motion.span>
 
       </div>
 
