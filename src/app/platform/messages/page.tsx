@@ -20,6 +20,29 @@ export type Chat = SidebarChat & {
   participantId?: string;
 };
 
+const MESSAGE_OUTBOX_KEY = 'wipa_message_outbox_v1';
+
+type OutboxEntry = { userId: string; message: ChatMessage };
+
+const readMessageOutbox = (): OutboxEntry[] => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(MESSAGE_OUTBOX_KEY) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveOutboxMessage = (userId: string, message: ChatMessage) => {
+  const entries = readMessageOutbox().filter(entry => entry.message.id !== message.id);
+  entries.push({ userId, message });
+  localStorage.setItem(MESSAGE_OUTBOX_KEY, JSON.stringify(entries));
+};
+
+const removeOutboxMessage = (messageId: string) => {
+  localStorage.setItem(MESSAGE_OUTBOX_KEY, JSON.stringify(readMessageOutbox().filter(entry => entry.message.id !== messageId)));
+};
+
 function MessagesContent() {
   const router = useRouter();
   const { user, cachedConversations, setCachedConversations } = useAppStore();
@@ -79,8 +102,40 @@ function MessagesContent() {
   const activeChannelRef = useRef<any>(null);
   const attachmentMenuRef = useRef<HTMLDivElement>(null);
   const openedDeepLinkRef = useRef<string | null>(null);
+  const sendAudioContextRef = useRef<AudioContext | null>(null);
 
   const activeChat = conversations.find(c => String(c.id) === String(activeChatId));
+
+  const playSendSound = useCallback(() => {
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const context = sendAudioContextRef.current || new AudioContextClass();
+      sendAudioContextRef.current = context;
+      void context.resume();
+      const now = context.currentTime;
+      const gain = context.createGain();
+      const first = context.createOscillator();
+      const second = context.createOscillator();
+      first.type = 'sine';
+      second.type = 'sine';
+      first.frequency.setValueAtTime(720, now);
+      first.frequency.exponentialRampToValueAtTime(1040, now + 0.07);
+      second.frequency.setValueAtTime(1180, now + 0.045);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.09, now + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
+      first.connect(gain);
+      second.connect(gain);
+      gain.connect(context.destination);
+      first.start(now);
+      second.start(now + 0.045);
+      first.stop(now + 0.1);
+      second.stop(now + 0.13);
+    } catch {
+      // Sound is enhancement-only; sending must never depend on audio availability.
+    }
+  }, []);
 
   // Auto close attachment menu when clicking or tapping outside
   useEffect(() => {
@@ -415,7 +470,7 @@ function MessagesContent() {
         if (error) throw error;
 
         if (data && isSubscribed) {
-          const msgs: ChatMessage[] = data.map(m => {
+          const serverMessages: ChatMessage[] = data.map(m => {
             const isMe = m.sender_id === user.id;
             let calculatedStatus: MessageStatus = 'sent';
             if (isMe) {
@@ -445,6 +500,18 @@ function MessagesContent() {
             };
           });
           
+          const durableOutbox = readMessageOutbox()
+            .filter(entry => entry.userId === user.id && String(entry.message.conversation_id) === currentChatId)
+            .map(entry => ({ ...entry.message, status: 'failed' as MessageStatus, error: 'Not sent. Tap to try again.' }))
+            .filter(pending => !serverMessages.some(serverMessage => serverMessage.id === pending.id));
+          const msgs = [...serverMessages, ...durableOutbox]
+            .sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime());
+
+          // If the server already contains an outbox ID, delivery succeeded before the response was lost.
+          readMessageOutbox()
+            .filter(entry => serverMessages.some(serverMessage => serverMessage.id === entry.message.id))
+            .forEach(entry => removeOutboxMessage(entry.message.id));
+
           setConversations(prev => prev.map(chat => String(chat.id) === currentChatId ? { ...chat, messages: msgs, unread: 0 } : chat));
           
           // Guarantee instant snap to bottom after messages load
@@ -753,6 +820,7 @@ function MessagesContent() {
   // Append message locally and sync to Supabase with client-generated UUID
   const sendMessageWithStatus = async (type: MediaType, text?: string, mediaUrl?: string) => {
     if (!activeChatId || !user?.id) return;
+    playSendSound();
     
     const clientMsgId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     const isRecipientOnline = activeChat?.isOnline ?? false;
@@ -771,6 +839,7 @@ function MessagesContent() {
       status: initialStatus,
       is_read: false
     };
+    saveOutboxMessage(user.id, newMsg);
 
     // Optimistically update UI and immediately bump this conversation to the very top
     setConversations(prev => {
@@ -811,6 +880,7 @@ function MessagesContent() {
 
       // Update message status
       updateOutgoingStatus(activeChatId, clientMsgId, isRecipientOnline ? 'delivered' : 'sent');
+      removeOutboxMessage(clientMsgId);
 
       await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeChatId);
 
@@ -842,6 +912,7 @@ function MessagesContent() {
       console.error("Message send failed:", err);
       // Mark message as failed
       updateOutgoingStatus(activeChatId, clientMsgId, 'failed', 'Not sent. Tap to try again.');
+      saveOutboxMessage(user.id, { ...newMsg, status: 'failed', error: 'Not sent. Tap to try again.' });
     }
   };
 
@@ -852,11 +923,13 @@ function MessagesContent() {
     const isRecipientOnline = activeChat?.isOnline ?? false;
 
     updateOutgoingStatus(conversationId, msg.id, 'sending');
+    saveOutboxMessage(user.id, { ...msg, sender_id: user.id, status: 'sending', error: undefined });
 
     try {
       const result = await persistOutgoingMessage({ ...msg, sender_id: user.id }, conversationId, isRecipientOnline);
       if (!result.success) throw result.error;
       updateOutgoingStatus(conversationId, msg.id, isRecipientOnline ? 'delivered' : 'sent');
+      removeOutboxMessage(msg.id);
 
       const pushEndpoint = `${window.location.origin}/api/notifications/push`;
       void fetch(pushEndpoint, {
@@ -875,6 +948,7 @@ function MessagesContent() {
       }).catch(() => {});
     } catch (err: any) {
       updateOutgoingStatus(conversationId, msg.id, 'failed', 'Not sent. Tap to try again.');
+      saveOutboxMessage(user.id, { ...msg, sender_id: user.id, status: 'failed', error: 'Not sent. Tap to try again.' });
     }
   };
 
