@@ -63,7 +63,7 @@ export const MessageStatusTick: React.FC<MessageStatusTickProps> = React.memo(({
               title="Click to retry sending"
             >
               <AlertCircle size={11} />
-              <span>Retry</span>
+              <span>Failed · tap to retry</span>
             </button>
           )}
         </span>

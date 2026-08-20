@@ -699,13 +699,64 @@ function MessagesContent() {
     }
   }, [isCameraOpen]);
 
+  const updateOutgoingStatus = useCallback((conversationId: string, messageId: string, status: MessageStatus, error?: string) => {
+    setConversations(prev => prev.map(chat => String(chat.id) === String(conversationId) ? {
+      ...chat,
+      messages: chat.messages.map(message => message.id === messageId
+        ? { ...message, status, error }
+        : message)
+    } : chat));
+  }, []);
+
+  const persistOutgoingMessage = useCallback(async (message: ChatMessage, conversationId: string, recipientOnline: boolean) => {
+    const deadline = Date.now() + 15000;
+    let lastError: any = new Error('Message could not be sent');
+
+    while (Date.now() < deadline) {
+      if (!navigator.onLine) {
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        continue;
+      }
+
+      try {
+        const remaining = deadline - Date.now();
+        const timeoutMs = Math.max(500, Math.min(3500, remaining));
+        const request = supabase.from('messages').insert({
+          id: message.id,
+          conversation_id: conversationId,
+          sender_id: message.sender_id,
+          content: message.text || (message.mediaUrl ? `[Media: ${message.type}]` : ''),
+          media_type: message.type || 'text',
+          media_url: message.mediaUrl || null,
+          delivered_at: recipientOnline ? new Date().toISOString() : null
+        }).select().single();
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Message request timed out')), timeoutMs));
+        const { error }: any = await Promise.race([request, timeout]);
+
+        // Reusing the client UUID makes a duplicate-key response proof that an earlier attempt succeeded.
+        if (!error || error.code === '23505') return { success: true as const };
+        lastError = error;
+
+        const messageText = String(error.message || '').toLowerCase();
+        const transient = /load failed|failed to fetch|network|timeout|connection/.test(messageText);
+        if (!transient) return { success: false as const, error };
+      } catch (error: any) {
+        lastError = error;
+      }
+
+      if (Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 1400));
+    }
+
+    return { success: false as const, error: lastError };
+  }, []);
+
   // Append message locally and sync to Supabase with client-generated UUID
   const sendMessageWithStatus = async (type: MediaType, text?: string, mediaUrl?: string) => {
     if (!activeChatId || !user?.id) return;
     
     const clientMsgId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     const isRecipientOnline = activeChat?.isOnline ?? false;
-    const initialStatus: MessageStatus = !isOnline ? 'queued' : (isRecipientOnline ? 'delivered' : 'sent');
+    const initialStatus: MessageStatus = 'sending';
 
     const newMsg: ChatMessage = {
       id: clientMsgId,
@@ -754,37 +805,12 @@ function MessagesContent() {
       }
     }, 20);
 
-    if (!isOnline) {
-      // Offline: left in queue
-      return;
-    }
-
     try {
-      const { data, error } = await supabase.from('messages').insert({
-        id: clientMsgId,
-        conversation_id: activeChatId,
-        sender_id: user.id,
-        content: text || (mediaUrl ? `[Media: ${type}]` : ""),
-        media_type: type,
-        media_url: mediaUrl || null,
-        delivered_at: isRecipientOnline ? new Date().toISOString() : null
-      }).select().single();
-
-      if (error) throw error;
+      const result = await persistOutgoingMessage(newMsg, activeChatId, isRecipientOnline);
+      if (!result.success) throw result.error;
 
       // Update message status
-      setConversations(prev => prev.map(chat => {
-        if (String(chat.id) === String(activeChatId)) {
-          return {
-            ...chat,
-            messages: chat.messages.map(m => m.id === clientMsgId ? { 
-              ...m, 
-              status: isRecipientOnline ? 'delivered' : 'sent' 
-            } : m)
-          };
-        }
-        return chat;
-      }));
+      updateOutgoingStatus(activeChatId, clientMsgId, isRecipientOnline ? 'delivered' : 'sent');
 
       await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeChatId);
 
@@ -815,64 +841,40 @@ function MessagesContent() {
     } catch (err: any) {
       console.error("Message send failed:", err);
       // Mark message as failed
-      setConversations(prev => prev.map(chat => {
-        if (String(chat.id) === String(activeChatId)) {
-          return {
-            ...chat,
-            messages: chat.messages.map(m => m.id === clientMsgId ? { ...m, status: 'failed', error: err.message } : m)
-          };
-        }
-        return chat;
-      }));
+      updateOutgoingStatus(activeChatId, clientMsgId, 'failed', 'Not sent. Tap to try again.');
     }
   };
 
   // Retry sending failed message
   const handleRetryMessage = async (msg: ChatMessage) => {
     if (!activeChatId || !user?.id) return;
+    const conversationId = activeChatId;
+    const isRecipientOnline = activeChat?.isOnline ?? false;
 
-    // Set to sending
-    setConversations(prev => prev.map(chat => {
-      if (String(chat.id) === String(activeChatId)) {
-        return {
-          ...chat,
-          messages: chat.messages.map(m => m.id === msg.id ? { ...m, status: 'sending', error: undefined } : m)
-        };
-      }
-      return chat;
-    }));
+    updateOutgoingStatus(conversationId, msg.id, 'sending');
 
     try {
-      const { data, error } = await supabase.from('messages').insert({
-        id: msg.id,
-        conversation_id: activeChatId,
-        sender_id: user.id,
-        content: msg.text || "",
-        media_type: msg.type || 'text',
-        media_url: msg.mediaUrl || null
-      }).select().single();
+      const result = await persistOutgoingMessage({ ...msg, sender_id: user.id }, conversationId, isRecipientOnline);
+      if (!result.success) throw result.error;
+      updateOutgoingStatus(conversationId, msg.id, isRecipientOnline ? 'delivered' : 'sent');
 
-      if (error) throw error;
-
-      setConversations(prev => prev.map(chat => {
-        if (String(chat.id) === String(activeChatId)) {
-          return {
-            ...chat,
-            messages: chat.messages.map(m => m.id === msg.id ? { ...m, status: 'sent' } : m)
-          };
-        }
-        return chat;
-      }));
+      const pushEndpoint = `${window.location.origin}/api/notifications/push`;
+      void fetch(pushEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          recipientId: activeChat?.participantId || null,
+          conversationId,
+          senderId: user.id,
+          senderName: user.name || user.email?.split('@')[0] || 'Member',
+          senderAvatar: user.avatar_url || null,
+          messageText: msg.text,
+          mediaType: msg.type || 'text',
+        }),
+      }).catch(() => {});
     } catch (err: any) {
-      setConversations(prev => prev.map(chat => {
-        if (String(chat.id) === String(activeChatId)) {
-          return {
-            ...chat,
-            messages: chat.messages.map(m => m.id === msg.id ? { ...m, status: 'failed', error: err.message } : m)
-          };
-        }
-        return chat;
-      }));
+      updateOutgoingStatus(conversationId, msg.id, 'failed', 'Not sent. Tap to try again.');
     }
   };
 
@@ -1218,7 +1220,7 @@ function MessagesContent() {
       {!isOnline && (
         <div className="bg-amber-500 text-black px-4 py-2 text-xs font-bold flex items-center justify-center gap-2 shadow-md z-50 animate-in slide-in-from-top duration-200">
           <WifiOff size={16} />
-          <span>You&apos;re currently offline. Messages will be queued and sent automatically when connected.</span>
+          <span>You&apos;re offline. Messages retry for 15 seconds, then you can tap the failed message to send again.</span>
         </div>
       )}
 
