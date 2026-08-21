@@ -18,8 +18,6 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { optimizeFeedUpload } from '@/lib/feedPerformance';
 
-const DEFAULT_MOCK_VIDEO = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
-
 export default function ProfilePage() {
   const { user, setUser } = useAppStore();
   const router = useRouter();
@@ -27,22 +25,22 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'activity' | 'about' | 'experience' | 'education' | 'skills'>('activity');
 
   const [profileData, setProfileData] = useState({
-    name: user?.name || 'Jane Doe',
-    role: 'Senior IP Counsel | Patent Strategist | WIPA Member',
-    company: 'TechLaw Partners LLP',
-    experienceYears: 6,
-    education: 'Harvard Law School · LL.M. Intellectual Property',
-    location: 'London, United Kingdom',
-    bio: 'Experienced IP Counsel with a focus on patent prosecution, technology licensing, and international trademark strategy. Passionate about empowering women innovators and protecting breakthroughs in artificial intelligence and life sciences. Active member of WIPA since 2024.',
-    linkedin: 'linkedin.com/in/janedoe',
-    website: 'janedoe.com',
-    practiceAreas: 'Patent Prosecution, Trademark Law, IP Litigation, Tech Licensing, AI Regulation',
-    skills: 'Patent Drafting, Trademark Portfolio, Cross-Border Licensing, Trade Secrets, IP Audit',
+    name: user?.name || '',
+    role: '',
+    company: '',
+    experienceYears: 0,
+    education: '',
+    location: '',
+    bio: '',
+    linkedin: '',
+    website: '',
+    practiceAreas: '',
+    skills: '',
     avatarUrl: user?.avatar_url || '',
-    introVideoUrl: DEFAULT_MOCK_VIDEO,
-    memberId: user?.member_id || 'WIP-884920',
-    verificationStatus: 'verified',
-    isWipaRecommended: true,
+    introVideoUrl: '',
+    memberId: user?.member_id || '',
+    verificationStatus: user?.verification_status || 'pending',
+    isWipaRecommended: false,
     businessProfile: null as any
   });
 
@@ -54,7 +52,7 @@ export default function ProfilePage() {
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [editForm, setEditForm] = useState(profileData);
-  const [stats, setStats] = useState({ connections: 142, followers: 890, posts: 14, profileViews: 328, postImpressions: '4.2k' });
+  const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0, profileViews: '—', postImpressions: '—' });
 
   // Post composer state
   const [newPostText, setNewPostText] = useState('');
@@ -69,13 +67,7 @@ export default function ProfilePage() {
       return next;
     });
   };
-  const [endorsedSkills, setEndorsedSkills] = useState<Record<string, { count: number; endorsed: boolean }>>({
-    'Patent Prosecution': { count: 24, endorsed: false },
-    'Trademark Law': { count: 19, endorsed: false },
-    'IP Litigation': { count: 31, endorsed: true },
-    'Tech Licensing': { count: 15, endorsed: false },
-    'AI Regulation': { count: 28, endorsed: true }
-  });
+  const [endorsedSkills, setEndorsedSkills] = useState<Record<string, { count: number; endorsed: boolean }>>({});
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
 
@@ -127,11 +119,12 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!user?.id) return;
     const fetchProfile = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*, business_profiles(id, name, slug, type, logo_url)')
-        .eq('id', user.id)
-        .single();
+      const [profileResult, connectionsResult, followersResult] = await Promise.all([
+        supabase.from('profiles').select('*, business_profiles(id, name, slug, type, logo_url)').eq('id', user.id).single(),
+        supabase.from('connections').select('id', { count: 'exact', head: true }).or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`).eq('status', 'accepted'),
+        supabase.from('follows').select('id', { count: 'exact', head: true }).eq('following_id', user.id)
+      ]);
+      const { data, error } = profileResult;
         
       if (!error && data) {
         const newProfile = {
@@ -156,6 +149,11 @@ export default function ProfilePage() {
         };
         setProfileData(newProfile);
         setEditForm(newProfile);
+        setStats(current => ({
+          ...current,
+          connections: connectionsResult.count ?? 0,
+          followers: followersResult.count ?? 0
+        }));
       }
     };
     
@@ -997,27 +995,13 @@ export default function ProfilePage() {
                     <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/50 flex items-center justify-center text-xl shrink-0">
                       ⚖️
                     </div>
-                    <div className="flex-1 border-b border-gray-100 dark:border-gray-800 pb-6">
+                    <div className="flex-1">
                       <h4 className="text-base font-bold text-gray-900 dark:text-white">{profileData.role}</h4>
                       <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">{profileData.company}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">2020 – Present · {profileData.experienceYears} yrs · London, UK</p>
-                      <p className="text-sm text-gray-700 dark:text-gray-300 mt-2 leading-relaxed">
-                        Leading strategic IP counseling, international patent drafting for high-growth tech ventures, and advising on multi-jurisdictional licensing agreements.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Position 2 */}
-                  <div className="flex gap-4 group">
-                    <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800/50 flex items-center justify-center text-xl shrink-0">
-                      🏛️
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-base font-bold text-gray-900 dark:text-white">Associate IP Attorney</h4>
-                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Global Intellectual Property Bureau</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">2018 – 2020 · 2 yrs · Geneva & London</p>
-                      <p className="text-sm text-gray-700 dark:text-gray-300 mt-2 leading-relaxed">
-                        Drafted trademark oppositions, managed European Patent Office (EPO) filings, and conducted comprehensive freedom-to-operate searches.
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        {profileData.experienceYears > 0 ? `${profileData.experienceYears} years experience` : ''}
+                        {profileData.experienceYears > 0 && profileData.location ? ' · ' : ''}
+                        {profileData.location}
                       </p>
                     </div>
                   </div>
@@ -1040,21 +1024,8 @@ export default function ProfilePage() {
                     <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center text-xl shrink-0">
                       🎓
                     </div>
-                    <div className="flex-1 border-b border-gray-100 dark:border-gray-800 pb-5">
-                      <h4 className="text-base font-bold text-gray-900 dark:text-white">{profileData.education}</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Master of Laws (LL.M.) · Focus on Global Patent Strategy</p>
-                      <p className="text-xs text-gray-400 mt-0.5">Graduated with High Distinction</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/50 flex items-center justify-center text-xl shrink-0">
-                      📜
-                    </div>
                     <div className="flex-1">
-                      <h4 className="text-base font-bold text-gray-900 dark:text-white">Certified Information Privacy Professional (CIPP/E)</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">IAPP · International Association of Privacy Professionals</p>
-                      <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">Active Credential · Issued 2025</p>
+                      <h4 className="text-base font-bold text-gray-900 dark:text-white">{profileData.education}</h4>
                     </div>
                   </div>
                 </div>
@@ -1072,13 +1043,13 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {profileData.skills.split(',').map((rawSkill, idx) => {
+                  {profileData.skills.split(',').filter(Boolean).map((rawSkill, idx) => {
                     const skill = rawSkill.trim();
-                    const state = endorsedSkills[skill] || { count: 12, endorsed: false };
+                    const state = endorsedSkills[skill] || { count: 0, endorsed: false };
 
                     const handleEndorse = () => {
                       setEndorsedSkills(prev => {
-                        const current = prev[skill] || { count: 12, endorsed: false };
+                        const current = prev[skill] || { count: 0, endorsed: false };
                         return {
                           ...prev,
                           [skill]: {
@@ -1320,9 +1291,6 @@ export default function ProfilePage() {
                   playsInline
                   preload="auto"
                   className="w-full h-full object-contain max-h-[65vh]"
-                  onError={(e) => {
-                    e.currentTarget.src = DEFAULT_MOCK_VIDEO;
-                  }}
                 >
                   <source src={profileData.introVideoUrl} type="video/mp4" />
                   Your browser does not support HTML video.
