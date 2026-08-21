@@ -69,8 +69,13 @@ export default function PlatformPage() {
   const pullStartRef = useRef({ x: 0, y: 0, active: false });
   const pullDistanceRef = useRef(0);
 
-  const handlePostDoubleTap = (postId: string) => {
+  const handlePostDoubleTap = (postId: string, event: React.MouseEvent<HTMLElement>) => {
     if (!user) return;
+    // Editing, selecting text, or double-clicking any control must never count as a post like.
+    if (editingPost?.id === postId) return;
+    const target = event.target as HTMLElement;
+    if (target.closest('button, a, input, textarea, select, label, video, [contenteditable="true"], [data-no-double-like]')) return;
+    if (typeof window !== 'undefined' && window.getSelection()?.toString()) return;
     const now = Date.now();
     const lastTap = lastTapMapRef.current[postId] || 0;
 
@@ -1028,7 +1033,7 @@ export default function PlatformPage() {
                   return (
                     <React.Fragment key={post.id}>
                     <div 
-                      onClick={() => handlePostDoubleTap(post.id)}
+                      onClick={(event) => handlePostDoubleTap(post.id, event)}
                       className="w-full max-w-full min-w-0 bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3.5 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border relative overflow-hidden select-none"
                     >
                       {/* Big Instagram-Style Double-Tap Heart Animation */}
@@ -1133,7 +1138,7 @@ export default function PlatformPage() {
                           <textarea 
                             value={editContent} 
                             onChange={(e) => setEditContent(e.target.value)}
-                            className="w-full p-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs sm:text-sm text-gray-900 dark:text-white outline-none resize-none"
+                            className="w-full select-text p-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs sm:text-sm text-gray-900 dark:text-white outline-none resize-none"
                             rows={3}
                           />
                           <div className="flex justify-end gap-2">
