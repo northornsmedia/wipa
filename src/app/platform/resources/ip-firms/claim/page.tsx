@@ -50,7 +50,7 @@ export default function ClaimFirmPage() {
           <ShieldCheck size={64} className="mx-auto text-green-500 mb-6" />
           <h1 className="text-3xl font-black mb-4">Request Submitted</h1>
           <p className="text-slate-600 dark:text-slate-400 mb-8">
-            Thank you for requesting to claim this firm profile. Our team will review your submission and notify you once approved.
+            Thank you for submitting your firm listing request. Our team will review the details and notify you once approved.
           </p>
           <a href="/platform/resources/ip-firms" className="bg-[#5a32fa] text-white px-8 py-3 rounded-xl font-bold inline-block">
             Return to Directory
@@ -67,9 +67,9 @@ export default function ClaimFirmPage() {
           <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 text-[#5a32fa] rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Building2 size={32} />
           </div>
-          <h1 className="text-4xl font-black mb-4 tracking-tight">Claim Firm Profile</h1>
+          <h1 className="text-4xl font-black mb-4 tracking-tight">Showcase or List Your Firm</h1>
           <p className="text-lg text-slate-600 dark:text-slate-400">
-            Verify your association with the firm to manage its profile, team, and settings.
+            Submit your firm for inclusion or verify your association to manage an existing listing.
           </p>
         </div>
 
@@ -93,7 +93,7 @@ export default function ClaimFirmPage() {
           </div>
 
           <button type="submit" disabled={submitting} className="w-full bg-[#5a32fa] text-white py-4 rounded-xl font-black text-lg flex items-center justify-center gap-2 hover:bg-[#4a24db] transition-colors disabled:opacity-50">
-            {submitting ? <Loader2 size={24} className="animate-spin" /> : 'Submit Claim Request'}
+            {submitting ? <Loader2 size={24} className="animate-spin" /> : 'Submit Firm Request'}
           </button>
         </form>
       </div>

@@ -65,7 +65,7 @@ export default function IPFirmsPage() {
               href="/platform/resources/ip-firms/claim"
               className="px-5 py-2.5 rounded-full bg-[#5a32fa] text-white text-xs sm:text-sm font-bold shadow-md hover:bg-[#4a24db] active:scale-95 transition-all inline-flex items-center gap-1.5"
             >
-              <CheckCircle2 size={15} /> Claim or Register Your Firm
+              <CheckCircle2 size={15} /> Showcase or List Your Firm
             </Link>
           </div>
         </div>

@@ -283,12 +283,12 @@ export default function FirmProfilePage({ params }: { params: { slug: string } }
         <div className="w-full lg:w-80 shrink-0 space-y-6">
           {!firm.is_claimed && (
             <div className="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-white/10">
-              <h3 className="text-xl font-black mb-2">Is this your firm?</h3>
+              <h3 className="text-xl font-black mb-2">Showcase your firm</h3>
               <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
-                Claim this profile to update firm details, add team members, and manage your presence on WIPA.
+                Submit your firm details to enhance this listing, add team members, and manage your presence on WIPA.
               </p>
               <Link href={`/platform/resources/ip-firms/claim?slug=${firm.slug}`} className="block w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-center py-3 rounded-xl font-black hover:opacity-90 transition-opacity">
-                Claim Profile
+                Manage Firm Listing
               </Link>
             </div>
           )}
