@@ -63,6 +63,8 @@ export default function CreatePostPage() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [publishSuccess, setPublishSuccess] = useState(false);
   const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [showDraftDecision, setShowDraftDecision] = useState(false);
+  const [isDraftRestored, setIsDraftRestored] = useState(false);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -74,7 +76,10 @@ export default function CreatePostPage() {
   // Auto-focus textarea on load
   useEffect(() => {
     const savedDraft = localStorage.getItem(POST_DRAFT_KEY);
-    if (savedDraft) setPostContent(savedDraft);
+    if (savedDraft) {
+      setPostContent(savedDraft);
+      setIsDraftRestored(true);
+    }
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
@@ -84,6 +89,29 @@ export default function CreatePostPage() {
     if (postContent.trim()) localStorage.setItem(POST_DRAFT_KEY, postContent);
     else localStorage.removeItem(POST_DRAFT_KEY);
   }, [postContent]);
+
+  const discardDraft = () => {
+    localStorage.removeItem(POST_DRAFT_KEY);
+    if (attachedMedia?.previewUrl) URL.revokeObjectURL(attachedMedia.previewUrl);
+    setPostContent('');
+    setAttachedMedia(null);
+    setSelectedTopic(null);
+    setLocationTag('');
+    setIsDraftRestored(false);
+    setShowDraftDecision(false);
+    router.push('/platform');
+  };
+
+  const saveDraftAndLeave = () => {
+    if (postContent.trim()) localStorage.setItem(POST_DRAFT_KEY, postContent);
+    setShowDraftDecision(false);
+    router.push('/platform');
+  };
+
+  const handleCloseComposer = () => {
+    if (postContent.trim() || attachedMedia) setShowDraftDecision(true);
+    else router.push('/platform');
+  };
 
   const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video' | 'doc') => {
     const file = e.target.files?.[0];
@@ -281,7 +309,7 @@ export default function CreatePostPage() {
       {/* TOP APP BAR (Instagram Style) */}
       <header className="shrink-0 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800/80 px-4 h-14 flex items-center justify-between pt-safe z-10">
         <button
-          onClick={() => router.back()}
+          onClick={handleCloseComposer}
           className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-200 flex items-center justify-center active:scale-90 transition-transform"
           aria-label="Cancel and close"
         >
@@ -325,6 +353,15 @@ export default function CreatePostPage() {
           <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
             <AlertCircle size={16} className="shrink-0" />
             <span>{uploadError}</span>
+          </div>
+        )}
+
+        {isDraftRestored && (
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#6600FF]/15 bg-[#6600FF]/5 px-3.5 py-2.5 text-xs text-[#6600FF] dark:text-violet-300">
+            <span className="font-semibold">Your saved draft has been restored.</span>
+            <button type="button" onClick={discardDraft} className="shrink-0 font-bold hover:underline">
+              Discard
+            </button>
           </div>
         )}
 
@@ -620,6 +657,30 @@ export default function CreatePostPage() {
           )}
         </button>
       </footer>
+
+      {showDraftDecision && (
+        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/45 p-3 backdrop-blur-sm sm:items-center">
+          <div role="dialog" aria-modal="true" aria-labelledby="draft-decision-title" className="w-full max-w-sm rounded-[1.75rem] bg-white p-5 shadow-2xl dark:bg-[#151c2c]">
+            <h2 id="draft-decision-title" className="text-lg font-black text-gray-900 dark:text-white">Keep this draft?</h2>
+            <p className="mt-1.5 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+              Save your text and continue later, or discard it and start fresh next time.
+              {attachedMedia ? ' Attached media will need to be selected again.' : ''}
+            </p>
+
+            <div className="mt-5 space-y-2.5">
+              <button type="button" onClick={saveDraftAndLeave} className="w-full rounded-2xl bg-[#6600FF] px-4 py-3 text-sm font-bold text-white active:scale-[0.98]">
+                Save for later
+              </button>
+              <button type="button" onClick={discardDraft} className="w-full rounded-2xl bg-rose-500/10 px-4 py-3 text-sm font-bold text-rose-600 active:scale-[0.98] dark:text-rose-400">
+                Discard draft
+              </button>
+              <button type="button" onClick={() => setShowDraftDecision(false)} className="w-full rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-500 active:scale-[0.98] dark:text-gray-400">
+                Continue editing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
