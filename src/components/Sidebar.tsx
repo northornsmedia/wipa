@@ -112,17 +112,19 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className={`hidden lg:flex flex-col shrink-0 bg-white dark:bg-[#0f172a] sticky top-[73px] h-[calc(100vh-73px)] transition-all duration-300 relative ${isOpen ? 'w-[260px] border-r border-gray-100 dark:border-white/10' : 'w-0 border-r-0'}`}>
+    <aside className={`sticky top-[73px] hidden h-[calc(100dvh-73px)] min-h-[calc(100dvh-73px)] self-start shrink-0 flex-col bg-white transition-all duration-300 dark:bg-[#0f172a] lg:flex ${isOpen ? 'w-[260px] border-r border-gray-100 dark:border-white/10' : 'w-0 border-r-0'}`}>
       
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute top-4 -right-3 w-6 h-6 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/20 rounded-full flex items-center justify-center cursor-pointer z-50 text-gray-400 hover:text-[#5a32fa] transition-all shadow-sm hover:border-[#5a32fa]"
+        className="absolute top-4 -right-4 z-50 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-gray-200 bg-white text-gray-700 shadow-md transition-all hover:scale-105 hover:border-[#5a32fa] hover:bg-[#f0ebff] hover:text-[#5a32fa] dark:border-white/25 dark:bg-[#0f172a] dark:text-white dark:hover:border-[#b892ff] dark:hover:bg-[#1e293b]"
+        aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
+        title={isOpen ? 'Collapse menu' : 'Open menu'}
       >
-        {isOpen ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+        {isOpen ? <ChevronLeft size={19} strokeWidth={2.6} /> : <ChevronRight size={19} strokeWidth={2.6} />}
       </button>
 
-      <div className="flex flex-col h-full w-full overflow-y-auto overflow-x-hidden no-scrollbar">
-        <div className="w-[260px] flex flex-col h-full shrink-0">
+      <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto overflow-x-hidden bg-white no-scrollbar dark:bg-[#0f172a]">
+        <div className="flex min-h-full w-[260px] shrink-0 flex-col bg-white dark:bg-[#0f172a]">
 
       <div className="px-4 mb-8 pt-6">
         <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-3 px-3 uppercase">MAIN NAVIGATION</p>
