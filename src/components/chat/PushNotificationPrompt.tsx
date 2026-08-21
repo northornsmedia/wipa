@@ -2,12 +2,12 @@
 
 import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import React, { useEffect, useState } from 'react';
-import { Bell, Check, Settings, X } from 'lucide-react';
+import { Bell, Check, Settings, TriangleAlert, X } from 'lucide-react';
 import { getPushSubscriptionStatus, subscribeToPushNotifications } from '@/lib/pushNotifications';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 
-type PromptMode = 'hidden' | 'ask' | 'denied' | 'success';
+type PromptMode = 'hidden' | 'ask' | 'confirm-dismiss' | 'denied' | 'success';
 
 const DISMISSED_KEY = 'wipa_push_prompt_dismissed';
 const DENIED_NOTICE_KEY = 'wipa_push_denied_notice_seen';
@@ -60,7 +60,7 @@ export const PushNotificationPrompt: React.FC = () => {
     };
   }, [user?.id]);
 
-  const dismissForever = () => {
+  const confirmDismissForever = () => {
     localStorage.setItem(DISMISSED_KEY, '1');
     setMode('hidden');
   };
@@ -94,6 +94,33 @@ export const PushNotificationPrompt: React.FC = () => {
 
   if (mode === 'hidden') return null;
 
+  if (mode === 'confirm-dismiss') {
+    return (
+      <div className="fixed inset-0 z-[90] flex items-end justify-center bg-slate-950/45 p-4 backdrop-blur-[2px] sm:items-center">
+        <div role="alertdialog" aria-modal="true" aria-labelledby="notification-dismiss-title" className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 text-slate-900 shadow-2xl animate-in fade-in zoom-in-95 duration-200 dark:border-white/10 dark:bg-slate-900 dark:text-white">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400">
+            <TriangleAlert size={24} />
+          </div>
+          <h2 id="notification-dismiss-title" className="mt-5 text-xl font-black">Turn off notification reminders?</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            Are you sure? You won&apos;t receive message notifications, and WIPA won&apos;t ask you to enable them again on this device.
+          </p>
+          <div className="mt-4 rounded-2xl bg-slate-50 p-4 text-xs leading-5 text-slate-600 dark:bg-white/5 dark:text-slate-300">
+            To turn them on later, open <strong>Settings → Apps → WIPA → Notifications</strong>. On the website, use your browser&apos;s <strong>Site Settings → Notifications</strong>.
+          </div>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <button type="button" onClick={() => setMode('ask')} className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold transition hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/5">
+              Keep Reminder
+            </button>
+            <button type="button" onClick={confirmDismissForever} className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white transition active:scale-95 dark:bg-white dark:text-slate-900">
+              Don&apos;t Ask Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pointer-events-none fixed inset-x-3 bottom-24 z-[80] flex justify-center md:bottom-6">
       <div className="pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl border border-black/5 bg-white/95 px-3.5 py-3 text-slate-900 shadow-[0_10px_35px_rgba(15,23,42,0.18)] backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-200 dark:border-white/10 dark:bg-slate-900/95 dark:text-white">
@@ -126,7 +153,7 @@ export const PushNotificationPrompt: React.FC = () => {
         )}
 
         {mode === 'ask' && (
-          <button type="button" onClick={dismissForever} aria-label="Dismiss notification prompt" className="shrink-0 p-1 text-slate-400">
+          <button type="button" onClick={() => setMode('confirm-dismiss')} aria-label="Dismiss notification prompt" className="shrink-0 p-1 text-slate-400">
             <X size={16} />
           </button>
         )}
