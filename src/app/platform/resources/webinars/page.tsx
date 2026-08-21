@@ -117,7 +117,8 @@ export default function WebinarsHubPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [resources, setResources] = useState<any[]>(MOCK_WEBINAR_RESOURCES);
+  const [resources, setResources] = useState<any[]>([]);
+  const [isLoadingWebinars, setIsLoadingWebinars] = useState(true);
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -345,6 +346,7 @@ export default function WebinarsHubPage() {
   };
 
   async function fetchData() {
+    setIsLoadingWebinars(true);
     try {
       // 1. Fetch from dedicated webinars table (strictly approved only!)
       const { data: webinarData, error: webErr } = await supabase
@@ -357,7 +359,9 @@ export default function WebinarsHubPage() {
         setResources(webinarData.map(d => ({
           ...d,
           expert: d.author_name || "Expert",
-          time: d.read_time || (d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString() : "45:00"),
+          dateLabel: d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'Date to be announced',
+          timeLabel: d.scheduled_at ? new Date(d.scheduled_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }) : 'Time to be announced',
+          time: d.duration_minutes ? `${d.duration_minutes} min` : (d.read_time || ''),
           image: d.cover_image_url || d.url || "/resourceimg1.jpg",
           featured: Boolean(d.is_featured ?? d.featured ?? false),
           topic: d.topic || d.subcategory || "AI in IP",
@@ -378,16 +382,23 @@ export default function WebinarsHubPage() {
         setResources(data.map(d => ({
           ...d,
           expert: d.author_name || "Expert",
-          time: d.read_time || (d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString() : "45:00"),
+          dateLabel: d.scheduled_at ? new Date(d.scheduled_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'Date to be announced',
+          timeLabel: d.scheduled_at ? new Date(d.scheduled_at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }) : 'Time to be announced',
+          time: d.duration_minutes ? `${d.duration_minutes} min` : (d.read_time || ''),
           image: d.cover_image_url || d.url || "/resourceimg1.jpg",
           featured: Boolean(d.is_featured ?? d.featured ?? false),
           topic: d.topic || d.subcategory || "AI in IP",
           subcategory: d.subcategory || d.topic || "AI in IP",
           type: d.webinar_status === 'live' ? 'Live Now' : (d.webinar_status === 'ended' ? 'Recording' : (d.resource_type || d.type || 'Upcoming Webinar'))
         })));
+      } else {
+        setResources([]);
       }
     } catch (err) {
       console.error('Error fetching webinars:', err);
+      setResources([]);
+    } finally {
+      setIsLoadingWebinars(false);
     }
   }
 
@@ -461,10 +472,18 @@ export default function WebinarsHubPage() {
     return matchesSearch && matchesSub && matchesType;
   });
 
-  const mainFeature = resources.find(r => r.featured) || filteredResources[0] || resources[0] || MOCK_WEBINAR_RESOURCES[0];
+  const mainFeature = resources.find(r => r.featured) || filteredResources[0] || resources[0];
   const otherResources = activeSub === 'all' && !searchQuery
     ? filteredResources.filter(r => r.id !== mainFeature?.id)
     : filteredResources;
+
+  if (isLoadingWebinars) {
+    return (
+      <div className="flex min-h-[calc(100dvh-72px)] items-center justify-center bg-[#f8f9fa] text-[#5a32fa] dark:bg-[#0f172a]">
+        <Loader2 size={64} dotSize={8} />
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] text-gray-900 dark:text-white font-sans selection:bg-[#ff2a5f]/30">
@@ -544,9 +563,9 @@ export default function WebinarsHubPage() {
                 <span className="bg-[#ff2a5f] text-white text-xs font-black uppercase px-3 py-1 rounded-sm flex items-center gap-1.5 shadow-md">
                   <MonitorPlay size={14} /> {mainFeature.type || "Upcoming Webinar"}
                 </span>
-                {(mainFeature.type === "Upcoming Webinar" || mainFeature.time) && (
+                {mainFeature.scheduled_at && (
                   <span className="bg-gray-900/10 dark:bg-black/50 backdrop-blur-md text-gray-900 dark:text-white text-xs font-bold uppercase px-3 py-1 rounded-sm border border-gray-900/20 dark:border-white/20 flex items-center gap-1.5">
-                    <Calendar size={14} /> {mainFeature.time}
+                    <Calendar size={14} /> {mainFeature.dateLabel} · {mainFeature.timeLabel}
                   </span>
                 )}
               </div>
@@ -667,9 +686,11 @@ export default function WebinarsHubPage() {
                       </span>
                     )}
                   </div>
-                  <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md">
-                    {resource.time}
-                  </div>
+                  {resource.time && (
+                    <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded-md">
+                      {resource.time}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex gap-3 items-start">
@@ -678,14 +699,19 @@ export default function WebinarsHubPage() {
                     {resource.expert.charAt(0)}
                   </div>
                   
-                  <div className="flex flex-col">
+                  <div className="flex min-w-0 flex-col">
                     <h3 className="text-gray-900 dark:text-white font-bold text-base leading-snug line-clamp-2 group-hover:text-[#ff2a5f] transition-colors">{resource.title}</h3>
-                    <div className="text-gray-500 dark:text-white/60 text-sm mt-1 flex flex-col">
+                    <div className="mt-1 flex flex-col gap-1.5 text-sm text-gray-500 dark:text-white/60">
                       <span className="hover:text-gray-900 dark:hover:text-white transition-colors">{resource.expert}</span>
-                      <div className="flex items-center gap-1.5 mt-0.5 text-xs">
-                        <span className="flex items-center gap-1"><Eye size={12} /> {resource.views}</span>
-                        <span>•</span>
-                        <span>{resource.topic}</span>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium">
+                        <span className="flex items-center gap-1"><Calendar size={12} /> {resource.dateLabel}</span>
+                        <span className="flex items-center gap-1"><Clock size={12} /> {resource.timeLabel}</span>
+                        <span className="flex items-center gap-1"><Video size={12} /> {resource.type}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        {resource.views && <span className="flex items-center gap-1"><Eye size={12} /> {resource.views}</span>}
+                        {resource.views && resource.topic && <span>•</span>}
+                        {resource.topic && <span>{resource.topic}</span>}
                       </div>
                     </div>
                   </div>
