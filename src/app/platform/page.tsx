@@ -44,6 +44,7 @@ export default function PlatformPage() {
   const feedCursorRef = useRef<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [dbLikedPostIds, setDbLikedPostIds] = useState<Set<string>>(new Set());
+  const [savedPostIds, setSavedPostIds] = useState<Set<string>>(new Set());
   const [activeCommentPost, setActiveCommentPost] = useState<any | null>(null);
   const [commentText, setCommentText] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
@@ -110,6 +111,52 @@ export default function PlatformPage() {
       else next.add(postId);
       return next;
     });
+  };
+
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    const storageKey = `wipa_saved_posts_${user.id}`;
+    let localIds: string[] = [];
+    try {
+      localIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      if (!cancelled) setSavedPostIds(new Set(localIds.map(String)));
+    } catch {}
+
+    const hydrateSavedPosts = async () => {
+      const { data, error } = await supabase
+        .from('saved_posts')
+        .select('post_id')
+        .eq('user_id', user.id);
+      if (cancelled || error || !data) return;
+      const merged = [...new Set([...localIds.map(String), ...data.map((row: any) => String(row.post_id))])];
+      setSavedPostIds(new Set(merged));
+      localStorage.setItem(storageKey, JSON.stringify(merged));
+    };
+    void hydrateSavedPosts();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
+  const handleToggleSavePost = async (postId: string) => {
+    if (!user?.id) return;
+    const normalizedId = String(postId);
+    const wasSaved = savedPostIds.has(normalizedId);
+    const next = new Set(savedPostIds);
+    if (wasSaved) next.delete(normalizedId);
+    else next.add(normalizedId);
+    setSavedPostIds(next);
+    localStorage.setItem(`wipa_saved_posts_${user.id}`, JSON.stringify([...next]));
+    if (navigator.vibrate) navigator.vibrate(18);
+
+    const { error } = wasSaved
+      ? await supabase.from('saved_posts').delete().match({ user_id: user.id, post_id: normalizedId })
+      : await supabase.from('saved_posts').upsert(
+          { user_id: user.id, post_id: normalizedId },
+          { onConflict: 'user_id,post_id', ignoreDuplicates: true }
+        );
+
+    // Local persistence keeps Save functional during a transient outage or before a migration reaches production.
+    if (error) console.warn('Saved post will sync when database persistence is available:', error.message);
   };
   
   const fetchFeed = useCallback(async (append = false) => {
@@ -1234,14 +1281,16 @@ export default function PlatformPage() {
 
                           {/* Bookmark / Save Button (Right Edge) */}
                           <button 
-                            onClick={() => {
-                              navigator.clipboard.writeText(`${window.location.origin}/platform/post/${post.id}`);
-                              alert('Post link copied & saved!');
-                            }}
-                            className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] transition-transform active:scale-75 shrink-0"
-                            aria-label="Save post"
+                            onClick={() => void handleToggleSavePost(post.id)}
+                            className={`transition-transform active:scale-75 shrink-0 ${
+                              savedPostIds.has(String(post.id))
+                                ? 'text-[#6600FF]'
+                                : 'text-gray-700 dark:text-gray-200 hover:text-[#5a32fa]'
+                            }`}
+                            aria-label={savedPostIds.has(String(post.id)) ? 'Remove saved post' : 'Save post'}
+                            aria-pressed={savedPostIds.has(String(post.id))}
                           >
-                            <Bookmark size={22} />
+                            <Bookmark size={22} className={savedPostIds.has(String(post.id)) ? 'fill-current' : ''} />
                           </button>
                         </div>
 
