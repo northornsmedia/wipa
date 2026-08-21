@@ -237,7 +237,7 @@ export default function WebinarDetailPage({ params }: { params: Promise<{ id: st
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-10">
         
-        {/* Video / Artwork Hero Player Canvas */}
+        {/* Webinar artwork hero */}
         <div className="relative w-full aspect-video md:aspect-[21/9] max-h-[540px] rounded-3xl overflow-hidden bg-black border border-gray-200 dark:border-white/10 shadow-2xl group">
           <img 
             src={coverImage} 
@@ -272,20 +272,6 @@ export default function WebinarDetailPage({ params }: { params: Promise<{ id: st
               </span>
             )}
           </div>
-
-          {/* Center Play / Join Button */}
-          {joinUrl && joinUrl !== '#' && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <a 
-                href={joinUrl} 
-                target="_blank" 
-                rel="noreferrer"
-                className="w-20 h-20 rounded-full bg-[#ff2a5f] hover:bg-[#ff1753] text-white flex items-center justify-center pl-1.5 shadow-2xl shadow-[#ff2a5f]/50 transform transition-all hover:scale-110 active:scale-95 group-hover:ring-8 group-hover:ring-[#ff2a5f]/20"
-              >
-                <Play size={36} fill="currentColor" />
-              </a>
-            </div>
-          )}
 
           {/* Bottom Hero Title & Metadata */}
           <div className="absolute bottom-6 left-6 right-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
