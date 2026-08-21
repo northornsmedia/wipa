@@ -49,6 +49,7 @@ export default function PlatformPage() {
   const [activeCommentPost, setActiveCommentPost] = useState<any | null>(null);
   const [commentText, setCommentText] = useState('');
   const [commentError, setCommentError] = useState('');
+  const [isDesktopViewport, setIsDesktopViewport] = useState<boolean | null>(null);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [postComments, setPostComments] = useState<Record<string, any[]>>({});
   const [activeMenuPostId, setActiveMenuPostId] = useState<string | null>(null);
@@ -69,6 +70,14 @@ export default function PlatformPage() {
   const [isPullRefreshing, setIsPullRefreshing] = useState(false);
   const pullStartRef = useRef({ x: 0, y: 0, active: false });
   const pullDistanceRef = useRef(0);
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 768px)');
+    const syncViewport = () => setIsDesktopViewport(media.matches);
+    syncViewport();
+    media.addEventListener('change', syncViewport);
+    return () => media.removeEventListener('change', syncViewport);
+  }, []);
 
   const handlePostDoubleTap = (postId: string, event: React.MouseEvent<HTMLElement>) => {
     if (!user) return;
@@ -1453,8 +1462,8 @@ export default function PlatformPage() {
       </div>
       
       {/* Comment Modal */}
-      {activeCommentPost && (
-        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] hidden md:flex items-center justify-center p-4">
+      {activeCommentPost && isDesktopViewport === true && (
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-[600px] overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-5 border-b border-gray-50 dark:border-white/5 pt-6 shrink-0">
@@ -1619,17 +1628,19 @@ export default function PlatformPage() {
       )}
 
       {/* Mobile Comment Bottom Drawer */}
-      <MobileCommentDrawer
-        isOpen={Boolean(activeCommentPost)}
-        onClose={() => setActiveCommentPost(null)}
-        post={activeCommentPost}
-        comments={activeCommentPost ? (postComments[activeCommentPost.id] || []) : []}
-        commentText={commentText}
-        setCommentText={setCommentText}
-        onSubmitComment={() => activeCommentPost && handleCommentSubmit(activeCommentPost.id)}
-        isSubmitting={isSubmittingComment}
-        error={commentError}
-      />
+      {isDesktopViewport === false && (
+        <MobileCommentDrawer
+          isOpen={Boolean(activeCommentPost)}
+          onClose={() => setActiveCommentPost(null)}
+          post={activeCommentPost}
+          comments={activeCommentPost ? (postComments[activeCommentPost.id] || []) : []}
+          commentText={commentText}
+          setCommentText={setCommentText}
+          onSubmitComment={() => activeCommentPost && handleCommentSubmit(activeCommentPost.id)}
+          isSubmitting={isSubmittingComment}
+          error={commentError}
+        />
+      )}
 
       <FeedShareSheet
         open={Boolean(sharePost)}
