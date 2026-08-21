@@ -22,71 +22,60 @@ export default function WelcomeBackSplash() {
 
     // 2. TTS AUDIO GREETING LOGIC (For everyone, once per session, from main page)
     const ttsPlayed = sessionStorage.getItem('wipa_tts_played');
-    console.log('[TTS Debug] Checking TTS. ttsPlayed:', ttsPlayed, 'pathname:', pathname, 'userName:', user?.name);
-    
     // Only attempt to play once the user's name is loaded so it doesn't say "Hello there"
     if (!ttsPlayed && pathname === '/platform' && user?.name) {
-      console.log('[TTS Debug] Conditions met. Scheduling TTS in 500ms...');
       // Mark it immediately so subsequent renders in the next 500ms don't schedule multiple timeouts
       sessionStorage.setItem('wipa_tts_played', 'true');
       
-      const playTTS = setTimeout(() => {
-        console.log('[TTS Debug] Timeout finished. Attempting to play TTS.');
+      setTimeout(() => {
         if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
           window.speechSynthesis.cancel();
-          
+          let hasSpoken = false;
+          let voiceFallbackTimer: ReturnType<typeof setTimeout> | undefined;
+
           const playWithFemaleVoice = () => {
-            const userName = user.name;
-            const utterance = new SpeechSynthesisUtterance(`Hello ${userName}, welcome to the Women's IP Alliance.`);
-            (window as any)._wipaUtterance = utterance;
-            
-            utterance.onstart = () => console.log('[TTS Debug] Audio started playing successfully!');
-            utterance.onend = () => console.log('[TTS Debug] Audio finished playing.');
-            utterance.onerror = (e) => console.error('[TTS Debug] Audio failed to play. Error:', e);
-            
-            const voices = window.speechSynthesis.getVoices();
-            console.log('[TTS Debug] Available voices:', voices.length);
-            
-            // Target specific known female voices across Windows, Mac, and Chrome
-            const femaleVoice = voices.find(v => 
-              v.name.includes('Female') || 
-              v.name.includes('Samantha') || // Mac female
-              v.name.includes('Zira') ||     // Windows female
-              v.name.includes('Susan') || 
-              v.name.includes('Victoria') ||
-              v.name.includes('Google US English') || // Chrome default is female
-              v.name.includes('Google UK English Female')
+            if (hasSpoken) return;
+            hasSpoken = true;
+            if (voiceFallbackTimer) clearTimeout(voiceFallbackTimer);
+
+            const firstName = user.name.trim().split(/\s+/)[0] || 'there';
+            const utterance = new SpeechSynthesisUtterance(
+              `Hi, ${firstName}. Welcome back to WIPA. It's lovely to have you here.`
             );
-            
-            if (femaleVoice) {
-              utterance.voice = femaleVoice;
-              console.log('[TTS Debug] Selected female voice:', femaleVoice.name);
-            } else {
-              console.log('[TTS Debug] No specific female voice found. Using system default.');
-            }
-            
+            (window as any)._wipaUtterance = utterance;
+            utterance.rate = 0.84;
+            utterance.pitch = 0.98;
+            utterance.volume = 0.9;
+
+            const voices = window.speechSynthesis.getVoices();
+            // Prefer the most natural commonly available English voices.
+            const femaleVoice = voices.find(v => 
+              v.name.includes('Aria') ||
+              v.name.includes('Jenny') ||
+              v.name.includes('Google UK English Female') ||
+              v.name.includes('Google US English') ||
+              v.name.includes('Samantha') ||
+              v.name.includes('Zira') ||
+              v.name.includes('Female') || 
+              v.name.includes('Susan') || 
+              v.name.includes('Victoria')
+            );
+            if (femaleVoice) utterance.voice = femaleVoice;
             window.speechSynthesis.speak(utterance);
           };
 
           // Browsers often load voices asynchronously. If empty, we must wait.
           if (window.speechSynthesis.getVoices().length === 0) {
-            console.log('[TTS Debug] Voices not loaded yet, waiting...');
             window.speechSynthesis.onvoiceschanged = () => {
               playWithFemaleVoice();
-              window.speechSynthesis.onvoiceschanged = null; // cleanup
+              window.speechSynthesis.onvoiceschanged = null;
             };
-            // Fallback just in case the event doesn't fire
-            setTimeout(playWithFemaleVoice, 1500);
+            voiceFallbackTimer = setTimeout(playWithFemaleVoice, 1500);
           } else {
             playWithFemaleVoice();
           }
-        } else {
-          console.error('[TTS Debug] speechSynthesis API not supported in this browser.');
         }
       }, 500);
-
-      // Do NOT clearTimeout here. If the component re-renders quickly, we still want the audio to play!
-      // Since we set 'wipa_tts_played' synchronously above, it won't be scheduled twice.
     }
   }, [user?.name, pathname]);
 
