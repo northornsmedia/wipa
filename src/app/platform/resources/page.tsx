@@ -451,7 +451,7 @@ export default function ResourcesPage() {
         </div>
 
         {/* Swipeable 11-Vertical Category Carousel for Fast Mobile Navigation */}
-        <div className="mb-6">
+        <div className="mb-6 sm:hidden">
           <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {[
               { title: 'Webinars', path: '/platform/resources/webinars', color: 'bg-rose-500/10 text-rose-500 border-rose-500/20' },
