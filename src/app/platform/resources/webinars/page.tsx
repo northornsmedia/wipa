@@ -512,16 +512,6 @@ export default function WebinarsHubPage() {
               >
                 <ArrowLeft size={16} /> Back
               </Link>
-              <div className="flex items-center gap-3 bg-white/70 dark:bg-black/50 backdrop-blur-md rounded-full px-4 py-2 border border-gray-300 dark:border-white/20 focus-within:border-gray-400 dark:focus-within:border-white/50 transition-all shadow-sm">
-                <Search size={16} className="text-gray-600 dark:text-white/80" />
-                <input 
-                  type="text" 
-                  placeholder="Search videos..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-white/70 w-48 sm:w-64"
-                />
-              </div>
             </div>
             
             <div className="flex items-center gap-3">
@@ -617,18 +607,30 @@ export default function WebinarsHubPage() {
             ))}
           </div>
           
-          <div className="relative pr-2">
-            <button 
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="bg-gray-100 dark:bg-black/50 border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/30 rounded-xl px-5 py-2.5 font-bold text-gray-900 dark:text-white flex items-center gap-3 min-w-[200px] transition-all"
-            >
-              <Filter size={16} className="text-gray-500 dark:text-white/50" />
-              <span className="flex-1 text-left">{typeFilter}</span>
-              <ChevronDown size={18} className={`text-gray-500 dark:text-white/50 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
+          <div className="flex w-full items-center gap-2 px-2 pb-2 md:w-auto md:px-0 md:pb-0 md:pr-2">
+            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-gray-200 bg-gray-100 px-3.5 transition-colors focus-within:border-[#ff2a5f] dark:border-white/10 dark:bg-black/50 md:w-64 md:flex-none">
+              <Search size={16} className="shrink-0 text-gray-500 dark:text-white/50" />
+              <input
+                type="search"
+                placeholder="Search webinars..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-11 min-w-0 flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-500 dark:text-white dark:placeholder:text-white/50"
+              />
+            </div>
+
+            <div className="relative shrink-0">
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="bg-gray-100 dark:bg-black/50 border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/30 rounded-xl px-4 md:px-5 py-2.5 font-bold text-gray-900 dark:text-white flex items-center gap-2 md:gap-3 min-w-[145px] md:min-w-[200px] transition-all"
+              >
+                <Filter size={16} className="text-gray-500 dark:text-white/50" />
+                <span className="flex-1 text-left">{typeFilter}</span>
+                <ChevronDown size={18} className={`text-gray-500 dark:text-white/50 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
             
-            {isDropdownOpen && (
-              <div className="absolute top-full right-2 mt-2 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden z-20 min-w-[200px]">
+              {isDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden z-20 min-w-[200px]">
                 {CONTENT_TYPES.map(type => (
                   <button
                     key={type}
@@ -645,8 +647,9 @@ export default function WebinarsHubPage() {
                     {type}
                   </button>
                 ))}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
