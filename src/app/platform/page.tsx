@@ -1138,8 +1138,16 @@ export default function PlatformPage() {
                           <textarea 
                             value={editContent} 
                             onChange={(e) => setEditContent(e.target.value)}
-                            className="w-full select-text p-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs sm:text-sm text-gray-900 dark:text-white outline-none resize-none"
-                            rows={3}
+                            onFocus={(e) => {
+                              e.currentTarget.style.height = 'auto';
+                              e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+                            }}
+                            onInput={(e) => {
+                              e.currentTarget.style.height = 'auto';
+                              e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+                            }}
+                            className="min-h-[180px] w-full select-text overflow-hidden p-3.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm sm:text-[15px] leading-relaxed text-gray-900 dark:text-white outline-none resize-none [field-sizing:content]"
+                            rows={7}
                           />
                           <div className="flex justify-end gap-2">
                             <button onClick={() => setEditingPost(null)} className="px-3 py-1 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100">Cancel</button>
