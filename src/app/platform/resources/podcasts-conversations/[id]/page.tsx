@@ -16,6 +16,17 @@ const formatClock = (seconds: number) => {
   return `${minutes}:${Math.floor(seconds % 60).toString().padStart(2, '0')}`;
 };
 
+const formatEpisodeDuration = (seconds: number) => {
+  if (!Number.isFinite(seconds) || seconds <= 0) return null;
+  const wholeSeconds = Math.round(seconds);
+  const hours = Math.floor(wholeSeconds / 3600);
+  const minutes = Math.floor((wholeSeconds % 3600) / 60);
+  const remainingSeconds = wholeSeconds % 60;
+  return hours > 0
+    ? `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`
+    : `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
+
 export default function PodcastDetailPage() {
   const { id } = useParams<{ id: string }>();
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -127,6 +138,7 @@ export default function PodcastDetailPage() {
     ? new Date(episode.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })
     : null;
   const transcript = typeof episode.transcript === 'string' ? episode.transcript.trim() : '';
+  const actualDuration = formatEpisodeDuration(audioDuration);
 
   return (
     <div className="min-h-screen bg-[#121212] pb-28 text-white">
@@ -158,7 +170,7 @@ export default function PodcastDetailPage() {
                 {episode.host_name && <span className="font-black text-white">{episode.host_name}</span>}
                 {episode.guest_names && <><span>•</span><span>with {episode.guest_names}</span></>}
                 {published && <><span>•</span><span>{published}</span></>}
-                {episode.duration && <><span>•</span><span>{episode.duration}</span></>}
+                {actualDuration && <><span>•</span><span>{actualDuration}</span></>}
               </div>
             </div>
           </div>
@@ -173,7 +185,8 @@ export default function PodcastDetailPage() {
                 ref={audioRef}
                 src={episode.media_file_url}
                 preload="metadata"
-                onLoadedMetadata={(event) => setAudioDuration(event.currentTarget.duration || 0)}
+                onLoadedMetadata={(event) => setAudioDuration(Number.isFinite(event.currentTarget.duration) ? event.currentTarget.duration : 0)}
+                onDurationChange={(event) => setAudioDuration(Number.isFinite(event.currentTarget.duration) ? event.currentTarget.duration : 0)}
                 onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
                 onPlay={() => setPlaying(true)}
                 onPause={() => setPlaying(false)}
@@ -225,7 +238,7 @@ export default function PodcastDetailPage() {
               {episode.guest_names && <div className="flex gap-3"><Users size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Guests</p><p className="font-bold">{episode.guest_names}</p></div></div>}
               {topic && <div className="flex gap-3"><Music2 size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Topic</p><p className="font-bold">{topic}</p></div></div>}
               {published && <div className="flex gap-3"><CalendarDays size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Published</p><p className="font-bold">{published}</p></div></div>}
-              {episode.duration && <div className="flex gap-3"><Clock3 size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Duration</p><p className="font-bold">{episode.duration}</p></div></div>}
+              {episode.media_file_url && <div className="flex gap-3"><Clock3 size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Duration</p><p className="font-bold">{actualDuration || 'Loading audio metadata…'}</p></div></div>}
             </div>
           </aside>
         </div>
