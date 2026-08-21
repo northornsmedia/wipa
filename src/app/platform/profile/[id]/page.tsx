@@ -8,7 +8,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { 
   BadgeCheck, MapPin, Link as LinkIcon, Users, Mail, MessageSquare, Briefcase, GraduationCap,
   Hash, ThumbsUp, Share2, Send, UserPlus, X, PlayCircle, Star, Copy, Globe2,
-  CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, ArrowLeft, FileText, ArrowUpRight, Heart, Bookmark, ShieldCheck, Check, MoreHorizontal, Eye,
+  CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, FileText, ArrowUpRight, Heart, Bookmark, ShieldCheck, Check, MoreHorizontal, Eye,
   TrendingUp, Search, Image as ImageIcon, Video, Award, Gift, Sparkles, Folder,
   Lightbulb, HelpCircle, Headphones, Calendar
 } from 'lucide-react';
@@ -319,16 +319,6 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
       
       <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 pt-0 sm:pt-4">
         
-        {/* Back navigation button */}
-        <div className="px-3 sm:px-0 pt-3 sm:pt-0">
-          <button 
-            onClick={() => router.back()}
-            className="mb-3 inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-[#5a32fa] transition-colors"
-          >
-            <ArrowLeft size={16} /> Back to Network
-          </button>
-        </div>
-
         {/* ================= HERO PROFILE CARD ================= */}
         <div className="bg-white dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-3xl border-x-0 sm:border-x border-b sm:border-y border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden mb-4 sm:mb-6">
           
