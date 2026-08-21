@@ -20,20 +20,30 @@ const isNetworkFailure = (error: unknown) => {
   return error instanceof TypeError || /load failed|failed to fetch|network|fetch failed|connection/.test(message);
 };
 
-async function withNetworkRetry<T>(operation: () => Promise<T>, attempts = 3): Promise<T> {
+const PUBLISH_RETRY_WINDOW_MS = 60_000;
+const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+async function withNetworkRetry<T>(operation: () => Promise<T>, deadline: number): Promise<T> {
   let lastError: unknown;
-  for (let attempt = 0; attempt < attempts; attempt += 1) {
+  let attempt = 0;
+  while (Date.now() < deadline) {
     try {
-      const result: any = await operation();
-      if (!result?.error || !isNetworkFailure(result.error) || attempt === attempts - 1) return result;
+      const remaining = Math.max(1, deadline - Date.now());
+      const result: any = await Promise.race([
+        operation(),
+        new Promise((_, reject) => setTimeout(() => reject(new TypeError('Network request timed out')), remaining)),
+      ]);
+      if (!result?.error || !isNetworkFailure(result.error)) return result;
       lastError = result.error;
     } catch (error) {
       lastError = error;
-      if (!isNetworkFailure(error) || attempt === attempts - 1) throw error;
+      if (!isNetworkFailure(error)) throw error;
     }
-    await new Promise((resolve) => setTimeout(resolve, 600 * (attempt + 1)));
+    attempt += 1;
+    const delay = Math.min(5_000, 700 * (2 ** Math.min(attempt - 1, 3)));
+    if (Date.now() + delay < deadline) await wait(delay);
   }
-  throw lastError;
+  throw lastError || new TypeError('Publishing timed out');
 }
 
 const EMOJIS = ['💡', '⚖️', '📜', '✨', '🚀', '💼', '🎯', '🤝', '🔥', '👏', '🎉', '📈'];
@@ -62,6 +72,7 @@ export default function CreatePostPage() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [publishSuccess, setPublishSuccess] = useState(false);
+  const [publishFailed, setPublishFailed] = useState(false);
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [showDraftDecision, setShowDraftDecision] = useState(false);
   const [isDraftRestored, setIsDraftRestored] = useState(false);
@@ -162,20 +173,18 @@ export default function CreatePostPage() {
 
     setIsPublishing(true);
     setUploadError(null);
+    setPublishFailed(false);
+    const publishDeadline = Date.now() + PUBLISH_RETRY_WINDOW_MS;
 
     let mediaUrls: string[] = [];
     let mediaType = attachedMedia?.type || null;
     let docName = attachedMedia?.name || null;
 
     try {
-      if (!navigator.onLine) {
-        setUploadError('You are offline. Your draft is safe—reconnect and tap Share again.');
-        return;
-      }
-
-      const { data: sessionData } = await withNetworkRetry(() => supabase.auth.getSession());
+      const { data: sessionData } = await withNetworkRetry(() => supabase.auth.getSession(), publishDeadline);
       if (!sessionData?.session) {
         setUploadError('Your session expired. Please sign in again; your draft has been saved.');
+        setPublishFailed(true);
         return;
       }
 
@@ -197,12 +206,13 @@ export default function CreatePostPage() {
               upsert: true,
               cacheControl: '31536000',
               contentType: uploadFile.type || undefined,
-            }));
+            }), publishDeadline);
 
           if (uploadErr) {
             setUploadError(isNetworkFailure(uploadErr)
               ? 'Connection interrupted while uploading. Your draft is safe—tap Share to retry.'
               : 'Could not upload this file: ' + uploadErr.message);
+            setPublishFailed(true);
             return;
           }
 
@@ -236,12 +246,13 @@ export default function CreatePostPage() {
         media_urls: mediaUrls,
         media_type: mediaType,
         document_name: docName
-      }));
+      }), publishDeadline);
 
       if (error && error.code !== '23505') {
         setUploadError(isNetworkFailure(error)
           ? 'Connection interrupted. Your draft is safe—check your internet and tap Share again.'
           : 'Could not publish this post: ' + error.message);
+        setPublishFailed(true);
         return;
       }
 
@@ -273,6 +284,8 @@ export default function CreatePostPage() {
       setUploadError(isNetworkFailure(err)
         ? 'Connection interrupted. Your draft is safe—check your internet and tap Share again.'
         : 'Something went wrong while publishing. Your draft is safe; please try again.');
+      if (isNetworkFailure(err)) setUploadError('Failed to publish after retrying for 60 seconds. Please click again to post.');
+      setPublishFailed(true);
     } finally {
       setIsPublishing(false);
     }
@@ -332,7 +345,7 @@ export default function CreatePostPage() {
           {isPublishing ? (
             <>
               <Loader2 size={13} className="animate-spin" />
-              <span>Sharing...</span>
+              <span>Posting...</span>
             </>
           ) : publishSuccess ? (
             <>
@@ -340,7 +353,7 @@ export default function CreatePostPage() {
               <span>Shared!</span>
             </>
           ) : (
-            <span>Share</span>
+            <span>{publishFailed ? 'Try again' : 'Share'}</span>
           )}
         </button>
       </header>
@@ -647,11 +660,11 @@ export default function CreatePostPage() {
           {isPublishing ? (
             <>
               <Loader2 size={14} className="animate-spin" />
-              <span>Sharing...</span>
+              <span>Posting...</span>
             </>
           ) : (
             <>
-              <span>Share Post</span>
+              <span>{publishFailed ? 'Try again' : 'Share Post'}</span>
               <Send size={13} />
             </>
           )}
