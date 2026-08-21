@@ -407,16 +407,17 @@ export default function ProfilePage() {
         <div className="bg-white dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-3xl border-x-0 sm:border-x border-b sm:border-y border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden mb-4 sm:mb-6">
           
           {/* Cover Photo */}
-          <div 
-            className="h-48 sm:h-64 md:h-80 w-full relative bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] overflow-hidden"
-            style={{ 
-              backgroundImage: (user?.cover_url || coverImage) ? `url(${user?.cover_url || coverImage})` : undefined,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}
-          >
-            {!(user?.cover_url || coverImage) && (
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_3px,transparent_3px)] [background-size:24px_24px]" />
+          <div className="relative h-48 w-full overflow-hidden bg-white sm:h-64 md:h-80">
+            {(user?.cover_url || coverImage) ? (
+              <img
+                src={user?.cover_url || coverImage || ''}
+                alt="Profile cover"
+                className="absolute inset-0 h-full w-full object-contain object-center sm:object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8]">
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_3px,transparent_3px)] [background-size:24px_24px]" />
+              </div>
             )}
 
             {/* Edit Cover Photo Button */}

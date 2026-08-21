@@ -333,16 +333,17 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
         <div className="bg-white dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-3xl border-x-0 sm:border-x border-b sm:border-y border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden mb-4 sm:mb-6">
           
           {/* Cover Photo */}
-          <div 
-            className="h-48 sm:h-64 md:h-80 w-full relative bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] overflow-hidden"
-            style={{ 
-              backgroundImage: profileData.coverUrl ? `url(${profileData.coverUrl})` : undefined,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}
-          >
-            {!profileData.coverUrl && (
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_3px,transparent_3px)] [background-size:24px_24px]" />
+          <div className="relative h-48 w-full overflow-hidden bg-white sm:h-64 md:h-80">
+            {profileData.coverUrl ? (
+              <img
+                src={profileData.coverUrl}
+                alt={`${profileData.name}'s cover`}
+                className="absolute inset-0 h-full w-full object-contain object-center sm:object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8]">
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_3px,transparent_3px)] [background-size:24px_24px]" />
+              </div>
             )}
           </div>
 
