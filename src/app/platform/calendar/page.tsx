@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, List, Grid, Plus, X, Link as LinkIcon, RefreshCw, AlertCircle, Building, Video, Users, CheckCircle2 } from 'lucide-react';
 import ThemeWrapper from '@/components/ThemeWrapper';
-import Sidebar from '@/components/Sidebar';
 
 export default function CalendarPage() {
   const { user } = useAppStore();
@@ -109,8 +108,6 @@ export default function CalendarPage() {
   return (
     <ThemeWrapper>
       <div className="flex h-screen bg-slate-50 dark:bg-[#020617] overflow-hidden font-sans">
-        <Sidebar />
-        
         <main className="flex-1 overflow-y-auto">
           <div className="p-8 max-w-7xl mx-auto">
             

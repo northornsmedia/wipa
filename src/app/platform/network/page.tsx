@@ -478,7 +478,7 @@ export default function NetworkPage() {
               <DotmCircular7 size={40} className="text-[#6600FF]" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 pb-24 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
               {network.filter(person => {
                 if (searchQuery && !person.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
                 if (selectedCountry && person.country !== selectedCountry) return false;
@@ -502,43 +502,43 @@ export default function NetworkPage() {
                 if (selectedPracticeArea && person.practiceArea !== selectedPracticeArea) return false;
                 return true; 
               }).map((person) => (
-                <div key={person.id} className="bg-white dark:bg-[#151c2c] rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-4 flex items-center justify-between gap-3 transition-all hover:border-[#5a32fa]/30">
+                <div key={person.id} className="flex flex-row items-center gap-3 overflow-hidden rounded-2xl border border-gray-100 bg-white p-3 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-[#5a32fa]/30 hover:shadow-md dark:border-white/10 dark:bg-[#151c2c] md:flex-col md:gap-0 md:rounded-3xl md:p-6 md:text-center">
                   
-                  <Link href={`/platform/profile/${person.id}`} className="flex items-center gap-3 min-w-0 flex-1 group">
+                  <Link href={`/platform/profile/${person.id}`} className="group flex min-w-0 flex-1 items-center gap-3 md:w-full md:flex-col md:gap-0">
                     {person.avatarUrl ? (
-                      <img src={person.avatarUrl} alt={person.name} className="w-11 h-11 rounded-full object-cover shrink-0 shadow-sm" />
+                      <img src={person.avatarUrl} alt={person.name} className="h-12 w-12 shrink-0 rounded-full object-cover shadow-sm md:mb-4 md:h-20 md:w-20" />
                     ) : (
-                      <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-sm font-bold text-white shadow-sm md:mb-4 md:h-20 md:w-20 md:text-2xl">
                         {person.initial}
                       </div>
                     )}
                     
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-[#5a32fa] transition-colors">
+                    <div className="min-w-0 flex-1 md:w-full">
+                      <h3 className="truncate text-sm font-bold text-gray-900 transition-colors group-hover:text-[#5a32fa] dark:text-white md:text-lg">
                         {person.name}
                       </h3>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                      <p className="truncate text-[11px] text-gray-500 dark:text-gray-400 md:mt-1 md:text-xs">
                         {person.practiceArea || person.role}
                       </p>
-                      <span className="text-[10px] text-gray-400 dark:text-gray-500 truncate block">
+                      <span className="block truncate text-[10px] text-gray-400 dark:text-gray-500 md:mt-1 md:text-[11px]">
                         {person.country}
                       </span>
                     </div>
                   </Link>
 
                   {/* Actions by Tab */}
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="flex shrink-0 items-center gap-2 md:mt-6 md:w-full">
                     {activeTab === 'Connections' && (
                       <>
-                        <Link href={`/platform/messages?userId=${person.id}`}>
-                          <button className="flex items-center gap-1 bg-[#5a32fa] hover:bg-[#4a24db] text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm shadow-[#5a32fa]/30 active:scale-95 transition-all">
+                        <Link href={`/platform/messages?userId=${person.id}`} className="md:flex-1">
+                          <button className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#5a32fa] px-3 py-2 text-xs font-bold text-white shadow-sm shadow-[#5a32fa]/30 transition-all hover:bg-[#4a24db] active:scale-95 md:py-2.5">
                             <MessageCircle size={13} />
                             <span>Message</span>
                           </button>
                         </Link>
                         <button 
                           onClick={() => handleRemoveConnection(person.id, person.connectionId)}
-                          className="p-1.5 text-gray-400 hover:text-rose-500 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                          className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-400 transition-colors hover:text-rose-500 dark:bg-white/10 dark:hover:bg-white/5 md:h-10 md:w-10"
                           title="Remove connection"
                         >
                           <UserMinus size={15} />
@@ -549,7 +549,7 @@ export default function NetworkPage() {
                     {activeTab === 'Following' && (
                       <button 
                         onClick={() => handleUnfollow(person.id)}
-                        className="flex items-center gap-1 bg-gray-100 dark:bg-white/10 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-xl font-bold text-xs border border-gray-200 dark:border-white/10 transition-colors"
+                        className="flex items-center justify-center gap-1 rounded-xl border border-gray-200 bg-gray-100 px-3 py-2 text-xs font-bold text-gray-700 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:border-white/10 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-rose-500/10 md:w-full md:py-2.5"
                       >
                         <span>Unfollow</span>
                       </button>
@@ -558,7 +558,7 @@ export default function NetworkPage() {
                     {activeTab === 'Followers' && (
                       <button 
                         onClick={() => handleConnect(person.id)}
-                        className="flex items-center gap-1 bg-[#5a32fa] hover:bg-[#4a24db] text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm active:scale-95 transition-all"
+                        className="flex items-center justify-center gap-1 rounded-xl bg-[#5a32fa] px-3 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#4a24db] active:scale-95 md:w-full md:py-2.5"
                       >
                         <UserPlus size={13} />
                         <span>Connect</span>
