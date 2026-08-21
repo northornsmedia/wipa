@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, Building2, Sparkles, MonitorSmartphone, X } from 'lucide-react';
+import { ArrowRight, Building2, Sparkles, MonitorSmartphone, X, ListPlus } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from "@/lib/utils";
 import { CanvasText } from "@/components/ui/canvas-text";
@@ -204,6 +204,12 @@ export default function IPServicesPage() {
                 This page is sponsored by PSS Solutions — an independent IP operations consultancy specialising in strategy, technology and process for corporate legal and IP teams.
               </p>
             </div>
+            <Link
+              href="/platform/resources/ip-services/list"
+              className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-sky-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-sky-600/20 transition-all hover:-translate-y-0.5 hover:bg-sky-700 active:scale-95"
+            >
+              <ListPlus size={18} /> List Your IP Service
+            </Link>
           </div>
 
           {/* Right Side - Sponsor Banner (Full Card Clickable) */}

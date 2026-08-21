@@ -498,12 +498,18 @@ export default function ResourcesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredResources.map((resource) => {
             const Icon = resource.icon;
+            const categoryHref = resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/resources/womens-ip-world` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : resource.id === 12 ? `/platform/resources/ip-services` : resource.id === 13 ? `/platform/resources/ip-firms` : resource.id === 14 ? `/platform/resources/wellness-v2` : `/platform/resources/wellness/${resource.id}`;
+            const listingHref = resource.id === 12
+              ? '/platform/resources/ip-services/list'
+              : resource.id === 13
+                ? '/platform/resources/ip-firms/claim'
+                : null;
             return (
-              <Link 
-                href={resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/resources/womens-ip-world` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : resource.id === 12 ? `/platform/resources/ip-services` : resource.id === 13 ? `/platform/resources/ip-firms` : resource.id === 14 ? `/platform/resources/wellness-v2` : `/platform/resources/wellness/${resource.id}`}
+              <div
                 key={resource.id}
-                className="relative bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.15)] transition-all duration-500 group cursor-pointer overflow-hidden block z-10"
+                className="relative bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.15)] transition-all duration-500 group overflow-hidden z-10"
               >
+                <Link href={categoryHref} aria-label={`Explore ${resource.title}`} className="absolute inset-0 z-10" />
                 <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/5 to-[#ff90e8]/5 dark:from-[#5a32fa]/10 dark:to-[#ff90e8]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
                 
                 <div className="h-52 w-full relative shrink-0 overflow-hidden z-10">
@@ -542,14 +548,19 @@ export default function ResourcesPage() {
                   </div>
                 )}
                 
-                <div className="flex items-center justify-end mt-auto border-t border-gray-100 dark:border-white/5 pt-5 relative">
+                <div className={`flex items-center ${listingHref ? 'justify-between' : 'justify-end'} gap-3 mt-auto border-t border-gray-100 dark:border-white/5 pt-5 relative z-20 pointer-events-none`}>
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#5a32fa]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  {listingHref && (
+                    <Link href={listingHref} className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-[#5a32fa] px-3.5 py-2 text-xs font-black text-white shadow-md transition hover:bg-[#4a24db] active:scale-95">
+                      <Plus size={14} /> {resource.id === 12 ? 'List Your Service' : 'List Your Firm'}
+                    </Link>
+                  )}
                   <span className="font-bold text-sm flex items-center gap-2 group-hover:translate-x-1 transition-all duration-300 text-gray-400 group-hover:text-[#5a32fa]">
                     Explore Category <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
                   </span>
                 </div>
                 </div>
-              </Link>
+              </div>
             );
           })}
 
