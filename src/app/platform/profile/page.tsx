@@ -82,6 +82,7 @@ export default function ProfilePage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [profileSaveError, setProfileSaveError] = useState<string | null>(null);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -135,19 +136,19 @@ export default function ProfilePage() {
       if (!error && data) {
         const newProfile = {
           ...profileData,
-          name: data.full_name || profileData.name,
-          role: data.role || profileData.role,
-          company: data.company || profileData.company,
-          experienceYears: data.experience_years || profileData.experienceYears,
-          education: data.education || profileData.education,
-          location: data.country || profileData.location,
-          bio: data.bio || profileData.bio,
-          linkedin: data.linkedin_url || profileData.linkedin,
-          website: data.website_url || profileData.website,
-          practiceAreas: data.practice_area || profileData.practiceAreas,
-          skills: data.skills || profileData.skills,
-          avatarUrl: data.avatar_url || profileData.avatarUrl,
-          introVideoUrl: data.intro_video_url || DEFAULT_MOCK_VIDEO,
+          name: data.full_name ?? '',
+          role: data.role ?? '',
+          company: data.company ?? '',
+          experienceYears: data.experience_years ?? 0,
+          education: data.education ?? '',
+          location: data.country ?? '',
+          bio: data.bio ?? '',
+          linkedin: data.linkedin_url ?? '',
+          website: data.website_url ?? '',
+          practiceAreas: data.practice_area ?? '',
+          skills: data.skills ?? '',
+          avatarUrl: data.avatar_url ?? '',
+          introVideoUrl: data.intro_video_url ?? '',
           memberId: data.member_id || profileData.memberId,
           verificationStatus: data.verification_status || 'verified',
           isWipaRecommended: data.is_wipa_recommended ?? true,
@@ -253,8 +254,9 @@ export default function ProfilePage() {
   const handleSaveProfile = async () => {
     if (!user?.id) return;
     setIsSaving(true);
+    setProfileSaveError(null);
     try {
-      await supabase.from('profiles').update({
+      const { data: savedProfile, error } = await supabase.from('profiles').update({
         full_name: editForm.name,
         role: editForm.role,
         company: editForm.company,
@@ -267,13 +269,43 @@ export default function ProfilePage() {
         practice_area: editForm.practiceAreas,
         skills: editForm.skills,
         intro_video_url: editForm.introVideoUrl
-      }).eq('id', user.id);
+      }).eq('id', user.id).select('*').single();
 
-      setProfileData(editForm);
-      setUser({ ...user, name: editForm.name });
+      if (error) throw error;
+      if (!savedProfile) throw new Error('The updated profile could not be confirmed.');
+
+      const confirmedProfile = {
+        ...editForm,
+        name: savedProfile.full_name ?? '',
+        role: savedProfile.role ?? '',
+        company: savedProfile.company ?? '',
+        experienceYears: savedProfile.experience_years ?? 0,
+        education: savedProfile.education ?? '',
+        location: savedProfile.country ?? '',
+        bio: savedProfile.bio ?? '',
+        linkedin: savedProfile.linkedin_url ?? '',
+        website: savedProfile.website_url ?? '',
+        practiceAreas: savedProfile.practice_area ?? '',
+        skills: savedProfile.skills ?? '',
+        avatarUrl: savedProfile.avatar_url ?? editForm.avatarUrl,
+        introVideoUrl: savedProfile.intro_video_url ?? ''
+      };
+
+      setProfileData(confirmedProfile);
+      setEditForm(confirmedProfile);
+      setUser({
+        ...user,
+        name: savedProfile.full_name ?? '',
+        avatar_url: savedProfile.avatar_url ?? user.avatar_url,
+        cover_url: savedProfile.cover_url ?? user.cover_url,
+        country: savedProfile.country ?? '',
+        practice_area: savedProfile.practice_area ?? '',
+        bio: savedProfile.bio ?? ''
+      });
       setIsEditModalOpen(false);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error saving profile:', err);
+      setProfileSaveError(err?.message || 'Profile could not be saved. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -467,7 +499,7 @@ export default function ProfilePage() {
                 </button>
 
                 <button 
-                  onClick={() => { setEditForm(profileData); setIsEditModalOpen(true); }}
+                  onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
                   className="px-5 py-2.5 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-semibold text-sm flex items-center gap-2 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
                 >
                   <Edit3 size={16} /> Edit Profile
@@ -922,7 +954,7 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">About</h3>
                   <button 
-                    onClick={() => { setEditForm(profileData); setIsEditModalOpen(true); }}
+                    onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
                     className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
                     <Edit3 size={18} />
@@ -1440,6 +1472,11 @@ export default function ProfilePage() {
               </div>
             </div>
 
+            {profileSaveError && (
+              <p className="mx-4 mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+                Could not save profile: {profileSaveError}
+              </p>
+            )}
             <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3">
               <button 
                 onClick={() => setIsEditModalOpen(false)}
