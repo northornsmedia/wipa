@@ -111,8 +111,26 @@ export default function Sidebar() {
     return null;
   }
 
+  const collapsedNavItems = [
+    { label: 'Feed', path: '/platform', Icon: LayoutGrid },
+    { label: 'Liked Threads', path: '/platform/liked-threads', Icon: Heart },
+    { label: 'My Network', path: '/platform/network', Icon: Globe },
+    { label: 'Members', path: '/platform/members', Icon: Users },
+    { label: 'Messages', path: '/platform/messages', Icon: Mail },
+    { label: 'Groups', path: '/platform/groups', Icon: Users },
+    { label: 'Discussion Forums', path: '/platform/forums', Icon: MessageCircle },
+    { label: 'Resource Library', path: '/platform/resources', Icon: BookOpen },
+    { label: 'Events', path: '/platform/events', Icon: Calendar },
+    { label: 'My Calendar', path: '/platform/calendar', Icon: Calendar },
+    { label: 'Jobs Board', path: '/platform/jobs', Icon: Briefcase },
+    { label: 'Quizzes & XP', path: '/platform/quizzes', Icon: BrainCircuit },
+    { label: 'Leaderboard', path: '/platform/leaderboard', Icon: Trophy },
+    { label: 'Mentorship', path: '/platform/mentorship', Icon: GraduationCap },
+    { label: 'Board Members', path: '/platform/board-members', Icon: Crown },
+  ];
+
   return (
-    <aside className={`sticky top-[73px] hidden h-[calc(100dvh-73px)] min-h-[calc(100dvh-73px)] self-start shrink-0 flex-col bg-white transition-all duration-300 dark:bg-[#0f172a] lg:flex ${isOpen ? 'w-[260px] border-r border-gray-100 dark:border-white/10' : 'w-0 border-r-0'}`}>
+    <aside className={`sticky top-[73px] hidden h-[calc(100dvh-73px)] min-h-[calc(100dvh-73px)] self-start shrink-0 flex-col border-r border-gray-100 bg-white transition-all duration-300 dark:border-white/10 dark:bg-[#0f172a] lg:flex ${isOpen ? 'w-[260px]' : 'w-16'}`}>
       
       <button 
         onClick={() => setIsOpen(!isOpen)}
@@ -123,7 +141,31 @@ export default function Sidebar() {
         {isOpen ? <ChevronLeft size={19} strokeWidth={2.6} /> : <ChevronRight size={19} strokeWidth={2.6} />}
       </button>
 
-      <div className="flex h-full min-h-0 w-full flex-col overflow-y-auto overflow-x-hidden bg-white no-scrollbar dark:bg-[#0f172a]">
+      {!isOpen && (
+        <nav className="flex h-full w-16 flex-col items-center gap-1 overflow-y-auto overflow-x-hidden bg-white px-2 pb-5 pt-14 no-scrollbar dark:bg-[#0f172a]" aria-label="Collapsed main navigation">
+          {collapsedNavItems.map(({ label, path, Icon }) => (
+            <button
+              key={path}
+              type="button"
+              onClick={() => setIsOpen(true)}
+              title={`Open menu · ${label}`}
+              aria-label={`Open menu to ${label}`}
+              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                isActive(path)
+                  ? 'bg-[#f0ebff] text-[#5a32fa]'
+                  : 'text-gray-500 hover:bg-gray-100 hover:text-[#5a32fa] dark:text-gray-300 dark:hover:bg-white/10'
+              }`}
+            >
+              <Icon size={20} strokeWidth={isActive(path) ? 2.5 : 2} />
+              {path === '/platform/messages' && unreadChatsCount > 0 && (
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#ff2a5f] ring-2 ring-white dark:ring-[#0f172a]" />
+              )}
+            </button>
+          ))}
+        </nav>
+      )}
+
+      <div className={`${isOpen ? 'flex' : 'hidden'} h-full min-h-0 w-full flex-col overflow-y-auto overflow-x-hidden bg-white no-scrollbar dark:bg-[#0f172a]`}>
         <div className="flex min-h-full w-[260px] shrink-0 flex-col bg-white dark:bg-[#0f172a]">
 
       <div className="px-4 mb-8 pt-6">
