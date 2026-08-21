@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { ArrowLeft, Users, Search, Plus, Hash, ShieldCheck, Lock, Globe, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
-import AdSlot from '@/components/AdSlot';
 
 const MOCK_GROUPS = [
   {
@@ -110,16 +109,16 @@ export default function GroupsPage() {
         </div>
 
         {/* Filters & Search */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="flex gap-2">
+        <div className="mb-8 flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#151c2c] md:flex-row md:items-center md:justify-between">
+          <div className="flex gap-1.5 overflow-x-auto">
             {['All', 'My Groups'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
-                className={`px-6 py-3 rounded-xl font-bold border-4 transition-all ${
+                className={`rounded-xl border px-6 py-2.5 text-sm font-bold transition-all ${
                   activeTab === tab
-                    ? 'bg-gray-900 text-white border-[#131313] shadow-sm'
-                    : 'bg-white dark:bg-[#0f172a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:border-gray-900'
+                    ? 'border-gray-900 bg-gray-900 text-white shadow-sm dark:border-white dark:bg-white dark:text-gray-900'
+                    : 'border-transparent bg-transparent text-gray-600 hover:border-gray-200 hover:bg-gray-50 dark:text-gray-300 dark:hover:border-white/10 dark:hover:bg-white/5'
                 }`}
               >
                 {tab}
@@ -127,19 +126,14 @@ export default function GroupsPage() {
             ))}
           </div>
 
-          {/* Dynamic Ad Banner */}
-          <div className="hidden lg:block w-72">
-            <AdSlot slotId="groups_sidebar" />
-          </div>
-
-          <div className="relative flex-1 max-w-md ml-auto">
+          <div className="relative w-full md:max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input 
               type="text" 
               placeholder="Search groups by topic or keywords..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-white/10 rounded-xl py-3 pl-12 pr-4 font-bold text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-[#5a32fa]/20 shadow-sm"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-12 pr-4 text-sm font-semibold text-gray-900 outline-none transition-all focus:border-[#5a32fa] focus:ring-4 focus:ring-[#5a32fa]/10 dark:border-white/10 dark:bg-black/20 dark:text-white"
             />
           </div>
         </div>
