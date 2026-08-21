@@ -167,6 +167,16 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
               const conn = connRes.data;
               if (conn.status === 'accepted') {
                 setConnectionStatus('accepted');
+                if (!followRes.data) {
+                  const { error: followSyncError } = await supabase.from('follows').upsert(
+                    { follower_id: user.id, following_id: resolvedId },
+                    { onConflict: 'follower_id,following_id', ignoreDuplicates: true }
+                  );
+                  if (!followSyncError) {
+                    setIsFollowing(true);
+                    setStats(previous => ({ ...previous, followers: previous.followers + 1 }));
+                  }
+                }
               } else if (conn.requester_id === user.id) {
                 setConnectionStatus('pending_sent');
               } else {
@@ -174,7 +184,9 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
               }
             }
 
-            setIsFollowing(Boolean(followRes.data));
+            if (connRes.data?.status !== 'accepted' || followRes.data) {
+              setIsFollowing(Boolean(followRes.data));
+            }
 
             if (likesRes.data) {
               setLikedPostIds(new Set(likesRes.data.map(l => l.post_id)));
@@ -199,6 +211,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     const currentlyFollowing = isFollowing;
 
     try {
+      if (connectionStatus === 'accepted' && currentlyFollowing) return;
       if (currentlyFollowing) {
         await supabase
           .from('follows')
@@ -248,7 +261,15 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
           .from('connections')
           .update({ status: 'accepted' })
           .match({ requester_id: profileData.id, recipient_id: user.id });
+        await supabase.from('follows').upsert(
+          { follower_id: user.id, following_id: profileData.id },
+          { onConflict: 'follower_id,following_id', ignoreDuplicates: true }
+        );
         setConnectionStatus('accepted');
+        if (!isFollowing) {
+          setIsFollowing(true);
+          setStats(previous => ({ ...previous, followers: previous.followers + 1 }));
+        }
       }
     } catch (e) {
       console.error('Error updating connection:', e);
@@ -407,7 +428,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                 {user?.id !== profileData.id && (
                   <button 
                     onClick={handleToggleFollow}
-                    disabled={isTogglingFollow}
+                    disabled={isTogglingFollow || (connectionStatus === 'accepted' && isFollowing)}
+                    title={connectionStatus === 'accepted' ? 'Connected members automatically follow each other' : undefined}
                     className={`px-4 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 shadow-sm transition-all border ${
                       isFollowing
                         ? 'bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#ff90e8] border-[#5a32fa]/30 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-300'

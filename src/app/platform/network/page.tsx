@@ -204,6 +204,10 @@ export default function NetworkPage() {
         .eq('id', connectionId);
         
       if (invite && user?.id) {
+        await supabase.from('follows').upsert(
+          { follower_id: user.id, following_id: invite.requester_id },
+          { onConflict: 'follower_id,following_id', ignoreDuplicates: true }
+        );
         await supabase.from('notifications').insert({
           user_id: invite.requester_id,
           actor_id: user.id,
