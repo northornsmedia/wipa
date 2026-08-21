@@ -1,250 +1,252 @@
-// @ts-nocheck
 'use client';
 
-import React, { useState } from 'react';
-import { ArrowLeft, PlayCircle, Clock, Users, Mic, AlignLeft, ChevronDown, ChevronUp, Music, Headphones } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import {
+  ArrowLeft, CalendarDays, Clock3, Headphones, Mic2, Music2,
+  Pause, Play, RotateCcw, Share2, SkipBack, SkipForward, Users,
+} from 'lucide-react';
+import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import { supabase } from '@/lib/supabase';
 
-export default function PodcastDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
-  const [showTranscript, setShowTranscript] = useState(false);
+const formatClock = (seconds: number) => {
+  if (!Number.isFinite(seconds)) return '0:00';
+  const minutes = Math.floor(seconds / 60);
+  return `${minutes}:${Math.floor(seconds % 60).toString().padStart(2, '0')}`;
+};
+
+export default function PodcastDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [episode, setEpisode] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  React.useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      const { data: podcast } = await supabase
-        .from('podcasts')
-        .select('*')
-        .eq('id', id)
-        .single();
-        
-      if (podcast) {
-        const { data: hostProfile } = await supabase
-          .from('profiles')
-          .select('is_wipa_recommended')
-          .eq('full_name', podcast.host_name)
-          .maybeSingle();
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [copied, setCopied] = useState(false);
 
-        setEpisode({
-          id: podcast.id,
-          title: podcast.title,
-          type: podcast.content_type || "Podcast Episode",
-          duration: podcast.duration || "N/A",
-          publishedAt: new Date(podcast.created_at).toLocaleDateString(),
-          host: {
-            name: podcast.host_name || "Unknown",
-            is_wipa_recommended: hostProfile?.is_wipa_recommended,
-            role: "Host",
-            image: podcast.cover_image_url || "https://i.pravatar.cc/150?img=12"
-          },
-          guest: {
-            name: podcast.guest_names || "Unknown",
-            role: "Guest",
-            image: "https://i.pravatar.cc/150?img=5"
-          },
-          description: podcast.description || "No description provided.",
-          transcriptSummary: [],
-          fullTranscript: podcast.transcript || "No transcript available.",
-          audioUrl: podcast.media_file_url || "#",
-          image: podcast.cover_image_url || null
-        });
-        
-        // Fetch related
-        const { data: relatedData } = await supabase
-          .from('podcasts')
-          .select('id, title, content_type')
-          .neq('id', id)
-          .limit(2);
-          
-        if (relatedData) {
-          setRelated(relatedData.map(r => ({
-            id: r.id,
-            title: r.title,
-            type: r.content_type
-          })));
-        }
+  useEffect(() => {
+    if (!id) return;
+    let active = true;
+
+    const fetchEpisode = async () => {
+      setLoading(true);
+      setLoadError(null);
+      const { data, error } = await supabase.from('podcasts').select('*').eq('id', id).maybeSingle();
+
+      if (!active) return;
+      if (error) {
+        setLoadError(error.message);
+        setLoading(false);
+        return;
       }
-      setIsLoading(false);
-    }
-    fetchData();
+      if (!data) {
+        setLoadError('This podcast episode could not be found.');
+        setLoading(false);
+        return;
+      }
+
+      setEpisode(data);
+      let relatedQuery = supabase
+        .from('podcasts')
+        .select('id, title, content_type, host_name, duration, cover_image_url, created_at')
+        .neq('id', data.id)
+        .order('created_at', { ascending: false })
+        .limit(4);
+      if (data.subcategory) relatedQuery = relatedQuery.eq('subcategory', data.subcategory);
+      const { data: relatedRows } = await relatedQuery;
+      if (active) {
+        setRelated(relatedRows || []);
+        setLoading(false);
+      }
+    };
+
+    void fetchEpisode();
+    return () => { active = false; };
   }, [id]);
 
-  if (isLoading || !episode) {
-    return <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex items-center justify-center font-bold text-gray-500">Loading Episode...</div>;
+  useEffect(() => {
+    setPlaying(false);
+    setCurrentTime(0);
+    setAudioDuration(0);
+  }, [id]);
+
+  const togglePlayback = async () => {
+    const audio = audioRef.current;
+    if (!audio || !episode?.media_file_url) return;
+    if (audio.paused) {
+      await audio.play();
+      setPlaying(true);
+    } else {
+      audio.pause();
+      setPlaying(false);
+    }
+  };
+
+  const seekBy = (amount: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + amount));
+  };
+
+  const shareEpisode = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      await navigator.share({ title: episode.title, url }).catch(() => {});
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[calc(100dvh-72px)] items-center justify-center bg-[#121212] text-[#1ed760]">
+        <DotmCircular7 size={64} dotSize={8} />
+      </div>
+    );
   }
 
+  if (loadError || !episode) {
+    return (
+      <div className="flex min-h-[calc(100dvh-72px)] flex-col items-center justify-center bg-[#121212] px-6 text-center text-white">
+        <Headphones size={48} className="mb-5 text-white/30" />
+        <h1 className="text-2xl font-black">Episode unavailable</h1>
+        <p className="mt-2 max-w-md text-sm text-white/55">{loadError}</p>
+        <Link href="/platform/resources/podcasts-conversations" className="mt-7 rounded-full bg-white px-6 py-3 text-sm font-black text-black">Back to podcasts</Link>
+      </div>
+    );
+  }
+
+  const topic = episode.topic_tag || episode.custom_topic || episode.subcategory;
+  const published = episode.created_at
+    ? new Date(episode.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })
+    : null;
+  const transcript = typeof episode.transcript === 'string' ? episode.transcript.trim() : '';
+
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] pb-20">
-      
-      {/* Header Area */}
-      <div className="bg-white dark:bg-[#1e293b] border-b border-gray-200 dark:border-white/10 pt-8 pb-12 relative overflow-hidden">
-        {/* Decorative background element */}
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-[#f59e0b]/10 blur-[100px] rounded-full transform translate-x-1/3 -translate-y-1/4 pointer-events-none"></div>
+    <div className="min-h-screen bg-[#121212] pb-28 text-white">
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#473414] via-[#292015] to-[#121212]">
+        {episode.cover_image_url && (
+          <img src={episode.cover_image_url} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-20 blur-3xl" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-black/15 to-black/30" />
 
-        <div className="w-full max-w-[900px] mx-auto p-4 md:p-6 lg:p-8 relative z-10">
-          <Link href="/platform/resources/podcasts-conversations" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#f59e0b] font-bold text-sm mb-10 transition-colors">
-            <ArrowLeft size={16} />
-            Back to Podcasts & Conversations
-          </Link>
-          
-          <div className="flex flex-wrap items-center gap-3 text-sm font-bold mb-6">
-            <span className="bg-[#f59e0b]/10 px-3 py-1 rounded-md uppercase tracking-wider text-[10px] text-[#f59e0b]">{episode.type}</span>
-            <span className="text-gray-500 dark:text-gray-400 font-medium">{episode.publishedAt}</span>
+        <div className="relative mx-auto max-w-6xl px-5 pb-12 pt-6 sm:px-8 sm:pt-8">
+          <div className="mb-10 flex items-center justify-between">
+            <Link href="/platform/resources/podcasts-conversations" className="inline-flex items-center gap-2 rounded-full bg-black/35 px-4 py-2 text-sm font-bold backdrop-blur hover:bg-black/55">
+              <ArrowLeft size={17} /> Podcasts
+            </Link>
+            <button onClick={() => void shareEpisode()} className="inline-flex items-center gap-2 rounded-full bg-black/35 px-4 py-2 text-sm font-bold backdrop-blur hover:bg-black/55">
+              <Share2 size={16} /> {copied ? 'Copied' : 'Share'}
+            </button>
           </div>
-          
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-gray-100 mb-8 leading-tight">
-            {episode.title}
-          </h1>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-t border-gray-100 dark:border-white/10 pt-6">
-            <div className="flex items-center gap-6">
-              {/* Host & Guest Avatars */}
-              <div className="flex items-center">
-                <img src={episode.host.image} alt={episode.host.name} className="w-12 h-12 rounded-full border-2 border-white dark:border-[#1e293b] relative z-10" />
-                <img src={episode.guest.image} alt={episode.guest.name} className="w-12 h-12 rounded-full border-2 border-white dark:border-[#1e293b] -ml-4 relative z-0" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1">
-                  <span className="text-gray-500">Host:</span> {episode.host.name} {episode.host.is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap ml-1">⭐ WIPA</span>}
-                </p>
-                <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mt-0.5">
-                  <span className="text-gray-500">Guest:</span> {episode.guest.name}
-                </p>
-              </div>
+          <div className="flex flex-col items-center gap-7 md:flex-row md:items-end md:gap-10">
+            <div className="flex aspect-square w-56 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-[#1ed760] to-[#075f2d] shadow-[0_24px_60px_rgba(0,0,0,.55)] sm:w-64 md:w-72">
+              {episode.cover_image_url ? <img src={episode.cover_image_url} alt={episode.title} className="h-full w-full object-cover" /> : <Headphones size={92} className="text-black/70" />}
             </div>
-            
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 font-bold text-sm bg-gray-50 dark:bg-[#0f172a] px-4 py-2 rounded-xl shrink-0">
-              <Clock size={16} className="text-[#f59e0b]" />
-              {episode.duration}
+
+            <div className="min-w-0 flex-1 text-center md:text-left">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-white/75">{episode.content_type || 'Podcast'}</p>
+              <h1 className="text-4xl font-black leading-[1.02] tracking-[-0.04em] sm:text-5xl lg:text-7xl">{episode.title}</h1>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm font-semibold text-white/70 md:justify-start">
+                {episode.host_name && <span className="font-black text-white">{episode.host_name}</span>}
+                {episode.guest_names && <><span>•</span><span>with {episode.guest_names}</span></>}
+                {published && <><span>•</span><span>{published}</span></>}
+                {episode.duration && <><span>•</span><span>{episode.duration}</span></>}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="w-full max-w-[900px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
-        
-        {/* Media Player Card */}
-        <div className="bg-white dark:bg-[#1e293b] rounded-[2rem] p-8 shadow-lg shadow-gray-200/50 dark:shadow-none border border-gray-200 dark:border-white/10 mb-10 transform -translate-y-16">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="w-40 h-40 rounded-2xl bg-gradient-to-br from-[#f59e0b] to-[#d97706] shadow-lg flex items-center justify-center shrink-0 overflow-hidden relative">
-              {episode.image ? (
-                <img src={episode.image} alt={episode.title} className="w-full h-full object-cover" />
-              ) : (
-                <Headphones size={64} className="text-white opacity-90" />
-              )}
-            </div>
-            
-            <div className="flex-1 w-full text-center md:text-left">
-              <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 mb-2 line-clamp-1">{episode.title}</h2>
-              <p className="text-[#f59e0b] font-bold text-sm mb-6 flex items-center justify-center md:justify-start gap-1">{episode.host.name} {episode.host.is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>} ft. {episode.guest.name}</p>
-              
-              {/* Audio Player */}
-              <div className="flex items-center gap-4 w-full">
-                {episode.audioUrl !== '#' && (
-                  <audio controls className="w-full h-12 outline-none" src={episode.audioUrl} />
-                )}
-                {episode.audioUrl === '#' && (
-                  <div className="w-full bg-gray-100 dark:bg-[#0f172a] text-center p-3 rounded-xl text-gray-500 font-bold text-sm">
-                    No Audio Available
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Description & Summary Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 -mt-6">
-          
-          {/* Description */}
-          <div className="md:col-span-2 bg-white dark:bg-[#1e293b] rounded-[2rem] p-8 shadow-sm border border-gray-200 dark:border-white/10">
-            <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-              <Mic className="text-[#f59e0b]" size={20} /> Episode Description
-            </h2>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-              {episode.description}
-            </p>
-          </div>
-
-          {/* Guest Profile Mini */}
-          <div className="bg-gradient-to-br from-[#f59e0b]/10 to-transparent rounded-[2rem] p-8 border border-[#f59e0b]/20 shadow-sm flex flex-col items-center text-center">
-            <img src={episode.guest.image} alt={episode.guest.name} className="w-24 h-24 rounded-full border-4 border-white dark:border-[#1e293b] shadow-md mb-4" />
-            <h3 className="font-black text-lg text-gray-900 dark:text-gray-100">{episode.guest.name}</h3>
-            <p className="text-[#f59e0b] font-bold text-sm mb-4">{episode.guest.role}</p>
-            <button className="mt-auto px-4 py-2 w-full bg-white dark:bg-[#1e293b] border border-[#f59e0b]/30 rounded-xl font-bold text-gray-700 dark:text-gray-200 hover:border-[#f59e0b] hover:text-[#f59e0b] transition-all text-sm">
-              View Full Profile
-            </button>
-          </div>
-        </div>
-
-        {/* Transcript / Timestamps */}
-        <div className="bg-white dark:bg-[#1e293b] rounded-[2rem] p-8 shadow-sm border border-gray-200 dark:border-white/10 mb-12">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <AlignLeft className="text-[#f59e0b]" size={24} /> Key Moments & Transcript
-            </h2>
-            <button 
-              onClick={() => setShowTranscript(!showTranscript)}
-              className="flex items-center gap-2 text-sm font-bold text-[#f59e0b] hover:text-[#d97706] transition-colors bg-[#f59e0b]/10 px-4 py-2 rounded-lg"
-            >
-              {showTranscript ? (
-                <>Hide Full Transcript <ChevronUp size={16} /></>
-              ) : (
-                <>Read Full Transcript <ChevronDown size={16} /></>
-              )}
-            </button>
-          </div>
-          
-          {!showTranscript ? (
-            <div className="space-y-4 relative before:absolute before:inset-y-2 before:left-[35px] before:w-0.5 before:bg-gray-100 dark:before:bg-white/5">
-              {episode.transcriptSummary.map((item, idx) => (
-                <div key={idx} className="relative flex items-center gap-6">
-                  <div className="w-20 bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-white/10 rounded-lg py-1.5 px-3 text-center text-sm font-black text-gray-600 dark:text-gray-300 relative z-10">
-                    {item.timestamp}
-                  </div>
-                  <p className="text-gray-700 dark:text-gray-300 font-medium">{item.text}</p>
+      <main className="mx-auto max-w-6xl px-5 sm:px-8">
+        <section className="-mt-1 rounded-2xl bg-[#181818] p-5 shadow-2xl sm:p-7">
+          {episode.media_file_url ? (
+            <>
+              <audio
+                ref={audioRef}
+                src={episode.media_file_url}
+                preload="metadata"
+                onLoadedMetadata={(event) => setAudioDuration(event.currentTarget.duration || 0)}
+                onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+                onPlay={() => setPlaying(true)}
+                onPause={() => setPlaying(false)}
+                onEnded={() => setPlaying(false)}
+              />
+              <div className="flex flex-col gap-5">
+                <div className="flex items-center justify-center gap-7">
+                  <button onClick={() => seekBy(-15)} className="text-white/60 hover:text-white" aria-label="Back 15 seconds"><SkipBack size={24} /></button>
+                  <button onClick={() => void togglePlayback()} className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1ed760] text-black transition-transform hover:scale-105" aria-label={playing ? 'Pause episode' : 'Play episode'}>
+                    {playing ? <Pause size={29} fill="currentColor" /> : <Play size={29} fill="currentColor" className="ml-1" />}
+                  </button>
+                  <button onClick={() => seekBy(15)} className="text-white/60 hover:text-white" aria-label="Forward 15 seconds"><SkipForward size={24} /></button>
                 </div>
+                <div className="flex items-center gap-3 text-xs font-semibold text-white/55">
+                  <span className="w-10 text-right">{formatClock(currentTime)}</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={audioDuration || 0}
+                    step="0.1"
+                    value={Math.min(currentTime, audioDuration || 0)}
+                    onChange={(event) => { if (audioRef.current) audioRef.current.currentTime = Number(event.target.value); }}
+                    className="h-1 flex-1 cursor-pointer accent-[#1ed760]"
+                    aria-label="Episode progress"
+                  />
+                  <span className="w-10">{formatClock(audioDuration)}</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center gap-3 py-5 text-sm font-bold text-white/45"><RotateCcw size={19} /> No media file was saved for this episode.</div>
+          )}
+        </section>
+
+        <div className="grid gap-10 py-12 lg:grid-cols-[1fr_320px]">
+          <div className="space-y-10">
+            {episode.description && (
+              <section><h2 className="mb-4 text-2xl font-black">About this episode</h2><p className="whitespace-pre-wrap text-base leading-8 text-white/68">{episode.description}</p></section>
+            )}
+            {transcript && (
+              <section className="border-t border-white/10 pt-9"><h2 className="mb-4 text-2xl font-black">Transcript</h2><p className="whitespace-pre-wrap text-sm leading-7 text-white/65">{transcript}</p></section>
+            )}
+          </div>
+
+          <aside className="space-y-4">
+            <h2 className="text-lg font-black">Episode details</h2>
+            <div className="space-y-4 rounded-2xl bg-[#181818] p-5 text-sm">
+              {episode.host_name && <div className="flex gap-3"><Mic2 size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Host</p><p className="font-bold">{episode.host_name}</p></div></div>}
+              {episode.guest_names && <div className="flex gap-3"><Users size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Guests</p><p className="font-bold">{episode.guest_names}</p></div></div>}
+              {topic && <div className="flex gap-3"><Music2 size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Topic</p><p className="font-bold">{topic}</p></div></div>}
+              {published && <div className="flex gap-3"><CalendarDays size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Published</p><p className="font-bold">{published}</p></div></div>}
+              {episode.duration && <div className="flex gap-3"><Clock3 size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Duration</p><p className="font-bold">{episode.duration}</p></div></div>}
+            </div>
+          </aside>
+        </div>
+
+        {related.length > 0 && (
+          <section className="border-t border-white/10 py-10">
+            <h2 className="mb-6 text-2xl font-black">More episodes</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {related.map((item) => (
+                <Link key={item.id} href={`/platform/resources/podcasts-conversations/${item.id}`} className="group rounded-xl bg-[#181818] p-4 transition-colors hover:bg-[#282828]">
+                  <div className="mb-4 flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-[#2b2b2b] to-[#111]">
+                    {item.cover_image_url ? <img src={item.cover_image_url} alt={item.title} className="h-full w-full object-cover transition-transform group-hover:scale-105" /> : <Headphones size={44} className="text-white/25" />}
+                  </div>
+                  <h3 className="line-clamp-2 font-black">{item.title}</h3>
+                  {item.host_name && <p className="mt-2 truncate text-xs text-white/50">{item.host_name}</p>}
+                </Link>
               ))}
             </div>
-          ) : (
-            <div className="bg-gray-50 dark:bg-[#0f172a] p-6 rounded-2xl border border-gray-200 dark:border-white/10">
-              <pre className="whitespace-pre-wrap font-sans text-gray-700 dark:text-gray-300 leading-relaxed text-sm">
-                {episode.fullTranscript}
-              </pre>
-            </div>
-          )}
-        </div>
-
-        {/* Related Episodes */}
-        <div className="border-t border-gray-200 dark:border-white/10 pt-12">
-          <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 mb-8 flex items-center gap-2">
-            <Music className="text-[#f59e0b]" size={24} /> More Episodes
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {related.map(item => (
-              <Link key={item.id} href={`/platform/resources/podcasts-conversations/${item.id}`} className="group block">
-                <div className="p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1e293b] hover:border-[#f59e0b]/50 hover:shadow-md transition-all flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-[#0f172a] flex items-center justify-center shrink-0 text-gray-400 group-hover:text-[#f59e0b] group-hover:bg-[#f59e0b]/10 transition-colors">
-                    <PlayCircle size={24} />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-black uppercase text-[#f59e0b] mb-1 block">{item.type}</span>
-                    <p className="font-bold text-gray-800 dark:text-gray-100 text-sm group-hover:text-[#f59e0b] transition-colors line-clamp-2">
-                      {item.title}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-      </div>
+          </section>
+        )}
+      </main>
     </div>
   );
 }
