@@ -17,6 +17,7 @@ interface MobileCommentDrawerProps {
   setCommentText: (val: string) => void;
   onSubmitComment: () => void;
   isSubmitting: boolean;
+  error?: string;
 }
 
 export default function MobileCommentDrawer({
@@ -27,16 +28,33 @@ export default function MobileCommentDrawer({
   commentText,
   setCommentText,
   onSubmitComment,
-  isSubmitting
+  isSubmitting,
+  error
 }: MobileCommentDrawerProps) {
   const user = useAppStore((state) => state.user);
+  const [viewport, setViewport] = React.useState<{ height: number; top: number } | null>(null);
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const syncViewport = () => {
+      const visual = window.visualViewport;
+      setViewport({ height: visual?.height || window.innerHeight, top: visual?.offsetTop || 0 });
+    };
+    syncViewport();
+    window.visualViewport?.addEventListener('resize', syncViewport);
+    window.visualViewport?.addEventListener('scroll', syncViewport);
+    return () => {
+      window.visualViewport?.removeEventListener('resize', syncViewport);
+      window.visualViewport?.removeEventListener('scroll', syncViewport);
+    };
+  }, [isOpen]);
 
   if (!post) return null;
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[110] flex flex-col justify-end">
+        <div className="fixed inset-x-0 top-0 z-[110] flex flex-col justify-end md:hidden" style={{ height: viewport ? `${viewport.height}px` : '100dvh', transform: viewport?.top ? `translateY(${viewport.top}px)` : undefined }}>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -52,7 +70,8 @@ export default function MobileCommentDrawer({
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            className="relative z-10 w-full max-w-lg mx-auto bg-white dark:bg-[#151c2c] rounded-t-[2rem] border-t border-gray-200 dark:border-gray-800 shadow-2xl flex flex-col max-h-[85vh] overflow-hidden"
+            className="relative z-10 w-full max-w-lg mx-auto bg-white dark:bg-[#151c2c] rounded-t-[2rem] border-t border-gray-200 dark:border-gray-800 shadow-2xl flex flex-col overflow-hidden"
+            style={{ maxHeight: viewport ? `${Math.min(viewport.height * 0.92, 760)}px` : '88dvh' }}
           >
             {/* Grab Handle & Header */}
             <div className="p-4 border-b border-gray-100 dark:border-gray-800/80 flex items-center justify-between shrink-0">
@@ -128,10 +147,11 @@ export default function MobileCommentDrawer({
             </div>
 
             {/* Comment Composer Input */}
-            <div className="p-3 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-[#151c2c] pb-safe shrink-0">
+            <div className="p-3 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-[#151c2c] pb-[max(env(safe-area-inset-bottom),12px)] shrink-0">
+              {error && <p className="mb-2 px-1 text-xs font-semibold text-rose-500">{error}</p>}
               <div className="flex items-center gap-2 bg-gray-100 dark:bg-white/5 rounded-2xl p-1.5 pl-3 border border-transparent focus-within:border-[#5a32fa] transition-all">
-                <input
-                  type="text"
+                <textarea
+                  rows={1}
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   onKeyDown={(e) => {
@@ -141,7 +161,7 @@ export default function MobileCommentDrawer({
                     }
                   }}
                   placeholder="Write a comment..."
-                  className="flex-1 bg-transparent text-xs text-gray-900 dark:text-white placeholder:text-gray-400 outline-none"
+                  className="max-h-24 min-h-6 flex-1 resize-none bg-transparent py-0.5 text-base leading-6 text-gray-900 caret-[#5a32fa] dark:text-white placeholder:text-gray-400 outline-none"
                 />
                 <button
                   onClick={onSubmitComment}

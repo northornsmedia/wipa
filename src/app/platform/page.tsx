@@ -48,6 +48,7 @@ export default function PlatformPage() {
   const [savedPostIds, setSavedPostIds] = useState<Set<string>>(new Set());
   const [activeCommentPost, setActiveCommentPost] = useState<any | null>(null);
   const [commentText, setCommentText] = useState('');
+  const [commentError, setCommentError] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [postComments, setPostComments] = useState<Record<string, any[]>>({});
   const [activeMenuPostId, setActiveMenuPostId] = useState<string | null>(null);
@@ -522,23 +523,45 @@ export default function PlatformPage() {
     const targetPost = feedPosts.find(p => p.id === postId);
     if (targetPost?.comments_disabled) return;
     setIsSubmittingComment(true);
-    
-    const { error } = await supabase.from('feed_comments').insert({
-      post_id: postId,
-      author_id: user.id,
-      content: commentText
-    });
+    setCommentError('');
+    const content = commentText.trim();
+    const commentId = crypto.randomUUID();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user?.id) {
+      setIsSubmittingComment(false);
+      setCommentError('Your session expired. Please sign in again.');
+      return;
+    }
+
+    let result: any = null;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      result = await supabase.from('feed_comments').insert({
+        id: commentId,
+        post_id: postId,
+        author_id: session.user.id,
+        content
+      }).select('*, author:profiles!feed_comments_author_id_fkey(full_name, avatar_url, is_wipa_recommended)').single();
+      if (!result.error || result.error.code === '23505') break;
+      const transient = /load failed|failed to fetch|network|connection/i.test(result.error.message || '');
+      if (!transient || attempt === 3) break;
+      await new Promise((resolve) => setTimeout(resolve, 700 * (attempt + 1)));
+    }
     
     setIsSubmittingComment(false);
     
-    if (error) {
-      console.error("Failed to post comment:", error);
+    if (result?.error && result.error.code !== '23505') {
+      console.error("Failed to post comment:", result.error);
+      setCommentError('Comment was not posted. Please tap send to try again.');
       return;
     }
-    
+
     setCommentText('');
-    fetchComments(postId); // Refresh comments to show the new one
-    fetchFeed(); // Update the comment count on the post
+    if (result?.data) {
+      setPostComments((previous) => ({ ...previous, [postId]: [...(previous[postId] || []), result.data] }));
+      setFeedPosts((previous) => previous.map((post) => post.id === postId ? { ...post, comments_count: (post.comments_count || 0) + 1 } : post));
+    } else {
+      await fetchComments(postId);
+    }
   };
 
   const handleDeletePost = (postId: string) => {
@@ -1431,7 +1454,7 @@ export default function PlatformPage() {
       
       {/* Comment Modal */}
       {activeCommentPost && (
-        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] hidden md:flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-[600px] overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-5 border-b border-gray-50 dark:border-white/5 pt-6 shrink-0">
@@ -1605,6 +1628,7 @@ export default function PlatformPage() {
         setCommentText={setCommentText}
         onSubmitComment={() => activeCommentPost && handleCommentSubmit(activeCommentPost.id)}
         isSubmitting={isSubmittingComment}
+        error={commentError}
       />
 
       <FeedShareSheet
