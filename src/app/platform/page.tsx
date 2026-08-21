@@ -1048,11 +1048,11 @@ export default function PlatformPage() {
                       <div className="w-full max-w-full min-w-0 flex items-center justify-between mb-3 px-3 sm:px-0 box-border">
                         <div className="flex items-center gap-2.5">
                           <Link href={`/platform/profile/${post.author_id}`} className="shrink-0 hover:opacity-80 transition-opacity block">
-                            <div className="p-0.5 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8]">
+                            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] p-0.5 sm:h-11 sm:w-11">
                               {author.avatar_url ? (
-                                <img src={author.avatar_url} alt={authorName} loading={index < 2 ? 'eager' : 'lazy'} decoding="async" className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-white dark:ring-[#0f172a]" />
+                                <img src={author.avatar_url} alt={authorName} loading={index < 2 ? 'eager' : 'lazy'} decoding="async" className="block h-full w-full rounded-full object-cover object-center ring-2 ring-white dark:ring-[#0f172a]" />
                               ) : (
-                                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-[#0f172a]">
+                                <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-xs font-bold text-white ring-2 ring-white dark:ring-[#0f172a]">
                                   {initial}
                                 </div>
                               )}
