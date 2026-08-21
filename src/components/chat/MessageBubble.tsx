@@ -162,6 +162,19 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
   onImageClick
 }) => {
   const isMe = message.sender === 'me';
+  const renderLinkedText = (text: string) => text.split(/(https?:\/\/[^\s]+)/g).map((part, index) =>
+    /^https?:\/\//.test(part) ? (
+      <a
+        key={`${part}-${index}`}
+        href={part}
+        target={part.includes('/platform/post/') ? '_self' : '_blank'}
+        rel={part.includes('/platform/post/') ? undefined : 'noopener noreferrer'}
+        className="break-all underline underline-offset-2 hover:opacity-80"
+      >
+        {part}
+      </a>
+    ) : <React.Fragment key={index}>{part}</React.Fragment>
+  );
 
   return (
     <div 
@@ -249,7 +262,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
         {/* 6. Standard Text Message */}
         {(!message.type || message.type === 'text') && (
           <span className="whitespace-pre-wrap select-text leading-relaxed">
-            {message.text}
+            {renderLinkedText(message.text || '')}
           </span>
         )}
       </div>

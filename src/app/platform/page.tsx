@@ -18,6 +18,7 @@ import AdSlot from '@/components/AdSlot';
 import FeedStoriesCarousel from '@/components/FeedStoriesCarousel';
 import MobileCommentDrawer from '@/components/MobileCommentDrawer';
 import ProgressiveFeedImage from '@/components/ProgressiveFeedImage';
+import FeedShareSheet from '@/components/FeedShareSheet';
 import { optimizeFeedUpload, readCachedFeed, writeCachedFeed } from '@/lib/feedPerformance';
 
 const FEED_PAGE_SIZE = 8;
@@ -56,6 +57,7 @@ export default function PlatformPage() {
   const [isUpdatingPost, setIsUpdatingPost] = useState(false);
   const [isIpWisdomModalOpen, setIsIpWisdomModalOpen] = useState(false);
   const [previewModalImage, setPreviewModalImage] = useState<string | null>(null);
+  const [sharePost, setSharePost] = useState<any | null>(null);
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const [userBusiness, setUserBusiness] = useState<any>(null);
   const [postAsId, setPostAsId] = useState<string>('user'); // 'user' or business.id
@@ -1260,18 +1262,7 @@ export default function PlatformPage() {
 
                             {/* Share Button */}
                             <button 
-                              onClick={() => {
-                                if (typeof navigator !== 'undefined' && navigator.share) {
-                                  navigator.share({
-                                    title: 'WIPA Network Post',
-                                    text: post.content?.slice(0, 100) || 'Check out this post on WIPA',
-                                    url: window.location.href,
-                                  }).catch(() => {});
-                                } else {
-                                  navigator.clipboard.writeText(window.location.href);
-                                  alert('Link copied to clipboard!');
-                                }
-                              }}
+                              onClick={() => setSharePost(post)}
                               className="text-gray-700 dark:text-gray-200 hover:text-[#ff90e8] transition-transform active:scale-75 -rotate-12 shrink-0"
                               aria-label="Share post"
                             >
@@ -1601,6 +1592,13 @@ export default function PlatformPage() {
         setCommentText={setCommentText}
         onSubmitComment={() => activeCommentPost && handleCommentSubmit(activeCommentPost.id)}
         isSubmitting={isSubmittingComment}
+      />
+
+      <FeedShareSheet
+        open={Boolean(sharePost)}
+        post={sharePost}
+        user={user}
+        onClose={() => setSharePost(null)}
       />
 
       {/* Desktop Image Lightbox Preview Modal */}
