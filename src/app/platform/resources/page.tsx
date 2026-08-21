@@ -266,6 +266,21 @@ export default function ResourcesPage() {
             }
           }
 
+          @media (min-width: 1024px) {
+            .loader-wrapper {
+              font-size: 2.25rem;
+              height: 150px;
+              letter-spacing: 0.02em;
+            }
+          }
+
+          @media (min-width: 1440px) {
+            .loader-wrapper {
+              font-size: 2.65rem;
+              height: 170px;
+            }
+          }
+
           .loader {
             position: absolute;
             top: 0;
