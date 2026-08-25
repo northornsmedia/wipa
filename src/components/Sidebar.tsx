@@ -21,7 +21,6 @@ import {
   ArrowUpRight,
   Circle,
   Globe,
-  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
@@ -29,15 +28,40 @@ import {
   Building2,
   Plus,
   BrainCircuit,
-  Trophy
+  Trophy,
+  Sparkles,
+  Video,
+  Newspaper,
+  Compass,
+  Mic,
+  Activity,
+  Headphones,
+  Settings,
+  HelpCircle,
+  ExternalLink
 } from 'lucide-react';
-import { ShinyButton } from './ShinyButton';
 
 type SidebarProps = {
   isOpen: boolean;
   onToggle: () => void;
   onOpen: () => void;
 };
+
+const RESOURCE_SUBITEMS = [
+  { label: 'Webinars & Learning', path: '/platform/resources/webinars', color: 'bg-indigo-500' },
+  { label: 'Education & Dev', path: '/platform/resources/education', color: 'bg-blue-500' },
+  { label: 'Publications', path: '/publications', color: 'bg-violet-500', isPublication: true },
+  { label: 'Articles & Insights', path: '/platform/resources/articles-insights', color: 'bg-cyan-500' },
+  { label: 'IP News & Updates', path: '/platform/resources/ip-news', color: 'bg-amber-500' },
+  { label: 'Research & Reports', path: '/platform/resources/research-reports', color: 'bg-emerald-500' },
+  { label: 'Guides & Toolkits', path: '/platform/resources/guides-toolkits', color: 'bg-teal-500' },
+  { label: 'Career & Leadership', path: '/platform/resources/career-leadership', color: 'bg-orange-500' },
+  { label: 'In-House Counsel', path: '/platform/resources/in-house-counsel', color: 'bg-purple-500' },
+  { label: 'Podcasts & Convos', path: '/platform/resources/podcasts-conversations', color: 'bg-pink-500' },
+  { label: 'Wellness & Wellbeing', path: '/platform/resources/wellness', color: 'bg-rose-500' },
+  { label: 'IP Services', path: '/platform/resources/ip-services', color: 'bg-sky-500' },
+  { label: 'IP Firms', path: '/platform/resources/ip-firms', color: 'bg-blue-600' },
+];
 
 export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
   const pathname = usePathname();
@@ -54,21 +78,12 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
     return pathname.startsWith(path);
   };
 
-  const navLinkClass = (path: string) => {
-    return `flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-[13px] transition-colors ${
-      isActive(path) 
-        ? 'bg-[#f0ebff] text-[#5a32fa] font-bold' 
-        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5'
-    }`;
-  };
-
   const [unreadChatsCount, setUnreadChatsCount] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
   const [isResourcesExpanded, setIsResourcesExpanded] = useState(
     () => pathname.startsWith('/platform/resources') || isPublicationRoute
   );
 
-  // Fetch initial unread count and listen for changes
   useEffect(() => {
     if (!user?.id) return;
 
@@ -131,260 +146,333 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
     { label: 'Members', path: '/platform/members', Icon: Users },
     { label: 'Messages', path: '/platform/messages', Icon: Mail },
     { label: 'Groups', path: '/platform/groups', Icon: Users },
-    { label: 'Discussion Forums', path: '/platform/forums', Icon: MessageCircle },
+    { label: 'Forums', path: '/platform/forums', Icon: MessageCircle },
     { label: 'Resource Library', path: '/platform/resources', Icon: BookOpen },
     { label: 'Events', path: '/platform/events', Icon: Calendar },
-    { label: 'My Calendar', path: '/platform/calendar', Icon: Calendar },
-    { label: 'Jobs Board', path: '/platform/jobs', Icon: Briefcase },
+    { label: 'Calendar', path: '/platform/calendar', Icon: Calendar },
+    { label: 'Jobs', path: '/platform/jobs', Icon: Briefcase },
     { label: 'Quizzes & XP', path: '/platform/quizzes', Icon: BrainCircuit },
     { label: 'Leaderboard', path: '/platform/leaderboard', Icon: Trophy },
     { label: 'Mentorship', path: '/platform/mentorship', Icon: GraduationCap },
     { label: 'Board Members', path: '/platform/board-members', Icon: Crown },
   ];
 
+  const renderNavLink = (path: string, label: string, Icon: any, badge?: React.ReactNode) => {
+    const active = isActive(path);
+    return (
+      <Link 
+        prefetch={false} 
+        href={path} 
+        className={`group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 ${
+          active 
+            ? 'bg-violet-50/90 text-[#5a32fa] font-bold shadow-xs dark:bg-violet-500/15 dark:text-violet-300' 
+            : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white'
+        }`}
+      >
+        {/* Active left indicator bar */}
+        {active && (
+          <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[#5a32fa] dark:bg-violet-400" />
+        )}
+        
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-transform duration-200 group-hover:scale-110 ${
+            active 
+              ? 'bg-[#5a32fa]/10 text-[#5a32fa] dark:bg-violet-400/20 dark:text-violet-300' 
+              : 'text-slate-400 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-white'
+          }`}>
+            <Icon size={17} strokeWidth={active ? 2.3 : 2} />
+          </span>
+          <span className="truncate">{label}</span>
+        </div>
+
+        {badge}
+      </Link>
+    );
+  };
+
   return (
-    <aside className={`fixed bottom-0 left-0 top-[var(--platform-header-height)] z-30 hidden flex-col border-r border-gray-100 bg-white transition-all duration-300 dark:border-white/10 dark:bg-[#0f172a] lg:flex ${isOpen ? 'w-[260px]' : 'w-16'}`}>
+    <aside className={`fixed bottom-0 left-0 top-[var(--platform-header-height)] z-30 hidden flex-col border-r border-slate-200/80 bg-white/95 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#0b1120]/95 lg:flex ${isOpen ? 'w-[268px]' : 'w-16'}`}>
       
+      {/* Toggle button */}
       <button 
         type="button"
         onClick={onToggle}
-        className="absolute right-3 top-3 z-50 flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-[#5a32fa]/20 bg-[#f0ebff] text-[#5a32fa] shadow-sm transition-all duration-200 hover:scale-105 hover:border-[#5a32fa]/40 hover:bg-[#5a32fa] hover:text-white hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5a32fa] focus-visible:ring-offset-2 dark:border-[#b892ff]/25 dark:bg-[#5a32fa]/20 dark:text-[#c9b6ff] dark:hover:bg-[#5a32fa] dark:hover:text-white dark:focus-visible:ring-offset-[#0f172a]"
+        className="absolute right-3 top-3.5 z-50 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-xs transition-all duration-200 hover:border-[#5a32fa]/40 hover:bg-violet-50 hover:text-[#5a32fa] active:scale-95 dark:border-white/10 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-violet-500/30 dark:hover:bg-violet-950/40 dark:hover:text-violet-300"
         aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
         aria-expanded={isOpen}
         aria-controls="desktop-sidebar-navigation"
         title={isOpen ? 'Collapse menu' : 'Open menu'}
       >
-        {isOpen ? <ChevronLeft size={20} strokeWidth={2.8} /> : <ChevronRight size={20} strokeWidth={2.8} />}
+        {isOpen ? <ChevronLeft size={16} strokeWidth={2.5} /> : <ChevronRight size={16} strokeWidth={2.5} />}
       </button>
 
+      {/* Collapsed view */}
       {!isOpen && (
-        <nav className="flex h-full w-16 flex-col items-center gap-1 overflow-y-auto overflow-x-hidden bg-white px-2 pb-5 pt-14 no-scrollbar overscroll-contain dark:bg-[#0f172a]" aria-label="Collapsed main navigation">
-          {collapsedNavItems.map(({ label, path, Icon }) => (
-            <button
-              key={path}
-              type="button"
-              onClick={onOpen}
-              title={`Open menu · ${label}`}
-              aria-label={`Open menu to ${label}`}
-              className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors ${
-                isActive(path)
-                  ? 'bg-[#f0ebff] text-[#5a32fa]'
-                  : 'text-gray-500 hover:bg-gray-100 hover:text-[#5a32fa] dark:text-gray-300 dark:hover:bg-white/10'
-              }`}
-            >
-              <Icon size={20} strokeWidth={isActive(path) ? 2.5 : 2} />
-              {path === '/platform/messages' && unreadChatsCount > 0 && (
-                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#ff2a5f] ring-2 ring-white dark:ring-[#0f172a]" />
-              )}
-            </button>
-          ))}
+        <nav className="flex h-full w-16 flex-col items-center gap-1.5 overflow-y-auto overflow-x-hidden bg-white/50 px-2 pb-5 pt-14 no-scrollbar overscroll-contain dark:bg-transparent" aria-label="Collapsed main navigation">
+          {collapsedNavItems.map(({ label, path, Icon }) => {
+            const active = isActive(path);
+            return (
+              <button
+                key={path}
+                type="button"
+                onClick={onOpen}
+                title={label}
+                aria-label={`Open menu to ${label}`}
+                className={`group relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${
+                  active
+                    ? 'bg-violet-50 text-[#5a32fa] shadow-xs dark:bg-violet-500/20 dark:text-violet-300'
+                    : 'text-slate-500 hover:bg-slate-100 hover:text-[#5a32fa] dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white'
+                }`}
+              >
+                <Icon size={18} strokeWidth={active ? 2.4 : 2} className="transition-transform group-hover:scale-110" />
+                {path === '/platform/messages' && unreadChatsCount > 0 && (
+                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[#ff2a5f] ring-2 ring-white dark:ring-[#0b1120]" />
+                )}
+                {active && (
+                  <span className="absolute left-0 top-2 bottom-2 w-0.5 rounded-r-full bg-[#5a32fa] dark:bg-violet-400" />
+                )}
+              </button>
+            );
+          })}
         </nav>
       )}
 
-      <div id="desktop-sidebar-navigation" className={`${isOpen ? 'flex' : 'hidden'} h-full flex-1 w-full flex-col overflow-y-auto overflow-x-hidden bg-white no-scrollbar overscroll-contain dark:bg-[#0f172a]`}>
-        <div className="flex min-h-full w-[260px] shrink-0 flex-col bg-white dark:bg-[#0f172a] pb-16">
+      {/* Expanded view */}
+      <div id="desktop-sidebar-navigation" className={`${isOpen ? 'flex' : 'hidden'} h-full flex-1 w-full flex-col overflow-y-auto overflow-x-hidden no-scrollbar overscroll-contain`}>
+        <div className="flex min-h-full w-[268px] shrink-0 flex-col pb-6">
 
-      <div className="px-4 mb-8 pt-6">
-        <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-3 px-3 uppercase">MAIN NAVIGATION</p>
-        <nav className="space-y-1">
-          <Link prefetch={false} href="/platform" className={navLinkClass('/platform')}>
-            <LayoutGrid size={18} /> Feed
-          </Link>
-          <Link prefetch={false} href="/platform/liked-threads" className={navLinkClass('/platform/liked-threads')}>
-            <Heart size={18} /> Liked Threads
-          </Link>
-          <Link prefetch={false} href="/platform/network" className={navLinkClass('/platform/network')}>
-            <Globe size={18} /> My Network
-          </Link>
-          <Link prefetch={false} href="/platform/members" className={navLinkClass('/platform/members')}>
-            <Users size={18} /> Members
-          </Link>
-          <Link prefetch={false} href="/platform/messages" className={`justify-between ${navLinkClass('/platform/messages')}`}>
-            <div className="flex items-center gap-3">
-              <Mail size={18} /> Messages
-            </div>
-            {unreadChatsCount > 0 && (
-              <span className="w-5 h-5 flex items-center justify-center bg-[#5a32fa] text-white text-[10px] font-bold rounded-full">
-                {unreadChatsCount}
+          {/* Section: Main Navigation */}
+          <div className="px-3.5 mb-6 pt-5">
+            <div className="flex items-center justify-between mb-2.5 px-3">
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">
+                Main Navigation
               </span>
-            )}
-          </Link>
-          <Link prefetch={false} href="/platform/groups" className={navLinkClass('/platform/groups')}>
-            <Users size={18} /> Groups
-          </Link>
-          <Link prefetch={false} href="/platform/forums" className={navLinkClass('/platform/forums')}>
-            <MessageCircle size={18} /> Discussion Forums
-          </Link>
-          <div className="flex flex-col">
-            <div className="flex items-center group relative">
-              <Link prefetch={false} href="/platform/resources" className={`flex-1 ${navLinkClass('/platform/resources')} pr-10 !font-bold`}>
-                <BookOpen size={18} className="stroke-[2.2]" /> <span className="font-bold">Resource Library</span>
-              </Link>
-              <button 
-                onClick={(e) => { e.preventDefault(); setIsResourcesExpanded(!isResourcesExpanded); }}
-                className="absolute right-2 p-1.5 rounded-lg text-gray-400 hover:text-[#5a32fa] hover:bg-[#5a32fa]/10 transition-colors"
-                aria-label="Toggle Resource Library Submenu"
-              >
-                <ChevronDown size={14} className={`transition-transform duration-300 ${isResourcesExpanded ? 'rotate-180' : ''}`} />
-              </button>
             </div>
-            <div className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isResourcesExpanded ? 'max-h-[500px] opacity-100 mt-1 mb-2' : 'max-h-0 opacity-0'}`}>
-              <div className="pl-[2.75rem] flex flex-col space-y-1.5 border-l-2 border-gray-100 dark:border-white/5 ml-[1.1rem]">
-                <Link prefetch={false} href="/platform/resources/webinars" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/webinars') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Webinars & Learning</Link>
-                <Link prefetch={false} href="/platform/resources/education" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/education') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Education & Dev</Link>
-                <Link prefetch={false} href="/publications" className={`text-[12px] font-medium transition-colors ${isPublicationRoute ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Publications</Link>
-                <Link prefetch={false} href="/platform/resources/articles-insights" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/articles-insights') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Articles & Insights</Link>
-                <Link prefetch={false} href="/platform/resources/ip-news" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/ip-news') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>IP News & Legal Updates</Link>
-                <Link prefetch={false} href="/platform/resources/research-reports" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/research-reports') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Research & Reports</Link>
-                <Link prefetch={false} href="/platform/resources/guides-toolkits" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/guides-toolkits') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Guides & Toolkits</Link>
-                <Link prefetch={false} href="/platform/resources/career-leadership" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/career-leadership') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Career & Leadership</Link>
-                <Link prefetch={false} href="/platform/resources/in-house-counsel" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/in-house-counsel') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>In-House Counsel</Link>
-                <Link prefetch={false} href="/platform/resources/podcasts-conversations" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/podcasts-conversations') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Podcasts & Convos</Link>
-                <Link prefetch={false} href="/platform/resources/wellness" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/wellness') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Wellness & Wellbeing</Link>
-                <Link prefetch={false} href="/platform/resources/ip-services" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/ip-services') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>IP Services</Link>
-                <Link prefetch={false} href="/platform/resources/ip-firms" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/ip-firms') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>IP Firms</Link>
+            
+            <nav className="space-y-0.5">
+              {renderNavLink('/platform', 'Feed', LayoutGrid)}
+              {renderNavLink('/platform/liked-threads', 'Liked Threads', Heart)}
+              {renderNavLink('/platform/network', 'My Network', Globe)}
+              {renderNavLink('/platform/members', 'Members', Users)}
+              {renderNavLink(
+                '/platform/messages', 
+                'Messages', 
+                Mail, 
+                unreadChatsCount > 0 ? (
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#5a32fa] px-1.5 text-[10px] font-extrabold text-white shadow-xs">
+                    {unreadChatsCount}
+                  </span>
+                ) : null
+              )}
+              {renderNavLink('/platform/groups', 'Groups', Users)}
+              {renderNavLink('/platform/forums', 'Discussion Forums', MessageCircle)}
+
+              {/* Resource Library Expandable */}
+              <div className="flex flex-col">
+                <div className="flex items-center group relative">
+                  <Link 
+                    prefetch={false} 
+                    href="/platform/resources" 
+                    className={`group/res relative flex flex-1 items-center justify-between px-3 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-200 pr-10 ${
+                      isActive('/platform/resources') || isPublicationRoute
+                        ? 'bg-violet-50/90 text-[#5a32fa] dark:bg-violet-500/15 dark:text-violet-300' 
+                        : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white'
+                    }`}
+                  >
+                    {(isActive('/platform/resources') || isPublicationRoute) && (
+                      <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-[#5a32fa] dark:bg-violet-400" />
+                    )}
+                    <div className="flex items-center gap-2.5">
+                      <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-transform duration-200 group-hover/res:scale-110 ${
+                        isActive('/platform/resources') || isPublicationRoute
+                          ? 'bg-[#5a32fa]/10 text-[#5a32fa] dark:bg-violet-400/20 dark:text-violet-300' 
+                          : 'text-slate-400 group-hover/res:text-slate-700 dark:text-slate-400 dark:group-hover/res:text-white'
+                      }`}>
+                        <BookOpen size={17} strokeWidth={2.3} />
+                      </span>
+                      <span>Resource Library</span>
+                    </div>
+                  </Link>
+                  <button 
+                    onClick={(e) => { e.preventDefault(); setIsResourcesExpanded(!isResourcesExpanded); }}
+                    className="absolute right-2 p-1.5 rounded-lg text-slate-400 hover:text-[#5a32fa] hover:bg-violet-100/60 dark:hover:bg-violet-950/50 dark:hover:text-violet-300 transition-colors"
+                    aria-label="Toggle Resource Library Submenu"
+                  >
+                    <ChevronDown size={14} className={`transition-transform duration-300 ${isResourcesExpanded ? 'rotate-180 text-[#5a32fa] dark:text-violet-300' : ''}`} />
+                  </button>
+                </div>
+
+                {/* Submenu with refined tree guides */}
+                <div className={`overflow-hidden transition-all duration-300 ease-out ${isResourcesExpanded ? 'max-h-[560px] opacity-100 mt-1 mb-1.5' : 'max-h-0 opacity-0'}`}>
+                  <div className="ml-5 pl-3 flex flex-col space-y-0.5 border-l border-slate-200 dark:border-white/10">
+                    {RESOURCE_SUBITEMS.map((item) => {
+                      const isSubActive = item.isPublication 
+                        ? isPublicationRoute 
+                        : pathname.startsWith(item.path);
+                      return (
+                        <Link 
+                          key={item.path}
+                          prefetch={false} 
+                          href={item.path} 
+                          className={`group/sub flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 ${
+                            isSubActive 
+                              ? 'bg-violet-50 text-[#5a32fa] font-bold dark:bg-violet-500/15 dark:text-violet-300' 
+                              : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200'
+                          }`}
+                        >
+                          <span className={`h-1.5 w-1.5 rounded-full transition-transform group-hover/sub:scale-125 ${
+                            isSubActive ? 'bg-[#5a32fa] ring-2 ring-violet-200 dark:bg-violet-400 dark:ring-violet-900' : item.color
+                          }`} />
+                          <span className="truncate">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-            </div>
+
+              {renderNavLink('/platform/events', 'Events', Calendar)}
+              {renderNavLink('/platform/calendar', 'My Calendar', Calendar)}
+              {renderNavLink('/platform/jobs', 'Jobs Board', Briefcase)}
+              {renderNavLink('/platform/quizzes', 'Quizzes & XP', BrainCircuit)}
+              {renderNavLink('/platform/leaderboard', 'Leaderboard', Trophy)}
+              {renderNavLink(
+                '/platform/mentorship', 
+                'Mentorship', 
+                GraduationCap,
+                <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                  New
+                </span>
+              )}
+              {renderNavLink('/platform/board-members', 'Board Members', Crown)}
+            </nav>
           </div>
-          <Link prefetch={false} href="/platform/events" className={navLinkClass('/platform/events')}>
-            <Calendar size={18} /> Events
-          </Link>
-          <Link prefetch={false} href="/platform/calendar" className={navLinkClass('/platform/calendar')}>
-            <Calendar size={18} /> My Calendar
-          </Link>
-          <Link prefetch={false} href="/platform/jobs" className={navLinkClass('/platform/jobs')}>
-            <Briefcase size={18} /> Jobs Board
-          </Link>
-          <Link prefetch={false} href="/platform/quizzes" className={navLinkClass('/platform/quizzes')}>
-            <BrainCircuit size={18} /> Quizzes & XP
-          </Link>
-          <Link prefetch={false} href="/platform/leaderboard" className={navLinkClass('/platform/leaderboard')}>
-            <Trophy size={18} /> Leaderboard
-          </Link>
-          <Link prefetch={false} href="/platform/mentorship" className={`justify-between ${navLinkClass('/platform/mentorship')}`}>
-            <div className="flex items-center gap-3">
-              <GraduationCap size={18} /> Mentorship
-            </div>
-            <span className="relative flex items-center justify-center">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00d26a] opacity-40"></span>
-              <span className="relative px-2 py-0.5 bg-[#00d26a] text-white text-[10px] font-bold rounded-full shadow-sm">NEW</span>
-            </span>
-          </Link>
-          <Link prefetch={false} href="/platform/board-members" className={navLinkClass('/platform/board-members')}>
-            <Crown size={18} /> Board Members
-          </Link>
-        </nav>
-      </div>
 
-      <div className="px-4 mb-8">
-        <p className="text-[13px] font-bold text-[#131313] dark:text-gray-400 mb-4 px-3">All Channels</p>
-        <nav className="space-y-1">
-          <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors group">
-            <div className="flex items-center gap-2">
-              <Hash size={16} className="text-gray-400" /> General
+          {/* Section: Channels */}
+          <div className="px-3.5 mb-6">
+            <div className="flex items-center justify-between mb-2.5 px-3">
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">
+                Channels
+              </span>
             </div>
-          </Link>
-          <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors group">
-            <div className="flex items-center gap-2">
-              <Hash size={16} className="text-gray-400" /> daily-highlights
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-            </div>
-          </Link>
-          <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors group">
-            <div className="flex items-center gap-2">
-              <Hash size={16} className="text-gray-400" /> time-tracking
-            </div>
-            <BellOff size={14} className="text-gray-400" />
-          </Link>
-          <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-900 dark:text-white bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors group">
-            <div className="flex items-center gap-2">
-              <Hash size={16} className="text-gray-400" /> productivity-systems
-            </div>
-          </Link>
-        </nav>
-      </div>
+            <nav className="space-y-0.5">
+              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-colors group">
+                <div className="flex items-center gap-2">
+                  <Hash size={14} className="text-slate-400 group-hover:text-[#5a32fa]" /> General
+                </div>
+              </Link>
+              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-colors group">
+                <div className="flex items-center gap-2">
+                  <Hash size={14} className="text-slate-400 group-hover:text-[#5a32fa]" /> daily-highlights
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#ff2a5f]" />
+                </div>
+              </Link>
+              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-colors group">
+                <div className="flex items-center gap-2">
+                  <Hash size={14} className="text-slate-400 group-hover:text-[#5a32fa]" /> time-tracking
+                </div>
+                <BellOff size={13} className="text-slate-400" />
+              </Link>
+            </nav>
+          </div>
 
-      <div className="px-4 mb-8">
-        <p className="text-[13px] font-bold text-[#131313] dark:text-gray-400 mb-4 px-3">Links</p>
-        <nav className="space-y-1">
-          <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors">
-            <div className="flex items-center gap-2">
-                iOS App
+          {/* Section: Business Profile Action */}
+          <div className="px-3.5 mb-6">
+            <div className="flex items-center justify-between mb-2.5 px-3">
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">
+                Business
+              </span>
             </div>
-            <ArrowUpRight size={14} className="text-gray-400" />
-          </Link>
-          <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors">
-            <div className="flex items-center gap-2">
-                Android App
-            </div>
-            <ArrowUpRight size={14} className="text-gray-400" />
-          </Link>
-        </nav>
-      </div>
+            {user?.business_profile_id ? (
+              <Link prefetch={false} href="/platform/business" className="flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-semibold text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5 transition-colors">
+                <div className="flex items-center gap-2">
+                  <Building2 size={15} className="text-[#5a32fa]" /> My Business
+                </div>
+                <ArrowUpRight size={13} className="text-slate-400" />
+              </Link>
+            ) : (
+              <Link prefetch={false} href="/platform/business/create" className="group flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-bold text-[#5a32fa] bg-violet-50/80 hover:bg-[#5a32fa] hover:text-white dark:bg-violet-950/40 dark:text-violet-300 dark:hover:bg-[#5a32fa] dark:hover:text-white transition-all duration-200 shadow-2xs">
+                <div className="flex items-center gap-2">
+                  <Plus size={14} className="transition-transform group-hover:rotate-90" /> Create Business Profile
+                </div>
+              </Link>
+            )}
+          </div>
 
-      <div className="px-4 mb-8">
-        <p className="text-[13px] font-bold text-[#131313] dark:text-gray-400 mb-4 px-3">Business</p>
-        <nav className="space-y-1">
-          {user?.business_profile_id ? (
-            <Link prefetch={false} href="/platform/business" className="flex items-center justify-between px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:bg-white/5 rounded-xl font-medium text-[13px] transition-colors">
-              <div className="flex items-center gap-2">
-                  <Building2 size={16} className="text-gray-400" /> My Business
-              </div>
-            </Link>
-          ) : (
-            <Link prefetch={false} href="/platform/business/create" className="flex items-center justify-between px-3 py-2 text-[#5a32fa] bg-[#5a32fa]/5 hover:bg-[#5a32fa]/10 rounded-xl font-bold text-[13px] transition-colors">
-              <div className="flex items-center gap-2">
-                  <Plus size={16} /> Create Business Profile
-              </div>
-            </Link>
-          )}
-        </nav>
-      </div>
-
-
-      <div className="px-4 mb-8">
-        <div className="flex items-center justify-between mb-4 px-3">
-          <h3 className="text-[13px] font-bold text-[#131313] dark:text-gray-400">Upcoming Events</h3>
-        </div>
-        <div className="space-y-3">
-          {upcomingEvents.length > 0 ? (
-            upcomingEvents.map(ev => (
-              <div key={ev.id} className="flex items-start gap-3">
-                <Circle size={16} className="text-[#5a32fa] mt-0.5 shrink-0 fill-[#5a32fa]/10" />
-                <Link prefetch={false} href="/platform/calendar" className="text-sm text-gray-700 dark:text-gray-300 hover:text-[#5a32fa] dark:hover:text-[#b892ff] font-medium leading-tight line-clamp-2">
-                  {ev.title}
+          {/* Section: Upcoming Events */}
+          {upcomingEvents.length > 0 && (
+            <div className="px-3.5 mb-6">
+              <div className="flex items-center justify-between mb-2.5 px-3">
+                <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">
+                  Upcoming
+                </span>
+                <Link href="/platform/calendar" className="text-[10px] font-bold text-[#5a32fa] hover:underline dark:text-violet-300">
+                  View all
                 </Link>
               </div>
-            ))
-          ) : (
-            <div className="text-xs text-gray-400">No upcoming events.</div>
+              <div className="space-y-1.5">
+                {upcomingEvents.map((ev) => (
+                  <Link 
+                    key={ev.id} 
+                    prefetch={false} 
+                    href="/platform/calendar" 
+                    className="flex items-start gap-2 rounded-lg p-2 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5 transition-colors"
+                  >
+                    <Circle size={10} className="mt-1 shrink-0 fill-[#5a32fa] text-[#5a32fa]" />
+                    <span className="line-clamp-1 leading-snug">{ev.title}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
           )}
-        </div>
-      </div>
-      
-      <div className="px-5 mb-4">
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-[#5a32fa]/10 to-[#b892ff]/10 dark:from-[#5a32fa]/20 dark:to-[#b892ff]/20 border border-[#5a32fa]/20 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-2 opacity-10">
-            <Mail size={40} />
+
+          {/* Section: Help Card Widget */}
+          <div className="px-3.5 mb-4 mt-auto">
+            <div className="relative overflow-hidden rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-50/80 via-white to-indigo-50/60 p-3.5 shadow-xs dark:border-violet-500/20 dark:from-violet-950/40 dark:via-slate-900/60 dark:to-indigo-950/30">
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#5a32fa] text-white shadow-2xs">
+                  <HelpCircle size={14} />
+                </div>
+                <span className="text-xs font-black text-slate-900 dark:text-white">Need Help?</span>
+              </div>
+              <p className="text-[11px] font-medium leading-relaxed text-slate-500 dark:text-slate-400 mb-2.5">
+                Reach out to the WIPA team for assistance.
+              </p>
+              <Link 
+                href="/contact" 
+                className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg bg-white border border-slate-200/80 text-[11px] font-bold text-slate-800 shadow-2xs hover:border-[#5a32fa]/30 hover:text-[#5a32fa] transition-colors dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-violet-500/30 dark:hover:text-violet-300"
+              >
+                <Mail size={12} /> Contact WIPA
+              </Link>
+            </div>
           </div>
-          <h3 className="text-sm font-bold text-[#5a32fa] dark:text-[#b892ff] mb-1">Need Help?</h3>
-          <p className="text-[11px] text-gray-600 dark:text-gray-300 mb-3 leading-relaxed relative z-10">Reach out to the WIPA team for support or inquiries.</p>
-          <button className="flex items-center justify-center gap-2 w-full py-2 bg-white dark:bg-[#0f172a] text-[#5a32fa] dark:text-white text-xs font-bold rounded-xl hover:shadow-md transition-all border border-transparent hover:border-[#5a32fa]/20 relative z-10">
-            <Mail size={14} /> Contact WIPA
-          </button>
-        </div>
-      </div>
-      
-        <div className="px-5 py-4 border-t border-gray-100 dark:border-white/10">
-          <Link href="/platform/profile" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            {user?.avatar_url && (
-              <img src={user.avatar_url} alt={user?.name || 'User'} className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-white/20" />
-            )}
-            <span className="text-sm font-bold text-gray-900 dark:text-white truncate">
-              {user?.name || 'My Profile'}
-            </span>
-          </Link>
-        </div>
+
+          {/* User Profile Footer */}
+          <div className="px-3.5 pt-3 border-t border-slate-100 dark:border-white/10">
+            <Link href="/platform/profile" className="group flex items-center justify-between p-2 rounded-xl hover:bg-slate-100/70 dark:hover:bg-white/5 transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="relative shrink-0">
+                  {user?.avatar_url ? (
+                    <img src={user.avatar_url} alt={user?.name || 'User'} className="h-8 w-8 rounded-full object-cover ring-2 ring-violet-100 dark:ring-violet-900/50" />
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-xs font-black text-[#5a32fa] dark:bg-violet-900/40 dark:text-violet-300">
+                      {user?.name?.charAt(0) || 'U'}
+                    </div>
+                  )}
+                  <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0b1120]" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                    {user?.name || 'My Profile'}
+                  </p>
+                  <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 truncate">
+                    View profile
+                  </p>
+                </div>
+              </div>
+              <ArrowUpRight size={14} className="text-slate-400 group-hover:text-[#5a32fa] transition-colors shrink-0" />
+            </Link>
+          </div>
 
         </div>
       </div>
