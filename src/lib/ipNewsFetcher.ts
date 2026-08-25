@@ -170,19 +170,21 @@ function classifyArticle(title: string, desc: string): {
     subcategory = 'asia-pacific';
   }
 
-  let resource_type = 'Breaking News';
-  if (/\b(court|judge|ruling|decision|verdict|lawsuit|sued|litigation|appeal|infringement|jury)\b/.test(combined)) {
+  let resource_type = 'News';
+  if (/\b(summary|briefing|dispute settled|settlement|v\.|versus|plaintiff|defendant|jury awards|verdict reached)\b/.test(combined)) {
+    resource_type = 'Case Summary';
+  } else if (/\b(court|judge|ruling|decision|verdict|lawsuit|sued|litigation|appeal|infringement|injunction|bench)\b/.test(combined)) {
     resource_type = 'Case Law Update';
-  } else if (/\b(uspto|epo|wipo|euipo|ukipo|office|guideline|examination|manual)\b/.test(combined)) {
+  } else if (/\b(uspto|epo|wipo|euipo|ukipo|cnipa|jpo|patent office|trademark office|examination guideline|fee schedule)\b/.test(combined)) {
     resource_type = 'IP Office Update';
-  } else if (/\b(directive|bill|act|treaty|parliament|congress|legislation|law passed)\b/.test(combined)) {
+  } else if (/\b(directive|bill|act|treaty|parliament|congress|legislation|law passed|statutory|reform)\b/.test(combined)) {
     resource_type = 'Legislative Update';
-  } else if (/\b(regulation|sec|ftc|antitrust|frand|compliance|rule)\b/.test(combined)) {
+  } else if (/\b(regulation|sec|ftc|antitrust|frand|compliance|rule|guidance|standard)\b/.test(combined)) {
     resource_type = 'Regulatory Update';
-  } else if (/\b(patent|patents|inventor|inventorship)\b/.test(combined)) {
-    resource_type = 'Patent Watch';
-  } else if (/\b(trademark|trademarks|brand|counterfeit|domain)\b/.test(combined)) {
-    resource_type = 'Trademark Bulletin';
+  } else if (/\b(jurisdiction|cross-border|international|regional|customs|treaty|harmonization|bilateral|pph)\b/.test(combined)) {
+    resource_type = 'Jurisdiction Update';
+  } else if (/\b(attorney|counsel|practice|strategy|portfolio|contract|audit|trade secret|licensing)\b/.test(combined)) {
+    resource_type = 'Legal Update';
   }
 
   const tags: string[] = ['Intellectual Property'];

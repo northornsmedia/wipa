@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Search, 
   Newspaper, 
@@ -11,7 +11,6 @@ import {
   Zap, 
   Filter, 
   RefreshCw, 
-  Sparkles, 
   Clock, 
   CheckCircle2,
   ChevronLeft,
@@ -19,7 +18,6 @@ import {
   Pause,
   Play,
   Flame,
-  ShieldCheck,
   Plus
 } from 'lucide-react';
 import Link from 'next/link';
@@ -27,22 +25,23 @@ import { supabase } from '@/lib/supabase';
 
 const JURISDICTION_FILTERS = [
   { id: 'all', name: 'All Jurisdictions' },
-  { id: 'global', name: 'Global' },
-  { id: 'us', name: 'United States' },
-  { id: 'eu', name: 'European Union' },
-  { id: 'uk', name: 'United Kingdom' },
+  { id: 'global', name: 'Global Updates' },
+  { id: 'us', name: 'US Updates' },
+  { id: 'eu', name: 'EU Updates' },
+  { id: 'uk', name: 'UK Updates' },
   { id: 'asia-pacific', name: 'Asia-Pacific' }
 ];
 
 const CONTENT_TYPES = [
   "All Types",
-  "Breaking News",
+  "News",
+  "Legal Update",
   "Case Law Update",
-  "IP Office Update",
   "Regulatory Update",
   "Legislative Update",
-  "Patent Watch",
-  "Trademark Bulletin"
+  "IP Office Update",
+  "Jurisdiction Update",
+  "Case Summary"
 ];
 
 export default function IPNewsHubPage() {
@@ -76,7 +75,7 @@ export default function IPNewsHubPage() {
           id: d.id,
           title: d.title,
           slug: d.slug || d.id,
-          type: d.resource_type || "Breaking News",
+          type: d.resource_type || "News",
           jurisdiction: d.tags?.[1] || d.tags?.[0] || (d.subcategory ? d.subcategory.toUpperCase() : "Global"),
           subcategory: d.subcategory || "global",
           date: d.created_at ? new Date(d.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently',
@@ -135,7 +134,7 @@ export default function IPNewsHubPage() {
 
     const interval = setInterval(() => {
       triggerBackgroundSync(false);
-    }, 180000); // sync every 3 minutes
+    }, 180000); // 3 minutes interval
 
     return () => {
       clearTimeout(syncTimeout);
@@ -154,7 +153,7 @@ export default function IPNewsHubPage() {
     return matchesSearch && matchesSub && matchesType;
   });
 
-  // Top Pool of Rotating Headlines (up to 8 latest stories)
+  // Top Pool of Rotating Headlines (up to 8 latest matching stories)
   const headlinePool = filteredNews.slice(0, 8);
 
   // 30-Second Auto-Rotation Timer Effect
@@ -196,6 +195,17 @@ export default function IPNewsHubPage() {
     }
   };
 
+  // Calculate item counts for each type filter badge
+  const getTypeCount = (type: string) => {
+    if (type === 'All Types') return newsItems.length;
+    return newsItems.filter(n => n.type === type).length;
+  };
+
+  const getJurisdictionCount = (subId: string) => {
+    if (subId === 'all') return newsItems.length;
+    return newsItems.filter(n => n.subcategory === subId).length;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 font-sans pb-24 overflow-x-hidden selection:bg-orange-500/20">
       
@@ -232,7 +242,7 @@ export default function IPNewsHubPage() {
         }
       `}</style>
 
-      {/* Header Area */}
+      {/* Terminal / Header Area */}
       <div className="border-b border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] shadow-xs">
         <div className="max-w-[1440px] mx-auto px-5 py-8 md:py-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
@@ -241,11 +251,11 @@ export default function IPNewsHubPage() {
                 <Activity size={13} className="animate-pulse" /> Live Intelligence Feed
               </span>
               <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
-                Auto-Syncing Continuous • {newsItems.length} Briefings Loaded
+                Continuous Auto-Sync • {newsItems.length} Briefings Loaded
               </span>
             </div>
-            <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
-              IP News & Legal <span className="text-orange-500">Intelligence</span>
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
+              Live <span className="text-orange-500">Updates</span>
             </h1>
             <p className="mt-2 text-sm md:text-base font-medium text-slate-600 dark:text-slate-400 max-w-2xl">
               Continuous live intelligence covering patent rulings, trademark decisions, IP office circulars, and global policy updates.
@@ -258,7 +268,7 @@ export default function IPNewsHubPage() {
               <Search size={16} className="text-slate-400 mr-2 shrink-0" />
               <input 
                 type="text" 
-                placeholder="Search IP briefings, cases..." 
+                placeholder="Search terminal..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-transparent text-xs sm:text-sm font-semibold focus:outline-none placeholder-slate-400 text-slate-900 dark:text-white"
@@ -293,51 +303,62 @@ export default function IPNewsHubPage() {
       <div className="max-w-[1440px] mx-auto px-5 pt-8 md:pt-10 flex flex-col lg:flex-row gap-8 lg:gap-10">
         
         {/* Left Sidebar Filters */}
-        <div className="w-full lg:w-60 shrink-0">
+        <div className="w-full lg:w-56 shrink-0">
           <div className="sticky top-20 space-y-6">
             
             {/* Jurisdictions Filter */}
             <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] p-4 shadow-xs">
-              <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-2">
-                <Globe size={13} className="text-orange-500" /> Jurisdictions
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-2">
+                <Filter size={12} className="text-orange-500" /> Jurisdictions
               </h3>
               <div className="flex flex-col gap-1">
-                {JURISDICTION_FILTERS.map(sub => (
-                  <button
-                    key={sub.id}
-                    onClick={() => { setActiveSub(sub.id); setHeadlineIndex(0); setSecondsRemaining(30); }}
-                    className={`text-left text-xs font-bold transition-all px-3 py-2 rounded-xl flex items-center justify-between ${
-                      activeSub === sub.id
-                        ? 'bg-orange-500 text-white shadow-xs'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                  >
-                    <span>{sub.name}</span>
-                    {activeSub === sub.id && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
-                  </button>
-                ))}
+                {JURISDICTION_FILTERS.map(sub => {
+                  const count = getJurisdictionCount(sub.id);
+                  return (
+                    <button
+                      key={sub.id}
+                      onClick={() => { setActiveSub(sub.id); setHeadlineIndex(0); setSecondsRemaining(30); }}
+                      className={`text-left text-xs font-bold transition-all px-3 py-2 rounded-xl flex items-center justify-between border-l-2 ${
+                        activeSub === sub.id
+                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400'
+                          : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      <span>{sub.name}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-semibold ${activeSub === sub.id ? 'bg-orange-500/20 text-orange-600 dark:text-orange-300' : 'text-slate-400'}`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Type Filter */}
             <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] p-4 shadow-xs">
-              <h3 className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-2">
-                <Scale size={13} className="text-orange-500" /> Briefing Type
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-2">
+                <Scale size={12} className="text-orange-500" /> Type
               </h3>
               <div className="flex flex-col gap-1">
-                {CONTENT_TYPES.map(type => (
-                  <button
-                    key={type}
-                    onClick={() => { setTypeFilter(type); setHeadlineIndex(0); setSecondsRemaining(30); }}
-                    className={`text-left text-xs font-semibold transition-all px-3 py-2 rounded-xl flex items-center justify-between ${
-                      typeFilter === type
-                        ? 'bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 font-bold border border-orange-200 dark:border-orange-900/50'
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                  >
-                    <span>{type}</span>
-                  </button>
-                ))}
+                {CONTENT_TYPES.map(type => {
+                  const count = getTypeCount(type);
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => { setTypeFilter(type); setHeadlineIndex(0); setSecondsRemaining(30); }}
+                      className={`text-left text-xs font-bold transition-all px-3 py-2 rounded-xl flex items-center justify-between border-l-2 ${
+                        typeFilter === type
+                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400'
+                          : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      <span>{type}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-semibold ${typeFilter === type ? 'bg-orange-500/20 text-orange-600 dark:text-orange-300' : 'text-slate-400'}`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -355,8 +376,8 @@ export default function IPNewsHubPage() {
           ) : filteredNews.length === 0 ? (
             <div className="rounded-3xl border border-slate-200 bg-white dark:bg-[#0d1322] dark:border-white/10 p-12 text-center">
               <Newspaper size={36} className="mx-auto text-slate-400 mb-3" />
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">No intelligence briefings found</h3>
-              <p className="text-xs text-slate-500 mb-6">Try broadening your search query or jurisdiction filters.</p>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">No briefings found under "{typeFilter}"</h3>
+              <p className="text-xs text-slate-500 mb-6">Try selecting "All Types" or broadening your jurisdiction filter.</p>
               <button 
                 onClick={() => { setSearchQuery(''); setActiveSub('all'); setTypeFilter('All Types'); }}
                 className="px-4 py-2 rounded-xl bg-orange-500 text-white text-xs font-bold hover:bg-orange-600 transition"
@@ -388,7 +409,7 @@ export default function IPNewsHubPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                         <div className="absolute top-4 left-4 flex items-center gap-2">
                           <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-md">
-                            <Flame size={12} /> Live Headline #{safeHeadlineIndex + 1}
+                            <Flame size={12} /> Lead Briefing #{safeHeadlineIndex + 1}
                           </span>
                           <span className="rounded-full bg-slate-900/80 backdrop-blur text-white px-2.5 py-1 text-[10px] font-bold">
                             {currentFeatured.jurisdiction}
@@ -418,7 +439,7 @@ export default function IPNewsHubPage() {
                             {currentFeatured.date}
                           </span>
                           <span className="inline-flex items-center gap-1.5 text-xs font-black text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform">
-                            Read Full Intelligence <ArrowRight size={14} />
+                            Read Full Briefing <ArrowRight size={14} />
                           </span>
                         </div>
                       </div>
@@ -516,7 +537,7 @@ export default function IPNewsHubPage() {
                       <div className="pt-3 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs">
                         <span className="font-semibold text-slate-400">{item.date}</span>
                         <span className="inline-flex items-center gap-1 font-bold text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform">
-                          View Analysis <ArrowRight size={13} />
+                          View Briefing <ArrowRight size={13} />
                         </span>
                       </div>
                     </Link>
