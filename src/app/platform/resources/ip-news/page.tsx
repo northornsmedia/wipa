@@ -411,8 +411,9 @@ export default function IPNewsHubPage() {
                     href={`/platform/resources/ip-news/${currentFeatured.id}`}
                     className="block"
                   >
-                    <div className="flex flex-col xl:flex-row items-stretch">
-                      <div className="xl:w-1/2 relative min-h-[260px] xl:min-h-[380px] overflow-hidden bg-slate-900">
+                    <div className="flex flex-col">
+                      {/* Top Image */}
+                      <div className="w-full relative h-[280px] sm:h-[360px] md:h-[420px] overflow-hidden bg-slate-900">
                         <img 
                           key={currentFeatured.id}
                           src={currentFeatured.image} 
@@ -421,38 +422,41 @@ export default function IPNewsHubPage() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                         <div className="absolute top-4 left-4 flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-md">
-                            <Flame size={12} /> Lead Briefing #{safeHeadlineIndex + 1}
+                          <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 text-white px-3.5 py-1 text-[11px] font-black uppercase tracking-wider shadow-md">
+                            <Flame size={13} /> Lead Briefing #{safeHeadlineIndex + 1}
                           </span>
-                          <span className="rounded-full bg-slate-900/80 backdrop-blur text-white px-2.5 py-1 text-[10px] font-bold">
+                          <span className="rounded-full bg-slate-900/85 backdrop-blur border border-white/10 text-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider">
                             {currentFeatured.jurisdiction}
                           </span>
                         </div>
                       </div>
 
-                      <div className="xl:w-1/2 p-6 md:p-8 lg:p-10 flex flex-col justify-between">
+                      {/* Content Below */}
+                      <div className="p-6 md:p-8 lg:p-10 flex flex-col justify-between">
                         <div>
-                          <div className="flex items-center gap-2 text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-2.5">
-                            <span>{currentFeatured.type}</span>
+                          <div className="flex items-center gap-2 text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-3">
+                            <span className="bg-orange-500/10 px-2.5 py-0.5 rounded-md font-extrabold">{currentFeatured.type}</span>
                             <span>•</span>
-                            <span className="flex items-center gap-1 text-slate-400 font-medium">
-                              <Clock size={12} /> {currentFeatured.read_time}
+                            <span className="flex items-center gap-1 text-slate-400 font-semibold">
+                              <Clock size={13} /> {currentFeatured.read_time}
                             </span>
                           </div>
-                          <h2 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors mb-4">
+                          
+                          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.15] tracking-tight text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors mb-4">
                             {currentFeatured.title}
                           </h2>
-                          <p className="text-sm md:text-base font-medium text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3">
+                          
+                          <p className="text-sm md:text-base lg:text-lg font-medium text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3">
                             {currentFeatured.summary}
                           </p>
                         </div>
 
-                        <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+                        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
                           <span className="text-xs font-bold text-slate-400">
                             {currentFeatured.date}
                           </span>
-                          <span className="inline-flex items-center gap-1.5 text-xs font-black text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform">
-                            Read Full Briefing <ArrowRight size={14} />
+                          <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform">
+                            Read Full Briefing <ArrowRight size={15} />
                           </span>
                         </div>
                       </div>
