@@ -685,7 +685,7 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               
               {/* Metric 1 */}
-              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 dark:hover:border-white/25 flex flex-col justify-between">
+              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/40 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-xs">
@@ -696,7 +696,7 @@ export default function Home() {
                     </span>
                   </div>
 
-                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-1.5">
+                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#ff7836] via-[#f59e0b] to-[#fbbf24] mb-1.5">
                     5,000+
                   </h3>
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
@@ -714,7 +714,7 @@ export default function Home() {
               </div>
 
               {/* Metric 2 */}
-              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 dark:hover:border-white/25 flex flex-col justify-between">
+              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/40 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-xs">
@@ -725,7 +725,7 @@ export default function Home() {
                     </span>
                   </div>
 
-                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-1.5">
+                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#a855f7] via-[#c084fc] to-[#f472b6] mb-1.5">
                     45+
                   </h3>
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
@@ -743,7 +743,7 @@ export default function Home() {
               </div>
 
               {/* Metric 3 */}
-              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 dark:hover:border-white/25 flex flex-col justify-between">
+              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/40 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-xs">
@@ -754,7 +754,7 @@ export default function Home() {
                     </span>
                   </div>
 
-                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-1.5">
+                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#10b981] via-[#14b8a6] to-[#06b6d4] mb-1.5">
                     1,200+
                   </h3>
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
@@ -774,7 +774,7 @@ export default function Home() {
               </div>
 
               {/* Metric 4 */}
-              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 dark:hover:border-white/25 flex flex-col justify-between">
+              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/40 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-xs">
@@ -785,7 +785,7 @@ export default function Home() {
                     </span>
                   </div>
 
-                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-1.5">
+                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#ff2a70] via-[#fb7185] to-[#f43f5e] mb-1.5">
                     35%
                   </h3>
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
