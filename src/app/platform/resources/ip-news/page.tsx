@@ -561,6 +561,69 @@ export default function IPNewsHubPage() {
 
         </div>
 
+        {/* Right Sidebar (Jurisdiction Activity & Trend Index) */}
+        <div className="w-full lg:w-72 shrink-0">
+          <div className="sticky top-20 space-y-6">
+            
+            <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] p-5 shadow-xs">
+              <h3 className="text-xs font-black uppercase tracking-widest mb-5 flex items-center gap-2 text-orange-600 dark:text-orange-400">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500" />
+                </span>
+                Jurisdiction Activity
+              </h3>
+
+              <div className="flex flex-col gap-3 text-xs font-bold">
+                <button
+                  onClick={() => { setActiveSub('global'); setHeadlineIndex(0); }}
+                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group"
+                >
+                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-orange-500 transition-colors">Global (WIPO)</span>
+                  <span className="text-orange-600 dark:text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">+12%</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveSub('us'); setHeadlineIndex(0); }}
+                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group"
+                >
+                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-orange-500 transition-colors">United States (USPTO)</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">+5%</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveSub('eu'); setHeadlineIndex(0); }}
+                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group"
+                >
+                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-orange-500 transition-colors">European Union (EPO)</span>
+                  <span className="text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">-2%</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveSub('uk'); setHeadlineIndex(0); }}
+                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group"
+                >
+                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-orange-500 transition-colors">United Kingdom (UKIPO)</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">+1%</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveSub('asia-pacific'); setHeadlineIndex(0); }}
+                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group"
+                >
+                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-orange-500 transition-colors">Asia-Pacific (APAC)</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">+8%</span>
+                </button>
+              </div>
+              
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/5 text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider leading-relaxed">
+                Data updated dynamically based on recent news volume, official gazette publications, and litigation filings.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
 
     </div>
