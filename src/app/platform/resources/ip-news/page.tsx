@@ -237,7 +237,7 @@ export default function IPNewsHubPage() {
         .animate-marquee {
           display: flex;
           width: max-content;
-          animation: marquee 45s linear infinite;
+          animation: marquee 160s linear infinite;
         }
         .animate-marquee:hover {
           animation-play-state: paused;
