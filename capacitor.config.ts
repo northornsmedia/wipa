@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'WIPA',
   webDir: 'capacitor-web',
   server: {
-    url: 'https://wipanorthon.vercel.app',
+    url: 'https://platform.womensipalliance.com',
     cleartext: false,
   },
   android: {

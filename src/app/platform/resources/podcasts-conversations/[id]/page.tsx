@@ -116,7 +116,7 @@ export default function PodcastDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[calc(100dvh-72px)] items-center justify-center bg-[#121212] text-[#1ed760]">
+      <div className="flex min-h-[calc(100dvh-72px)] items-center justify-center bg-slate-50 text-emerald-500 dark:bg-[#121212] dark:text-[#1ed760]">
         <DotmCircular7 size={64} dotSize={8} />
       </div>
     );
@@ -124,11 +124,11 @@ export default function PodcastDetailPage() {
 
   if (loadError || !episode) {
     return (
-      <div className="flex min-h-[calc(100dvh-72px)] flex-col items-center justify-center bg-[#121212] px-6 text-center text-white">
-        <Headphones size={48} className="mb-5 text-white/30" />
+      <div className="flex min-h-[calc(100dvh-72px)] flex-col items-center justify-center bg-slate-50 px-6 text-center text-slate-950 dark:bg-[#121212] dark:text-white">
+        <Headphones size={48} className="mb-5 text-slate-300 dark:text-white/30" />
         <h1 className="text-2xl font-black">Episode unavailable</h1>
-        <p className="mt-2 max-w-md text-sm text-white/55">{loadError}</p>
-        <Link href="/platform/resources/podcasts-conversations" className="mt-7 rounded-full bg-white px-6 py-3 text-sm font-black text-black">Back to podcasts</Link>
+        <p className="mt-2 max-w-md text-sm text-slate-500 dark:text-white/55">{loadError}</p>
+        <Link href="/platform/resources/podcasts-conversations" className="mt-7 rounded-full bg-slate-950 px-6 py-3 text-sm font-black text-white dark:bg-white dark:text-black">Back to podcasts</Link>
       </div>
     );
   }
@@ -141,33 +141,33 @@ export default function PodcastDetailPage() {
   const actualDuration = formatEpisodeDuration(audioDuration);
 
   return (
-    <div className="min-h-screen bg-[#121212] pb-28 text-white">
-      <div className="relative overflow-hidden bg-gradient-to-b from-[#473414] via-[#292015] to-[#121212]">
+    <div className="min-h-screen bg-slate-50 pb-28 text-slate-950 dark:bg-[#121212] dark:text-white">
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#f1dfc7] via-[#eadfe2] to-slate-50 dark:from-[#473414] dark:via-[#292015] dark:to-[#121212]">
         {episode.cover_image_url && (
-          <img src={episode.cover_image_url} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-20 blur-3xl" />
+          <img src={episode.cover_image_url} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-10 blur-3xl dark:opacity-20" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-black/15 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-white/10 to-white/30 dark:from-[#121212] dark:via-black/15 dark:to-black/30" />
 
         <div className="relative mx-auto max-w-6xl px-5 pb-12 pt-6 sm:px-8 sm:pt-8">
           <div className="mb-10 flex items-center justify-between">
-            <Link href="/platform/resources/podcasts-conversations" className="inline-flex items-center gap-2 rounded-full bg-black/35 px-4 py-2 text-sm font-bold backdrop-blur hover:bg-black/55">
+            <Link href="/platform/resources/podcasts-conversations" className="inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 text-sm font-bold text-slate-800 shadow-sm backdrop-blur hover:bg-white dark:border-white/10 dark:bg-black/35 dark:text-white dark:hover:bg-black/55">
               <ArrowLeft size={17} /> Podcasts
             </Link>
-            <button onClick={() => void shareEpisode()} className="inline-flex items-center gap-2 rounded-full bg-black/35 px-4 py-2 text-sm font-bold backdrop-blur hover:bg-black/55">
+            <button onClick={() => void shareEpisode()} className="inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 text-sm font-bold text-slate-800 shadow-sm backdrop-blur hover:bg-white dark:border-white/10 dark:bg-black/35 dark:text-white dark:hover:bg-black/55">
               <Share2 size={16} /> {copied ? 'Copied' : 'Share'}
             </button>
           </div>
 
           <div className="flex flex-col items-center gap-7 md:flex-row md:items-end md:gap-10">
-            <div className="flex aspect-square w-56 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-[#1ed760] to-[#075f2d] shadow-[0_24px_60px_rgba(0,0,0,.55)] sm:w-64 md:w-72">
+            <div className="flex aspect-square w-56 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-[#1ed760] to-[#075f2d] shadow-[0_24px_60px_rgba(15,23,42,.22)] sm:w-64 md:w-72 dark:shadow-[0_24px_60px_rgba(0,0,0,.55)]">
               {episode.cover_image_url ? <img src={episode.cover_image_url} alt={episode.title} className="h-full w-full object-cover" /> : <Headphones size={92} className="text-black/70" />}
             </div>
 
             <div className="min-w-0 flex-1 text-center md:text-left">
-              <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-white/75">{episode.content_type || 'Podcast'}</p>
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-slate-600 dark:text-white/75">{episode.content_type || 'Podcast'}</p>
               <h1 className="text-4xl font-black leading-[1.02] tracking-[-0.04em] sm:text-5xl lg:text-7xl">{episode.title}</h1>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm font-semibold text-white/70 md:justify-start">
-                {episode.host_name && <span className="font-black text-white">{episode.host_name}</span>}
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm font-semibold text-slate-600 md:justify-start dark:text-white/70">
+                {episode.host_name && <span className="font-black text-slate-950 dark:text-white">{episode.host_name}</span>}
                 {episode.guest_names && <><span>•</span><span>with {episode.guest_names}</span></>}
                 {published && <><span>•</span><span>{published}</span></>}
                 {actualDuration && <><span>•</span><span>{actualDuration}</span></>}
@@ -178,7 +178,7 @@ export default function PodcastDetailPage() {
       </div>
 
       <main className="mx-auto max-w-6xl px-5 sm:px-8">
-        <section className="-mt-1 rounded-2xl bg-[#181818] p-5 shadow-2xl sm:p-7">
+        <section className="-mt-1 rounded-2xl border border-slate-200 bg-white p-5 shadow-xl shadow-slate-900/5 sm:p-7 dark:border-white/5 dark:bg-[#181818] dark:shadow-2xl">
           {episode.media_file_url ? (
             <>
               <audio
@@ -194,13 +194,13 @@ export default function PodcastDetailPage() {
               />
               <div className="flex flex-col gap-5">
                 <div className="flex items-center justify-center gap-7">
-                  <button onClick={() => seekBy(-15)} className="text-white/60 hover:text-white" aria-label="Back 15 seconds"><SkipBack size={24} /></button>
+                  <button onClick={() => seekBy(-15)} className="text-slate-400 hover:text-slate-950 dark:text-white/60 dark:hover:text-white" aria-label="Back 15 seconds"><SkipBack size={24} /></button>
                   <button onClick={() => void togglePlayback()} className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1ed760] text-black transition-transform hover:scale-105" aria-label={playing ? 'Pause episode' : 'Play episode'}>
                     {playing ? <Pause size={29} fill="currentColor" /> : <Play size={29} fill="currentColor" className="ml-1" />}
                   </button>
-                  <button onClick={() => seekBy(15)} className="text-white/60 hover:text-white" aria-label="Forward 15 seconds"><SkipForward size={24} /></button>
+                  <button onClick={() => seekBy(15)} className="text-slate-400 hover:text-slate-950 dark:text-white/60 dark:hover:text-white" aria-label="Forward 15 seconds"><SkipForward size={24} /></button>
                 </div>
-                <div className="flex items-center gap-3 text-xs font-semibold text-white/55">
+                <div className="flex items-center gap-3 text-xs font-semibold text-slate-500 dark:text-white/55">
                   <span className="w-10 text-right">{formatClock(currentTime)}</span>
                   <input
                     type="range"
@@ -217,43 +217,43 @@ export default function PodcastDetailPage() {
               </div>
             </>
           ) : (
-            <div className="flex items-center justify-center gap-3 py-5 text-sm font-bold text-white/45"><RotateCcw size={19} /> No media file was saved for this episode.</div>
+            <div className="flex items-center justify-center gap-3 py-5 text-sm font-bold text-slate-400 dark:text-white/45"><RotateCcw size={19} /> No media file was saved for this episode.</div>
           )}
         </section>
 
         <div className="grid gap-10 py-12 lg:grid-cols-[1fr_320px]">
           <div className="space-y-10">
             {episode.description && (
-              <section><h2 className="mb-4 text-2xl font-black">About this episode</h2><p className="whitespace-pre-wrap text-base leading-8 text-white/68">{episode.description}</p></section>
+              <section><h2 className="mb-4 text-2xl font-black">About this episode</h2><p className="whitespace-pre-wrap text-base leading-8 text-slate-600 dark:text-white/68">{episode.description}</p></section>
             )}
             {transcript && (
-              <section className="border-t border-white/10 pt-9"><h2 className="mb-4 text-2xl font-black">Transcript</h2><p className="whitespace-pre-wrap text-sm leading-7 text-white/65">{transcript}</p></section>
+              <section className="border-t border-slate-200 pt-9 dark:border-white/10"><h2 className="mb-4 text-2xl font-black">Transcript</h2><p className="whitespace-pre-wrap text-sm leading-7 text-slate-600 dark:text-white/65">{transcript}</p></section>
             )}
           </div>
 
           <aside className="space-y-4">
             <h2 className="text-lg font-black">Episode details</h2>
-            <div className="space-y-4 rounded-2xl bg-[#181818] p-5 text-sm">
-              {episode.host_name && <div className="flex gap-3"><Mic2 size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Host</p><p className="font-bold">{episode.host_name}</p></div></div>}
-              {episode.guest_names && <div className="flex gap-3"><Users size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Guests</p><p className="font-bold">{episode.guest_names}</p></div></div>}
-              {topic && <div className="flex gap-3"><Music2 size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Topic</p><p className="font-bold">{topic}</p></div></div>}
-              {published && <div className="flex gap-3"><CalendarDays size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Published</p><p className="font-bold">{published}</p></div></div>}
-              {episode.media_file_url && <div className="flex gap-3"><Clock3 size={18} className="shrink-0 text-[#1ed760]" /><div><p className="text-xs text-white/45">Duration</p><p className="font-bold">{actualDuration || 'Loading audio metadata…'}</p></div></div>}
+            <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 text-sm shadow-sm dark:border-white/5 dark:bg-[#181818]">
+              {episode.host_name && <div className="flex gap-3"><Mic2 size={18} className="shrink-0 text-emerald-500 dark:text-[#1ed760]" /><div><p className="text-xs text-slate-500 dark:text-white/45">Host</p><p className="font-bold">{episode.host_name}</p></div></div>}
+              {episode.guest_names && <div className="flex gap-3"><Users size={18} className="shrink-0 text-emerald-500 dark:text-[#1ed760]" /><div><p className="text-xs text-slate-500 dark:text-white/45">Guests</p><p className="font-bold">{episode.guest_names}</p></div></div>}
+              {topic && <div className="flex gap-3"><Music2 size={18} className="shrink-0 text-emerald-500 dark:text-[#1ed760]" /><div><p className="text-xs text-slate-500 dark:text-white/45">Topic</p><p className="font-bold">{topic}</p></div></div>}
+              {published && <div className="flex gap-3"><CalendarDays size={18} className="shrink-0 text-emerald-500 dark:text-[#1ed760]" /><div><p className="text-xs text-slate-500 dark:text-white/45">Published</p><p className="font-bold">{published}</p></div></div>}
+              {episode.media_file_url && <div className="flex gap-3"><Clock3 size={18} className="shrink-0 text-emerald-500 dark:text-[#1ed760]" /><div><p className="text-xs text-slate-500 dark:text-white/45">Duration</p><p className="font-bold">{actualDuration || 'Loading audio metadata…'}</p></div></div>}
             </div>
           </aside>
         </div>
 
         {related.length > 0 && (
-          <section className="border-t border-white/10 py-10">
+          <section className="border-t border-slate-200 py-10 dark:border-white/10">
             <h2 className="mb-6 text-2xl font-black">More episodes</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {related.map((item) => (
-                <Link key={item.id} href={`/platform/resources/podcasts-conversations/${item.id}`} className="group rounded-xl bg-[#181818] p-4 transition-colors hover:bg-[#282828]">
-                  <div className="mb-4 flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-[#2b2b2b] to-[#111]">
-                    {item.cover_image_url ? <img src={item.cover_image_url} alt={item.title} className="h-full w-full object-cover transition-transform group-hover:scale-105" /> : <Headphones size={44} className="text-white/25" />}
+                <Link key={item.id} href={`/platform/resources/podcasts-conversations/${item.id}`} className="group rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg dark:border-white/5 dark:bg-[#181818] dark:hover:bg-[#282828]">
+                  <div className="mb-4 flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 dark:from-[#2b2b2b] dark:to-[#111]">
+                    {item.cover_image_url ? <img src={item.cover_image_url} alt={item.title} className="h-full w-full object-cover transition-transform group-hover:scale-105" /> : <Headphones size={44} className="text-slate-300 dark:text-white/25" />}
                   </div>
                   <h3 className="line-clamp-2 font-black">{item.title}</h3>
-                  {item.host_name && <p className="mt-2 truncate text-xs text-white/50">{item.host_name}</p>}
+                  {item.host_name && <p className="mt-2 truncate text-xs text-slate-500 dark:text-white/50">{item.host_name}</p>}
                 </Link>
               ))}
             </div>

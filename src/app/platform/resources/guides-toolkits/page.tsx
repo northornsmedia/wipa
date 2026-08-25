@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Search, Command, ChevronRight, FileCode, CheckSquare, DownloadCloud, Box, LayoutTemplate, Zap, Folder, ChevronDown } from 'lucide-react';
+import { Search, Command, FileCode, CheckSquare, DownloadCloud, Box, LayoutTemplate, Zap, Folder, Sparkles, Layers3, BookOpenCheck, SlidersHorizontal, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 const MOCK_GUIDES_SUBCATEGORIES = [
@@ -24,7 +24,39 @@ const CONTENT_TYPES = [
   "Glossary"
 ];
 
-const MOCK_GUIDES_RESOURCES = [
+type GuideResource = {
+  id: string | number;
+  title: string;
+  type: string;
+  topic: string;
+  subcategory: string;
+  author: string;
+  time: string;
+  featured: boolean;
+  image: string;
+  is_splash_sponsored?: boolean;
+  splash_tagline?: string | null;
+  splash_cta_text?: string | null;
+  splash_cta_url?: string | null;
+};
+
+type GuideResourceRow = {
+  id: string;
+  title: string;
+  resource_type?: string | null;
+  tags?: string[] | null;
+  subcategory?: string | null;
+  author_name?: string | null;
+  read_time?: string | null;
+  is_featured?: boolean | null;
+  cover_image_url?: string | null;
+  is_splash_sponsored?: boolean;
+  splash_tagline?: string | null;
+  splash_cta_text?: string | null;
+  splash_cta_url?: string | null;
+};
+
+const MOCK_GUIDES_RESOURCES: GuideResource[] = [
   {
     id: 1,
     title: "AI Patent Strategy Playbook",
@@ -100,7 +132,7 @@ export default function GuidesToolkitsHubPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [dbResources, setDbResources] = useState<any[]>([]);
+  const [dbResources, setDbResources] = useState<GuideResource[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -113,7 +145,7 @@ export default function GuidesToolkitsHubPage() {
           .order('created_at', { ascending: false });
 
         if (!error && data && data.length > 0) {
-          const mapped = data.map((d: any) => ({
+          const mapped = (data as GuideResourceRow[]).map((d) => ({
             id: d.id,
             title: d.title,
             type: d.resource_type || "Toolkit",
@@ -132,7 +164,7 @@ export default function GuidesToolkitsHubPage() {
         } else {
           setDbResources(MOCK_GUIDES_RESOURCES);
         }
-      } catch (err) {
+      } catch {
         setDbResources(MOCK_GUIDES_RESOURCES);
       } finally {
         setLoading(false);
@@ -155,21 +187,20 @@ export default function GuidesToolkitsHubPage() {
   const regularResources = filteredResources.filter(r => !r.featured);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-100 font-sans selection:bg-teal-500/30">
+    <div className="min-h-screen bg-[#f5f8f7] dark:bg-[#07100f] text-gray-900 dark:text-gray-100 font-sans selection:bg-teal-500/30">
       
       {/* App Header */}
-      <div className="sticky top-0 z-30 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/10">
+      <div className="sticky top-[var(--platform-header-height)] z-30 border-b border-gray-200/80 bg-white/85 shadow-[0_8px_30px_rgba(15,23,42,0.035)] backdrop-blur-xl dark:border-white/10 dark:bg-[#07100f]/85 dark:shadow-none">
         <div className="max-w-[1600px] mx-auto px-4 md:px-6 h-20 flex items-center justify-between gap-6">
           <div className="flex items-center gap-4 md:gap-6">
 
-            <div className="h-6 w-px bg-gray-200 dark:bg-white/10"></div>
             <div className="flex items-center gap-3">
-               <div className="w-8 h-8 rounded-lg bg-teal-500 text-white flex items-center justify-center shadow-md shadow-teal-500/20 shrink-0">
-                 <Command size={16} />
+               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-lg shadow-teal-500/20">
+                 <Command size={18} />
                </div>
                <div>
-                 <h1 className="text-base md:text-lg font-bold leading-none mb-1">Guides & Toolkits</h1>
-                 <p className="text-[10px] text-gray-500 font-medium uppercase tracking-widest leading-none hidden sm:block">Resource Directory</p>
+                 <h1 className="mb-1 text-base font-black leading-none tracking-tight md:text-lg">Guides & Toolkits</h1>
+                 <p className="hidden text-[10px] font-bold uppercase leading-none tracking-[0.18em] text-teal-600 sm:block dark:text-teal-400">Practice Resource Studio</p>
                </div>
             </div>
           </div>
@@ -183,10 +214,10 @@ export default function GuidesToolkitsHubPage() {
               placeholder="Search templates, guides, playbooks..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-100 dark:bg-white/5 border border-transparent focus:bg-white dark:focus:bg-[#111] focus:border-teal-500 rounded-xl py-2.5 pl-11 pr-4 text-sm font-medium transition-all outline-none shadow-sm"
+              className="w-full rounded-2xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-16 text-sm font-medium shadow-inner outline-none transition-all focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10 dark:border-white/5 dark:bg-white/5 dark:focus:bg-[#0b1715]"
             />
             <div className="absolute inset-y-0 right-0 pr-2 flex items-center">
-               <span className="text-[10px] font-bold text-gray-400 bg-gray-200 dark:bg-white/10 px-2 py-1 rounded-md border border-gray-300 dark:border-white/5">⌘K</span>
+               <span className="rounded-md border border-gray-200 bg-white px-2 py-1 text-[10px] font-bold text-gray-400 shadow-sm dark:border-white/10 dark:bg-white/10">⌘K</span>
             </div>
           </div>
 
@@ -216,10 +247,10 @@ export default function GuidesToolkitsHubPage() {
         </div>
       </div>
 
-      <div className="max-w-[1600px] mx-auto px-4 md:px-6 pt-6 md:pt-10 pb-24 flex flex-col lg:flex-row gap-8 lg:gap-12 lg:items-start relative">
+      <div className="relative mx-auto flex max-w-[1600px] flex-col gap-8 px-4 pb-24 pt-6 md:px-6 md:pt-10 lg:flex-row lg:items-start lg:gap-10">
         
         {/* Notion-style Sidebar */}
-        <div className={`w-full lg:w-64 shrink-0 lg:sticky lg:top-32 flex flex-col ${isSidebarOpen ? 'block' : 'hidden lg:block'}`}>
+        <div className={`w-full shrink-0 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm lg:sticky lg:top-[calc(var(--platform-header-height)+96px)] lg:w-64 dark:border-white/10 dark:bg-[#0b1715] ${isSidebarOpen ? 'block' : 'hidden lg:block'}`}>
            <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400 mb-4 px-3">Directory</h3>
            <div className="flex flex-col gap-1">
              {MOCK_GUIDES_SUBCATEGORIES.map(sub => (
@@ -265,28 +296,76 @@ export default function GuidesToolkitsHubPage() {
 
         {/* Main Workspace */}
         <div className="flex-1 min-w-0">
+
+           {/* Editorial hero */}
+           <section className="relative mb-10 overflow-hidden rounded-[2rem] border border-teal-300/15 bg-[#062d2a] px-6 py-9 text-white shadow-2xl shadow-teal-950/10 md:px-10 md:py-12 lg:min-h-[360px] lg:px-12">
+             <div className="pointer-events-none absolute -right-20 -top-32 h-96 w-96 rounded-full bg-teal-400/20 blur-[80px]" />
+             <div className="pointer-events-none absolute -bottom-48 left-1/4 h-80 w-80 rounded-full bg-emerald-300/10 blur-[90px]" />
+             <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background-image:linear-gradient(rgba(255,255,255,.45)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.45)_1px,transparent_1px)] [background-size:36px_36px]" />
+
+             <div className="relative z-10 grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
+               <div>
+                 <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.2em] text-teal-100 backdrop-blur">
+                   <Sparkles size={14} /> Built for practical action
+                 </span>
+                 <h2 className="mt-6 max-w-3xl text-4xl font-black leading-[1.03] tracking-[-0.045em] md:text-6xl">
+                   Turn complex IP work into <span className="text-teal-300">confident action.</span>
+                 </h2>
+                 <p className="mt-5 max-w-2xl text-sm font-medium leading-7 text-teal-50/75 md:text-base">
+                   Practice-ready guides, reusable templates and expert-built toolkits designed to help you move from question to outcome faster.
+                 </p>
+                 <div className="mt-7 flex flex-wrap gap-3">
+                   <span className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black/10 px-3.5 py-2.5 text-xs font-bold text-white/85"><BookOpenCheck size={16} className="text-teal-300" /> {loading ? 'Loading' : resourcesList.length} resources</span>
+                   <span className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black/10 px-3.5 py-2.5 text-xs font-bold text-white/85"><Layers3 size={16} className="text-teal-300" /> Four collections</span>
+                   <span className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black/10 px-3.5 py-2.5 text-xs font-bold text-white/85"><DownloadCloud size={16} className="text-teal-300" /> Ready to use</span>
+                 </div>
+               </div>
+
+               <div className="relative hidden h-64 lg:block" aria-hidden="true">
+                 <div className="absolute left-8 top-8 w-60 -rotate-6 rounded-2xl border border-white/15 bg-white/10 p-5 shadow-2xl backdrop-blur-md transition-transform duration-500 hover:-rotate-3">
+                   <div className="flex items-center justify-between"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-300 text-teal-950"><CheckSquare size={20} /></span><span className="text-[10px] font-black uppercase tracking-widest text-teal-100/60">Checklist</span></div>
+                   <div className="mt-8 h-2 w-4/5 rounded-full bg-white/25" /><div className="mt-3 h-2 w-3/5 rounded-full bg-white/10" />
+                 </div>
+                 <div className="absolute bottom-0 right-1 w-64 rotate-6 rounded-2xl border border-white/20 bg-white p-5 text-slate-900 shadow-2xl transition-transform duration-500 hover:rotate-3">
+                   <div className="flex items-center justify-between"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500 text-white"><LayoutTemplate size={20} /></span><ArrowUpRight size={18} className="text-teal-600" /></div>
+                   <p className="mt-6 text-xs font-black uppercase tracking-[0.18em] text-teal-600">Practice template</p>
+                   <p className="mt-2 text-lg font-black leading-tight">Expert resources, ready when you are.</p>
+                 </div>
+               </div>
+             </div>
+           </section>
            
            {/* Featured "Hero Widgets" */}
            {featuredResources.length > 0 && (
              <div className="mb-12 md:mb-16">
+               <div className="mb-6 flex items-end justify-between gap-4">
+                 <div>
+                   <p className="text-[11px] font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">Editor’s selection</p>
+                   <h2 className="mt-2 text-2xl font-black tracking-tight md:text-3xl">Featured resources</h2>
+                 </div>
+                 <span className="hidden text-xs font-bold text-gray-400 sm:inline">Curated by WIPA practice teams</span>
+               </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                  {featuredResources.map(resource => (
-                   <Link key={resource.id} href={`/platform/resources/guides-toolkits/${resource.id}`} className="group relative rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#111] overflow-hidden hover:border-teal-500 dark:hover:border-teal-500 transition-colors shadow-sm hover:shadow-xl hover:shadow-teal-500/10 flex flex-col">
-                     <div className="h-40 md:h-48 w-full relative overflow-hidden bg-gray-100 dark:bg-[#1a1a1a]">
+                   <Link key={resource.id} href={`/platform/resources/guides-toolkits/${resource.id}`} className="group relative flex flex-col overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-teal-400 hover:shadow-2xl hover:shadow-teal-500/10 dark:border-white/10 dark:bg-[#0b1715] dark:hover:border-teal-500/50">
+                     <div className="relative h-48 w-full overflow-hidden bg-gray-100 md:h-56 dark:bg-[#10201d]">
+                       {/* Dynamic cover URLs can come from member-managed Supabase content. */}
+                       {/* eslint-disable-next-line @next/next/no-img-element */}
                        <img src={resource.image} alt={resource.title} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
-                       <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent" />
-                       <div className="absolute bottom-4 left-5 flex items-center gap-2">
-                         <div className="w-8 h-8 rounded-md bg-teal-500 text-white flex items-center justify-center shadow-lg shadow-teal-500/20">
+                       <div className="absolute inset-0 bg-gradient-to-t from-[#041b19]/95 via-[#041b19]/20 to-transparent" />
+                       <div className="absolute bottom-5 left-5 flex items-center gap-2">
+                         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500 text-white shadow-lg shadow-teal-500/20">
                             <Zap size={16} />
                          </div>
-                         <span className="text-white text-xs font-bold tracking-wide">{resource.type}</span>
+                         <span className="text-xs font-black uppercase tracking-[0.14em] text-white">{resource.type}</span>
                        </div>
                      </div>
-                     <div className="p-5 flex flex-col flex-1">
-                       <h3 className="text-lg md:text-xl font-bold leading-snug mb-3 group-hover:text-teal-500 transition-colors line-clamp-2">{resource.title}</h3>
-                       <div className="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
+                     <div className="flex flex-1 flex-col p-6">
+                       <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em] text-teal-600 dark:text-teal-400">{resource.topic}</p>
+                       <h3 className="mb-4 line-clamp-2 text-xl font-black leading-snug transition-colors group-hover:text-teal-600 md:text-2xl dark:group-hover:text-teal-400">{resource.title}</h3>
+                       <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-4 text-xs font-medium text-gray-500 dark:border-white/5 dark:text-gray-400">
                          <span className="flex items-center gap-1.5"><Box size={14}/> {resource.author}</span>
-                         <span className="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded-md text-gray-600 dark:text-gray-300 font-mono text-[10px] uppercase">{resource.time}</span>
+                         <span className="rounded-lg bg-gray-100 px-2.5 py-1.5 font-mono text-[10px] uppercase text-gray-600 dark:bg-white/10 dark:text-gray-300">{resource.time}</span>
                        </div>
                      </div>
                    </Link>
@@ -297,29 +376,34 @@ export default function GuidesToolkitsHubPage() {
 
            {/* Grid "App" Directory */}
            <div>
-             <h2 className="text-lg md:text-xl font-bold mb-6 flex items-center gap-3 border-b border-gray-200 dark:border-white/10 pb-4">
-               Directory Items
-               <span className="bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-md font-mono border border-gray-200 dark:border-white/5">{regularResources.length}</span>
-             </h2>
+             <div className="mb-6 flex items-end justify-between gap-4 border-b border-gray-200 pb-5 dark:border-white/10">
+               <div>
+                 <p className="text-[11px] font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">Browse the library</p>
+                 <h2 className="mt-2 flex items-center gap-3 text-xl font-black md:text-2xl">Directory items <span className="rounded-lg border border-gray-200 bg-white px-2 py-1 font-mono text-xs text-gray-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-400">{regularResources.length}</span></h2>
+               </div>
+               <SlidersHorizontal size={19} className="text-gray-400" />
+             </div>
              
              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5">
                {regularResources.map(resource => (
-                 <Link key={resource.id} href={`/platform/resources/guides-toolkits/${resource.id}`} className="group bg-white dark:bg-[#111] rounded-xl border border-gray-200 dark:border-white/10 p-5 hover:border-teal-500 transition-all hover:shadow-md flex flex-col relative overflow-hidden">
+                 <Link key={resource.id} href={`/platform/resources/guides-toolkits/${resource.id}`} className="group relative flex min-h-[250px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-400 hover:shadow-xl hover:shadow-teal-500/5 dark:border-white/10 dark:bg-[#0b1715] dark:hover:border-teal-500/40">
                    
-                   <div className="absolute top-0 right-0 w-16 h-16 bg-teal-500/5 rounded-bl-[100%] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                   <div className="pointer-events-none absolute right-0 top-0 h-24 w-24 rounded-bl-[100%] bg-gradient-to-bl from-teal-400/15 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+                   <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-teal-500 to-emerald-400 transition-transform duration-300 group-hover:scale-x-100" />
                    
                    <div className="flex items-start justify-between mb-4">
-                     <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-[#1a1a1a] flex items-center justify-center text-gray-500 group-hover:text-teal-500 group-hover:bg-teal-50 dark:group-hover:bg-teal-500/10 transition-colors">
+                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gray-100 text-gray-500 transition-all group-hover:scale-105 group-hover:bg-teal-50 group-hover:text-teal-600 dark:bg-white/5 dark:group-hover:bg-teal-500/10 dark:group-hover:text-teal-400">
                        {resource.type === 'Template' ? <LayoutTemplate size={20} /> : resource.type === 'Checklist' ? <CheckSquare size={20} /> : <FileCode size={20} />}
                      </div>
                      <span className="text-[10px] font-mono uppercase bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 px-2 py-1 rounded border border-gray-200 dark:border-white/5">{resource.time}</span>
                    </div>
                    
-                   <h3 className="text-sm md:text-base font-bold leading-snug mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{resource.title}</h3>
+                   <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em] text-teal-600 dark:text-teal-400">{resource.topic}</p>
+                   <h3 className="mb-3 text-base font-black leading-snug transition-colors group-hover:text-teal-600 md:text-lg dark:group-hover:text-teal-400">{resource.title}</h3>
                    
                    <div className="mt-auto pt-4 flex items-center justify-between text-xs font-medium text-gray-500 dark:text-gray-400">
                      <span>{resource.author}</span>
-                     <DownloadCloud size={14} className="opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 group-hover:text-teal-500 transition-all" />
+                     <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-all group-hover:bg-teal-500 group-hover:text-white dark:bg-white/5"><DownloadCloud size={14} /></span>
                    </div>
                  </Link>
                ))}

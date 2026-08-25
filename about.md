@@ -159,7 +159,7 @@ WIPA isn't just a platform — it's a **commitment to equity in intellectual pro
 
 **Ready to get started?**
 
-👉 Visit [wipa.vercel.app](https://wipa.vercel.app) and create your free account today.
+👉 Visit [platform.womensipalliance.com](https://platform.womensipalliance.com) and create your free account today.
 
 ---
 

@@ -444,6 +444,7 @@ export default function ResourcesPage() {
         <div className="mb-6 sm:hidden">
           <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {[
+              { title: 'Wellness & Wellbeing', path: '/platform/resources/wellness', color: 'bg-emerald-500/10 text-[#00d26a] border-emerald-500/20' },
               { title: 'Webinars', path: '/platform/resources/webinars', color: 'bg-rose-500/10 text-rose-500 border-rose-500/20' },
               { title: 'Education', path: '/platform/resources/education', color: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' },
               { title: 'Articles & Insights', path: '/platform/resources/articles-insights', color: 'bg-sky-500/10 text-sky-500 border-sky-500/20' },

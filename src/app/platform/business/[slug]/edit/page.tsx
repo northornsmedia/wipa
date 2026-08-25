@@ -162,7 +162,7 @@ export default function EditBusinessProfilePage({ params }: { params: { slug: st
     <div className="min-h-screen bg-slate-50 dark:bg-[#020617] pb-24">
       
       {/* Header */}
-      <div className="bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-white/10 sticky top-[73px] z-30">
+      <div className="sticky top-[var(--platform-header-height)] z-30 border-b border-slate-200 bg-white dark:border-white/10 dark:bg-[#0f172a]">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href={`/platform/business/${business.slug}`} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full transition-colors">

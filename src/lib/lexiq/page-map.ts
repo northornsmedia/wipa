@@ -103,5 +103,10 @@ export const PAGE_MAP: Record<string, { name: string; aliases: string[]; descrip
     name: 'Wellness & Wellbeing',
     aliases: ['wellness', 'wellbeing', 'mental health', 'take a break', 'relax', 'health resources', 'wellness hub'],
     description: 'Curated wellness resources, mental health, and physical wellbeing tools for IP professionals.'
+  },
+  '/platform/resources/wellness/budding-minds': {
+    name: 'Budding Minds · Whole-Person Wellbeing for Women',
+    aliases: ['budding minds', 'jel', 'nutritional therapist', 'gut health', 'hormone health', 'polyvagal', 'wellness retreats', 'somatic', '1:1 nutrition', 'jel budding minds'],
+    description: 'Specialised gut and hormone health, nervous system regulation, 1:1 support, corporate workshops, and international retreats with Jel.'
   }
 };

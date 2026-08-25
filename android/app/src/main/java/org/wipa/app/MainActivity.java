@@ -44,7 +44,7 @@ public class MainActivity extends BridgeActivity {
                 .remove(WipaMessagingService.historyKey(conversationId))
                 .apply();
         }
-        String destination = path.startsWith("http") ? path : "https://wipanorthon.vercel.app" + path;
+        String destination = path.startsWith("http") ? path : "https://platform.womensipalliance.com" + path;
         bridge.getWebView().post(() -> bridge.getWebView().loadUrl(destination));
     }
 }

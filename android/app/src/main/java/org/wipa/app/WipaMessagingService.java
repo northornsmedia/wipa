@@ -131,7 +131,7 @@ public class WipaMessagingService extends MessagingService {
         if (avatarUrl == null || avatarUrl.isEmpty()) return null;
         HttpURLConnection connection = null;
         try {
-            String resolved = avatarUrl.startsWith("http") ? avatarUrl : "https://wipanorthon.vercel.app" + avatarUrl;
+            String resolved = avatarUrl.startsWith("http") ? avatarUrl : "https://platform.womensipalliance.com" + avatarUrl;
             connection = (HttpURLConnection) new URL(resolved).openConnection();
             connection.setConnectTimeout(3500);
             connection.setReadTimeout(3500);

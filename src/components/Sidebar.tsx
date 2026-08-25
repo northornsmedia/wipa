@@ -33,9 +33,21 @@ import {
 } from 'lucide-react';
 import { ShinyButton } from './ShinyButton';
 
-export default function Sidebar() {
+type SidebarProps = {
+  isOpen: boolean;
+  onToggle: () => void;
+  onOpen: () => void;
+};
+
+export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
   const pathname = usePathname();
   const user = useAppStore((state) => state.user);
+  const isPublicationRoute = [
+    '/publications',
+    '/womens-ip-world',
+    '/global-ip-magazine',
+    '/ip-tech-innovation-annual',
+  ].some((route) => pathname.startsWith(route));
 
   const isActive = (path: string) => {
     if (path === '/platform') return pathname === '/platform';
@@ -50,10 +62,11 @@ export default function Sidebar() {
     }`;
   };
 
-  const [isOpen, setIsOpen] = useState(true);
   const [unreadChatsCount, setUnreadChatsCount] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
-  const [isResourcesExpanded, setIsResourcesExpanded] = useState(false);
+  const [isResourcesExpanded, setIsResourcesExpanded] = useState(
+    () => pathname.startsWith('/platform/resources') || isPublicationRoute
+  );
 
   // Fetch initial unread count and listen for changes
   useEffect(() => {
@@ -130,15 +143,18 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className={`fixed top-[60px] bottom-0 left-0 z-30 hidden flex-col border-r border-gray-100 bg-white transition-all duration-300 dark:border-white/10 dark:bg-[#0f172a] lg:flex ${isOpen ? 'w-[260px]' : 'w-16'}`}>
+    <aside className={`fixed bottom-0 left-0 top-[var(--platform-header-height)] z-30 hidden flex-col border-r border-gray-100 bg-white transition-all duration-300 dark:border-white/10 dark:bg-[#0f172a] lg:flex ${isOpen ? 'w-[260px]' : 'w-16'}`}>
       
       <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="absolute top-4 -right-4 z-50 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-2 border-gray-200 bg-white text-gray-700 shadow-md transition-all hover:scale-105 hover:border-[#5a32fa] hover:bg-[#f0ebff] hover:text-[#5a32fa] dark:border-white/25 dark:bg-[#0f172a] dark:text-white dark:hover:border-[#b892ff] dark:hover:bg-[#1e293b]"
+        type="button"
+        onClick={onToggle}
+        className="absolute right-3 top-3 z-50 flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-[#5a32fa]/20 bg-[#f0ebff] text-[#5a32fa] shadow-sm transition-all duration-200 hover:scale-105 hover:border-[#5a32fa]/40 hover:bg-[#5a32fa] hover:text-white hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5a32fa] focus-visible:ring-offset-2 dark:border-[#b892ff]/25 dark:bg-[#5a32fa]/20 dark:text-[#c9b6ff] dark:hover:bg-[#5a32fa] dark:hover:text-white dark:focus-visible:ring-offset-[#0f172a]"
         aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
+        aria-expanded={isOpen}
+        aria-controls="desktop-sidebar-navigation"
         title={isOpen ? 'Collapse menu' : 'Open menu'}
       >
-        {isOpen ? <ChevronLeft size={19} strokeWidth={2.6} /> : <ChevronRight size={19} strokeWidth={2.6} />}
+        {isOpen ? <ChevronLeft size={20} strokeWidth={2.8} /> : <ChevronRight size={20} strokeWidth={2.8} />}
       </button>
 
       {!isOpen && (
@@ -147,7 +163,7 @@ export default function Sidebar() {
             <button
               key={path}
               type="button"
-              onClick={() => setIsOpen(true)}
+              onClick={onOpen}
               title={`Open menu · ${label}`}
               aria-label={`Open menu to ${label}`}
               className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors ${
@@ -165,7 +181,7 @@ export default function Sidebar() {
         </nav>
       )}
 
-      <div className={`${isOpen ? 'flex' : 'hidden'} h-full flex-1 w-full flex-col overflow-y-auto overflow-x-hidden bg-white no-scrollbar overscroll-contain dark:bg-[#0f172a]`}>
+      <div id="desktop-sidebar-navigation" className={`${isOpen ? 'flex' : 'hidden'} h-full flex-1 w-full flex-col overflow-y-auto overflow-x-hidden bg-white no-scrollbar overscroll-contain dark:bg-[#0f172a]`}>
         <div className="flex min-h-full w-[260px] shrink-0 flex-col bg-white dark:bg-[#0f172a] pb-16">
 
       <div className="px-4 mb-8 pt-6">
@@ -216,7 +232,7 @@ export default function Sidebar() {
               <div className="pl-[2.75rem] flex flex-col space-y-1.5 border-l-2 border-gray-100 dark:border-white/5 ml-[1.1rem]">
                 <Link prefetch={false} href="/platform/resources/webinars" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/webinars') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Webinars & Learning</Link>
                 <Link prefetch={false} href="/platform/resources/education" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/education') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Education & Dev</Link>
-                <Link prefetch={false} href="/platform/resources/womens-ip-world" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/womens-ip-world') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Women's IP World</Link>
+                <Link prefetch={false} href="/publications" className={`text-[12px] font-medium transition-colors ${isPublicationRoute ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Publications</Link>
                 <Link prefetch={false} href="/platform/resources/articles-insights" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/articles-insights') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Articles & Insights</Link>
                 <Link prefetch={false} href="/platform/resources/ip-news" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/ip-news') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>IP News & Legal Updates</Link>
                 <Link prefetch={false} href="/platform/resources/research-reports" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/research-reports') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Research & Reports</Link>

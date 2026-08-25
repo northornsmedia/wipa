@@ -1,11 +1,10 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, Building2, Sparkles, MonitorSmartphone, X, ListPlus } from 'lucide-react';
+import { ArrowRight, Building2, Sparkles, ListPlus, ShieldCheck, Globe2, Layers3 } from 'lucide-react';
 import Link from 'next/link';
-import { cn } from "@/lib/utils";
-import { CanvasText } from "@/components/ui/canvas-text";
 import SplashSponsoredBanner from '@/components/SplashSponsoredBanner';
+import PssSponsorIntro from '@/components/PssSponsorIntro';
 import { supabase } from '@/lib/supabase';
 
 const DEFAULT_IP_SERVICES = [
@@ -129,53 +128,9 @@ export default function IPServicesPage() {
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-20">
       
-      {/* CanvasText Splash Screen (Viewport-centered, light and dark theme ready) */}
+      {/* PSS sponsor intro keeps the brand wordmark visible throughout the animation. */}
       {showIntro && (
-        <div 
-          onClick={handleDismissSplash}
-          className={`fixed top-[73px] bottom-0 right-0 left-0 lg:left-[260px] z-30 bg-white/95 dark:bg-[#020617]/95 backdrop-blur-md flex flex-col items-center justify-center p-8 cursor-pointer transition-all duration-500 ${fadeOut ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
-        >
-          {/* Ambient Glow */}
-          <div className="absolute w-[500px] h-[300px] bg-sky-400/20 dark:bg-sky-500/10 rounded-full blur-[100px] pointer-events-none" />
-
-          {/* Skip Button */}
-          <button 
-            onClick={(e) => { e.stopPropagation(); handleDismissSplash(); }}
-            className="absolute top-6 right-6 z-50 text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/15 border border-slate-200 dark:border-white/10 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors backdrop-blur-sm"
-          >
-            Skip
-          </button>
-
-          <div className="relative z-10 flex flex-col items-center justify-center p-4 max-w-full">
-            <h2 className={cn("group relative mx-auto text-center font-black tracking-tight text-slate-900 dark:text-white flex flex-col sm:flex-row items-center justify-center gap-x-3 gap-y-2 max-w-full px-2")}>
-              <span className="text-slate-500 dark:text-slate-400 text-xs sm:text-lg font-bold uppercase tracking-wider">Sponsored by</span>
-              <CanvasText
-                text="PSS Solutions"
-                animationType="aurora"
-                className="font-black text-3xl sm:text-5xl md:text-6xl tracking-tight drop-shadow-[0_4px_20px_rgba(56,189,248,0.4)]"
-                lightColors={[
-                  "#0284c7",
-                  "#2563eb",
-                  "#0369a1",
-                  "#1d4ed8",
-                  "#0891b2",
-                  "#4f46e5",
-                  "#0284c7"
-                ]}
-                darkColors={[
-                  "#38bdf8",
-                  "#0ea5e9",
-                  "#60a5fa",
-                  "#818cf8",
-                  "#a78bfa",
-                  "#38bdf8",
-                  "#06b6d4"
-                ]}
-                animationDuration={3.5}
-              />
-            </h2>
-          </div>
-        </div>
+        <PssSponsorIntro fading={fadeOut} onDismiss={handleDismissSplash} />
       )}
       
       {/* Top Hero Section */}
@@ -185,6 +140,12 @@ export default function IPServicesPage() {
         <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-0 pointer-events-none"></div>
 
         <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 relative z-10 py-16 md:py-24 flex flex-col lg:flex-row items-center gap-12">
+          <Link
+            href="/platform/resources/ip-services/list"
+            className="absolute right-4 top-4 z-20 inline-flex items-center justify-center gap-2 rounded-full bg-sky-600 px-5 py-2.5 text-xs font-black text-white shadow-lg shadow-sky-600/20 transition-all hover:-translate-y-0.5 hover:bg-sky-700 active:scale-95 sm:right-6 sm:top-5 sm:px-6 sm:py-3 sm:text-sm lg:right-8"
+          >
+            <ListPlus size={18} /> List Your IP Service
+          </Link>
           
           {/* Left Side */}
           <div className="flex-1 text-center lg:text-left">
@@ -202,12 +163,17 @@ export default function IPServicesPage() {
                 This page is sponsored by PSS Solutions — an independent IP operations consultancy specialising in strategy, technology and process for corporate legal and IP teams.
               </p>
             </div>
-            <Link
-              href="/platform/resources/ip-services/list"
-              className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-sky-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-sky-600/20 transition-all hover:-translate-y-0.5 hover:bg-sky-700 active:scale-95"
-            >
-              <ListPlus size={18} /> List Your IP Service
-            </Link>
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-2.5 lg:justify-start">
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+                <ShieldCheck size={15} className="text-sky-600 dark:text-sky-400" /> Independent advice
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+                <Layers3 size={15} className="text-sky-600 dark:text-sky-400" /> IP-specialist expertise
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3.5 py-2 text-xs font-bold text-slate-600 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+                <Globe2 size={15} className="text-sky-600 dark:text-sky-400" /> Global support
+              </span>
+            </div>
           </div>
 
           {/* Right Side - Sponsor Banner (Full Card Clickable) */}
@@ -265,7 +231,21 @@ export default function IPServicesPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-7 sm:flex-row sm:items-end sm:justify-between dark:border-white/10">
+          <div>
+            <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400">
+              <span className="h-px w-7 bg-sky-500" /> Service directory
+            </div>
+            <h2 className="text-2xl font-black tracking-tight text-slate-900 md:text-3xl dark:text-white">Explore trusted IP partners</h2>
+            <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-slate-500 dark:text-slate-400">Specialist providers supporting modern IP teams across operations, technology, strategy and protection.</p>
+          </div>
+          <span className="inline-flex w-max items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+            <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-sky-100 px-1.5 text-sky-700 dark:bg-sky-400/10 dark:text-sky-300">{ipServices.length}</span>
+            Available services
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           
           {ipServices.map((service, index) => {
             const isSponsored = index === 0;
@@ -280,6 +260,7 @@ export default function IPServicesPage() {
                   href={cardHref}
                   className="group relative bg-white dark:bg-[#0B1221] rounded-[2rem] border-2 border-sky-400/40 dark:border-sky-500/30 overflow-hidden flex flex-col md:col-span-2 lg:col-span-2 min-h-[420px] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl shadow-xl dark:shadow-[0_20px_60px_-15px_rgba(14,165,233,0.2)]"
                 >
+                  <div className="absolute inset-x-0 top-0 z-20 h-1 bg-gradient-to-r from-sky-500 via-cyan-400 to-blue-600" />
                   {/* Glowing ambient gradient */}
                   <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-sky-500/25 via-blue-500/15 to-transparent blur-[80px] rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-700"></div>
                   <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.03] dark:opacity-[0.12] mix-blend-overlay"></div>
@@ -337,7 +318,7 @@ export default function IPServicesPage() {
                     {/* Footer Row */}
                     <div className="pt-6 mt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
                       <span className="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase tracking-widest flex items-center gap-1.5">
-                        Verified IP Consultancy
+                        <ShieldCheck size={15} /> Verified IP Consultancy
                       </span>
 
                       <div className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white group-hover:text-sky-500 transition-colors uppercase tracking-widest">
@@ -355,15 +336,16 @@ export default function IPServicesPage() {
               <Link 
                 key={service.id}
                 href={cardHref}
-                className="group relative bg-white dark:bg-[#0B1221] rounded-[2rem] border border-slate-200 dark:border-white/5 overflow-hidden flex flex-col h-[420px] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:hover:shadow-[0_20px_60px_-15px_rgba(14,165,233,0.15)] dark:hover:border-white/10"
+                className="group relative flex min-h-[420px] flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white transition-all duration-500 hover:-translate-y-1.5 hover:border-sky-300 hover:shadow-2xl dark:border-white/5 dark:bg-[#0B1221] dark:hover:border-sky-500/25 dark:hover:shadow-[0_20px_60px_-15px_rgba(14,165,233,0.15)]"
               >
+                <div className="absolute inset-x-0 top-0 z-20 h-1 origin-left scale-x-0 bg-gradient-to-r from-sky-500 to-cyan-400 transition-transform duration-500 group-hover:scale-x-100" />
                 {/* Branded Abstract Glow */}
                 <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/20 to-cyan-500/20 blur-[70px] rounded-full pointer-events-none opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700`}></div>
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.02] dark:opacity-[0.1] mix-blend-overlay"></div>
                 
-                <div className="relative z-10 p-8 md:p-10 flex flex-col h-full">
+                <div className="relative z-10 flex h-full flex-col p-8 md:p-9">
                   
-                  <div className="flex justify-between items-start mb-auto">
+                  <div className="flex items-start justify-between">
                     <div className="w-16 h-16 rounded-[1.25rem] bg-slate-50 dark:bg-white/5 backdrop-blur-md shadow-lg border border-slate-100 dark:border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 relative overflow-hidden">
                       <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-20 transition-opacity duration-500`}></div>
                       {service.url ? (
@@ -372,24 +354,28 @@ export default function IPServicesPage() {
                         <Building2 size={28} className="text-slate-400 dark:text-slate-300 relative z-10" />
                       )}
                     </div>
+                    <span className="text-5xl font-black tracking-[-0.06em] text-slate-100 transition-colors group-hover:text-sky-100 dark:text-white/5 dark:group-hover:text-sky-400/10">0{index + 1}</span>
                   </div>
 
-                  <div className="mt-8 relative z-10">
-                    <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-sky-500 transition-colors drop-shadow-sm line-clamp-1">
-                      {service.title}
-                    </h3>
-                    <div className="inline-block px-3 py-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full mb-6">
+                  <div className="relative z-10 mt-8 flex flex-1 flex-col">
+                    <div className="mb-4 inline-block w-max rounded-full border border-slate-200 bg-slate-100 px-3 py-1 dark:border-white/10 dark:bg-white/5">
                       <p className="text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-[0.2em]">
                         {service.subcategory || service.category || 'IP Operations'}
                       </p>
                     </div>
+                    <h3 className="mb-3 line-clamp-2 text-2xl font-black leading-tight text-slate-900 transition-colors group-hover:text-sky-600 md:text-3xl dark:text-white dark:group-hover:text-sky-400">
+                      {service.title}
+                    </h3>
                     
-                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8 line-clamp-3">
+                    <p className="line-clamp-3 text-sm font-medium leading-7 text-slate-600 dark:text-slate-400">
                       {service.description}
                     </p>
                     
-                    <div className="flex items-center gap-2 text-sm font-black text-slate-900 dark:text-white group-hover:text-sky-500 transition-colors uppercase tracking-widest mt-auto w-max">
-                      Explore Profile <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-300" />
+                    <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-6 dark:border-white/5">
+                      <span className="text-xs font-black uppercase tracking-[0.14em] text-slate-700 transition-colors group-hover:text-sky-600 dark:text-slate-200 dark:group-hover:text-sky-400">Explore Profile</span>
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-all group-hover:bg-sky-600 group-hover:text-white dark:bg-white/5 dark:text-slate-300">
+                        <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+                      </span>
                     </div>
                   </div>
                   

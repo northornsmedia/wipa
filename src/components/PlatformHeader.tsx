@@ -175,7 +175,7 @@ export default function PlatformHeader() {
 
   return (
     <>
-      <header className="hidden md:flex items-center justify-between px-4 sm:px-6 py-2 border-b border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] fixed top-0 left-0 right-0 z-50 h-[60px] box-border">
+      <header className="fixed left-0 right-0 top-0 z-50 box-border hidden h-[var(--platform-header-height)] items-center justify-between border-b border-gray-100 bg-white px-4 py-3 shadow-[0_1px_0_rgba(15,23,42,0.02)] sm:px-6 md:flex dark:border-white/10 dark:bg-[#0f172a] dark:shadow-none">
         {isSearchOpen ? (
           <div className="flex items-center w-full gap-4 max-w-4xl mx-auto animate-in fade-in duration-200">
             <Search size={18} className="text-gray-400 flex-shrink-0" />
@@ -217,13 +217,13 @@ export default function PlatformHeader() {
                 <img 
                   src="/WIPA-Logo.png" 
                   alt="WIPA Logo" 
-                  className="h-8 max-h-8 w-auto max-w-[130px] object-contain shrink-0" 
-                  style={{ height: '32px', width: 'auto' }}
+                  className="h-9 max-h-9 w-auto max-w-[145px] shrink-0 object-contain" 
+                  style={{ height: '36px', width: 'auto' }}
                 />
               </Link>
             </div>
             
-            <nav className="hidden md:flex items-center gap-0.5 bg-white/60 dark:bg-[#020617]/50 backdrop-blur-xl rounded-xl p-1 border border-gray-200/60 dark:border-white/10 shadow-sm">
+            <nav className="hidden items-center gap-0.5 rounded-2xl border border-gray-200/60 bg-white/60 p-1.5 shadow-sm backdrop-blur-xl md:flex dark:border-white/10 dark:bg-[#020617]/50">
               {navItems.map((item) => {
                 const isActive = item.path === '/platform' ? pathname === '/platform' : (item.path.startsWith('/') && pathname.startsWith(item.path));
                 const Icon = item.icon;
@@ -233,7 +233,7 @@ export default function PlatformHeader() {
                     <button 
                       key={item.name} 
                       onClick={handleLexIQClick}
-                      className={`group relative flex flex-col items-center justify-center h-[38px] rounded-lg transition-all duration-300 ease-out overflow-hidden text-gray-500 dark:text-gray-400 hover:text-[#ff90e8] ${
+                      className={`group relative flex h-[42px] flex-col items-center justify-center overflow-hidden rounded-xl text-gray-500 transition-all duration-300 ease-out hover:text-[#ff90e8] dark:text-gray-400 ${
                         flyingBox || isLexIQOpen ? "opacity-0 pointer-events-none w-0 mx-0" : "opacity-100 w-[52px] mx-0.5"
                       }`}
                     >
@@ -256,7 +256,7 @@ export default function PlatformHeader() {
                   <Link prefetch={false} 
                     key={item.name} 
                     href={item.path} 
-                    className={`group relative flex flex-col items-center justify-center w-[52px] h-[38px] rounded-lg transition-all duration-300 ease-out overflow-hidden ${
+                    className={`group relative flex h-[42px] w-[54px] flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ease-out ${
                       isActive 
                         ? 'text-[#5a32fa] dark:text-[#818cf8]' 
                         : 'text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] dark:hover:text-[#818cf8]'
@@ -529,10 +529,10 @@ export default function PlatformHeader() {
       {isSearchOpen && (
         <>
           <div 
-            className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[40] transition-opacity top-[73px]"
+            className="fixed inset-0 top-[var(--platform-header-height)] z-[40] bg-slate-900/20 backdrop-blur-sm transition-opacity"
             onClick={handleCloseSearch}
           />
-          <div className="fixed top-[73px] left-0 w-full bg-white dark:bg-[#0f172a] border-b border-gray-100 dark:border-white/10 shadow-lg z-[45] animate-in slide-in-from-top-2 duration-200 max-h-[60vh] overflow-y-auto">
+          <div className="fixed left-0 top-[var(--platform-header-height)] z-[45] max-h-[60vh] w-full overflow-y-auto border-b border-gray-100 bg-white shadow-lg animate-in slide-in-from-top-2 duration-200 dark:border-white/10 dark:bg-[#0f172a]">
             <div className="max-w-4xl mx-auto p-6">
               
               {!searchQuery.trim() ? (
