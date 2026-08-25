@@ -417,12 +417,12 @@ export default function Home() {
             </motion.div>
           </motion.div>
         </section>
-
+        
         {/* 6 Platform Pillars Grid (What WIPA Can Do) */}
         <section className="w-full max-w-7xl mx-auto px-6 py-20 z-10 relative">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-[#ff2a70]/10 border border-[#ff2a70]/25 text-[#ff2a70] text-xs font-black uppercase tracking-wider px-4 py-1.5 rounded-full mb-4 shadow-sm">
-              <Sparkles size={13} /> Platform Capabilities
+            <div className="inline-flex items-center gap-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-slate-800 dark:text-slate-200 text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full mb-4 shadow-2xs">
+              <Sparkles size={13} className="text-orange-500" /> Platform Architecture
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
               Everything You Need To Lead In Intellectual Property
@@ -435,14 +435,14 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
             
             {/* Pillar 1: LexIQ AI */}
-            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-purple-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-purple-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-purple-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-purple-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform shadow-inner">
-                    <Bot size={24} />
+                  <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                    <Bot size={20} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-300">
-                    Core AI
+                  <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+                    AI ENGINE
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
@@ -458,14 +458,14 @@ export default function Home() {
             </div>
 
             {/* Pillar 2: Live IP News */}
-            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-orange-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-orange-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-orange-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-orange-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform shadow-inner">
-                    <Activity size={24} />
+                  <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                    <Activity size={20} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-300">
-                    30s Live Sync
+                  <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+                    30S SYNC
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-orange-600 dark:group-hover:text-orange-300 transition-colors">
@@ -481,14 +481,14 @@ export default function Home() {
             </div>
 
             {/* Pillar 3: Verified Firm Directory */}
-            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-emerald-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-emerald-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-emerald-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-emerald-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform shadow-inner">
-                    <ShieldCheck size={24} />
+                  <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                    <ShieldCheck size={20} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-300">
-                    45+ Nations
+                  <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+                    45+ NATIONS
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors">
@@ -504,14 +504,14 @@ export default function Home() {
             </div>
 
             {/* Pillar 4: Annual Publications */}
-            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-pink-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-pink-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-pink-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-pink-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-600 dark:text-pink-400 group-hover:scale-110 transition-transform shadow-inner">
-                    <BookOpen size={24} />
+                  <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                    <BookOpen size={20} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-600 dark:text-pink-300">
-                    35% Savings
+                  <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+                    FLAGSHIP
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-pink-600 dark:group-hover:text-pink-300 transition-colors">
@@ -527,14 +527,14 @@ export default function Home() {
             </div>
 
             {/* Pillar 5: Virtual Roundtables */}
-            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-blue-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-blue-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-blue-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-blue-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform shadow-inner">
-                    <Calendar size={24} />
+                  <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                    <Calendar size={20} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-300">
-                    HD Video
+                  <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+                    HD VIDEO
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
@@ -550,14 +550,14 @@ export default function Home() {
             </div>
 
             {/* Pillar 6: Mentorship & Wellness */}
-            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-amber-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-amber-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-amber-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-amber-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform shadow-inner">
-                    <HeartHandshake size={24} />
+                  <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                    <HeartHandshake size={20} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-300">
-                    Empowerment
+                  <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+                    MENTORSHIP
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
@@ -664,145 +664,144 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Global Impact Numbers Counter - High-Voltage Interactive Cyber Cards */}
+        {/* Global Impact Numbers Counter - High-Voltage Precision Enterprise Cards */}
         <section className="w-full max-w-7xl mx-auto px-6 py-16 z-10 relative">
-          <div className="relative rounded-[2.5rem] bg-white/95 dark:bg-gradient-to-b dark:from-white/10 dark:via-white/5 dark:to-transparent border border-slate-200 dark:border-transparent p-[1px] shadow-xl dark:shadow-2xl dark:shadow-purple-950/20">
+          <div className="relative rounded-[2.5rem] bg-white dark:bg-[#090d16]/95 border border-slate-200/80 dark:border-white/10 p-6 sm:p-10 lg:p-12 shadow-xl dark:shadow-2xl">
             
-            {/* Ambient Backlight Glows */}
-            <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
-            <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+            {/* Header Label */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-8 mb-8 border-b border-slate-100 dark:border-white/10">
+              <div className="flex items-center gap-3">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-mono font-bold uppercase tracking-widest text-slate-800 dark:text-slate-200">
+                  Global Alliance Network Telemetry
+                </span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[11px] font-mono font-bold text-slate-600 dark:text-slate-400">
+                <span>SYSTEM STATUS: OPERATIONAL</span>
+              </div>
+            </div>
 
-            <div className="rounded-[2.45rem] bg-white/90 dark:bg-[#090d16]/90 backdrop-blur-2xl p-6 sm:p-10 lg:p-12 border border-slate-200/60 dark:border-white/5">
+            {/* 4 Precision Metric Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               
-              {/* Header Label */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-8 mb-8 border-b border-slate-200 dark:border-white/10">
-                <div className="flex items-center gap-3">
-                  <span className="h-3 w-3 rounded-full bg-emerald-500 animate-ping" />
-                  <span className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-300">
-                    Live Alliance Network Metrics
+              {/* Metric 1 */}
+              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 dark:hover:border-white/25 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-xs">
+                      <Users size={17} />
+                    </div>
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+                      COUNSEL
+                    </span>
+                  </div>
+
+                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-1.5">
+                    5,000+
+                  </h3>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
+                    Verified IP Leaders
+                  </p>
+                  <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                    Partners, in-house counsel & patent agents
+                  </p>
+                </div>
+
+                <div className="mt-5 pt-3 border-t border-slate-200/70 dark:border-white/5 flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">+18% MoM Growth</span>
+                  <span className="text-slate-400">Global</span>
+                </div>
+              </div>
+
+              {/* Metric 2 */}
+              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 dark:hover:border-white/25 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-xs">
+                      <Globe size={17} />
+                    </div>
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+                      REACH
+                    </span>
+                  </div>
+
+                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-1.5">
+                    45+
+                  </h3>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
+                    Global Jurisdictions
+                  </p>
+                  <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                    USPTO, EPO, UKIPO, WIPO & APAC
+                  </p>
+                </div>
+
+                <div className="mt-5 pt-3 border-t border-slate-200/70 dark:border-white/5 flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-purple-600 dark:text-purple-400 font-bold">Cross-Border</span>
+                  <span className="text-slate-400">Active</span>
+                </div>
+              </div>
+
+              {/* Metric 3 */}
+              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 dark:hover:border-white/25 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-xs">
+                      <Scale size={17} />
+                    </div>
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+                      INTELLIGENCE
+                    </span>
+                  </div>
+
+                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-1.5">
+                    1,200+
+                  </h3>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
+                    Legal Briefs & Rulings
+                  </p>
+                  <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                    Patent, trademark & copyright case law
+                  </p>
+                </div>
+
+                <div className="mt-5 pt-3 border-t border-slate-200/70 dark:border-white/5 flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-cyan-600 dark:text-cyan-400 font-bold flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse" /> 30s Live Sync
                   </span>
-                </div>
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-600 dark:text-slate-400">
-                  <Activity size={13} className="text-orange-500 animate-pulse" /> Real-Time Global Telemetry
+                  <span className="text-slate-400">Verified</span>
                 </div>
               </div>
 
-              {/* 4 Glowing Metric Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                
-                {/* Metric 1 */}
-                <div className="group relative rounded-3xl bg-slate-50/90 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 hover:border-orange-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-orange-500/15 flex flex-col justify-between">
+              {/* Metric 4 */}
+              <div className="group rounded-2xl bg-slate-50/70 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 dark:hover:border-white/25 flex flex-col justify-between">
+                <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
-                      <Users size={20} />
+                    <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white/10 text-white flex items-center justify-center shadow-xs">
+                      <BookOpen size={17} />
                     </div>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[10px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400">
-                      Verified
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-slate-500 dark:text-slate-400 uppercase">
+                      SAVINGS
                     </span>
                   </div>
 
-                  <div>
-                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-500 dark:from-orange-400 dark:via-amber-300 dark:to-yellow-400 mb-1.5">
-                      5,000+
-                    </h3>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
-                      IP Leaders & Counsel
-                    </p>
-                    <p className="text-[11px] text-slate-500 font-medium">
-                      Partners, in-house attorneys & agents
-                    </p>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> +18% MoM Growth
-                  </div>
+                  <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-1.5">
+                    35%
+                  </h3>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
+                    Member Savings
+                  </p>
+                  <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                    On Women&apos;s IP World Annual flagship editions
+                  </p>
                 </div>
 
-                {/* Metric 2 */}
-                <div className="group relative rounded-3xl bg-slate-50/90 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 hover:border-purple-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-purple-500/15 flex flex-col justify-between">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
-                      <Globe size={20} />
-                    </div>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">
-                      Global
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-fuchsia-400 to-pink-500 dark:from-purple-400 dark:via-fuchsia-300 dark:to-pink-400 mb-1.5">
-                      45+
-                    </h3>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
-                      Global Jurisdictions
-                    </p>
-                    <p className="text-[11px] text-slate-500 font-medium">
-                      USPTO, EPO, UKIPO, WIPO & APAC
-                    </p>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-purple-600 dark:text-purple-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-purple-500" /> Cross-Border Precedents
-                  </div>
+                <div className="mt-5 pt-3 border-t border-slate-200/70 dark:border-white/5 flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-pink-600 dark:text-pink-400 font-bold">Print & Digital</span>
+                  <span className="text-slate-400">2026</span>
                 </div>
-
-                {/* Metric 3 */}
-                <div className="group relative rounded-3xl bg-slate-50/90 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 hover:border-emerald-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-emerald-500/15 flex flex-col justify-between">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-                      <Scale size={20} />
-                    </div>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                      Live Sync
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 dark:from-emerald-400 dark:via-teal-300 dark:to-cyan-400 mb-1.5">
-                      1,200+
-                    </h3>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
-                      Intelligence Briefs
-                    </p>
-                    <p className="text-[11px] text-slate-500 font-medium">
-                      Patents, trademarks & copyright rulings
-                    </p>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse" /> 30s Auto Refresh
-                  </div>
-                </div>
-
-                {/* Metric 4 */}
-                <div className="group relative rounded-3xl bg-slate-50/90 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 hover:border-pink-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-pink-500/15 flex flex-col justify-between">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform">
-                      <Sparkles size={20} />
-                    </div>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-[10px] font-black uppercase tracking-wider text-pink-600 dark:text-pink-400">
-                      Exclusive
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-400 to-orange-500 dark:from-pink-400 dark:via-rose-300 dark:to-orange-400 mb-1.5">
-                      35%
-                    </h3>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
-                      Member Savings
-                    </p>
-                    <p className="text-[11px] text-slate-500 font-medium">
-                      On Women&apos;s IP World Annual editions
-                    </p>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-pink-600 dark:text-pink-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-pink-500" /> Print & Digital Editions
-                  </div>
-                </div>
-
               </div>
+
             </div>
           </div>
         </section>
