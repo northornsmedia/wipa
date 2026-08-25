@@ -612,24 +612,145 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Global Impact Numbers Counter */}
-        <section className="w-full bg-[#0e0e14] border-y border-white/10 text-white py-16 px-6 relative z-10">
-          <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div className="p-4 border-r border-white/10 last:border-none">
-              <h3 className="text-4xl sm:text-5xl md:text-6xl font-black text-orange-400 mb-2">5,000+</h3>
-              <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-300">IP Leaders & Counsel</p>
-            </div>
-            <div className="p-4 border-r border-white/10 last:border-none">
-              <h3 className="text-4xl sm:text-5xl md:text-6xl font-black text-purple-400 mb-2">45+</h3>
-              <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-300">Global Jurisdictions</p>
-            </div>
-            <div className="p-4 border-r border-white/10 last:border-none">
-              <h3 className="text-4xl sm:text-5xl md:text-6xl font-black text-emerald-400 mb-2">1,200+</h3>
-              <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-300">Intelligence Resources</p>
-            </div>
-            <div className="p-4">
-              <h3 className="text-4xl sm:text-5xl md:text-6xl font-black text-pink-400 mb-2">35%</h3>
-              <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-300">Member Savings</p>
+        {/* Global Impact Numbers Counter - High-Voltage Interactive Cyber Cards */}
+        <section className="w-full max-w-7xl mx-auto px-6 py-16 z-10 relative">
+          <div className="relative rounded-[2.5rem] bg-gradient-to-b from-white/10 via-white/5 to-transparent p-[1px] shadow-2xl shadow-purple-950/20">
+            
+            {/* Ambient Backlight Glows */}
+            <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-64 h-64 bg-orange-500/15 rounded-full blur-3xl pointer-events-none -z-10" />
+            <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-64 h-64 bg-purple-500/15 rounded-full blur-3xl pointer-events-none -z-10" />
+
+            <div className="rounded-[2.45rem] bg-[#090d16]/90 backdrop-blur-2xl p-6 sm:p-10 lg:p-12">
+              
+              {/* Header Label */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-8 mb-8 border-b border-white/10">
+                <div className="flex items-center gap-3">
+                  <span className="h-3 w-3 rounded-full bg-emerald-400 animate-ping" />
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-300">
+                    Live Alliance Network Metrics
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-slate-400">
+                  <Activity size={13} className="text-orange-400 animate-pulse" /> Real-Time Global Telemetry
+                </div>
+              </div>
+
+              {/* 4 Glowing Metric Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                {/* Metric 1 */}
+                <div className="group relative rounded-3xl bg-[#0e1422]/90 border border-white/10 hover:border-orange-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-orange-500/15 flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-10 h-10 rounded-2xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform">
+                      <Users size={20} />
+                    </div>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[10px] font-black uppercase tracking-wider text-orange-400">
+                      Verified
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 mb-1.5">
+                      5,000+
+                    </h3>
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                      IP Leaders & Counsel
+                    </p>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      Partners, in-house attorneys & agents
+                    </p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> +18% MoM Growth
+                  </div>
+                </div>
+
+                {/* Metric 2 */}
+                <div className="group relative rounded-3xl bg-[#0e1422]/90 border border-white/10 hover:border-purple-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-purple-500/15 flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-10 h-10 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                      <Globe size={20} />
+                    </div>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] font-black uppercase tracking-wider text-purple-400">
+                      Global
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-pink-400 mb-1.5">
+                      45+
+                    </h3>
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                      Global Jurisdictions
+                    </p>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      USPTO, EPO, UKIPO, WIPO & APAC
+                    </p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-purple-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-purple-400" /> Cross-Border Precedents
+                  </div>
+                </div>
+
+                {/* Metric 3 */}
+                <div className="group relative rounded-3xl bg-[#0e1422]/90 border border-white/10 hover:border-emerald-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-emerald-500/15 flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                      <Scale size={20} />
+                    </div>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black uppercase tracking-wider text-emerald-400">
+                      Live Sync
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 mb-1.5">
+                      1,200+
+                    </h3>
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                      Intelligence Briefs
+                    </p>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      Patents, trademarks & copyright rulings
+                    </p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-cyan-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" /> 30s Auto Refresh
+                  </div>
+                </div>
+
+                {/* Metric 4 */}
+                <div className="group relative rounded-3xl bg-[#0e1422]/90 border border-white/10 hover:border-pink-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-pink-500/15 flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-10 h-10 rounded-2xl bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform">
+                      <Sparkles size={20} />
+                    </div>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-[10px] font-black uppercase tracking-wider text-pink-400">
+                      Exclusive
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-rose-300 to-orange-400 mb-1.5">
+                      35%
+                    </h3>
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                      Member Savings
+                    </p>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      On Women's IP World Annual editions
+                    </p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-pink-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-pink-400" /> Print & Digital Editions
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
         </section>
