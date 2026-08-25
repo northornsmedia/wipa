@@ -419,114 +419,156 @@ export default function Home() {
         </section>
 
         {/* 6 Platform Pillars Grid (What WIPA Can Do) */}
-        <section className="w-full max-w-7xl mx-auto px-6 py-16 z-10 relative">
+        <section className="w-full max-w-7xl mx-auto px-6 py-20 z-10 relative">
           <div className="text-center mb-16">
-            <span className="bg-[#ff2a70]/15 text-[#ff2a70] border border-[#ff2a70]/30 text-xs font-black uppercase tracking-wider px-4 py-1.5 rounded-full mb-3 inline-block">
-              Platform Architecture
-            </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white">
+            <div className="inline-flex items-center gap-2 bg-[#ff2a70]/10 border border-[#ff2a70]/25 text-[#ff2a70] text-xs font-black uppercase tracking-wider px-4 py-1.5 rounded-full mb-4 shadow-sm">
+              <Sparkles size={13} /> Platform Capabilities
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
               Everything You Need To Lead In Intellectual Property
             </h2>
-            <p className="mt-4 text-slate-400 text-base max-w-2xl mx-auto">
-              A single unified ecosystem built for patent attorneys, trademark specialists, in-house general counsels, and innovation leaders.
+            <p className="mt-4 text-slate-400 text-sm sm:text-base max-w-2xl mx-auto font-medium leading-relaxed">
+              A single unified ecosystem purpose-built for patent attorneys, trademark specialists, in-house counsel, and innovation leaders globally.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
             
             {/* Pillar 1: LexIQ AI */}
-            <div className="p-8 rounded-3xl bg-[#0e0e14] border border-white/10 hover:border-[#8b5cf6]/50 hover:shadow-xl hover:shadow-purple-500/10 transition-all group flex flex-col justify-between">
+            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-purple-500/50 shadow-xl hover:shadow-2xl hover:shadow-purple-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 transition-transform">
-                  <Bot size={24} />
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform shadow-inner">
+                    <Bot size={24} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300">
+                    Core AI
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">LexIQ AI Intelligence</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
-                  Specialized legal reasoning trained on USPTO, EPO, and WIPO case law. Instant prior art synthesis and claim drafting analysis.
+                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-purple-300 transition-colors">
+                  LexIQ AI Intelligence
+                </h3>
+                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                  Specialized legal reasoning trained on USPTO, EPO, and WIPO case law. Instant prior art synthesis, claim drafting analysis, and infringement defense.
                 </p>
               </div>
-              <Link href="/platform/ai" className="mt-6 inline-flex items-center gap-1.5 text-xs font-bold text-purple-400 group-hover:translate-x-1 transition-transform">
-                Launch LexIQ AI ➔
+              <Link href="/platform/ai" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-purple-400 group-hover:text-purple-300 group-hover:gap-3 transition-all">
+                Launch LexIQ AI <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Pillar 2: Live IP News */}
-            <div className="p-8 rounded-3xl bg-[#0e0e14] border border-white/10 hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-500/10 transition-all group flex flex-col justify-between">
+            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-orange-500/50 shadow-xl hover:shadow-2xl hover:shadow-orange-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 mb-6 group-hover:scale-110 transition-transform">
-                  <Activity size={24} />
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform shadow-inner">
+                    <Activity size={24} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-300">
+                    30s Live Sync
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Continuous Live IP News</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
-                  Real-time 30-second automated internet stream capturing UPC rulings, trademark oppositions, and global regulatory directives.
+                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-orange-300 transition-colors">
+                  Continuous Live IP News
+                </h3>
+                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                  Continuous 30-second automated internet aggregation stream capturing UPC rulings, trademark oppositions, and global regulatory directives.
                 </p>
               </div>
-              <Link href="/platform/resources/ip-news" className="mt-6 inline-flex items-center gap-1.5 text-xs font-bold text-orange-400 group-hover:translate-x-1 transition-transform">
-                View Live Feed ➔
+              <Link href="/platform/resources/ip-news" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-orange-400 group-hover:text-orange-300 group-hover:gap-3 transition-all">
+                View Live Feed <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Pillar 3: Verified Firm Directory */}
-            <div className="p-8 rounded-3xl bg-[#0e0e14] border border-white/10 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/10 transition-all group flex flex-col justify-between">
+            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-emerald-500/50 shadow-xl hover:shadow-2xl hover:shadow-emerald-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
-                  <ShieldCheck size={24} />
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform shadow-inner">
+                    <ShieldCheck size={24} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+                    45+ Nations
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Verified Firm Directory</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
-                  Global directory of certified IP law firms, boutique patent agencies, and verified partners across 45+ jurisdictions.
+                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-emerald-300 transition-colors">
+                  Verified Firm Directory
+                </h3>
+                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                  Global directory of certified IP law firms, boutique patent agencies, and verified partner counsel with claimed profiles and badges.
                 </p>
               </div>
-              <Link href="/platform/resources/ip-firms" className="mt-6 inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition-transform">
-                Search Directory ➔
+              <Link href="/platform/resources/ip-firms" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-emerald-400 group-hover:text-emerald-300 group-hover:gap-3 transition-all">
+                Search Directory <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Pillar 4: Annual Publications */}
-            <div className="p-8 rounded-3xl bg-[#0e0e14] border border-white/10 hover:border-pink-500/50 hover:shadow-xl hover:shadow-pink-500/10 transition-all group flex flex-col justify-between">
+            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-pink-500/50 shadow-xl hover:shadow-2xl hover:shadow-pink-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 mb-6 group-hover:scale-110 transition-transform">
-                  <BookOpen size={24} />
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform shadow-inner">
+                    <BookOpen size={24} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-300">
+                    35% Savings
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Annual Publications</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
-                  Women's IP World and IP Tech Innovation annuals with 35% exclusive member discounts on global print and digital distributions.
+                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-pink-300 transition-colors">
+                  Annual Publications
+                </h3>
+                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                  Women&apos;s IP World and IP Tech Innovation annuals with exclusive alliance discounts on global print and digital flagship distributions.
                 </p>
               </div>
-              <Link href="/publications" className="mt-6 inline-flex items-center gap-1.5 text-xs font-bold text-pink-400 group-hover:translate-x-1 transition-transform">
-                Explore Editions ➔
+              <Link href="/publications" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-pink-400 group-hover:text-pink-300 group-hover:gap-3 transition-all">
+                Explore Editions <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Pillar 5: Virtual Roundtables */}
-            <div className="p-8 rounded-3xl bg-[#0e0e14] border border-white/10 hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/10 transition-all group flex flex-col justify-between">
+            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-blue-500/50 shadow-xl hover:shadow-2xl hover:shadow-blue-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-transform">
-                  <Calendar size={24} />
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform shadow-inner">
+                    <Calendar size={24} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300">
+                    HD Video
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Meetn Live Events</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-blue-300 transition-colors">
+                  Meetn Live Events
+                </h3>
+                <p className="text-sm text-slate-400 leading-relaxed font-medium">
                   High-definition virtual rooms, calendar synchronization (Google / Outlook / iCal), and VIP roundtables with managing partners.
                 </p>
               </div>
-              <Link href="/platform/events" className="mt-6 inline-flex items-center gap-1.5 text-xs font-bold text-blue-400 group-hover:translate-x-1 transition-transform">
-                Browse Events ➔
+              <Link href="/platform/events" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-blue-400 group-hover:text-blue-300 group-hover:gap-3 transition-all">
+                Browse Events <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Pillar 6: Mentorship & Wellness */}
-            <div className="p-8 rounded-3xl bg-[#0e0e14] border border-white/10 hover:border-amber-500/50 hover:shadow-xl hover:shadow-amber-500/10 transition-all group flex flex-col justify-between">
+            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-amber-500/50 shadow-xl hover:shadow-2xl hover:shadow-amber-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-6 group-hover:scale-110 transition-transform">
-                  <HeartHandshake size={24} />
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform shadow-inner">
+                    <HeartHandshake size={24} />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300">
+                    Empowerment
+                  </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Budding Minds & Mentorship</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-amber-300 transition-colors">
+                  Budding Minds & Mentorship
+                </h3>
+                <p className="text-sm text-slate-400 leading-relaxed font-medium">
                   1:1 mentorship matchmaking, wellness toolkits, leadership coaching, and academic partnerships empowering future IP leaders.
                 </p>
               </div>
-              <Link href="/platform/mentorship" className="mt-6 inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
-                Join Mentorship ➔
+              <Link href="/platform/mentorship" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400 group-hover:text-amber-300 group-hover:gap-3 transition-all">
+                Join Mentorship <ArrowRight size={14} />
               </Link>
             </div>
 
