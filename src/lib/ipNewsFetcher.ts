@@ -217,7 +217,7 @@ function parseRssFeed(xml: string): IPNewsItem[] {
   let match;
   let index = 0;
 
-  while ((match = itemRegex.exec(xml)) !== null && items.length < 20) {
+  while ((match = itemRegex.exec(xml)) !== null && items.length < 50) {
     const itemXml = match[1];
     const titleMatch = /<title>([\s\S]*?)<\/title>/.exec(itemXml);
     const descMatch = /<description>([\s\S]*?)<\/description>/.exec(itemXml);
@@ -248,7 +248,7 @@ function parseRssFeed(xml: string): IPNewsItem[] {
       </p>
       <h3 class="text-xl font-bold mt-6 mb-3 text-slate-900 dark:text-white">Executive Analysis & Background</h3>
       <p class="mb-4 text-base leading-relaxed text-slate-700 dark:text-slate-300">
-        This matter represents a significant development in ${subcategory.toUpperCase()} intellectual property administration. Legal and commercial stakeholders are closely evaluating the strategic impact on ongoing portfolio management, licensing arrangements, and dispute mitigation strategies.
+        This matter represents a notable development in ${subcategory.toUpperCase()} intellectual property administration. Legal and commercial stakeholders are closely evaluating the strategic impact on ongoing portfolio management, licensing arrangements, and dispute mitigation strategies.
       </p>
       <h3 class="text-xl font-bold mt-6 mb-3 text-slate-900 dark:text-white">Key Takeaways for Practitioners</h3>
       <ul class="list-disc pl-5 mb-4 space-y-2 text-slate-700 dark:text-slate-300">
@@ -269,7 +269,7 @@ function parseRssFeed(xml: string): IPNewsItem[] {
       cover_image_url,
       category: 'ip-news',
       type: 'ip_news',
-      is_featured: items.length < 2,
+      is_featured: items.length < 5,
       read_time: `${Math.max(3, Math.ceil(cleanedTitleText.length / 25))} min read`,
       created_at: pubDate,
     });
@@ -282,9 +282,14 @@ function parseRssFeed(xml: string): IPNewsItem[] {
 
 export async function fetchLiveIPNews(): Promise<IPNewsItem[]> {
   const feedUrls = [
-    'https://news.google.com/rss/search?q=intellectual+property+OR+patent+litigation+OR+trademark+law+when:4d&hl=en-US&gl=US&ceid=US:en',
-    'https://news.google.com/rss/search?q=USPTO+OR+WIPO+OR+EPO+patent+copyright+when:4d&hl=en-US&gl=US&ceid=US:en',
-    'https://news.google.com/rss/search?q=trademark+infringement+OR+patent+licensing+when:4d&hl=en-US&gl=US&ceid=US:en',
+    'https://news.google.com/rss/search?q=intellectual+property+OR+patent+litigation+OR+trademark+law+when:7d&hl=en-US&gl=US&ceid=US:en',
+    'https://news.google.com/rss/search?q=USPTO+OR+WIPO+OR+EPO+patent+copyright+when:7d&hl=en-US&gl=US&ceid=US:en',
+    'https://news.google.com/rss/search?q=trademark+infringement+OR+patent+licensing+when:7d&hl=en-US&gl=US&ceid=US:en',
+    'https://news.google.com/rss/search?q="patent+office"+OR+"trade+secret"+OR+"copyright+lawsuit"+when:7d&hl=en-US&gl=US&ceid=US:en',
+    'https://news.google.com/rss/search?q="Unified+Patent+Court"+OR+EUIPO+OR+UKIPO+when:7d&hl=en-US&gl=US&ceid=US:en',
+    'https://news.google.com/rss/search?q=biotech+patent+OR+pharma+IP+OR+semiconductor+patent+when:7d&hl=en-US&gl=US&ceid=US:en',
+    'https://news.google.com/rss/search?q=AI+patent+OR+AI+copyright+OR+"generative+AI"+IP+when:7d&hl=en-US&gl=US&ceid=US:en',
+    'https://news.google.com/rss/search?q=intellectual+property+enforcement+OR+anti-counterfeiting+when:7d&hl=en-US&gl=US&ceid=US:en'
   ];
 
   const gathered: IPNewsItem[] = [];
@@ -309,7 +314,6 @@ export async function fetchLiveIPNews(): Promise<IPNewsItem[]> {
       try {
         const parsed = parseRssFeed(result.value);
         for (const item of parsed) {
-          // Avoid duplicate titles in the current batch
           if (!gathered.some(g => g.title.toLowerCase() === item.title.toLowerCase() || g.slug === item.slug)) {
             gathered.push(item);
           }
@@ -320,7 +324,6 @@ export async function fetchLiveIPNews(): Promise<IPNewsItem[]> {
     }
   }
 
-  // If remote feeds were empty or blocked, seamlessly use high-quality fallback pool with fresh timestamps
   if (gathered.length === 0) {
     const now = new Date();
     return FALLBACK_NEWS_POOL.map((item, idx) => ({

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Search, 
   Newspaper, 
@@ -9,15 +9,18 @@ import {
   Scale, 
   ArrowRight, 
   Zap, 
-  TrendingUp, 
   Filter, 
   RefreshCw, 
   Sparkles, 
-  BookOpen, 
-  Layers3, 
   Clock, 
-  Bookmark,
-  CheckCircle2
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
+  Flame,
+  ShieldCheck,
+  Plus
 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -52,6 +55,12 @@ export default function IPNewsHubPage() {
   const [lastSyncTime, setLastSyncTime] = useState<string>('Just now');
   const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(null);
 
+  // 30-Second Headline Auto-Rotation
+  const [headlineIndex, setHeadlineIndex] = useState(0);
+  const [secondsRemaining, setSecondsRemaining] = useState(30);
+  const [isPaused, setIsPaused] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(12);
+
   // 1. Fetch live news items directly from Supabase
   const loadNewsFromDatabase = useCallback(async () => {
     try {
@@ -59,7 +68,8 @@ export default function IPNewsHubPage() {
         .from('resources')
         .select('*')
         .or('category.eq.ip-news,type.eq.ip_news')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(100);
 
       if (!error && data && data.length > 0) {
         const mapped = data.map((d: any) => ({
@@ -100,7 +110,7 @@ export default function IPNewsHubPage() {
       if (data && data.success) {
         setLastSyncTime('Just now');
         if (data.inserted_count > 0) {
-          setSyncSuccessMessage(`Added ${data.inserted_count} new intellectual property intelligence briefings`);
+          setSyncSuccessMessage(`Added ${data.inserted_count} new global IP intelligence briefings`);
           setTimeout(() => setSyncSuccessMessage(null), 4000);
         } else if (manual) {
           setSyncSuccessMessage('All latest global IP intelligence is fully up to date');
@@ -119,15 +129,13 @@ export default function IPNewsHubPage() {
   useEffect(() => {
     loadNewsFromDatabase();
     
-    // Auto-trigger background sync in fire-and-forget mode
     const syncTimeout = setTimeout(() => {
       triggerBackgroundSync(false);
-    }, 1200);
+    }, 1000);
 
-    // Continuous interval background runner every 5 minutes
     const interval = setInterval(() => {
       triggerBackgroundSync(false);
-    }, 300000);
+    }, 180000); // sync every 3 minutes
 
     return () => {
       clearTimeout(syncTimeout);
@@ -146,22 +154,61 @@ export default function IPNewsHubPage() {
     return matchesSearch && matchesSub && matchesType;
   });
 
-  const featuredItem = filteredNews.find(n => n.featured) || filteredNews[0];
-  const listItems = filteredNews.filter(n => n.id !== featuredItem?.id);
+  // Top Pool of Rotating Headlines (up to 8 latest stories)
+  const headlinePool = filteredNews.slice(0, 8);
+
+  // 30-Second Auto-Rotation Timer Effect
+  useEffect(() => {
+    if (headlinePool.length <= 1 || isPaused) return;
+
+    const timer = setInterval(() => {
+      setSecondsRemaining(prev => {
+        if (prev <= 1) {
+          setHeadlineIndex(curr => (curr + 1) % headlinePool.length);
+          return 30;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [headlinePool.length, isPaused]);
+
+  // Safe active featured story
+  const safeHeadlineIndex = headlinePool.length > 0 ? headlineIndex % headlinePool.length : 0;
+  const currentFeatured = headlinePool[safeHeadlineIndex] || filteredNews[0];
+
+  // Remaining list items excluding current featured story
+  const listItems = filteredNews.filter(n => n.id !== currentFeatured?.id);
+  const displayedListItems = listItems.slice(0, visibleCount);
+
+  const handleNextHeadline = () => {
+    if (headlinePool.length > 0) {
+      setHeadlineIndex(prev => (prev + 1) % headlinePool.length);
+      setSecondsRemaining(30);
+    }
+  };
+
+  const handlePrevHeadline = () => {
+    if (headlinePool.length > 0) {
+      setHeadlineIndex(prev => (prev - 1 + headlinePool.length) % headlinePool.length);
+      setSecondsRemaining(30);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 font-sans pb-24 overflow-x-hidden selection:bg-orange-500/20">
       
-      {/* Ticker Tape */}
+      {/* Real-time Ticker Tape */}
       <div className="w-full bg-slate-950 text-white overflow-hidden py-2.5 border-b border-orange-500/30 flex items-center shadow-xs">
         <div className="flex whitespace-nowrap animate-marquee gap-12 font-black uppercase text-[11px] tracking-wider text-slate-200">
-          {newsItems.slice(0, 8).map((r, i) => (
+          {newsItems.slice(0, 15).map((r, i) => (
             <span key={`ticker-1-${r.id || i}`} className="inline-flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
               <span className="font-bold text-orange-400">[{r.type}]</span> {r.title}
             </span>
           ))}
-          {newsItems.slice(0, 8).map((r, i) => (
+          {newsItems.slice(0, 15).map((r, i) => (
             <span key={`ticker-2-${r.id || i}`} className="inline-flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
               <span className="font-bold text-orange-400">[{r.type}]</span> {r.title}
@@ -178,7 +225,7 @@ export default function IPNewsHubPage() {
         .animate-marquee {
           display: flex;
           width: max-content;
-          animation: marquee 35s linear infinite;
+          animation: marquee 45s linear infinite;
         }
         .animate-marquee:hover {
           animation-play-state: paused;
@@ -191,17 +238,17 @@ export default function IPNewsHubPage() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400">
-                <Activity size={13} className="animate-pulse" /> Continuous Live Feed
+                <Activity size={13} className="animate-pulse" /> Live Intelligence Feed
               </span>
               <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
-                Synced {lastSyncTime}
+                Auto-Syncing Continuous • {newsItems.length} Briefings Loaded
               </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
               IP News & Legal <span className="text-orange-500">Intelligence</span>
             </h1>
             <p className="mt-2 text-sm md:text-base font-medium text-slate-600 dark:text-slate-400 max-w-2xl">
-              Curated global developments, case law precedents, patent office circulars, and regulatory updates for intellectual property professionals.
+              Continuous live intelligence covering patent rulings, trademark decisions, IP office circulars, and global policy updates.
             </p>
           </div>
           
@@ -222,11 +269,11 @@ export default function IPNewsHubPage() {
             <button
               onClick={() => triggerBackgroundSync(true)}
               disabled={isSyncing}
-              title="Sync Latest News"
+              title="Sync Latest News from Internet"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white px-4 py-2.5 text-xs font-black shadow-sm transition-all disabled:opacity-60 shrink-0"
             >
               <RefreshCw size={14} className={isSyncing ? "animate-spin" : ""} />
-              <span className="hidden sm:inline">{isSyncing ? "Syncing..." : "Refresh"}</span>
+              <span className="hidden sm:inline">{isSyncing ? "Syncing..." : "Sync Fresh"}</span>
             </button>
           </div>
         </div>
@@ -258,7 +305,7 @@ export default function IPNewsHubPage() {
                 {JURISDICTION_FILTERS.map(sub => (
                   <button
                     key={sub.id}
-                    onClick={() => setActiveSub(sub.id)}
+                    onClick={() => { setActiveSub(sub.id); setHeadlineIndex(0); setSecondsRemaining(30); }}
                     className={`text-left text-xs font-bold transition-all px-3 py-2 rounded-xl flex items-center justify-between ${
                       activeSub === sub.id
                         ? 'bg-orange-500 text-white shadow-xs'
@@ -281,7 +328,7 @@ export default function IPNewsHubPage() {
                 {CONTENT_TYPES.map(type => (
                   <button
                     key={type}
-                    onClick={() => setTypeFilter(type)}
+                    onClick={() => { setTypeFilter(type); setHeadlineIndex(0); setSecondsRemaining(30); }}
                     className={`text-left text-xs font-semibold transition-all px-3 py-2 rounded-xl flex items-center justify-between ${
                       typeFilter === type
                         ? 'bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 font-bold border border-orange-200 dark:border-orange-900/50'
@@ -319,64 +366,119 @@ export default function IPNewsHubPage() {
             </div>
           ) : (
             <>
-              {/* Featured / Lead Story */}
-              {featuredItem && (
-                <Link 
-                  href={`/platform/resources/ip-news/${featuredItem.id}`}
-                  className="group relative block overflow-hidden rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-[#0d1322] shadow-sm hover:shadow-xl transition-all duration-300 hover:border-orange-500/50"
+              {/* Rotating 30-Second Lead Headline Feature */}
+              {currentFeatured && (
+                <div 
+                  className="group relative overflow-hidden rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-[#0d1322] shadow-sm hover:shadow-xl transition-all duration-300 hover:border-orange-500/50"
+                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseLeave={() => setIsPaused(false)}
                 >
-                  <div className="flex flex-col xl:flex-row items-stretch">
-                    <div className="xl:w-1/2 relative min-h-[260px] xl:min-h-[380px] overflow-hidden bg-slate-900">
-                      <img 
-                        src={featuredItem.image} 
-                        alt={featuredItem.title} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                      <div className="absolute top-4 left-4 flex items-center gap-2">
-                        <span className="rounded-full bg-orange-500 text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-md">
-                          Lead Intelligence
-                        </span>
-                        <span className="rounded-full bg-slate-900/80 backdrop-blur text-white px-2.5 py-1 text-[10px] font-bold">
-                          {featuredItem.jurisdiction}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="xl:w-1/2 p-6 md:p-8 lg:p-10 flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-2.5">
-                          <span>{featuredItem.type}</span>
-                          <span>•</span>
-                          <span className="flex items-center gap-1 text-slate-400 font-medium">
-                            <Clock size={12} /> {featuredItem.read_time}
+                  <Link 
+                    href={`/platform/resources/ip-news/${currentFeatured.id}`}
+                    className="block"
+                  >
+                    <div className="flex flex-col xl:flex-row items-stretch">
+                      <div className="xl:w-1/2 relative min-h-[260px] xl:min-h-[380px] overflow-hidden bg-slate-900">
+                        <img 
+                          key={currentFeatured.id}
+                          src={currentFeatured.image} 
+                          alt={currentFeatured.title} 
+                          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 animate-fadeIn" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        <div className="absolute top-4 left-4 flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-md">
+                            <Flame size={12} /> Live Headline #{safeHeadlineIndex + 1}
+                          </span>
+                          <span className="rounded-full bg-slate-900/80 backdrop-blur text-white px-2.5 py-1 text-[10px] font-bold">
+                            {currentFeatured.jurisdiction}
                           </span>
                         </div>
-                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors mb-4">
-                          {featuredItem.title}
-                        </h2>
-                        <p className="text-sm md:text-base font-medium text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3">
-                          {featuredItem.summary}
-                        </p>
                       </div>
 
-                      <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-400">
-                          {featuredItem.date}
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 text-xs font-black text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform">
-                          Read Briefing <ArrowRight size={14} />
-                        </span>
+                      <div className="xl:w-1/2 p-6 md:p-8 lg:p-10 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-2 text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-2.5">
+                            <span>{currentFeatured.type}</span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1 text-slate-400 font-medium">
+                              <Clock size={12} /> {currentFeatured.read_time}
+                            </span>
+                          </div>
+                          <h2 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors mb-4">
+                            {currentFeatured.title}
+                          </h2>
+                          <p className="text-sm md:text-base font-medium text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3">
+                            {currentFeatured.summary}
+                          </p>
+                        </div>
+
+                        <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+                          <span className="text-xs font-bold text-slate-400">
+                            {currentFeatured.date}
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 text-xs font-black text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform">
+                            Read Full Intelligence <ArrowRight size={14} />
+                          </span>
+                        </div>
                       </div>
                     </div>
+                  </Link>
+
+                  {/* 30-Second Rotation Control & Progress Bar */}
+                  <div className="bg-slate-100 dark:bg-slate-900/80 border-t border-slate-200/80 dark:border-white/5 px-6 py-3 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-3">
+                      <span className="font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500" />
+                        </span>
+                        Next headline in <span className="font-black text-orange-500 font-mono">{secondsRemaining}s</span>
+                      </span>
+                      <button 
+                        onClick={(e) => { e.preventDefault(); setIsPaused(!isPaused); }}
+                        className="p-1 rounded-md text-slate-400 hover:text-orange-500 transition"
+                        title={isPaused ? "Resume auto-rotation" : "Pause auto-rotation"}
+                      >
+                        {isPaused ? <Play size={13} /> : <Pause size={13} />}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-bold text-slate-400">
+                        {safeHeadlineIndex + 1} / {headlinePool.length}
+                      </span>
+                      <button 
+                        onClick={(e) => { e.preventDefault(); handlePrevHeadline(); }}
+                        className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-orange-500 border border-slate-200 dark:border-white/10 shadow-2xs transition"
+                        title="Previous headline"
+                      >
+                        <ChevronLeft size={14} />
+                      </button>
+                      <button 
+                        onClick={(e) => { e.preventDefault(); handleNextHeadline(); }}
+                        className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-orange-500 border border-slate-200 dark:border-white/10 shadow-2xs transition"
+                        title="Next headline"
+                      >
+                        <ChevronRight size={14} />
+                      </button>
+                    </div>
                   </div>
-                </Link>
+
+                  {/* Visual 30-Second Countdown Progress Bar */}
+                  <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 overflow-hidden">
+                    <div 
+                      className="bg-orange-500 h-full transition-all duration-1000 ease-linear"
+                      style={{ width: `${((30 - secondsRemaining) / 30) * 100}%` }}
+                    />
+                  </div>
+                </div>
               )}
 
-              {/* Grid of Remaining Stories */}
-              {listItems.length > 0 && (
+              {/* Grid of Stories */}
+              {displayedListItems.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {listItems.map((item) => (
+                  {displayedListItems.map((item) => (
                     <Link
                       key={item.id}
                       href={`/platform/resources/ip-news/${item.id}`}
@@ -419,6 +521,18 @@ export default function IPNewsHubPage() {
                       </div>
                     </Link>
                   ))}
+                </div>
+              )}
+
+              {/* Load More Button */}
+              {listItems.length > visibleCount && (
+                <div className="flex justify-center pt-4">
+                  <button
+                    onClick={() => setVisibleCount(prev => prev + 12)}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white dark:bg-[#0d1322] border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm hover:border-orange-500/50 hover:text-orange-500 transition-all"
+                  >
+                    <Plus size={15} /> Load More IP Intelligence ({listItems.length - visibleCount} remaining)
+                  </button>
                 </div>
               )}
             </>
