@@ -158,7 +158,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <main className="min-h-screen bg-[#fdf6ec] dark:bg-[#060608] bg-grid-pattern text-slate-900 dark:text-white flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw] relative selection:bg-pink-500 selection:text-white transition-colors duration-300">
+      <main className="min-h-screen bg-white dark:bg-[#060608] text-slate-900 dark:text-white flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw] relative selection:bg-pink-500 selection:text-white transition-colors duration-300">
         
         {/* Background Glowing Wavy Line Gradient SVG (Adapts to Light and Dark) */}
         <div className="absolute top-16 left-0 right-0 w-full overflow-hidden pointer-events-none opacity-85 z-0">
@@ -189,7 +189,7 @@ export default function Home() {
         <div className="absolute top-40 right-1/4 w-96 h-96 bg-[#8b5cf6]/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
         {/* Navigation */}
-        <div className="w-full z-50 relative border-b border-slate-200/80 dark:border-white/5 bg-[#fdf6ec]/80 dark:bg-[#060608]/80 backdrop-blur-md">
+        <div className="w-full z-50 relative border-b border-slate-100 dark:border-white/5 bg-white/90 dark:bg-[#060608]/80 backdrop-blur-md">
           <PublicHeader />
         </div>
 
