@@ -158,9 +158,9 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <main className="min-h-screen bg-[#060608] text-white flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw] relative selection:bg-pink-500 selection:text-white">
+      <main className="min-h-screen bg-[#fdf6ec] dark:bg-[#060608] bg-grid-pattern text-slate-900 dark:text-white flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw] relative selection:bg-pink-500 selection:text-white transition-colors duration-300">
         
-        {/* Background Glowing Wavy Line Gradient SVG (Matching Login Page Vibe) */}
+        {/* Background Glowing Wavy Line Gradient SVG (Adapts to Light and Dark) */}
         <div className="absolute top-16 left-0 right-0 w-full overflow-hidden pointer-events-none opacity-85 z-0">
           <svg
             viewBox="0 0 500 150"
@@ -189,7 +189,7 @@ export default function Home() {
         <div className="absolute top-40 right-1/4 w-96 h-96 bg-[#8b5cf6]/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
         {/* Navigation */}
-        <div className="w-full z-50 relative border-b border-white/5 bg-[#060608]/80 backdrop-blur-md">
+        <div className="w-full z-50 relative border-b border-slate-200/80 dark:border-white/5 bg-[#fdf6ec]/80 dark:bg-[#060608]/80 backdrop-blur-md">
           <PublicHeader />
         </div>
 
@@ -204,15 +204,15 @@ export default function Home() {
           >
             
             {/* Top Glowing Floating Pill Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/15 px-4 py-1.5 mb-8 shadow-lg shadow-pink-500/10 backdrop-blur">
+            <div className="inline-flex items-center gap-2 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 px-4 py-1.5 mb-8 shadow-sm backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-[#ff2a70] animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-orange-300 to-purple-400">
-                Women's IP World Alliance Platform
+              <span className="text-xs font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-orange-500 to-purple-600 dark:from-pink-400 dark:via-orange-300 dark:to-purple-400">
+                Women&apos;s IP World Alliance Platform
               </span>
             </div>
 
             {/* Editorial Futuristic Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-black text-white leading-[1.12] mb-6 w-full px-2 tracking-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-black text-slate-900 dark:text-white leading-[1.12] mb-6 w-full px-2 tracking-tight">
               <span className="block md:whitespace-nowrap">A Global, Empowering</span>
               <span className="block md:whitespace-nowrap mt-2">
                 Community To Grow Your{" "}
@@ -243,7 +243,7 @@ export default function Home() {
               </span>
             </h1>
             
-            <p className="max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-slate-300 font-medium leading-relaxed mb-10 px-4">
+            <p className="max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-slate-700 dark:text-slate-300 font-medium leading-relaxed mb-10 px-4">
               Connect, collaborate, and grow professionally within the premier global Intellectual Property ecosystem for women.
             </p>
             
@@ -263,17 +263,17 @@ export default function Home() {
               {/* Glassmorphic Secondary Button */}
               <button 
                 onClick={() => setIsVideoOpen(true)}
-                className="flex items-center gap-2.5 text-white font-bold text-sm sm:text-base bg-white/10 hover:bg-white/15 px-6 py-3.5 rounded-full border border-white/20 shadow-lg backdrop-blur hover:scale-105 active:scale-95 transition-all"
+                className="flex items-center gap-2.5 text-slate-800 dark:text-white font-bold text-sm sm:text-base bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/15 px-6 py-3.5 rounded-full border border-slate-300 dark:border-white/20 shadow-md backdrop-blur hover:scale-105 active:scale-95 transition-all cursor-pointer"
               >
-                <div className="w-6 h-6 rounded-full border border-white/40 flex items-center justify-center bg-white/10">
-                  <Play size={10} fill="currentColor" className="ml-0.5 text-white" />
+                <div className="w-6 h-6 rounded-full border-2 border-slate-800 dark:border-white flex items-center justify-center bg-transparent">
+                  <Play size={10} fill="currentColor" className="ml-0.5" />
                 </div>
                 <span>Watch Platform Tour</span>
               </button>
 
               <Link 
                 href="/login" 
-                className="text-slate-300 hover:text-white font-semibold text-sm px-6 py-3.5 rounded-full border border-white/10 hover:border-white/30 bg-[#18181d] hover:bg-[#222228] transition-all"
+                className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-bold text-sm px-6 py-3.5 rounded-full border border-slate-300 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/30 bg-white/60 dark:bg-[#18181d] hover:bg-white dark:hover:bg-[#222228] transition-all"
               >
                 Sign In
               </Link>
@@ -424,10 +424,10 @@ export default function Home() {
             <div className="inline-flex items-center gap-2 bg-[#ff2a70]/10 border border-[#ff2a70]/25 text-[#ff2a70] text-xs font-black uppercase tracking-wider px-4 py-1.5 rounded-full mb-4 shadow-sm">
               <Sparkles size={13} /> Platform Capabilities
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
               Everything You Need To Lead In Intellectual Property
             </h2>
-            <p className="mt-4 text-slate-400 text-sm sm:text-base max-w-2xl mx-auto font-medium leading-relaxed">
+            <p className="mt-4 text-slate-600 dark:text-slate-400 text-sm sm:text-base max-w-2xl mx-auto font-medium leading-relaxed">
               A single unified ecosystem purpose-built for patent attorneys, trademark specialists, in-house counsel, and innovation leaders globally.
             </p>
           </div>
@@ -435,139 +435,139 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
             
             {/* Pillar 1: LexIQ AI */}
-            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-purple-500/50 shadow-xl hover:shadow-2xl hover:shadow-purple-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-purple-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-purple-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform shadow-inner">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform shadow-inner">
                     <Bot size={24} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-300">
                     Core AI
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-purple-300 transition-colors">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
                   LexIQ AI Intelligence
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                   Specialized legal reasoning trained on USPTO, EPO, and WIPO case law. Instant prior art synthesis, claim drafting analysis, and infringement defense.
                 </p>
               </div>
-              <Link href="/platform/ai" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-purple-400 group-hover:text-purple-300 group-hover:gap-3 transition-all">
+              <Link href="/platform/ai" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-purple-600 dark:text-purple-400 group-hover:gap-3 transition-all">
                 Launch LexIQ AI <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Pillar 2: Live IP News */}
-            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-orange-500/50 shadow-xl hover:shadow-2xl hover:shadow-orange-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-orange-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-orange-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform shadow-inner">
+                  <div className="w-12 h-12 rounded-2xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform shadow-inner">
                     <Activity size={24} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-300">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-300">
                     30s Live Sync
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-orange-300 transition-colors">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-orange-600 dark:group-hover:text-orange-300 transition-colors">
                   Continuous Live IP News
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                   Continuous 30-second automated internet aggregation stream capturing UPC rulings, trademark oppositions, and global regulatory directives.
                 </p>
               </div>
-              <Link href="/platform/resources/ip-news" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-orange-400 group-hover:text-orange-300 group-hover:gap-3 transition-all">
+              <Link href="/platform/resources/ip-news" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-orange-600 dark:text-orange-400 group-hover:gap-3 transition-all">
                 View Live Feed <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Pillar 3: Verified Firm Directory */}
-            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-emerald-500/50 shadow-xl hover:shadow-2xl hover:shadow-emerald-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-emerald-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-emerald-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform shadow-inner">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform shadow-inner">
                     <ShieldCheck size={24} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-300">
                     45+ Nations
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-emerald-300 transition-colors">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors">
                   Verified Firm Directory
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                   Global directory of certified IP law firms, boutique patent agencies, and verified partner counsel with claimed profiles and badges.
                 </p>
               </div>
-              <Link href="/platform/resources/ip-firms" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-emerald-400 group-hover:text-emerald-300 group-hover:gap-3 transition-all">
+              <Link href="/platform/resources/ip-firms" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 group-hover:gap-3 transition-all">
                 Search Directory <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Pillar 4: Annual Publications */}
-            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-pink-500/50 shadow-xl hover:shadow-2xl hover:shadow-pink-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-pink-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-pink-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform shadow-inner">
+                  <div className="w-12 h-12 rounded-2xl bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-600 dark:text-pink-400 group-hover:scale-110 transition-transform shadow-inner">
                     <BookOpen size={24} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-300">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-600 dark:text-pink-300">
                     35% Savings
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-pink-300 transition-colors">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-pink-600 dark:group-hover:text-pink-300 transition-colors">
                   Annual Publications
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                   Women&apos;s IP World and IP Tech Innovation annuals with exclusive alliance discounts on global print and digital flagship distributions.
                 </p>
               </div>
-              <Link href="/publications" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-pink-400 group-hover:text-pink-300 group-hover:gap-3 transition-all">
+              <Link href="/publications" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-pink-600 dark:text-pink-400 group-hover:gap-3 transition-all">
                 Explore Editions <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Pillar 5: Virtual Roundtables */}
-            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-blue-500/50 shadow-xl hover:shadow-2xl hover:shadow-blue-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-blue-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-blue-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform shadow-inner">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform shadow-inner">
                     <Calendar size={24} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-300">
                     HD Video
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-blue-300 transition-colors">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
                   Meetn Live Events
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                   High-definition virtual rooms, calendar synchronization (Google / Outlook / iCal), and VIP roundtables with managing partners.
                 </p>
               </div>
-              <Link href="/platform/events" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-blue-400 group-hover:text-blue-300 group-hover:gap-3 transition-all">
+              <Link href="/platform/events" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400 group-hover:gap-3 transition-all">
                 Browse Events <ArrowRight size={14} />
               </Link>
             </div>
 
             {/* Pillar 6: Mentorship & Wellness */}
-            <div className="group p-8 rounded-[2rem] bg-gradient-to-b from-white/[0.06] via-[#0c101d] to-[#070a12] border border-white/[0.08] hover:border-amber-500/50 shadow-xl hover:shadow-2xl hover:shadow-amber-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+            <div className="group p-8 rounded-[2rem] bg-white dark:bg-[#0c101d] border border-slate-200/90 dark:border-white/[0.08] hover:border-amber-500/50 shadow-md hover:shadow-xl dark:shadow-2xl dark:hover:shadow-amber-950/30 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform shadow-inner">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform shadow-inner">
                     <HeartHandshake size={24} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-300">
                     Empowerment
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2.5 tracking-tight group-hover:text-amber-300 transition-colors">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2.5 tracking-tight group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
                   Budding Minds & Mentorship
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                   1:1 mentorship matchmaking, wellness toolkits, leadership coaching, and academic partnerships empowering future IP leaders.
                 </p>
               </div>
-              <Link href="/platform/mentorship" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-400 group-hover:text-amber-300 group-hover:gap-3 transition-all">
+              <Link href="/platform/mentorship" className="mt-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 group-hover:gap-3 transition-all">
                 Join Mentorship <ArrowRight size={14} />
               </Link>
             </div>
@@ -577,17 +577,17 @@ export default function Home() {
 
         {/* Interactive LexIQ AI Playground Showcase */}
         <section className="w-full max-w-7xl mx-auto px-6 py-16 z-10 relative">
-          <div className="bg-[#0e0e14] rounded-[2.5rem] border border-white/15 p-8 md:p-14 shadow-2xl overflow-hidden relative">
+          <div className="bg-white dark:bg-[#0e0e14] rounded-[2.5rem] border border-slate-200 dark:border-white/15 p-8 md:p-14 shadow-xl dark:shadow-2xl overflow-hidden relative">
             
             <div className="flex flex-col lg:flex-row items-start justify-between gap-12">
               <div className="lg:w-1/2">
-                <div className="inline-flex items-center gap-2 bg-purple-500/15 border border-purple-500/30 px-4 py-1.5 rounded-full text-xs font-black uppercase text-purple-400 mb-4">
+                <div className="inline-flex items-center gap-2 bg-purple-500/15 border border-purple-500/30 px-4 py-1.5 rounded-full text-xs font-black uppercase text-purple-600 dark:text-purple-400 mb-4">
                   <Bot size={15} /> Live AI Interactive Demo
                 </div>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-6 leading-tight">
                   Meet LexIQ — The AI Purpose-Built for Intellectual Property
                 </h2>
-                <p className="text-slate-300 text-base md:text-lg leading-relaxed mb-8">
+                <p className="text-slate-600 dark:text-slate-300 text-base md:text-lg leading-relaxed mb-8">
                   Trained on verified patent prosecution guidelines, trademark case law, and cross-border regulatory precedents. Experience pinpoint accuracy with zero hallucinations.
                 </p>
 
@@ -597,56 +597,66 @@ export default function Home() {
                     <button
                       key={idx}
                       onClick={() => setSelectedPromptIndex(idx)}
-                      className={`text-left px-5 py-4 rounded-2xl border text-sm font-bold transition-all flex items-center justify-between ${
+                      className={`text-left px-5 py-4 rounded-2xl border text-sm font-bold transition-all flex items-center justify-between cursor-pointer ${
                         selectedPromptIndex === idx
-                          ? 'bg-gradient-to-r from-[#ff2a70] to-[#8b5cf6] text-white border-transparent shadow-lg shadow-pink-500/20'
-                          : 'bg-[#18181d] text-slate-300 hover:bg-[#222228] border-white/10'
+                          ? "bg-purple-50 dark:bg-purple-950/40 border-purple-500/60 text-purple-700 dark:text-purple-300 shadow-md"
+                          : "bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-white/20"
                       }`}
                     >
                       <span>{item.title}</span>
-                      <ArrowRight size={16} />
+                      <ArrowRight size={15} className="text-purple-500 shrink-0" />
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Simulated Live AI Terminal */}
-              <div className="lg:w-1/2 w-full bg-[#070b14] border border-slate-800 rounded-3xl p-6 md:p-8 text-white shadow-2xl flex flex-col justify-between min-h-[380px]">
-                <div>
-                  <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
+              {/* Simulated Chat Window */}
+              <div className="lg:w-1/2 w-full">
+                <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 shadow-2xl relative overflow-hidden">
+                  <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
                     <div className="flex items-center gap-2.5">
-                      <span className="h-3 w-3 rounded-full bg-emerald-500 animate-ping" />
-                      <span className="font-black text-xs uppercase tracking-wider text-slate-200">LexIQ Active Agent</span>
+                      <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                      <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                      <span className="text-xs font-mono text-slate-400 ml-2">lexiq-kernel-v4.2</span>
                     </div>
-                    <span className="text-[11px] font-mono text-purple-400 font-bold">WIPA Engine v2.4</span>
+                    <div className="flex items-center gap-1 text-[11px] text-emerald-400 font-mono">
+                      <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                      <span>ONLINE</span>
+                    </div>
                   </div>
 
-                  <div className="mb-4">
-                    <span className="text-xs font-bold text-orange-400 uppercase tracking-wider">User Query:</span>
-                    <p className="text-sm font-semibold text-slate-200 mt-1">
-                      "{DEMO_AI_PROMPTS[selectedPromptIndex].prompt}"
+                  {/* Query */}
+                  <div className="mb-4 bg-white/5 rounded-2xl p-4 border border-white/5">
+                    <div className="text-[10px] font-mono text-purple-400 uppercase font-black mb-1">User Query</div>
+                    <p className="text-xs sm:text-sm text-slate-200 font-medium">
+                      {DEMO_AI_PROMPTS[selectedPromptIndex].prompt}
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-white/5">
-                    <span className="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles size={13} /> Legal Intelligence Analysis:
-                    </span>
-                    <p className="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed mt-2">
+                  {/* Response */}
+                  <div className="bg-[#0b0f19] rounded-2xl p-5 border border-purple-500/20 min-h-[160px] relative">
+                    <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 uppercase font-bold mb-2">
+                      <span className="flex items-center gap-1.5 text-purple-300">
+                        <Sparkles size={12} /> LexIQ Response
+                      </span>
+                      <span>Latency: 280ms</span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-300 font-mono leading-relaxed whitespace-pre-wrap">
                       {aiTypingText}
-                      {isTyping && <span className="inline-block w-2 h-4 bg-orange-400 ml-1 animate-pulse" />}
+                      {isTyping && <span className="inline-block w-2 h-4 ml-1 bg-purple-400 animate-pulse" />}
                     </p>
                   </div>
-                </div>
 
-                <div className="pt-5 border-t border-white/10 flex items-center justify-between mt-6">
-                  <span className="text-[11px] text-slate-400">Verified IP Case Precedents</span>
-                  <Link 
-                    href="/platform/ai" 
-                    className="text-xs font-bold text-orange-400 hover:text-orange-300 transition-colors flex items-center gap-1"
-                  >
-                    Open Full LexIQ Chat ➔
-                  </Link>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-[11px] text-slate-500 font-mono">USPTO · EPO · WIPO Indexed</span>
+                    <Link
+                      href="/platform/ai"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-400 hover:text-purple-300 transition-colors"
+                    >
+                      Open Full Chat <ArrowRight size={13} />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -656,24 +666,24 @@ export default function Home() {
 
         {/* Global Impact Numbers Counter - High-Voltage Interactive Cyber Cards */}
         <section className="w-full max-w-7xl mx-auto px-6 py-16 z-10 relative">
-          <div className="relative rounded-[2.5rem] bg-gradient-to-b from-white/10 via-white/5 to-transparent p-[1px] shadow-2xl shadow-purple-950/20">
+          <div className="relative rounded-[2.5rem] bg-white/95 dark:bg-gradient-to-b dark:from-white/10 dark:via-white/5 dark:to-transparent border border-slate-200 dark:border-transparent p-[1px] shadow-xl dark:shadow-2xl dark:shadow-purple-950/20">
             
             {/* Ambient Backlight Glows */}
-            <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-64 h-64 bg-orange-500/15 rounded-full blur-3xl pointer-events-none -z-10" />
-            <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-64 h-64 bg-purple-500/15 rounded-full blur-3xl pointer-events-none -z-10" />
+            <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+            <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
-            <div className="rounded-[2.45rem] bg-[#090d16]/90 backdrop-blur-2xl p-6 sm:p-10 lg:p-12">
+            <div className="rounded-[2.45rem] bg-white/90 dark:bg-[#090d16]/90 backdrop-blur-2xl p-6 sm:p-10 lg:p-12 border border-slate-200/60 dark:border-white/5">
               
               {/* Header Label */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-8 mb-8 border-b border-white/10">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-8 mb-8 border-b border-slate-200 dark:border-white/10">
                 <div className="flex items-center gap-3">
-                  <span className="h-3 w-3 rounded-full bg-emerald-400 animate-ping" />
-                  <span className="text-xs font-black uppercase tracking-widest text-slate-300">
+                  <span className="h-3 w-3 rounded-full bg-emerald-500 animate-ping" />
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-800 dark:text-slate-300">
                     Live Alliance Network Metrics
                   </span>
                 </div>
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-slate-400">
-                  <Activity size={13} className="text-orange-400 animate-pulse" /> Real-Time Global Telemetry
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                  <Activity size={13} className="text-orange-500 animate-pulse" /> Real-Time Global Telemetry
                 </div>
               </div>
 
@@ -681,21 +691,21 @@ export default function Home() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 
                 {/* Metric 1 */}
-                <div className="group relative rounded-3xl bg-[#0e1422]/90 border border-white/10 hover:border-orange-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-orange-500/15 flex flex-col justify-between">
+                <div className="group relative rounded-3xl bg-slate-50/90 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 hover:border-orange-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-orange-500/15 flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-2xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
                       <Users size={20} />
                     </div>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[10px] font-black uppercase tracking-wider text-orange-400">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[10px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400">
                       Verified
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400 mb-1.5">
+                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-500 dark:from-orange-400 dark:via-amber-300 dark:to-yellow-400 mb-1.5">
                       5,000+
                     </h3>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
                       IP Leaders & Counsel
                     </p>
                     <p className="text-[11px] text-slate-500 font-medium">
@@ -703,27 +713,27 @@ export default function Home() {
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> +18% MoM Growth
+                  <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> +18% MoM Growth
                   </div>
                 </div>
 
                 {/* Metric 2 */}
-                <div className="group relative rounded-3xl bg-[#0e1422]/90 border border-white/10 hover:border-purple-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-purple-500/15 flex flex-col justify-between">
+                <div className="group relative rounded-3xl bg-slate-50/90 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 hover:border-purple-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-purple-500/15 flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
                       <Globe size={20} />
                     </div>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] font-black uppercase tracking-wider text-purple-400">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">
                       Global
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-pink-400 mb-1.5">
+                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-fuchsia-400 to-pink-500 dark:from-purple-400 dark:via-fuchsia-300 dark:to-pink-400 mb-1.5">
                       45+
                     </h3>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
                       Global Jurisdictions
                     </p>
                     <p className="text-[11px] text-slate-500 font-medium">
@@ -731,27 +741,27 @@ export default function Home() {
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-purple-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-purple-400" /> Cross-Border Precedents
+                  <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-purple-600 dark:text-purple-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-purple-500" /> Cross-Border Precedents
                   </div>
                 </div>
 
                 {/* Metric 3 */}
-                <div className="group relative rounded-3xl bg-[#0e1422]/90 border border-white/10 hover:border-emerald-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-emerald-500/15 flex flex-col justify-between">
+                <div className="group relative rounded-3xl bg-slate-50/90 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 hover:border-emerald-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-emerald-500/15 flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
                       <Scale size={20} />
                     </div>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black uppercase tracking-wider text-emerald-400">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                       Live Sync
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 mb-1.5">
+                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 dark:from-emerald-400 dark:via-teal-300 dark:to-cyan-400 mb-1.5">
                       1,200+
                     </h3>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
                       Intelligence Briefs
                     </p>
                     <p className="text-[11px] text-slate-500 font-medium">
@@ -759,36 +769,36 @@ export default function Home() {
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-cyan-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" /> 30s Auto Refresh
+                  <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse" /> 30s Auto Refresh
                   </div>
                 </div>
 
                 {/* Metric 4 */}
-                <div className="group relative rounded-3xl bg-[#0e1422]/90 border border-white/10 hover:border-pink-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-pink-500/15 flex flex-col justify-between">
+                <div className="group relative rounded-3xl bg-slate-50/90 dark:bg-[#0e1422]/90 border border-slate-200/80 dark:border-white/10 hover:border-pink-500/50 p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-pink-500/15 flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-2xl bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-2xl bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform">
                       <Sparkles size={20} />
                     </div>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-[10px] font-black uppercase tracking-wider text-pink-400">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-[10px] font-black uppercase tracking-wider text-pink-600 dark:text-pink-400">
                       Exclusive
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-rose-300 to-orange-400 mb-1.5">
+                    <h3 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-400 to-orange-500 dark:from-pink-400 dark:via-rose-300 dark:to-orange-400 mb-1.5">
                       35%
                     </h3>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300 mb-1">
                       Member Savings
                     </p>
                     <p className="text-[11px] text-slate-500 font-medium">
-                      On Women's IP World Annual editions
+                      On Women&apos;s IP World Annual editions
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-pink-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-pink-400" /> Print & Digital Editions
+                  <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-pink-600 dark:text-pink-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-pink-500" /> Print & Digital Editions
                   </div>
                 </div>
 
@@ -801,19 +811,19 @@ export default function Home() {
         <section className="w-full max-w-7xl mx-auto px-6 py-20 z-10 relative">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
-              <span className="bg-purple-500/20 text-purple-400 text-xs font-black uppercase tracking-wider px-3.5 py-1.5 rounded-full mb-3 inline-block">
+              <span className="bg-purple-500/15 text-purple-600 dark:text-purple-400 text-xs font-black uppercase tracking-wider px-3.5 py-1.5 rounded-full mb-3 inline-block">
                 Exclusive Content
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white max-w-2xl leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white max-w-2xl leading-tight">
                 Access Exclusive IP Resources, Webinars, and Masterclasses
               </h2>
             </div>
             
             <div className="hidden md:flex items-center gap-4">
-              <button onClick={() => scrollResources('left')} className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center hover:bg-white/15 transition-colors">
+              <button onClick={() => scrollResources('left')} className="w-12 h-12 rounded-full border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-white/5 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/15 transition-colors cursor-pointer text-slate-800 dark:text-white shadow-xs">
                 <ArrowLeft strokeWidth={1.5} className="w-5 h-5" />
               </button>
-              <button onClick={() => scrollResources('right')} className="w-12 h-12 rounded-full border border-white/20 bg-white/5 flex items-center justify-center hover:bg-white/15 transition-colors">
+              <button onClick={() => scrollResources('right')} className="w-12 h-12 rounded-full border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-white/5 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/15 transition-colors cursor-pointer text-slate-800 dark:text-white shadow-xs">
                 <ArrowRight strokeWidth={1.5} className="w-5 h-5" />
               </button>
             </div>
@@ -823,7 +833,7 @@ export default function Home() {
             <div className="flex gap-6 w-max">
               
               {/* Card 1 */}
-              <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[2rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-white/10 shadow-xl">
+              <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[2rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-slate-200 dark:border-white/10 shadow-xl">
                 <Image src="/course_finance_1783622322975.png" alt="IP Leadership" fill sizes="(max-width: 768px) 300px, 350px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-8 w-full z-10">
@@ -837,7 +847,7 @@ export default function Home() {
               </div>
 
               {/* Card 2 */}
-              <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[2rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-white/10 shadow-xl">
+              <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[2rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-slate-200 dark:border-white/10 shadow-xl">
                 <Image src="/course_yoga_1783622333453.png" alt="Trademarks" fill sizes="(max-width: 768px) 300px, 350px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-8 w-full z-10">
@@ -851,7 +861,7 @@ export default function Home() {
               </div>
 
               {/* Card 3 */}
-              <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[2rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-white/10 shadow-xl">
+              <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[2rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-slate-200 dark:border-white/10 shadow-xl">
                 <Image src="/course_speaking_1783622343431.png" alt="AI in IP" fill sizes="(max-width: 768px) 300px, 350px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-8 w-full z-10">
@@ -865,7 +875,7 @@ export default function Home() {
               </div>
 
               {/* Card 4 */}
-              <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[2rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-white/10 shadow-xl">
+              <div className="w-[300px] h-[450px] md:w-[350px] md:h-[520px] rounded-[2rem] overflow-hidden relative snap-start group cursor-pointer flex-shrink-0 border border-slate-200 dark:border-white/10 shadow-xl">
                 <Image src="/course_marketing_1783622354038.png" alt="Networking Event" fill sizes="(max-width: 768px) 300px, 350px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-8 w-full z-10">
@@ -888,7 +898,7 @@ export default function Home() {
             <span className="bg-[#ff2a70]/15 text-[#ff2a70] border border-[#ff2a70]/30 text-xs font-black uppercase tracking-wider px-4 py-1.5 rounded-full mb-3 inline-block">
               Frequently Asked Questions
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white">
               Everything You Need To Know
             </h2>
           </div>
@@ -910,19 +920,19 @@ export default function Home() {
             ].map((faq, idx) => (
               <div 
                 key={idx} 
-                className="bg-[#0e0e14] rounded-2xl border border-white/10 overflow-hidden transition-all"
+                className="bg-white dark:bg-[#0e0e14] rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden transition-all shadow-xs"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                  className="w-full p-6 text-left font-bold text-base md:text-lg text-white flex items-center justify-between gap-4"
+                  className="w-full p-6 text-left font-bold text-base md:text-lg text-slate-900 dark:text-white flex items-center justify-between gap-4 cursor-pointer"
                 >
                   <span>{faq.q}</span>
-                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0 text-slate-300">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center shrink-0 text-slate-700 dark:text-slate-300">
                     {openFaq === idx ? <Minus size={16} /> : <Plus size={16} />}
                   </div>
                 </button>
                 {openFaq === idx && (
-                  <div className="px-6 pb-6 text-slate-300 text-sm md:text-base leading-relaxed border-t border-white/5 pt-4">
+                  <div className="px-6 pb-6 text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed border-t border-slate-100 dark:border-white/5 pt-4">
                     {faq.a}
                   </div>
                 )}

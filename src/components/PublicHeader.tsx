@@ -2,15 +2,27 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAppStore } from '@/store/useAppStore';
 
 export default function PublicHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const [user, setUser] = useState<{name: string, email: string} | null>(null);
+  const isDarkMode = useAppStore((state) => state.isDarkMode);
+  const toggleDarkMode = useAppStore((state) => state.toggleDarkMode);
+
+  const handleToggleTheme = () => {
+    toggleDarkMode();
+    if (typeof document !== 'undefined') {
+      const nextDark = !isDarkMode;
+      document.documentElement.classList.toggle('dark', nextDark);
+      document.documentElement.style.colorScheme = nextDark ? 'dark' : 'light';
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user: authUser }, error }) => {
@@ -44,7 +56,7 @@ export default function PublicHeader() {
 
   return (
     <>
-      <header className="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between z-50 relative">
+      <header className="w-full max-w-7xl mx-auto px-6 py-5 flex items-center justify-between z-50 relative">
         {/* Logo */}
         <div className="flex items-center">
           <Link href="/" className="flex items-center gap-3 group">
@@ -65,10 +77,32 @@ export default function PublicHeader() {
           <Link href="/contact" className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors">Contact</Link>
         </nav>
 
-        {/* Auth Buttons */}
-        <div className="hidden md:flex items-center gap-3 z-50 relative">
+        {/* Top Right Controls & Auth Buttons */}
+        <div className="hidden md:flex items-center gap-2.5 z-50 relative">
+          
+          {/* Dual Mode Theme Toggle Switch */}
+          <button
+            type="button"
+            onClick={handleToggleTheme}
+            title={isDarkMode ? "Switch to Light theme" : "Switch to Dark theme"}
+            aria-label="Toggle theme"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-white/5 backdrop-blur text-slate-700 dark:text-slate-200 hover:border-orange-500 hover:text-orange-500 transition-all text-xs font-bold shadow-2xs cursor-pointer mr-1"
+          >
+            {isDarkMode ? (
+              <>
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+                <span>Light</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-3.5 h-3.5 text-purple-500" />
+                <span>Dark</span>
+              </>
+            )}
+          </button>
+
           {user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <span className="text-slate-800 dark:text-white font-semibold bg-white/80 dark:bg-white/10 px-4 py-2 rounded-full border border-slate-200 dark:border-white/10 text-xs">
                 Hi, {user.name} 👋
               </span>
@@ -80,7 +114,7 @@ export default function PublicHeader() {
               </Link>
               <button 
                 onClick={handleLogout}
-                className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-full font-bold text-xs hover:-translate-y-0.5 active:scale-95 transition-all block"
+                className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-full font-bold text-xs hover:-translate-y-0.5 active:scale-95 transition-all block cursor-pointer"
               >
                 Logout
               </button>
@@ -89,7 +123,7 @@ export default function PublicHeader() {
             <>
               <Link 
                 href="/login" 
-                className="text-slate-800 dark:text-white font-bold text-xs sm:text-sm hover:bg-white/10 dark:hover:bg-white/10 border border-slate-200 dark:border-white/20 rounded-full transition-all px-5 py-2 active:scale-95 duration-200"
+                className="text-slate-800 dark:text-white font-bold text-xs sm:text-sm hover:bg-black/5 dark:hover:bg-white/10 border border-slate-300 dark:border-white/20 rounded-full transition-all px-5 py-2 active:scale-95 duration-200"
               >
                 Login
               </Link>
