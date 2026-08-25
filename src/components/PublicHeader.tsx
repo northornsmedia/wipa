@@ -47,10 +47,12 @@ export default function PublicHeader() {
       <header className="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between z-50 relative">
         {/* Logo */}
         <div className="flex items-center">
-          <Link href="/">
-            <h1 className="text-3xl font-bold tracking-tighter text-[#131313] flex items-center">
-              <span>WIPA</span>
-            </h1>
+          <Link href="/" className="flex items-center gap-3 group">
+            <img 
+              src="/WIPA-Logo.png" 
+              alt="Women's IP World Alliance" 
+              className="h-9 md:h-10 w-auto object-contain group-hover:scale-105 transition-transform" 
+            />
           </Link>
         </div>
 
