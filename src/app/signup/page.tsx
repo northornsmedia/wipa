@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { User, LogIn, Eye, EyeOff, UserPlus } from "lucide-react";
+import { User, LogIn, Eye, EyeOff, UserPlus, Sun, Moon } from "lucide-react";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -14,6 +15,16 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [passwordStrength, setPasswordStrength] = useState({ length: false, number: false, special: false });
+  const { isDarkMode, toggleDarkMode } = useAppStore();
+
+  const handleToggleTheme = () => {
+    toggleDarkMode();
+    if (typeof document !== 'undefined') {
+      const nextDark = !isDarkMode;
+      document.documentElement.classList.toggle('dark', nextDark);
+      document.documentElement.style.colorScheme = nextDark ? 'dark' : 'light';
+    }
+  };
 
   useEffect(() => {
     setPasswordStrength({
@@ -39,8 +50,9 @@ export default function SignupPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
+      const isPurchase = params.get('purchasing');
       const tierParam = params.get('tier');
-      if (tierParam) {
+      if (isPurchase === 'true' || tierParam) {
         setIsPurchasing(true);
         setTier(tierParam);
       }
@@ -58,26 +70,19 @@ export default function SignupPage() {
       options: {
         data: {
           full_name: name,
-          ...(tier ? { pending_tier: tier } : {})
         },
-        emailRedirectTo: `${window.location.origin}/platform`,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
     if (error) {
-      if (error.message === "Failed to fetch") {
-        setError("Network error. Please make sure you are connected to the internet.");
-      } else if (error.message.includes("User already registered") || error.status === 400) {
-        setError("An account with this email already exists.");
-      } else {
-        setError(error.message);
-      }
+      setError(error.message);
       setLoading(false);
     } else {
-      if (data.session) {
-        router.push("/onboarding");
+      if (isPurchasing && tier) {
+        router.push(`/onboarding?purchasing=true&tier=${tier}`);
       } else {
-        router.push("/login?message=Check your email to confirm your account");
+        router.push("/onboarding");
       }
     }
   };
@@ -110,28 +115,45 @@ export default function SignupPage() {
 
       {/* Top Bar Header */}
       <header className="w-full max-w-sm flex items-center justify-between z-10 pt-2 pb-4">
-        {/* Geometric Custom Brand Logo */}
+        {/* Official WIPA Brand Logo */}
         <Link href="/" aria-label="WIPA Home" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-xl bg-white text-black flex items-center justify-center p-1.5 shadow-lg group-hover:scale-105 transition-transform">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-full h-full">
-              <rect x="3" y="3" width="7" height="7" rx="2.5" fill="black" />
-              <rect x="14" y="3" width="7" height="7" rx="2.5" fill="black" />
-              <rect x="3" y="14" width="7" height="7" rx="2.5" fill="black" />
-              <rect x="14" y="14" width="7" height="7" rx="2.5" fill="black" />
-            </svg>
+          <div className="h-10 w-auto flex items-center group-hover:scale-105 transition-transform">
+            <img 
+              src="/WIPA-Logo.png" 
+              alt="WIPA Logo" 
+              className="h-8 w-auto object-contain brightness-125 drop-shadow-md"
+            />
           </div>
         </Link>
 
-        {/* Top Right Sign In Link */}
-        <Link
-          href="/login"
-          className="flex items-center gap-1.5 text-white/90 hover:text-white font-medium text-sm transition-colors py-1.5 px-3 rounded-full hover:bg-white/5"
-        >
-          <div className="w-6 h-6 rounded-full border border-white/30 flex items-center justify-center">
-            <User className="w-3.5 h-3.5" />
-          </div>
-          <span>Sign In</span>
-        </Link>
+        {/* Top Right Controls: Dual Mode Switch + Sign In */}
+        <div className="flex items-center gap-2">
+          {/* Dual Mode Switch */}
+          <button
+            type="button"
+            onClick={handleToggleTheme}
+            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label="Toggle theme"
+            className="w-8 h-8 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 flex items-center justify-center text-white transition-all active:scale-95"
+          >
+            {isDarkMode ? (
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <Moon className="w-3.5 h-3.5 text-purple-400" />
+            )}
+          </button>
+
+          {/* Top Right Sign In Link */}
+          <Link
+            href="/login"
+            className="flex items-center gap-1.5 text-white/90 hover:text-white font-medium text-sm transition-colors py-1.5 px-3 rounded-full hover:bg-white/5 border border-white/10"
+          >
+            <div className="w-5 h-5 rounded-full border border-white/30 flex items-center justify-center">
+              <User className="w-3 h-3" />
+            </div>
+            <span>Sign In</span>
+          </Link>
+        </div>
       </header>
 
       {/* Main Content Form Card */}
