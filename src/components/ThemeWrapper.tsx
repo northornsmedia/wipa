@@ -8,16 +8,18 @@ export default function ThemeWrapper({ children }: { children: React.ReactNode }
   
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      if (isDarkMode) {
+      if (isDarkMode === true) {
         document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = 'dark';
       } else {
         document.documentElement.classList.remove('dark');
+        document.documentElement.style.colorScheme = 'light';
       }
     }
   }, [isDarkMode]);
   
   return (
-    <div className="theme-shell flex min-h-screen flex-col">
+    <div className="theme-shell flex min-h-screen flex-col bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {children}
     </div>
   );

@@ -55,14 +55,17 @@ export default function RootLayout({
             __html: `
               try {
                 var stored = JSON.parse(localStorage.getItem('wipa-storage') || '{}');
-                if (stored && stored.state && stored.state.isDarkMode) {
+                if (stored && stored.state && stored.state.isDarkMode === true) {
                   document.documentElement.classList.add('dark');
                   document.documentElement.style.colorScheme = 'dark';
                 } else {
                   document.documentElement.classList.remove('dark');
                   document.documentElement.style.colorScheme = 'light';
                 }
-              } catch (_) {}
+              } catch (_) {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.style.colorScheme = 'light';
+              }
             `,
           }}
         />
