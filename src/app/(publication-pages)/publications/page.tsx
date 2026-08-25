@@ -56,7 +56,35 @@ export default function PublicationsPage() {
               <p className="text-xs font-black uppercase tracking-[0.2em] text-[#5a32fa]">Choose a publication</p>
               <h2 className="mt-2 text-2xl font-black tracking-tight md:text-3xl">Three platforms. One member advantage.</h2>
             </div>
-            <span className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-slate-400"><BadgePercent size={17} /> 35% member-exclusive saving</span>
+            
+            <div className="relative group/discount inline-flex items-center self-start sm:self-auto">
+              {/* Animated glowing backdrop aura */}
+              <div className="crazy-discount-aura absolute -inset-1 rounded-full blur-md opacity-75 group-hover/discount:opacity-100 transition duration-500" />
+              
+              {/* Main pill container */}
+              <div className="relative inline-flex items-center gap-2.5 rounded-full border border-white/80 dark:border-white/20 bg-white/95 dark:bg-slate-900/95 px-4 py-2 shadow-lg shadow-purple-500/20 backdrop-blur-xl transition-all duration-300 group-hover/discount:scale-105 group-hover/discount:shadow-xl group-hover/discount:shadow-pink-500/30">
+                {/* Live ping beacon */}
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff2a5f] opacity-80" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ff2a5f]" />
+                </span>
+
+                {/* Crazy gradient percentage badge */}
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#ff2a5f] via-[#a855f7] to-[#5a32fa] text-white font-black text-xs uppercase tracking-wider shadow-md shadow-[#ff2a5f]/40">
+                  <Sparkles size={13} className="crazy-sparkle-spin text-amber-300" /> 35% OFF
+                </span>
+
+                {/* Text */}
+                <span className="text-xs sm:text-sm font-black tracking-tight flex items-center gap-1.5">
+                  <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 dark:from-purple-300 dark:via-pink-300 dark:to-amber-300 bg-clip-text text-transparent font-black">
+                    Member-Exclusive Saving
+                  </span>
+                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-pink-100 dark:bg-pink-950/60 text-[#ff2a5f] dark:text-pink-300 uppercase tracking-widest border border-pink-200 dark:border-pink-800/60">
+                    Active
+                  </span>
+                </span>
+              </div>
+            </div>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-3">

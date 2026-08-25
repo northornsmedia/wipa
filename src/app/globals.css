@@ -455,3 +455,26 @@ img, video {
     animation: none;
   }
 }
+
+/* Crazy 35% Member Discount Badge Animation ------------------------------ */
+.crazy-discount-aura {
+  background: linear-gradient(90deg, #ff2a5f, #a855f7, #06b6d4, #00d26a, #ff2a5f);
+  background-size: 300% 100%;
+  animation: crazy-gradient-shift 4s ease infinite;
+}
+
+@keyframes crazy-gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.crazy-sparkle-spin {
+  animation: crazy-spin 5s linear infinite;
+}
+
+@keyframes crazy-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
