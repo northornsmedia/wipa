@@ -212,18 +212,20 @@ export default function IPNewsHubPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 font-sans pb-24 overflow-x-hidden selection:bg-orange-500/20">
       
       {/* Real-time Ticker Tape */}
-      <div className="w-full bg-slate-950 text-white overflow-hidden py-2.5 border-b border-orange-500/30 flex items-center shadow-xs">
-        <div className="flex whitespace-nowrap animate-marquee gap-12 font-black uppercase text-[11px] tracking-wider text-slate-200">
+      <div className="w-full bg-slate-950 text-white overflow-hidden py-4 border-b-2 border-orange-500/40 flex items-center shadow-md">
+        <div className="flex whitespace-nowrap animate-marquee gap-14 font-black uppercase text-xs md:text-sm tracking-wider text-slate-200">
           {newsItems.slice(0, 15).map((r, i) => (
-            <span key={`ticker-1-${r.id || i}`} className="inline-flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="font-bold text-orange-400">[{r.type}]</span> {r.title}
+            <span key={`ticker-1-${r.id || i}`} className="inline-flex items-center gap-2.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-orange-500 animate-pulse shrink-0" />
+              <span className="font-extrabold text-orange-400">[{r.type}]</span> 
+              <span className="font-bold text-slate-100">{r.title}</span>
             </span>
           ))}
           {newsItems.slice(0, 15).map((r, i) => (
-            <span key={`ticker-2-${r.id || i}`} className="inline-flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="font-bold text-orange-400">[{r.type}]</span> {r.title}
+            <span key={`ticker-2-${r.id || i}`} className="inline-flex items-center gap-2.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-orange-500 animate-pulse shrink-0" />
+              <span className="font-extrabold text-orange-400">[{r.type}]</span> 
+              <span className="font-bold text-slate-100">{r.title}</span>
             </span>
           ))}
         </div>
@@ -245,8 +247,8 @@ export default function IPNewsHubPage() {
       `}</style>
 
       {/* Terminal / Header Area */}
-      <div className="border-b border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] shadow-xs">
-        <div className="max-w-[1440px] mx-auto px-5 py-8 md:py-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+      <div className="border-b-2 border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1322] shadow-sm">
+        <div className="max-w-[1440px] mx-auto px-6 py-10 md:py-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400">
