@@ -130,7 +130,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className={`sticky top-[73px] hidden h-[calc(100dvh-73px)] min-h-[calc(100dvh-73px)] self-start shrink-0 flex-col border-r border-gray-100 bg-white transition-all duration-300 dark:border-white/10 dark:bg-[#0f172a] lg:flex ${isOpen ? 'w-[260px]' : 'w-16'}`}>
+    <aside className={`fixed top-[60px] bottom-0 left-0 z-30 hidden flex-col border-r border-gray-100 bg-white transition-all duration-300 dark:border-white/10 dark:bg-[#0f172a] lg:flex ${isOpen ? 'w-[260px]' : 'w-16'}`}>
       
       <button 
         onClick={() => setIsOpen(!isOpen)}
@@ -142,7 +142,7 @@ export default function Sidebar() {
       </button>
 
       {!isOpen && (
-        <nav className="flex h-full w-16 flex-col items-center gap-1 overflow-y-auto overflow-x-hidden bg-white px-2 pb-5 pt-14 no-scrollbar dark:bg-[#0f172a]" aria-label="Collapsed main navigation">
+        <nav className="flex h-full w-16 flex-col items-center gap-1 overflow-y-auto overflow-x-hidden bg-white px-2 pb-5 pt-14 no-scrollbar overscroll-contain dark:bg-[#0f172a]" aria-label="Collapsed main navigation">
           {collapsedNavItems.map(({ label, path, Icon }) => (
             <button
               key={path}
@@ -165,8 +165,8 @@ export default function Sidebar() {
         </nav>
       )}
 
-      <div className={`${isOpen ? 'flex' : 'hidden'} h-full min-h-0 w-full flex-col overflow-y-auto overflow-x-hidden bg-white no-scrollbar dark:bg-[#0f172a]`}>
-        <div className="flex min-h-full w-[260px] shrink-0 flex-col bg-white dark:bg-[#0f172a]">
+      <div className={`${isOpen ? 'flex' : 'hidden'} h-full flex-1 w-full flex-col overflow-y-auto overflow-x-hidden bg-white no-scrollbar overscroll-contain dark:bg-[#0f172a]`}>
+        <div className="flex min-h-full w-[260px] shrink-0 flex-col bg-white dark:bg-[#0f172a] pb-16">
 
       <div className="px-4 mb-8 pt-6">
         <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-3 px-3 uppercase">MAIN NAVIGATION</p>
@@ -224,8 +224,7 @@ export default function Sidebar() {
                 <Link prefetch={false} href="/platform/resources/career-leadership" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/career-leadership') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Career & Leadership</Link>
                 <Link prefetch={false} href="/platform/resources/in-house-counsel" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/in-house-counsel') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>In-House Counsel</Link>
                 <Link prefetch={false} href="/platform/resources/podcasts-conversations" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/podcasts-conversations') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Podcasts & Convos</Link>
-                <Link prefetch={false} href="/platform/resources/wellness" className={`text-[12px] font-medium transition-colors ${pathname === '/platform/resources/wellness' ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Wellness & Wellbeing</Link>
-                <Link prefetch={false} href="/platform/resources/wellness-v2" className={`text-[12px] font-medium transition-colors ${pathname === '/platform/resources/wellness-v2' ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Wellness 2.0</Link>
+                <Link prefetch={false} href="/platform/resources/wellness" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/wellness') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>Wellness & Wellbeing</Link>
                 <Link prefetch={false} href="/platform/resources/ip-services" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/ip-services') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>IP Services</Link>
                 <Link prefetch={false} href="/platform/resources/ip-firms" className={`text-[12px] font-medium transition-colors ${pathname.startsWith('/platform/resources/ip-firms') ? 'text-[#5a32fa] font-bold' : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'}`}>IP Firms</Link>
               </div>
@@ -327,9 +326,9 @@ export default function Sidebar() {
       </div>
 
 
-      <div className="mt-auto px-7 mb-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-gray-900 dark:text-white">Upcoming Events</h3>
+      <div className="px-4 mb-8">
+        <div className="flex items-center justify-between mb-4 px-3">
+          <h3 className="text-[13px] font-bold text-[#131313] dark:text-gray-400">Upcoming Events</h3>
         </div>
         <div className="space-y-3">
           {upcomingEvents.length > 0 ? (

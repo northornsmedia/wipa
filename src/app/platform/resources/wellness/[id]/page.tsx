@@ -1,190 +1,194 @@
+// @ts-nocheck
 'use client';
 
 import React from 'react';
-import { ArrowLeft, BookOpen, Download, FileText, Video, Headphones, CheckSquare, BarChart, ExternalLink, Play, User } from 'lucide-react';
+import { ArrowLeft, Play, Calendar as CalendarIcon, ExternalLink, Heart, Clock, Star, MapPin, Video, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
-// Using a mock ID to simulate dynamic data
-export default function WellnessResourceDetail({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params);
-  
-  // Mock Data
-  const resource = {
-    id: id || '1',
+const DETAILS_DB = {
+  'jel-1to1': {
+    title: "1:1 Nutritional Therapy & Coaching",
+    type: "Service",
+    expert: "Jel · Budding Minds",
+    expertRole: "Registered Nutritional Therapist",
+    price: "From £690",
+    image: "/jel.jpg",
+    description: "A completely personalized journey to uncover the root causes of your symptoms. I look at your health timeline, dietary habits, and lifestyle to create a tailored protocol that works for your unique body.",
+    includes: [
+      "Initial 90-minute deep dive consultation",
+      "Personalized nutrition & lifestyle plan",
+      "Supplement recommendations (if needed)",
+      "Access to functional testing (extra cost)",
+      "Follow-up consultations to track progress",
+      "Direct message support between sessions"
+    ],
+    linkUrl: "https://www.budding-minds.com/copy-of-services",
+    linkText: "Book Your Discovery Call",
+    tags: ["Member Offer", "Gut Health", "Hormones"]
+  },
+  'jel-group': {
+    title: "The Reset: Group Coaching Programme",
+    type: "Service",
+    expert: "Jel · Budding Minds",
+    expertRole: "Registered Nutritional Therapist",
+    price: "Live Zoom Sessions",
+    image: "/jel.jpg",
+    description: "Join a supportive community of like-minded professionals in a guided program designed to reset your nervous system, optimize your nutrition, and build sustainable habits.",
+    includes: [
+      "Weekly live group coaching sessions on Zoom",
+      "Downloadable workbooks and resources",
+      "Private community group for daily support",
+      "Guest expert sessions on mindset and sleep",
+      "Access to session recordings"
+    ],
+    linkUrl: "https://www.budding-minds.com/",
+    linkText: "Join the Waitlist",
+    tags: ["Member Offer", "Community", "Mental Health"]
+  },
+  'jel-events': {
+    title: "Sensory Vibes: In-Person Wellness Event",
+    type: "Service",
+    expert: "Jel · Budding Minds",
+    expertRole: "Registered Nutritional Therapist",
+    price: "In-Person Event",
+    image: "/jel.jpg",
+    description: "An immersive, in-person experience designed to engage all your senses and regulate your nervous system. Expect sound baths, mindful movement, nourishing food, and deep connection.",
+    includes: [
+      "Guided somatic movement and breathwork",
+      "Immersive sound healing session",
+      "Nutrient-dense, chef-prepared lunch",
+      "Nervous system regulation toolkit to take home",
+      "Goodie bag with wellness products"
+    ],
+    linkUrl: "https://www.budding-minds.com/",
+    linkText: "View Upcoming Dates",
+    tags: ["Member Offer", "In-Person", "Stress Management"]
+  },
+  'burnout-guide': {
     title: "Navigating Burnout: A Practical Guide for IP Professionals",
     type: "Wellness Webinar",
-    topic: "Mental Health & Burnout",
-    category: "Wellness & Wellbeing",
-    color: "#00d26a",
-    expert: {
-      name: "Dr. Elena Rostova",
-      role: "Clinical Psychologist & Wellbeing Consultant",
-      image: "https://i.pravatar.cc/150?img=47"
-    },
-    overview: "In this comprehensive session, Dr. Elena Rostova explores the unique stressors faced by intellectual property professionals. We delve into identifying the early signs of burnout, establishing healthy boundaries, and practical techniques to manage high-pressure deadlines without compromising your mental health.",
-    publishDate: "August 12, 2026",
-    
-    // Practical Tips
-    practicalTips: [
-      "Set strict 'offline' hours to mentally detach from case work.",
-      "Incorporate 5-minute mindfulness breathing exercises between meetings.",
-      "Delegate administrative tasks to focus on high-impact strategic work.",
-      "Regularly communicate capacity limits to your team to prevent overload."
+    expert: "Dr. Elena Rostova",
+    expertRole: "Clinical Psychologist & Wellbeing Consultant",
+    price: "Free for WIPA Members",
+    image: "/resourceimg2.jpg",
+    description: "In this comprehensive session, Dr. Elena Rostova explores the unique stressors faced by intellectual property professionals. We delve into identifying early signs of burnout and practical techniques to manage high-pressure deadlines.",
+    includes: [
+      "45-minute video presentation",
+      "Downloadable burnout prevention toolkit",
+      "Self-assessment checklist",
+      "Actionable stress management strategies"
     ],
-    
-    // Downloadable Guides (Toolkit, Checklist, Infographic)
-    downloads: [
-      { id: 1, title: "Daily Wellbeing Checklist", type: "Checklist", icon: CheckSquare, size: "120 KB" },
-      { id: 2, title: "Burnout Prevention Toolkit", type: "Toolkit", icon: BookOpen, size: "2.4 MB" },
-      { id: 3, title: "Stress Response Infographic", type: "Infographic", icon: BarChart, size: "850 KB" }
-    ],
+    linkUrl: "#",
+    linkText: "Watch Webinar",
+    tags: ["Mental Health", "Burnout", "Webinar"]
+  }
+};
 
-    // Related Resources
-    related: [
-      { id: '101', title: "Meditation for Lawyers", type: "Podcast", time: "20 min listen" },
-      { id: '102', title: "Work-Life Balance Workshop", type: "Video", time: "45 min watch" }
-    ]
-  };
+export default function WellnessDetailRoute({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
+  const data = DETAILS_DB[id] || DETAILS_DB['jel-1to1'];
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col pb-20">
-      {/* Main Content */}
-      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
-        
-        {/* Breadcrumb & Header */}
-        <div className="mb-8">
-          <Link href="/platform/resources" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] font-bold text-sm mb-6 transition-colors">
-            <ArrowLeft size={16} />
-            Back to Resources
+    <div className="min-h-screen bg-[#f4f6f9] dark:bg-[#0a0a0f] text-slate-900 dark:text-white font-sans transition-colors duration-300 pb-20">
+      
+      {/* Top Bar */}
+      <div className="bg-white/60 dark:bg-[#1a1a24]/60 backdrop-blur-xl border-b border-gray-200 dark:border-white/10 py-6">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-8">
+          <Link href="/platform/resources/wellness" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#00d26a] font-bold text-sm transition-colors">
+            <ArrowLeft size={16} /> Back to Wellness & Wellbeing
           </Link>
-          
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className="text-xs font-black uppercase tracking-wider px-3 py-1 rounded-lg" style={{ color: resource.color, backgroundColor: `${resource.color}15` }}>
-              {resource.type}
-            </span>
-            <span className="text-xs font-black uppercase tracking-wider px-3 py-1 rounded-lg bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300">
-              {resource.topic}
-            </span>
-            <span className="text-sm font-bold text-gray-400 ml-auto">{resource.publishDate}</span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl font-black text-gray-800 dark:text-gray-100 leading-tight mb-6">
-            {resource.title}
-          </h1>
-          
-          {/* Expert Details */}
-          <div className="flex items-center gap-4 bg-white dark:bg-[#1e293b] p-4 rounded-2xl border border-gray-100 dark:border-white/10 w-fit shadow-sm">
-            <img src={resource.expert.image} alt={resource.expert.name} className="w-12 h-12 rounded-full border-2 border-[#00d26a]" />
-            <div>
-              <p className="font-bold text-gray-800 dark:text-gray-100">{resource.expert.name}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{resource.expert.role}</p>
-            </div>
-          </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-[1200px] mx-auto px-4 md:px-8 pt-10">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           
-          {/* Main Column */}
-          <div className="lg:col-span-2 flex flex-col gap-8">
+          {/* Main Detail Area */}
+          <div className="lg:col-span-8">
             
-            {/* Media Player Mockup (Video/Audio) */}
-            <div className="w-full aspect-video bg-gray-900 rounded-[2rem] overflow-hidden relative shadow-lg group border border-gray-200 dark:border-white/10">
-              <img src="/resourceimg2.jpg" alt="Video Thumbnail" className="w-full h-full object-cover opacity-60" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <button className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300 border border-white/30 shadow-2xl">
-                  <Play size={36} className="ml-2 fill-white" />
-                </button>
+            {/* Header / Badges */}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <span className="bg-[#00d26a]/10 text-[#00d26a] font-bold text-xs px-3 py-1.5 rounded-full border border-[#00d26a]/20">
+                {data.type}
+              </span>
+              {data.tags && data.tags.map(tag => (
+                <span key={tag} className="bg-pink-500/10 text-pink-500 font-bold text-xs px-3 py-1.5 rounded-full border border-pink-500/20">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <h1 className="text-3xl md:text-5xl font-black text-gray-900 dark:text-white leading-tight mb-6">
+              {data.title}
+            </h1>
+
+            {/* Expert Info */}
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/60 dark:bg-[#1a1a24]/60 backdrop-blur-xl border border-gray-200 dark:border-white/10 mb-8">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#00d26a] to-[#20c997] flex items-center justify-center text-white font-black text-lg shadow-md shadow-[#00d26a]/20">
+                {data.expert.charAt(0)}
               </div>
-              <div className="absolute bottom-0 inset-x-0 h-2 bg-white/20">
-                <div className="h-full bg-[#00d26a] w-1/3" />
+              <div>
+                <h3 className="font-bold text-gray-900 dark:text-white text-base">{data.expert}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{data.expertRole}</p>
               </div>
             </div>
 
-            {/* Overview */}
-            <div className="bg-white dark:bg-[#1e293b] p-8 rounded-[2rem] border border-gray-100 dark:border-white/10 shadow-sm">
-              <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <FileText className="text-[#00d26a]" /> Overview
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 font-medium text-lg leading-relaxed">
-                {resource.overview}
+            {/* Image */}
+            <div className="rounded-[2.5rem] overflow-hidden aspect-[16/9] mb-10 shadow-lg border border-gray-200 dark:border-white/10">
+              <img src={data.image} alt={data.title} className="w-full h-full object-cover object-top" />
+            </div>
+
+            {/* Description */}
+            <div className="prose dark:prose-invert max-w-none mb-10">
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-4">About this Offering</h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                {data.description}
               </p>
             </div>
 
-            {/* Practical Tips */}
-            <div className="bg-gradient-to-br from-[#00d26a]/10 to-transparent p-8 rounded-[2rem] border border-[#00d26a]/20 shadow-sm">
-              <h2 className="text-2xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-                <CheckSquare className="text-[#00d26a]" /> Practical Tips
-              </h2>
-              <ul className="space-y-4">
-                {resource.practicalTips.map((tip, index) => (
-                  <li key={index} className="flex items-start gap-4 bg-white dark:bg-[#0f172a] p-4 rounded-xl shadow-sm border border-[#00d26a]/10">
-                    <div className="w-8 h-8 rounded-full bg-[#00d26a]/20 flex items-center justify-center text-[#00d26a] font-black shrink-0 mt-0.5">
-                      {index + 1}
-                    </div>
-                    <p className="font-bold text-gray-700 dark:text-gray-200 text-lg leading-snug pt-1">{tip}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
+            {/* What's Included */}
+            {data.includes && (
+              <div className="bg-white/60 dark:bg-[#1a1a24]/60 backdrop-blur-xl rounded-[2rem] p-8 border border-gray-200 dark:border-white/10 mb-10">
+                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6">What's Included</h3>
+                <ul className="space-y-4">
+                  {data.includes.map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-3 text-gray-700 dark:text-gray-300 font-medium text-base">
+                      <CheckCircle2 size={20} className="text-[#00d26a] shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
           </div>
 
-          {/* Sidebar */}
-          <div className="flex flex-col gap-6">
-            
-            {/* Downloadable Guides */}
-            <div className="bg-white dark:bg-[#1e293b] p-6 rounded-[2rem] border border-gray-100 dark:border-white/10 shadow-sm">
-              <h3 className="text-xl font-black text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-                <Download className="text-[#00d26a]" /> Downloads
-              </h3>
-              <div className="flex flex-col gap-4">
-                {resource.downloads.map(file => {
-                  const Icon = file.icon;
-                  return (
-                    <a key={file.id} href="#" className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 dark:border-white/5 hover:border-[#00d26a]/50 hover:bg-[#00d26a]/5 transition-all group">
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-[#00d26a] group-hover:bg-[#00d26a]/10 transition-colors">
-                        <Icon size={20} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-gray-800 dark:text-gray-100 truncate text-sm">{file.title}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[10px] font-black text-[#00d26a] uppercase">{file.type}</span>
-                          <span className="text-[10px] font-medium text-gray-400">• {file.size}</span>
-                        </div>
-                      </div>
-                      <Download size={16} className="text-gray-400 group-hover:text-[#00d26a]" />
-                    </a>
-                  )
-                })}
-              </div>
-            </div>
+          {/* Sidebar CTA Card */}
+          <div className="lg:col-span-4">
+            <div className="sticky top-24 bg-white/80 dark:bg-[#1a1a24]/80 backdrop-blur-xl rounded-[2.5rem] p-8 border border-gray-200 dark:border-white/10 shadow-xl">
+              <div className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Pricing / Access</div>
+              <div className="text-3xl font-black text-gray-900 dark:text-white mb-6">{data.price}</div>
 
-            {/* Related Resources */}
-            <div className="bg-white dark:bg-[#1e293b] p-6 rounded-[2rem] border border-gray-100 dark:border-white/10 shadow-sm">
-              <h3 className="text-xl font-black text-gray-800 dark:text-gray-100 mb-6">Related Resources</h3>
-              <div className="flex flex-col gap-4">
-                {resource.related.map(item => (
-                  <Link key={item.id} href={`/platform/resources/wellness/${item.id}`} className="group block">
-                    <div className="p-4 rounded-xl border border-transparent hover:border-gray-200 dark:hover:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[10px] font-black uppercase text-gray-500 bg-gray-100 dark:bg-white/10 px-2 py-0.5 rounded">
-                          {item.type}
-                        </span>
-                        <span className="text-[10px] font-medium text-gray-400">{item.time}</span>
-                      </div>
-                      <p className="font-bold text-gray-800 dark:text-gray-100 text-sm group-hover:text-[#5a32fa] transition-colors line-clamp-2">
-                        {item.title}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
+              <a 
+                href={data.linkUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full bg-[#00d26a] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-[#00c060] shadow-lg shadow-[#00d26a]/25 transition-all text-center mb-4"
+              >
+                {data.linkText} <ExternalLink size={18} />
+              </a>
 
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center leading-relaxed">
+                Exclusive wellness resources & member offers powered by WIPA partners.
+              </p>
+            </div>
           </div>
 
         </div>
+
       </div>
+
     </div>
   );
 }

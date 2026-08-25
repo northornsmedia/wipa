@@ -99,8 +99,8 @@ export const PAGE_MAP: Record<string, { name: string; aliases: string[]; descrip
     aliases: ['leaderboard', 'rankings', 'top members', 'who is number one', 'my rank', 'xp leaderboard', 'standings'],
     description: 'Top WIPA members ranked by total XP.'
   },
-  '/platform/resources/wellness-v2': {
-    name: 'Wellness 2.0',
+  '/platform/resources/wellness': {
+    name: 'Wellness & Wellbeing',
     aliases: ['wellness', 'wellbeing', 'mental health', 'take a break', 'relax', 'health resources', 'wellness hub'],
     description: 'Curated wellness resources, mental health, and physical wellbeing tools for IP professionals.'
   }

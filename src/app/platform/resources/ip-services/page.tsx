@@ -151,7 +151,8 @@ export default function IPServicesPage() {
               <span className="text-slate-500 dark:text-slate-400 text-xs sm:text-lg font-bold uppercase tracking-wider">Sponsored by</span>
               <CanvasText
                 text="PSS Solutions"
-                className="font-black text-3xl sm:text-5xl md:text-6xl tracking-tight"
+                animationType="aurora"
+                className="font-black text-3xl sm:text-5xl md:text-6xl tracking-tight drop-shadow-[0_4px_20px_rgba(56,189,248,0.4)]"
                 lightColors={[
                   "#0284c7",
                   "#2563eb",
@@ -170,10 +171,7 @@ export default function IPServicesPage() {
                   "#38bdf8",
                   "#06b6d4"
                 ]}
-                lineGap={6}
-                lineWidth={1.8}
-                curveIntensity={25}
-                animationDuration={4}
+                animationDuration={3.5}
               />
             </h2>
           </div>

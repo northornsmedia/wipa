@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/store/useAppStore";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { User, LogIn, Eye, EyeOff } from "lucide-react";
 import AppLaunchSplash from "@/components/AppLaunchSplash";
 
 export default function LoginPage() {
@@ -130,138 +130,196 @@ export default function LoginPage() {
       router.push("/platform");
     }
   };
+
   return (
-    <div className="min-h-screen bg-[#fbe8d5] bg-grid-pattern flex flex-col font-sans">
-      {/* Header with Logo */}
-      <header className="w-full max-w-7xl mx-auto px-6 py-8 flex items-center justify-between z-10">
-        <Link href="/" className="flex items-center">
-          <h1 className="text-3xl font-bold tracking-tighter text-[#131313] flex items-center">
-            <span>WIPA</span>
-          </h1>
-        </Link>
-        <button 
-          onClick={() => router.back()}
-          className="flex items-center gap-2 px-4 py-2 bg-white border-[1.5px] border-black rounded-full shadow-[3px_3px_0px_0px_#131313] hover:translate-y-px hover:shadow-[1px_1px_0px_0px_#131313] transition-all font-semibold text-sm text-[#131313]"
+    <div className="min-h-screen bg-[#060608] text-white flex flex-col justify-between items-center p-6 relative overflow-hidden font-sans selection:bg-pink-500 selection:text-white">
+      {/* Background Wavy Line Gradient SVG */}
+      <div className="absolute top-20 left-0 right-0 w-full overflow-hidden pointer-events-none opacity-90 z-0">
+        <svg
+          viewBox="0 0 500 150"
+          preserveAspectRatio="none"
+          className="w-full h-32 sm:h-44 stroke-current"
         >
-          <ArrowLeft className="w-4 h-4" strokeWidth={2.5} />
-          Back
-        </button>
+          <defs>
+            <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#ff2a70" />
+              <stop offset="50%" stopColor="#ff7836" />
+              <stop offset="100%" stopColor="#8b5cf6" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M-20,30 Q80,130 200,60 T440,80 T550,20"
+            fill="none"
+            stroke="url(#waveGradient)"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
+
+      {/* Top Bar Header */}
+      <header className="w-full max-w-sm flex items-center justify-between z-10 pt-2 pb-4">
+        {/* Geometric Custom Brand Logo */}
+        <Link href="/" aria-label="WIPA Home" className="flex items-center gap-2 group">
+          <div className="w-9 h-9 rounded-xl bg-white text-black flex items-center justify-center p-1.5 shadow-lg group-hover:scale-105 transition-transform">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-full h-full">
+              <rect x="3" y="3" width="7" height="7" rx="2.5" fill="black" />
+              <rect x="14" y="3" width="7" height="7" rx="2.5" fill="black" />
+              <rect x="3" y="14" width="7" height="7" rx="2.5" fill="black" />
+              <rect x="14" y="14" width="7" height="7" rx="2.5" fill="black" />
+            </svg>
+          </div>
+        </Link>
+
+        {/* Top Right Sign Up Link */}
+        <Link
+          href="/signup"
+          className="flex items-center gap-1.5 text-white/90 hover:text-white font-medium text-sm transition-colors py-1.5 px-3 rounded-full hover:bg-white/5"
+        >
+          <div className="w-6 h-6 rounded-full border border-white/30 flex items-center justify-center">
+            <User className="w-3.5 h-3.5" />
+          </div>
+          <span>Sign Up</span>
+        </Link>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center p-6 relative z-10">
-        <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-sm border-[1.5px] border-black">
-          <div className="text-center mb-8">
-            <h2 className="font-serif text-4xl text-[#1a1a1a] mb-2 leading-tight">
-              Welcome back
-            </h2>
-            <p className="text-gray-500 font-medium">
-              Please enter your details to sign in.
-            </p>
+      {/* Main Content Form Card */}
+      <main className="w-full max-w-sm flex-1 flex flex-col justify-center items-center z-10 py-6">
+        {/* Page Title */}
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-8 text-center font-sans">
+          Sign In
+        </h1>
+
+        <form onSubmit={handleLogin} className="w-full space-y-6">
+          {message && (
+            <div className="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2.5 rounded-2xl text-xs font-semibold text-center">
+              {message}
+            </div>
+          )}
+          {error && (
+            <div className="text-rose-400 bg-rose-500/10 border border-rose-500/20 px-4 py-2.5 rounded-2xl text-xs font-semibold text-center">
+              {error}
+            </div>
+          )}
+
+          {/* Email Input Field */}
+          <div className="space-y-1.5">
+            <label className="block text-center text-xs font-semibold text-gray-400">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="hannadowie@gmail.com"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck="false"
+              required
+              className="w-full bg-[#18181d] border border-white/10 text-white placeholder-gray-500 rounded-full py-3.5 px-6 text-center text-sm font-medium outline-none focus:border-pink-500/60 focus:ring-2 focus:ring-pink-500/20 transition-all shadow-inner"
+            />
           </div>
 
-          <form className="space-y-5" onSubmit={handleLogin}>
-            {message && <div className="text-green-600 bg-green-50 px-3 py-2 rounded-md text-sm font-semibold">{message}</div>}
-            {error && <div className="text-red-500 text-sm font-semibold">{error}</div>}
-            <div>
-              <label className="block text-sm font-semibold text-[#1a1a1a] mb-1.5 px-1">
-                Email Address
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck="false"
-                  className="w-full bg-transparent rounded-full py-3 px-5 text-[#1a1a1a] placeholder-gray-400 font-medium border-[1.5px] border-black/20 focus:border-black outline-none transition-colors shadow-sm"
-                  required
-                />
-              </div>
+          {/* Password Input Field */}
+          <div className="space-y-1.5 relative">
+            <label className="block text-center text-xs font-semibold text-gray-400">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="************"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck="false"
+                required
+                className="w-full bg-[#18181d] border border-white/10 text-white placeholder-gray-500 rounded-full py-3.5 px-6 text-center text-sm font-medium outline-none focus:border-pink-500/60 focus:ring-2 focus:ring-pink-500/20 transition-all shadow-inner"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-[#1a1a1a] mb-1.5 px-1">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck="false"
-                  className="w-full bg-transparent rounded-full py-3 pl-5 pr-12 text-[#1a1a1a] placeholder-gray-400 font-medium border-[1.5px] border-black/20 focus:border-black outline-none transition-colors shadow-sm"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" strokeWidth={2.5} /> : <Eye className="w-5 h-5" strokeWidth={2.5} />}
-                </button>
-              </div>
-              <div className="flex justify-end mt-2">
-                <button 
-                  type="button"
-                  onClick={handleResetPassword} 
-                  className="text-sm font-semibold text-[#f99d3e] hover:text-[#e88c2d] transition-colors"
-                >
-                  Forgot Password?
-                </button>
-              </div>
+            
+            <div className="flex justify-center pt-1">
+              <button
+                type="button"
+                onClick={handleResetPassword}
+                className="text-xs font-medium text-gray-400 hover:text-pink-400 transition-colors"
+              >
+                Forgot Password?
+              </button>
             </div>
+          </div>
 
+          {/* Primary Gradient Outline Sign In Button */}
+          <div className="pt-2">
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#b892ff] text-black font-semibold py-3.5 rounded-full hover:bg-[#a57aff] hover:-translate-y-0.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-[1.5px] border-black shadow-sm disabled:opacity-50"
+              className="w-full p-[2px] rounded-full bg-gradient-to-r from-[#d946ef] via-[#ff2a70] to-[#f97316] shadow-lg shadow-pink-500/20 active:scale-[0.98] transition-transform duration-200 group cursor-pointer disabled:opacity-50"
             >
-              {loading ? "Logging in..." : "Login"}
+              <div className="w-full h-full bg-[#0a0a0e] group-hover:bg-[#121218] text-white rounded-full py-3.5 px-6 flex items-center justify-center gap-2.5 font-medium text-base transition-colors">
+                <div className="w-6 h-6 rounded-md border border-white/20 flex items-center justify-center text-white shrink-0">
+                  <LogIn className="w-3.5 h-3.5" />
+                </div>
+                <span>{loading ? "Signing In..." : "Sign In"}</span>
+              </div>
+            </button>
+          </div>
+
+          {/* Social Divider */}
+          <div className="pt-4 text-center">
+            <span className="text-xs font-medium text-gray-400">
+              or Sign In with
+            </span>
+          </div>
+
+          {/* Social Buttons Row */}
+          <div className="flex items-center justify-center gap-4 pt-1">
+            {/* Google */}
+            <button
+              type="button"
+              onClick={() => handleOAuthLogin('google')}
+              aria-label="Sign in with Google"
+              className="w-12 h-12 rounded-full bg-[#18181d] border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-white/30 transition-all active:scale-90 shadow-md"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </svg>
             </button>
 
-            <div className="relative flex items-center py-2">
-              <div className="flex-grow border-t border-gray-300"></div>
-              <span className="flex-shrink-0 mx-4 text-gray-500 text-sm font-medium">Or continue with</span>
-              <div className="flex-grow border-t border-gray-300"></div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => handleOAuthLogin('google')}
-                className="w-full flex items-center justify-center gap-2 bg-white text-black font-semibold py-3 rounded-full hover:-translate-y-0.5 transition-all duration-300 border-[1.5px] border-black shadow-[2px_2px_0px_0px_#131313] hover:shadow-[1px_1px_0px_0px_#131313]"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                Google
-              </button>
-              <button
-                type="button"
-                onClick={() => handleOAuthLogin('azure')}
-                className="w-full flex items-center justify-center gap-2 bg-white text-black font-semibold py-3 rounded-full hover:-translate-y-0.5 transition-all duration-300 border-[1.5px] border-black shadow-[2px_2px_0px_0px_#131313] hover:shadow-[1px_1px_0px_0px_#131313]"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 21 21"><path d="M10 0H0v10h10V0zM21 0H11v10h10V0zM10 11H0v10h10V11zM21 11H11v10h10V11z" fill="#00a4ef"/></svg>
-                Microsoft
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-8 text-center">
-            <p className="text-gray-600 font-medium">
-              Don't have an account?{" "}
-              <Link href="/signup" className="text-[#1a1a1a] font-bold hover:text-[#f99d3e] transition-colors">
-                Sign up
-              </Link>
-            </p>
+            {/* Microsoft */}
+            <button
+              type="button"
+              onClick={() => handleOAuthLogin('azure')}
+              aria-label="Sign in with Microsoft"
+              className="w-12 h-12 rounded-full bg-[#18181d] border border-white/10 flex items-center justify-center text-white hover:bg-white/10 hover:border-white/30 transition-all active:scale-90 shadow-md"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 21 21">
+                <path d="M10 0H0v10h10V0z" fill="#f25022"/>
+                <path d="M21 0H11v10h10V0z" fill="#7fba00"/>
+                <path d="M10 11H0v10h10V11z" fill="#00a4ef"/>
+                <path d="M21 11H11v10h10V11z" fill="#ffb900"/>
+              </svg>
+            </button>
           </div>
-        </div>
+        </form>
       </main>
+
+      {/* Footer minimal spacing / safe area */}
+      <footer className="w-full text-center py-2 text-[10px] text-gray-600 z-10">
+        Women&apos;s IP World Alliance Platform
+      </footer>
     </div>
   );
 }

@@ -140,16 +140,6 @@ const MOCK_CATEGORIES = [
     ]
   },
   {
-    id: 14,
-    title: "Wellness & Wellbeing 2.0",
-    icon: Headphones,
-    color: "#00d26a",
-    description: "Your upgraded sanctuary for mental health with Daily Check-ins.",
-    latestItems: [
-      { title: "Daily Mindfulness Minute", type: "Audio", time: "Just now" }
-    ]
-  },
-  {
     id: 13,
     title: "IP Firms Directory",
     icon: Building2,

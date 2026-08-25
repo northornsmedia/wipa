@@ -23,9 +23,9 @@ export default function PlatformLayout({
           {/* Mobile Top App Bar */}
           <MobileTopBar />
           
-          <div className="flex-1 flex w-full max-w-full min-w-0 box-border">
+          <div className="flex-1 flex w-full max-w-full min-w-0 box-border pt-0 md:pt-[60px]">
             <Sidebar />
-            <div className="flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-hidden box-border">
+            <div className="flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-hidden box-border lg:pl-[260px]">
               <main className="flex-1 w-full max-w-full min-w-0 pb-20 md:pb-0 overflow-x-hidden box-border">
                 {children}
               </main>

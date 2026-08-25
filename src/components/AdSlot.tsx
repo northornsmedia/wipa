@@ -160,16 +160,16 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
     return (
       <div 
         ref={containerRef}
-        className={`w-full bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3.5 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all overflow-hidden ${className}`}
+        className={`w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-6 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all overflow-hidden select-none ${className}`}
       >
         {/* Sponsor Post Header */}
-        <div className="flex items-center justify-between mb-3 px-3 sm:px-0">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2.5">
-            <div className="p-0.5 rounded-full bg-gradient-to-tr from-amber-400 to-[#5a32fa]">
+            <div className="p-0.5 rounded-full bg-gradient-to-tr from-amber-400 to-[#ff2a5f]">
               {ad.company_logo_url ? (
-                <img src={ad.company_logo_url} alt={ad.company_name} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-white dark:ring-[#0f172a]" />
+                <img src={ad.company_logo_url} alt={ad.company_name} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-white dark:ring-[#0b0f19]" />
               ) : (
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-[#0f172a]">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-amber-500 to-rose-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-[#0b0f19]">
                   {ad.company_name?.charAt(0) || "S"}
                 </div>
               )}
@@ -198,8 +198,8 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
           </a>
         </div>
 
-        {/* Headline & Body (LinkedIn Text Style) */}
-        <div className="px-3 sm:px-0 mb-2.5">
+        {/* Headline & Body */}
+        <div className="mb-2.5">
           <h3 className="text-[13px] sm:text-[14px] font-bold text-gray-900 dark:text-white leading-snug mb-1">
             {ad.headline}
           </h3>
@@ -210,7 +210,7 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
           )}
         </div>
 
-        {/* Banner Asset (Flush on mobile, rounded on desktop) */}
+        {/* Banner Asset */}
         {ad.banner_image_url && (
           <div className="w-full max-w-full min-w-0 my-2.5 box-border">
             <a
@@ -218,26 +218,26 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleAdClick}
-              className="w-full max-w-full min-w-0 overflow-hidden bg-slate-900/5 dark:bg-black/40 flex items-center justify-center border-y sm:border border-gray-100 dark:border-white/5 sm:rounded-2xl shadow-sm block box-border"
+              className="w-full max-w-full min-w-0 overflow-hidden bg-slate-900/5 dark:bg-black/40 flex items-center justify-center rounded-xl shadow-sm block box-border"
             >
               <img 
                 src={ad.banner_image_url} 
                 alt={ad.headline} 
-                className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-cover sm:rounded-2xl transition-opacity hover:opacity-98 block mx-auto" 
+                className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-cover rounded-xl transition-opacity hover:opacity-98 block mx-auto" 
               />
             </a>
           </div>
         )}
 
         {/* Action Bar + Learn More Button */}
-        <div className="flex items-center justify-between pt-2 px-3 sm:px-0 border-t border-gray-100 dark:border-white/5">
+        <div className="flex items-center justify-between pt-2.5 mt-1 box-border text-xs font-semibold">
           <span className="text-[11px] font-semibold text-gray-400">Promoted Content</span>
           <a
             href={ad.target_url || "#"}
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleAdClick}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#5a32fa] hover:bg-[#4a24db] text-white text-xs font-bold shadow-sm shadow-[#5a32fa]/30 active:scale-95 transition-all"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-[#ff2a5f] to-[#ff90e8] text-white text-xs font-bold shadow-md active:scale-95 transition-all"
           >
             <span>{ad.cta_label || "Learn More"}</span>
             <ExternalLink size={12} />

@@ -31,74 +31,62 @@ export default function MobileBottomNav() {
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800/80 px-2 pb-[env(safe-area-inset-bottom,0px)] transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.06)] w-full max-w-full box-border">
-        <div className="h-16 w-full flex items-center justify-around">
+      {/* Sleek Floating Glassmorphic Capsule Nav */}
+      <nav className="md:hidden fixed bottom-3 left-3 right-3 z-50 max-w-md mx-auto bg-[#090d16]/90 dark:bg-[#090d16]/90 backdrop-blur-2xl border border-white/10 dark:border-white/15 rounded-full px-3 py-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.5)] transition-all box-border">
+        <div className="h-13 w-full flex items-center justify-between">
           {/* 1. Feed / Home */}
           <Link
             href="/platform"
             prefetch={true}
             onTouchStart={() => router.prefetch('/platform')}
-            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 touch-manipulation ${
+            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
               isActive('/platform')
-                ? 'text-[#5a32fa] dark:text-[#ff90e8]'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'bg-white/10 text-white font-bold'
+                : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Home size={21} strokeWidth={isActive('/platform') ? 2.5 : 2} />
-            <span className="text-[10px] font-bold mt-1 leading-tight">Home</span>
-            {isActive('/platform') && (
-              <span className="absolute bottom-0 w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8]" />
-            )}
+            <Home size={19} strokeWidth={isActive('/platform') ? 2.5 : 1.8} />
+            <span className="text-[9.5px] font-medium mt-0.5 leading-none">Home</span>
           </Link>
 
-          {/* 2. Messages / Chat */}
+          {/* 2. Chat */}
           <Link
             href="/platform/messages"
             prefetch={true}
             onTouchStart={() => router.prefetch('/platform/messages')}
-            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 touch-manipulation ${
+            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
               isActive('/platform/messages')
-                ? 'text-[#5a32fa] dark:text-[#ff90e8]'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'bg-white/10 text-white font-bold'
+                : 'text-gray-400 hover:text-white'
             }`}
           >
-            <MessageSquare size={21} strokeWidth={isActive('/platform/messages') ? 2.5 : 2} />
-            <span className="text-[10px] font-bold mt-1 leading-tight">Chat</span>
-            {isActive('/platform/messages') && (
-              <span className="absolute bottom-0 w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8]" />
-            )}
+            <MessageSquare size={19} strokeWidth={isActive('/platform/messages') ? 2.5 : 1.8} />
+            <span className="text-[9.5px] font-medium mt-0.5 leading-none">Chat</span>
           </Link>
 
-          {/* 3. Centered Elevated '+' Create Button */}
-          <div className="flex flex-col items-center justify-center -mt-5">
-            <button
-              onClick={() => setIsCreationOpen(true)}
-              aria-label="Create Post, Webinar, or Topic"
-              className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#ff2a5f] to-rose-600 text-white flex items-center justify-center shadow-lg shadow-[#ff2a5f]/40 active:scale-90 transition-transform ring-4 ring-white dark:ring-[#0b0f19] touch-manipulation"
-            >
-              <Plus size={24} strokeWidth={2.8} />
-            </button>
-            <span className="text-[9px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mt-1">
-              Create
-            </span>
-          </div>
+          {/* 3. Executive Pill Action Button */}
+          <Link
+            href="/platform/create-post"
+            aria-label="Create Post"
+            className="flex items-center gap-1.5 bg-gradient-to-r from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] text-white px-3.5 py-2 rounded-full font-bold text-xs shadow-lg shadow-[#5a32fa]/30 active:scale-90 transition-transform touch-manipulation cursor-pointer"
+          >
+            <Plus size={16} strokeWidth={3} />
+            <span>Post</span>
+          </Link>
 
-          {/* 4. Resources (11 Verticals) */}
+          {/* 4. Resources */}
           <Link
             href="/platform/resources"
             prefetch={true}
             onTouchStart={() => router.prefetch('/platform/resources')}
-            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 touch-manipulation ${
+            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
               isActive('/platform/resources')
-                ? 'text-[#5a32fa] dark:text-[#ff90e8]'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'bg-white/10 text-white font-bold'
+                : 'text-gray-400 hover:text-white'
             }`}
           >
-            <BookOpen size={21} strokeWidth={isActive('/platform/resources') ? 2.5 : 2} />
-            <span className="text-[10px] font-bold mt-1 leading-tight">Resources</span>
-            {isActive('/platform/resources') && (
-              <span className="absolute bottom-0 w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8]" />
-            )}
+            <BookOpen size={19} strokeWidth={isActive('/platform/resources') ? 2.5 : 1.8} />
+            <span className="text-[9.5px] font-medium mt-0.5 leading-none">Library</span>
           </Link>
 
           {/* 5. Profile */}
@@ -106,23 +94,20 @@ export default function MobileBottomNav() {
             href="/platform/profile"
             prefetch={true}
             onTouchStart={() => router.prefetch('/platform/profile')}
-            className={`flex flex-col items-center justify-center w-14 h-12 relative transition-all active:scale-90 touch-manipulation ${
+            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
               isActive('/platform/profile')
-                ? 'text-[#5a32fa] dark:text-[#ff90e8]'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'bg-white/10 text-white font-bold'
+                : 'text-gray-400 hover:text-white'
             }`}
           >
             {user?.avatar_url ? (
-              <div className={`w-6 h-6 rounded-full overflow-hidden ring-2 ${isActive('/platform/profile') ? 'ring-[#5a32fa] dark:ring-[#ff90e8]' : 'ring-transparent'}`}>
+              <div className={`w-5 h-5 rounded-full overflow-hidden ring-1.5 ${isActive('/platform/profile') ? 'ring-white' : 'ring-gray-400/40'}`}>
                 <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
               </div>
             ) : (
-              <User size={21} strokeWidth={isActive('/platform/profile') ? 2.5 : 2} />
+              <User size={19} strokeWidth={isActive('/platform/profile') ? 2.5 : 1.8} />
             )}
-            <span className="text-[10px] font-bold mt-1 leading-tight">Profile</span>
-            {isActive('/platform/profile') && (
-              <span className="absolute bottom-0 w-1 h-1 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8]" />
-            )}
+            <span className="text-[9.5px] font-medium mt-0.5 leading-none">Profile</span>
           </Link>
         </div>
       </nav>
@@ -132,3 +117,4 @@ export default function MobileBottomNav() {
     </>
   );
 }
+

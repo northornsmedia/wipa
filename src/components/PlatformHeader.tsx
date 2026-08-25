@@ -175,23 +175,23 @@ export default function PlatformHeader() {
 
   return (
     <>
-      <header className="hidden md:flex items-center justify-between px-4 sm:px-6 py-3 md:py-4 border-b border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] sticky top-0 z-50 min-h-[73px]">
+      <header className="hidden md:flex items-center justify-between px-4 sm:px-6 py-2 border-b border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] fixed top-0 left-0 right-0 z-50 h-[60px] box-border">
         {isSearchOpen ? (
           <div className="flex items-center w-full gap-4 max-w-4xl mx-auto animate-in fade-in duration-200">
-            <Search size={20} className="text-gray-400 flex-shrink-0" />
+            <Search size={18} className="text-gray-400 flex-shrink-0" />
             <input 
               type="text"
               autoFocus
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search people, jobs, events..."
-              className="flex-1 bg-gray-50 dark:bg-white/5 rounded-full py-2.5 px-6 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/20 focus:bg-white dark:bg-[#0f172a] border border-transparent focus:border-[#5a32fa] transition-all text-gray-900 dark:text-white"
+              className="flex-1 bg-gray-50 dark:bg-white/5 rounded-full py-2 px-5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/20 focus:bg-white dark:bg-[#0f172a] border border-transparent focus:border-[#5a32fa] transition-all text-gray-900 dark:text-white"
             />
             <button 
               onClick={handleCloseSearch}
-              className="p-2 text-gray-400 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:bg-white/5 rounded-full transition-colors flex-shrink-0"
+              className="p-1.5 text-gray-400 hover:text-gray-900 dark:text-white hover:bg-gray-50 dark:bg-white/5 rounded-full transition-colors flex-shrink-0"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         ) : (
@@ -217,13 +217,13 @@ export default function PlatformHeader() {
                 <img 
                   src="/WIPA-Logo.png" 
                   alt="WIPA Logo" 
-                  className="h-10 max-h-10 w-auto max-w-[140px] object-contain shrink-0" 
-                  style={{ height: '40px', width: 'auto' }}
+                  className="h-8 max-h-8 w-auto max-w-[130px] object-contain shrink-0" 
+                  style={{ height: '32px', width: 'auto' }}
                 />
               </Link>
             </div>
             
-            <nav className="hidden md:flex items-center gap-1 bg-white/60 dark:bg-[#020617]/40 backdrop-blur-xl rounded-2xl px-2 py-2 border border-gray-200/60 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
+            <nav className="hidden md:flex items-center gap-0.5 bg-white/60 dark:bg-[#020617]/50 backdrop-blur-xl rounded-xl p-1 border border-gray-200/60 dark:border-white/10 shadow-sm">
               {navItems.map((item) => {
                 const isActive = item.path === '/platform' ? pathname === '/platform' : (item.path.startsWith('/') && pathname.startsWith(item.path));
                 const Icon = item.icon;
@@ -233,19 +233,19 @@ export default function PlatformHeader() {
                     <button 
                       key={item.name} 
                       onClick={handleLexIQClick}
-                      className={`group relative flex flex-col items-center justify-center h-[52px] rounded-xl transition-all duration-500 ease-out overflow-hidden text-gray-500 dark:text-gray-400 hover:text-[#ff90e8] ${
-                        flyingBox || isLexIQOpen ? "opacity-0 pointer-events-none w-0 mx-0" : "opacity-100 w-[72px] mx-1"
+                      className={`group relative flex flex-col items-center justify-center h-[38px] rounded-lg transition-all duration-300 ease-out overflow-hidden text-gray-500 dark:text-gray-400 hover:text-[#ff90e8] ${
+                        flyingBox || isLexIQOpen ? "opacity-0 pointer-events-none w-0 mx-0" : "opacity-100 w-[52px] mx-0.5"
                       }`}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/10 dark:from-[#5a32fa]/20 dark:to-[#ff90e8]/20 rounded-xl opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out border border-[#ff90e8]/20" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/10 dark:from-[#5a32fa]/20 dark:to-[#ff90e8]/20 rounded-lg opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out border border-[#ff90e8]/20" />
                       
                       <Icon 
-                        size={20} 
+                        size={18} 
                         strokeWidth={2} 
-                        className="relative z-10 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:-translate-y-2.5 group-hover:scale-125 group-hover:rotate-[8deg] group-hover:drop-shadow-lg text-[#5a32fa] dark:text-[#ff90e8]" 
+                        className="relative z-10 transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:scale-110 text-[#5a32fa] dark:text-[#ff90e8]" 
                       />
                       
-                      <span className="text-[9px] font-bold tracking-wider absolute bottom-1.5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] whitespace-nowrap opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 text-[#5a32fa] dark:text-[#ff90e8]">
+                      <span className="text-[8px] font-bold tracking-wider absolute bottom-0.5 transition-all duration-300 ease-out whitespace-nowrap opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 text-[#5a32fa] dark:text-[#ff90e8]">
                         {item.name}
                       </span>
                     </button>
@@ -256,7 +256,7 @@ export default function PlatformHeader() {
                   <Link prefetch={false} 
                     key={item.name} 
                     href={item.path} 
-                    className={`group relative flex flex-col items-center justify-center w-[72px] h-[52px] rounded-xl transition-all duration-500 ease-out overflow-hidden ${
+                    className={`group relative flex flex-col items-center justify-center w-[52px] h-[38px] rounded-lg transition-all duration-300 ease-out overflow-hidden ${
                       isActive 
                         ? 'text-[#5a32fa] dark:text-[#818cf8]' 
                         : 'text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] dark:hover:text-[#818cf8]'
@@ -264,31 +264,31 @@ export default function PlatformHeader() {
                   >
                     {/* Active state background */}
                     {isActive && (
-                      <div className="absolute inset-0 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 rounded-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] border border-[#5a32fa]/10 dark:border-[#5a32fa]/20" />
+                      <div className="absolute inset-0 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 rounded-lg border border-[#5a32fa]/15 dark:border-[#5a32fa]/30" />
                     )}
                     
-                    {/* Hover animated background (expanding circle effect) */}
+                    {/* Hover animated background */}
                     {!isActive && (
-                      <div className="absolute inset-0 bg-[#5a32fa]/5 dark:bg-[#5a32fa]/10 rounded-xl opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out" />
+                      <div className="absolute inset-0 bg-[#5a32fa]/5 dark:bg-[#5a32fa]/10 rounded-lg opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out" />
                     )}
                     
-                    {/* Icon with crazy bounce */}
+                    {/* Icon */}
                     <Icon 
-                      size={20} 
+                      size={18} 
                       strokeWidth={isActive ? 2.5 : 2} 
-                      className={`relative z-10 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                      className={`relative z-10 transition-all duration-300 ease-out ${
                         isActive 
-                          ? '-translate-y-2.5 scale-110 drop-shadow-md' 
-                          : 'group-hover:-translate-y-2.5 group-hover:scale-125 group-hover:rotate-[8deg] group-hover:drop-shadow-lg'
+                          ? '-translate-y-1.5 scale-105' 
+                          : 'group-hover:-translate-y-1.5 group-hover:scale-110'
                       }`} 
                     />
                     
                     {/* Text slides up on active/hover */}
                     <span 
-                      className={`text-[9px] font-bold tracking-wider absolute bottom-1.5 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] whitespace-nowrap ${
+                      className={`text-[8px] font-bold tracking-wider absolute bottom-0.5 transition-all duration-300 ease-out whitespace-nowrap ${
                         isActive 
                           ? 'opacity-100 translate-y-0' 
-                          : 'opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0'
+                          : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0'
                       }`}
                     >
                       {item.name}

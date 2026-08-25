@@ -756,7 +756,7 @@ export default function PlatformPage() {
               {/* DESKTOP PREMIUM COMPOSER (DESKTOP ONLY) */}
               <div 
                 className="hidden md:flex bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] border border-white dark:border-white/10 flex-col overflow-hidden cursor-pointer hover:shadow-[0_20px_40px_rgb(0,0,0,0.12)] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 relative group z-20"
-                onClick={() => setIsCreatePostModalOpen(true)}
+                onClick={() => router.push('/platform/create-post')}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 pointer-events-none rounded-[2rem]" />
                 
@@ -794,249 +794,11 @@ export default function PlatformPage() {
 
               {/* DESKTOP STORIES (DESKTOP ONLY) */}
               <div className="hidden md:block">
-                <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
+                <FeedStoriesCarousel onOpenCreatePost={() => router.push('/platform/create-post')} />
               </div>
 
-              {/* CREATE POST MODAL */}
-              {isModalOpen && (
-                <div className={`fixed inset-0 bg-gray-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-0 transition-opacity ${isClosingModal ? 'animate-out fade-out duration-200' : 'animate-in fade-in duration-200'}`}>
-                  <div className={`bg-white dark:bg-[#0f172a] rounded-[2rem] w-full max-w-lg shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col border border-white/50 relative group ease-out ${isClosingModal ? 'animate-out fade-out zoom-out-95 duration-200' : 'animate-in fade-in zoom-in-95 duration-200'}`}>
-                    
-                    {publishSuccess ? (
-                      <div className="flex flex-col items-center justify-center p-12 text-center animate-in fade-in zoom-in duration-300">
-                        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                          <CheckCircle2 size={40} className="text-green-500" />
-                        </div>
-                        <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Post Published!</h2>
-                        <p className="text-gray-500 dark:text-gray-400 mb-8">Your post has been successfully shared to the feed.</p>
-                        <button 
-                          onClick={handleCloseModal}
-                          className="px-8 py-3 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 text-gray-900 dark:text-white rounded-xl font-bold transition-colors"
-                        >
-                          Close
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="flex items-center justify-between p-5 border-b border-gray-50 dark:border-white/5 pt-6">
-                          <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Create Post</h2>
-                          <button 
-                            onClick={handleCloseModal}
-                            className="p-2 hover:bg-gray-200 dark:hover:bg-white/20 active:scale-90 rounded-full transition-all duration-200 group/close"
-                          >
-                            <X size={20} className="text-gray-400 group-hover/close:text-gray-900 dark:text-white transition-colors" />
-                          </button>
-                        </div>
-                    
-                    <div className="p-5 flex items-center gap-3">
-                      {user?.avatar_url ? (
-                        <img src={user.avatar_url} alt={user?.name || 'User'} className="w-12 h-12 rounded-2xl object-cover shadow-md shadow-gray-200" />
-                      ) : (
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-lg shrink-0 shadow-md shadow-[#ff90e8]/30">
-                          {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                        </div>
-                      )}
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-[15px] text-gray-900 dark:text-white leading-tight">
-                            {postAsId === 'user' ? (user?.name || 'User') : (userBusiness?.name || 'Business')}
-                          </p>
-                          {userBusiness && (
-                            <select 
-                              value={postAsId}
-                              onChange={(e) => setPostAsId(e.target.value)}
-                              className="text-xs bg-gray-100 dark:bg-white/10 rounded-lg px-2 py-1 outline-none text-gray-700 dark:text-gray-200"
-                            >
-                              <option value="user">Post as myself</option>
-                              <option value={userBusiness.id}>Post as {userBusiness.name}</option>
-                            </select>
-                          )}
-                        </div>
-                        <div className="relative">
-                          <div 
-                            className="flex items-center gap-1.5 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gray-200 dark:border-white/20 hover:bg-gray-100 dark:bg-white/10 transition-colors cursor-pointer px-2.5 py-1 rounded-lg mt-1 w-fit"
-                            onClick={() => setIsPrivacyDropdownOpen(!isPrivacyDropdownOpen)}
-                          >
-                            <Users size={12} className="text-gray-600 dark:text-gray-300" />
-                            <span className="text-[11px] font-bold text-gray-600 dark:text-gray-300">{postPrivacy}</span>
-                            <span className="text-[10px] text-gray-400 ml-0.5">▼</span>
-                          </div>
-                          
-                          {isPrivacyDropdownOpen && (
-                            <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-[#0f172a] border border-gray-100 dark:border-white/10 rounded-xl shadow-lg z-50 overflow-hidden">
-                              <button 
-                                className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:bg-white/5 flex items-center gap-3 transition-colors border-b border-gray-50 dark:border-white/5"
-                                onClick={() => {
-                                  setPostPrivacy('Anyone');
-                                  setIsPrivacyDropdownOpen(false);
-                                }}
-                              >
-                                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center shrink-0">
-                                  <Users size={14} className="text-gray-600 dark:text-gray-300" />
-                                </div>
-                                <div>
-                                  <p className="text-sm font-bold text-gray-900 dark:text-white">Anyone</p>
-                                  <p className="text-[11px] text-gray-500 dark:text-gray-400">Anyone on or off WIPA</p>
-                                </div>
-                              </button>
-                              <button 
-                                className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:bg-white/5 flex items-center gap-3 transition-colors"
-                                onClick={() => {
-                                  setPostPrivacy('Followers only');
-                                  setIsPrivacyDropdownOpen(false);
-                                }}
-                              >
-                                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center shrink-0">
-                                  <Users size={14} className="text-gray-600 dark:text-gray-300" />
-                                </div>
-                                <div>
-                                  <p className="text-sm font-bold text-gray-900 dark:text-white">Followers only</p>
-                                  <p className="text-[11px] text-gray-500 dark:text-gray-400">Only your connections</p>
-                                </div>
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="px-5 pb-2">
-                      <textarea 
-                        className="w-full min-h-[160px] resize-none outline-none text-xl text-gray-900 dark:text-white placeholder-gray-300 font-medium leading-relaxed bg-transparent"
-                        placeholder="What's on your mind?"
-                        autoFocus
-                        value={postContent}
-                        onChange={(e) => setPostContent(e.target.value)}
-                      ></textarea>
-                    </div>
-                    
-                    {/* Attachment Preview Box */}
-                    {attachedMedia && (
-                      <div className="px-5 pb-3">
-                        {attachedMedia.type === 'image' && (
-                          <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 max-h-60 group shadow-sm">
-                            <img src={attachedMedia.previewUrl} alt="Preview" className="w-full h-full object-cover max-h-60" />
-                            <button 
-                              type="button"
-                              onClick={() => setAttachedMedia(null)} 
-                              className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-black/75 hover:bg-black text-white transition-all shadow-md"
-                            >
-                              <X size={16} />
-                            </button>
-                          </div>
-                        )}
-
-                        {attachedMedia.type === 'video' && (
-                          <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-black max-h-60 shadow-sm">
-                            <video src={attachedMedia.previewUrl} controls className="w-full max-h-56 object-contain" />
-                            <button 
-                              type="button"
-                              onClick={() => setAttachedMedia(null)} 
-                              className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-black/75 hover:bg-black text-white transition-all shadow-md z-10"
-                            >
-                              <X size={16} />
-                            </button>
-                          </div>
-                        )}
-
-                        {attachedMedia.type === 'doc' && (
-                          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 shadow-sm">
-                            <div className="flex items-center gap-3 overflow-hidden">
-                              <div className="w-10 h-10 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0">
-                                <FileText size={20} />
-                              </div>
-                              <div className="overflow-hidden">
-                                <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{attachedMedia.name}</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">{attachedMedia.size || 'Document / PDF'}</p>
-                              </div>
-                            </div>
-                            <button 
-                              type="button"
-                              onClick={() => setAttachedMedia(null)} 
-                              className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-lg transition-colors"
-                            >
-                              <X size={18} />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Quick Emoji Bar */}
-                    {showEmojiPicker && (
-                      <div className="px-5 pb-3">
-                        <div className="flex flex-wrap gap-2 p-2.5 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10">
-                          {['💡', '⚖️', '📜', '🚀', '🌟', '💼', '🤝', '🎉', '👏', '🔥', '👩‍⚖️', '📚'].map((emoji) => (
-                            <button
-                              key={emoji}
-                              type="button"
-                              onClick={() => setPostContent(prev => prev + ' ' + emoji)}
-                              className="text-xl p-1.5 hover:scale-125 transition-transform"
-                            >
-                              {emoji}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="px-5 pb-5 relative">
-                      <div className="absolute inset-x-5 inset-y-0 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] rounded-2xl blur opacity-20 pointer-events-none"></div>
-                      <div className="relative flex items-center justify-between border border-white/50 bg-white dark:bg-[#0f172a]/80 backdrop-blur-xl rounded-2xl p-3 shadow-lg shadow-[#5a32fa]/5">
-                        <span className="font-bold text-[13px] text-gray-600 dark:text-gray-300 pl-2">Add to your post</span>
-                        <div className="flex items-center gap-1">
-                          <input type="file" accept="image/*" className="hidden" id="modal-image-upload" onChange={(e) => handleUpload(e, 'image')} />
-                          <input type="file" accept="video/*" className="hidden" id="modal-video-upload" onChange={(e) => handleUpload(e, 'video')} />
-                          <input type="file" accept=".pdf,.doc,.docx,.txt" className="hidden" id="modal-doc-upload" onChange={(e) => handleUpload(e, 'doc')} />
-                          
-                          <label htmlFor="modal-image-upload" title="Attach Image" className="p-2.5 hover:bg-[#00d26a]/10 rounded-xl transition-colors group/icon cursor-pointer"><ImageIcon size={22} className="text-[#00d26a] group-hover/icon:scale-110 transition-transform" /></label>
-                          <label htmlFor="modal-video-upload" title="Attach Video" className="p-2.5 hover:bg-[#ff4b4b]/10 rounded-xl transition-colors group/icon cursor-pointer"><Video size={22} className="text-[#ff4b4b] group-hover/icon:scale-110 transition-transform" /></label>
-                          <label htmlFor="modal-doc-upload" title="Attach Document/PDF" className="p-2.5 hover:bg-[#5a32fa]/10 rounded-xl transition-colors group/icon cursor-pointer"><FileText size={22} className="text-[#5a32fa] group-hover/icon:scale-110 transition-transform" /></label>
-                          <button type="button" onClick={() => setShowEmojiPicker(!showEmojiPicker)} title="Insert Emoji" className="p-2.5 hover:bg-[#ff90e8]/10 rounded-xl transition-colors group/icon"><Smile size={22} className="text-[#ff90e8] group-hover/icon:scale-110 transition-transform" /></button>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="px-5 pb-5">
-                      <div className="flex items-center gap-3 bg-gray-50 dark:bg-white/5 rounded-xl p-3 border border-gray-100 dark:border-white/10">
-                        <div className="w-1 h-8 bg-black rounded-full shrink-0"></div>
-                        <p className="text-[12px] text-gray-600 dark:text-gray-300 font-medium leading-snug">
-                          <strong className="text-gray-900 dark:text-white">Do you know?</strong> Ennoble IP is ranked #3 for patents and IP.
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {uploadError && (
-                      <div className="px-5 pb-3">
-                        <p className="text-red-500 text-[13px] font-bold bg-red-50 border border-red-100 p-2.5 rounded-xl">{uploadError}</p>
-                      </div>
-                    )}
-                    
-                    <div className="p-5 pt-0">
-                      <button 
-                        className="w-full bg-gradient-to-r from-[#5a32fa] to-[#b892ff] text-white py-3.5 rounded-2xl font-bold hover:shadow-lg hover:shadow-[#5a32fa]/30 transition-all duration-300 hover:-translate-y-0.5 flex items-center justify-center gap-2 group/btn disabled:opacity-50 disabled:cursor-not-allowed"
-                        onClick={handlePublish}
-                        disabled={(!postContent.trim() && !attachedMedia) || isPublishing}
-                      >
-                        {isPublishing ? (
-                          <>
-                            <Loader2 size={18} className="animate-spin" /> Publishing...
-                          </>
-                        ) : (
-                          <>
-                            Publish Post <ArrowUpRight size={18} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </>
-                )}
-                  </div>
-                </div>
-              )}
-
               {/* FEED */}
-              <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-0 sm:space-y-4">
                 {isLoadingFeed ? (
                   <div className="flex items-center justify-center py-20 text-gray-400">
                     <Loader2 size={32} className="animate-spin text-[#5a32fa]" />
@@ -1066,30 +828,30 @@ export default function PlatformPage() {
                     <React.Fragment key={post.id}>
                     <div 
                       onClick={(event) => handlePostDoubleTap(post.id, event)}
-                      className="w-full max-w-full min-w-0 bg-white dark:bg-[#0f172a] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-y sm:border border-gray-100 dark:border-white/5 sm:border-gray-200/80 sm:dark:border-gray-800/80 py-3.5 sm:p-6 mb-2 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:shadow-none sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border relative overflow-hidden select-none"
+                      className="w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-6 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border relative overflow-hidden select-none"
                     >
-                      {/* Big Instagram-Style Double-Tap Heart Animation */}
+                      {/* Sleek Minimal Double-Tap Heart Animation */}
                       {animatingHeartPostIds.has(post.id) && (
-                        <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center animate-in zoom-in-50 duration-200">
-                          <div className="relative flex items-center justify-center animate-bounce">
-                            <div className="absolute w-36 h-36 bg-gradient-to-tr from-rose-500 to-pink-500 rounded-full blur-2xl opacity-70 animate-ping"></div>
+                        <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center animate-in zoom-in-50 duration-150">
+                          <div className="relative flex items-center justify-center">
+                            <div className="absolute w-16 h-16 bg-rose-500/60 rounded-full blur-xl animate-ping"></div>
                             <Heart 
-                              size={100} 
-                              className="fill-rose-500 text-white drop-shadow-[0_12px_35px_rgba(244,63,94,0.9)] scale-125 transform transition-transform duration-300 stroke-[2.5]"
+                              size={48} 
+                              className="fill-rose-500 text-white drop-shadow-md scale-110 transform transition-transform duration-200"
                             />
                           </div>
                         </div>
                       )}
 
                       {/* Post Header */}
-                      <div className="w-full max-w-full min-w-0 flex items-center justify-between mb-3 px-3 sm:px-0 box-border">
+                      <div className="w-full max-w-full min-w-0 flex items-center justify-between mb-3 box-border">
                         <div className="flex items-center gap-2.5">
                           <Link href={`/platform/profile/${post.author_id}`} className="shrink-0 hover:opacity-80 transition-opacity block">
-                            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] p-0.5 sm:h-11 sm:w-11">
+                            <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/15 bg-slate-800">
                               {author.avatar_url ? (
-                                <img src={author.avatar_url} alt={authorName} loading={index < 2 ? 'eager' : 'lazy'} decoding="async" className="block h-full w-full rounded-full object-cover object-center ring-2 ring-white dark:ring-[#0f172a]" />
+                                <img src={author.avatar_url} alt={authorName} loading={index < 2 ? 'eager' : 'lazy'} decoding="async" className="block h-full w-full rounded-full object-cover object-center" />
                               ) : (
-                                <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-xs font-bold text-white ring-2 ring-white dark:ring-[#0f172a]">
+                                <div className="flex h-full w-full items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white">
                                   {initial}
                                 </div>
                               )}
@@ -1109,7 +871,7 @@ export default function PlatformPage() {
                             <span className="text-[10px] sm:text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
                               {timeAgo}
                               <span>•</span>
-                              <span className="truncate max-w-[140px] sm:max-w-none">{author.practice_area || 'IP Professional'}</span>
+                              <span className="truncate max-w-[140px] sm:max-w-none capitalize">{author.practice_area || 'IP Professional'}</span>
                             </span>
                           </div>
                         </div>
@@ -1188,7 +950,7 @@ export default function PlatformPage() {
                         </div>
                       ) : (
                         post.content && (
-                          <div className="px-3 sm:px-0 mb-2.5">
+                          <div className="mb-2.5">
                             <p className="text-[13px] sm:text-[14px] text-gray-900 dark:text-gray-100 leading-relaxed font-normal whitespace-pre-wrap">
                               {displayContent}
                               {isLongText && !isExpanded && (
@@ -1214,7 +976,7 @@ export default function PlatformPage() {
 
                       {/* Post Media Attachments (100% Uncropped Whole Image/Video in Phone Frame) */}
                       {post.media_urls && post.media_urls.length > 0 && (
-                        <div className="w-full max-w-full px-3 sm:px-0 my-2.5 min-w-0">
+                        <div className="w-full max-w-full my-2.5 min-w-0">
                           {post.media_urls.map((url: string, mIdx: number) => {
                             const isVideo = post.media_type === 'video' || url.match(/\.(mp4|webm|mov|ogg)$/i);
                             const isDoc = post.media_type === 'doc' || url.match(/\.(pdf|doc|docx|txt)$/i);
@@ -1274,81 +1036,65 @@ export default function PlatformPage() {
                         </div>
                       )}
 
-                        {/* Instagram-Style Post Action Row */}
-                        <div className="w-full max-w-full min-w-0 flex items-center justify-between px-3 sm:px-0 pt-2 box-border">
-                          <div className="flex items-center gap-4 sm:gap-5 min-w-0">
-                            {/* Like Button */}
-                            <button 
-                              onClick={() => handleLikePost(post.id)} 
-                              className="flex items-center gap-1 text-gray-700 dark:text-gray-200 hover:text-rose-500 transition-transform active:scale-75 shrink-0"
-                              aria-label="Like post"
-                            >
-                              <Heart 
-                                size={22} 
-                                className={isLiked ? "fill-rose-500 text-rose-500 transition-transform scale-110" : "hover:text-rose-500 transition-colors"} 
-                              />
-                            </button>
+                        {/* Executive Clean 4-Column Control Bar */}
+                        <div className="w-full grid grid-cols-4 gap-1 pt-2.5 mt-2.5 border-t border-gray-100/60 dark:border-white/[0.06] text-xs font-semibold">
+                          {/* Applaud */}
+                          <button
+                            onClick={() => handleLikePost(post.id)}
+                            className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition-colors active:scale-95 ${
+                              isLiked
+                                ? 'text-rose-500 font-bold bg-rose-500/10'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-white/[0.05]'
+                            }`}
+                            aria-label="Applaud post"
+                          >
+                            <ThumbsUp size={15} className={isLiked ? "fill-rose-500 text-rose-500" : ""} />
+                            <span className="text-[12px]">{post.likes_count ? post.likes_count : ''} Applaud</span>
+                          </button>
 
-                            {/* Comment Button */}
-                            <button 
-                              onClick={() => {
-                                if (post.comments_disabled) return;
-                                setActiveCommentPost(post);
-                                fetchComments(post.id);
-                              }}
-                              disabled={post.comments_disabled}
-                              className={`flex items-center gap-1 transition-transform active:scale-75 shrink-0 ${
-                                post.comments_disabled ? 'opacity-30 cursor-not-allowed text-gray-400' : 'text-gray-700 dark:text-gray-200 hover:text-[#5a32fa]'
-                              }`}
-                              aria-label="Comment on post"
-                            >
-                              <MessageCircle size={22} />
-                            </button>
+                          {/* Discuss */}
+                          <button
+                            onClick={() => {
+                              if (post.comments_disabled) return;
+                              setActiveCommentPost(post);
+                              fetchComments(post.id);
+                            }}
+                            disabled={post.comments_disabled}
+                            className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition-colors active:scale-95 ${
+                              post.comments_disabled
+                                ? 'opacity-30 cursor-not-allowed text-gray-600'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-white/[0.05]'
+                            }`}
+                            aria-label="Comment on post"
+                          >
+                            <MessageSquare size={15} />
+                            <span className="text-[12px]">{post.comments_count ? post.comments_count : ''} Discuss</span>
+                          </button>
 
-                            {/* Share Button */}
-                            <button 
-                              onClick={() => setSharePost(post)}
-                              className="text-gray-700 dark:text-gray-200 hover:text-[#ff90e8] transition-transform active:scale-75 -rotate-12 shrink-0"
-                              aria-label="Share post"
-                            >
-                              <Send size={20} />
-                            </button>
-                          </div>
+                          {/* Share */}
+                          <button
+                            onClick={() => setSharePost(post)}
+                            className="flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-white/[0.05] transition-colors active:scale-95"
+                            aria-label="Share post"
+                          >
+                            <Share2 size={15} />
+                            <span className="text-[12px]">Share</span>
+                          </button>
 
-                          {/* Bookmark / Save Button (Right Edge) */}
-                          <button 
+                          {/* Save */}
+                          <button
                             onClick={() => void handleToggleSavePost(post.id)}
-                            className={`transition-transform active:scale-75 shrink-0 ${
+                            className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition-colors active:scale-95 ${
                               savedPostIds.has(String(post.id))
-                                ? 'text-[#6600FF]'
-                                : 'text-gray-700 dark:text-gray-200 hover:text-[#5a32fa]'
+                                ? 'text-amber-500 font-bold bg-amber-500/10'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-white/[0.05]'
                             }`}
                             aria-label={savedPostIds.has(String(post.id)) ? 'Remove saved post' : 'Save post'}
-                            aria-pressed={savedPostIds.has(String(post.id))}
                           >
-                            <Bookmark size={22} className={savedPostIds.has(String(post.id)) ? 'fill-current' : ''} />
+                            <Bookmark size={15} className={savedPostIds.has(String(post.id)) ? 'fill-amber-500 text-amber-500' : ''} />
+                            <span className="text-[12px]">{savedPostIds.has(String(post.id)) ? 'Saved' : 'Save'}</span>
                           </button>
                         </div>
-
-                        {/* Likes & Comments Count Summary */}
-                        <div className="w-full max-w-full min-w-0 px-3 sm:px-0 pt-2 pb-0.5 text-xs box-border">
-                          <span className="font-bold text-gray-900 dark:text-white">
-                            {post.likes_count ? `${post.likes_count.toLocaleString()} ${post.likes_count === 1 ? 'like' : 'likes'}` : 'Be the first to like'}
-                          </span>
-                          {(post.comments_count || 0) > 0 && (
-                            <button 
-                              onClick={() => {
-                                if (post.comments_disabled) return;
-                                setActiveCommentPost(post);
-                                fetchComments(post.id);
-                              }}
-                              className="block text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xs mt-0.5"
-                            >
-                              View all {post.comments_count} comments
-                            </button>
-                          )}
-                        </div>
-                        
                       </div>
                     {/* Dynamic Sponsored Native Content Placement after every 4 posts */}
                     {(index + 1) % 4 === 0 && (
