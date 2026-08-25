@@ -54,7 +54,7 @@ export default function IPNewsHubPage() {
   const [lastSyncTime, setLastSyncTime] = useState<string>('Just now');
   const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(null);
 
-  // 30-Second Headline Auto-Rotation
+  // 30-Second Headline Auto-Rotation & 30-Second Real-Time Fetch
   const [headlineIndex, setHeadlineIndex] = useState(0);
   const [secondsRemaining, setSecondsRemaining] = useState(30);
   const [isPaused, setIsPaused] = useState(false);
@@ -68,7 +68,7 @@ export default function IPNewsHubPage() {
         .select('*')
         .or('category.eq.ip-news,type.eq.ip_news')
         .order('created_at', { ascending: false })
-        .limit(100);
+        .limit(200);
 
       if (!error && data && data.length > 0) {
         const mapped = data.map((d: any) => ({
@@ -94,7 +94,7 @@ export default function IPNewsHubPage() {
     }
   }, []);
 
-  // 2. Trigger background continuous sync runner (never fails)
+  // 2. Trigger background continuous sync runner (fetch real news from internet every 30 seconds)
   const triggerBackgroundSync = useCallback(async (manual = false) => {
     if (isSyncing) return;
     setIsSyncing(true);
@@ -109,10 +109,10 @@ export default function IPNewsHubPage() {
       if (data && data.success) {
         setLastSyncTime('Just now');
         if (data.inserted_count > 0) {
-          setSyncSuccessMessage(`Added ${data.inserted_count} new global IP intelligence briefings`);
+          setSyncSuccessMessage(`Added ${data.inserted_count} new live intelligence briefings from internet`);
           setTimeout(() => setSyncSuccessMessage(null), 4000);
         } else if (manual) {
-          setSyncSuccessMessage('All latest global IP intelligence is fully up to date');
+          setSyncSuccessMessage('All real-time global IP intelligence is fully up to date');
           setTimeout(() => setSyncSuccessMessage(null), 3000);
         }
         await loadNewsFromDatabase();
@@ -124,17 +124,19 @@ export default function IPNewsHubPage() {
     }
   }, [isSyncing, loadNewsFromDatabase]);
 
-  // Initial Load + Auto Background Runner
+  // Initial Load + Auto 30-Second Continuous Internet Ingestion
   useEffect(() => {
     loadNewsFromDatabase();
     
+    // Initial fetch on mount
     const syncTimeout = setTimeout(() => {
       triggerBackgroundSync(false);
     }, 1000);
 
+    // Continuous 30-second interval internet runner
     const interval = setInterval(() => {
       triggerBackgroundSync(false);
-    }, 180000); // 3 minutes interval
+    }, 30000);
 
     return () => {
       clearTimeout(syncTimeout);
@@ -195,7 +197,7 @@ export default function IPNewsHubPage() {
     }
   };
 
-  // Calculate item counts for each type filter badge
+  // Real-time counter calculations
   const getTypeCount = (type: string) => {
     if (type === 'All Types') return newsItems.length;
     return newsItems.filter(n => n.type === type).length;
@@ -248,10 +250,11 @@ export default function IPNewsHubPage() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400">
-                <Activity size={13} className="animate-pulse" /> Live Intelligence Feed
+                <Activity size={13} className="animate-pulse" /> Real-Time Live Stream (30s Sync)
               </span>
-              <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
-                Continuous Auto-Sync • {newsItems.length} Briefings Loaded
+              <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                {newsItems.length} Live Intelligence Briefings
               </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
@@ -303,29 +306,34 @@ export default function IPNewsHubPage() {
       <div className="max-w-[1440px] mx-auto px-5 pt-8 md:pt-10 flex flex-col lg:flex-row gap-8 lg:gap-10">
         
         {/* Left Sidebar Filters */}
-        <div className="w-full lg:w-56 shrink-0">
+        <div className="w-full lg:w-64 shrink-0 space-y-6">
           <div className="sticky top-20 space-y-6">
             
-            {/* Jurisdictions Filter */}
-            <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] p-4 shadow-xs">
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-2">
-                <Filter size={12} className="text-orange-500" /> Jurisdictions
+            {/* Jurisdictions Card */}
+            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0c1322] p-5 shadow-lg">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 mb-4 flex items-center gap-2">
+                <Filter size={14} className="text-orange-500" /> Jurisdictions
               </h3>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1.5">
                 {JURISDICTION_FILTERS.map(sub => {
                   const count = getJurisdictionCount(sub.id);
+                  const isSelected = activeSub === sub.id;
                   return (
                     <button
                       key={sub.id}
                       onClick={() => { setActiveSub(sub.id); setHeadlineIndex(0); setSecondsRemaining(30); }}
-                      className={`text-left text-xs font-bold transition-all px-3 py-2 rounded-xl flex items-center justify-between border-l-2 ${
-                        activeSub === sub.id
-                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400'
-                          : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                      className={`text-left text-xs font-bold transition-all px-3.5 py-2.5 rounded-2xl flex items-center justify-between group ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-orange-500/20 via-orange-500/10 to-transparent border border-orange-500/40 text-orange-600 dark:text-orange-400 shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
-                      <span>{sub.name}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-semibold ${activeSub === sub.id ? 'bg-orange-500/20 text-orange-600 dark:text-orange-300' : 'text-slate-400'}`}>
+                      <span className="font-bold">{sub.name}</span>
+                      <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-mono font-bold transition-all ${
+                        isSelected 
+                          ? 'bg-orange-500/20 text-orange-600 dark:text-orange-300 border border-orange-500/30' 
+                          : 'bg-slate-100 dark:bg-slate-900 text-slate-400 group-hover:text-slate-200'
+                      }`}>
                         {count}
                       </span>
                     </button>
@@ -334,26 +342,31 @@ export default function IPNewsHubPage() {
               </div>
             </div>
 
-            {/* Type Filter */}
-            <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] p-4 shadow-xs">
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-2">
-                <Scale size={12} className="text-orange-500" /> Type
+            {/* Type Card */}
+            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0c1322] p-5 shadow-lg">
+              <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 mb-4 flex items-center gap-2">
+                <Scale size={14} className="text-orange-500" /> Type
               </h3>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1.5">
                 {CONTENT_TYPES.map(type => {
                   const count = getTypeCount(type);
+                  const isSelected = typeFilter === type;
                   return (
                     <button
                       key={type}
                       onClick={() => { setTypeFilter(type); setHeadlineIndex(0); setSecondsRemaining(30); }}
-                      className={`text-left text-xs font-bold transition-all px-3 py-2 rounded-xl flex items-center justify-between border-l-2 ${
-                        typeFilter === type
-                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400'
-                          : 'border-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                      className={`text-left text-xs font-bold transition-all px-3.5 py-2.5 rounded-2xl flex items-center justify-between group ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-orange-500/20 via-orange-500/10 to-transparent border border-orange-500/40 text-orange-600 dark:text-orange-400 shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
-                      <span>{type}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-semibold ${typeFilter === type ? 'bg-orange-500/20 text-orange-600 dark:text-orange-300' : 'text-slate-400'}`}>
+                      <span className="font-bold">{type}</span>
+                      <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-mono font-bold transition-all ${
+                        isSelected 
+                          ? 'bg-orange-500/20 text-orange-600 dark:text-orange-300 border border-orange-500/30' 
+                          : 'bg-slate-100 dark:bg-slate-900 text-slate-400 group-hover:text-slate-200'
+                      }`}>
                         {count}
                       </span>
                     </button>
@@ -565,7 +578,7 @@ export default function IPNewsHubPage() {
         <div className="w-full lg:w-72 shrink-0">
           <div className="sticky top-20 space-y-6">
             
-            <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] p-5 shadow-xs">
+            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0c1322] p-5 shadow-lg">
               <h3 className="text-xs font-black uppercase tracking-widest mb-5 flex items-center gap-2 text-orange-600 dark:text-orange-400">
                 <span className="flex h-2 w-2 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
