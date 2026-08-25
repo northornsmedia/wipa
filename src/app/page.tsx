@@ -358,12 +358,12 @@ export default function Home() {
             }}
           >
             <motion.div
-              className="flex items-end gap-3 md:gap-5 flex-nowrap w-max"
+              className="flex items-end flex-nowrap w-max"
               animate={{ x: ["0%", "-50%"] }}
-              transition={{ repeat: Infinity, ease: "linear", duration: 32 }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 35 }}
             >
-              {[...Array(2)].map((_, setIndex) => (
-                <div key={setIndex} className="flex items-end gap-3 md:gap-5 flex-nowrap">
+              {[0, 1].map((setIndex) => (
+                <div key={setIndex} className="flex shrink-0 items-end gap-3 md:gap-5 pr-3 md:pr-5 flex-nowrap">
                   {/* Item 1 - Orange Pill */}
                   <motion.div className="relative w-20 h-40 md:w-32 md:h-64 rounded-full bg-[#f99d3e] border border-white/20 overflow-hidden flex-shrink-0 flex items-end justify-center shadow-lg shadow-orange-500/10">
                     <div className="w-full h-full relative">
