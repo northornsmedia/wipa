@@ -70,21 +70,12 @@ export default function PublicationDetailPage({ publication }: { publication: Pu
               <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.16em] text-white/85 backdrop-blur">
                 {publication.edition}
               </span>
-              <div className="relative group/discount inline-flex items-center">
-                <div className="crazy-discount-aura absolute -inset-0.5 rounded-full blur-sm opacity-80 group-hover/discount:opacity-100 transition duration-300" />
-                <div className="relative inline-flex items-center gap-2 rounded-full border border-white/25 bg-slate-950/80 px-3 py-1 text-xs font-black shadow-lg backdrop-blur">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff2a5f] opacity-80" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ff2a5f]" />
-                  </span>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#ff2a5f] to-[#a855f7] text-white font-black text-[10px] uppercase tracking-wider">
-                    <Sparkles size={11} className="crazy-sparkle-spin text-amber-300" /> 35% OFF
-                  </span>
-                  <span className="bg-gradient-to-r from-purple-200 via-pink-200 to-amber-200 bg-clip-text text-transparent font-bold">
-                    Exclusive Member Saving
-                  </span>
-                </div>
-              </div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold text-white shadow-xs backdrop-blur">
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
+                  <BadgePercent size={12} /> 35% Saving
+                </span>
+                <span className="text-white/90">Alliance Member Exclusive</span>
+              </span>
             </div>
             <h1 className="max-w-4xl text-4xl font-black leading-[1.02] tracking-[-0.045em] sm:text-5xl md:text-7xl">
               {publication.title}

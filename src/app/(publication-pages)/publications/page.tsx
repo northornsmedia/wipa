@@ -57,33 +57,13 @@ export default function PublicationsPage() {
               <h2 className="mt-2 text-2xl font-black tracking-tight md:text-3xl">Three platforms. One member advantage.</h2>
             </div>
             
-            <div className="relative group/discount inline-flex items-center self-start sm:self-auto">
-              {/* Animated glowing backdrop aura */}
-              <div className="crazy-discount-aura absolute -inset-1 rounded-full blur-md opacity-75 group-hover/discount:opacity-100 transition duration-500" />
-              
-              {/* Main pill container */}
-              <div className="relative inline-flex items-center gap-2.5 rounded-full border border-white/80 dark:border-white/20 bg-white/95 dark:bg-slate-900/95 px-4 py-2 shadow-lg shadow-purple-500/20 backdrop-blur-xl transition-all duration-300 group-hover/discount:scale-105 group-hover/discount:shadow-xl group-hover/discount:shadow-pink-500/30">
-                {/* Live ping beacon */}
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff2a5f] opacity-80" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ff2a5f]" />
-                </span>
-
-                {/* Crazy gradient percentage badge */}
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#ff2a5f] via-[#a855f7] to-[#5a32fa] text-white font-black text-xs uppercase tracking-wider shadow-md shadow-[#ff2a5f]/40">
-                  <Sparkles size={13} className="crazy-sparkle-spin text-amber-300" /> 35% OFF
-                </span>
-
-                {/* Text */}
-                <span className="text-xs sm:text-sm font-black tracking-tight flex items-center gap-1.5">
-                  <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 dark:from-purple-300 dark:via-pink-300 dark:to-amber-300 bg-clip-text text-transparent font-black">
-                    Member-Exclusive Saving
-                  </span>
-                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-pink-100 dark:bg-pink-950/60 text-[#ff2a5f] dark:text-pink-300 uppercase tracking-widest border border-pink-200 dark:border-pink-800/60">
-                    Active
-                  </span>
-                </span>
-              </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-violet-200/90 bg-violet-50/80 px-3.5 py-1.5 shadow-xs transition hover:border-[#5a32fa]/40 self-start sm:self-auto dark:border-violet-500/20 dark:bg-violet-950/40">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#5a32fa] px-2.5 py-0.5 text-[11px] font-black uppercase tracking-wider text-white shadow-xs">
+                <BadgePercent size={13} /> 35% Saving
+              </span>
+              <span className="text-xs sm:text-sm font-bold text-violet-950 dark:text-violet-200">
+                Alliance Member Exclusive
+              </span>
             </div>
           </div>
 
