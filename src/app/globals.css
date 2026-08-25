@@ -337,7 +337,7 @@ img, video {
 }
 
 .pss-sponsor-progress {
-  animation: pss-sponsor-progress 2.45s 0.2s both cubic-bezier(0.22, 1, 0.36, 1);
+  animation: pss-sponsor-progress 4.7s 0.2s both cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .pss-sponsor-subtitle {

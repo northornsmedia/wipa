@@ -117,8 +117,8 @@ export default function IPServicesPage() {
     };
     
     fetchServices();
-    const timer1 = setTimeout(() => setFadeOut(true), 2400);
-    const timer2 = setTimeout(() => setShowIntro(false), 2800);
+    const timer1 = setTimeout(() => setFadeOut(true), 4700);
+    const timer2 = setTimeout(() => setShowIntro(false), 5100);
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
