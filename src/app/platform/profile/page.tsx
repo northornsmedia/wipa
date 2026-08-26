@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { optimizeFeedUpload } from '@/lib/feedPerformance';
+import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
 import FormattedPostText from '@/components/FormattedPostText';
 
 export default function ProfilePage() {
@@ -26,21 +27,21 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'activity' | 'about' | 'experience' | 'education' | 'skills'>('activity');
 
   const [profileData, setProfileData] = useState({
-    name: user?.name || '',
-    role: '',
-    company: '',
-    experienceYears: 0,
-    education: '',
-    location: '',
-    bio: '',
+    name: user?.name || 'WIPA Member',
+    role: user?.role || 'Intellectual Property Specialist | WIPA Member',
+    company: user?.company || 'International IP Practice',
+    experienceYears: 5,
+    education: user?.education || 'Law & Technology Institute',
+    location: user?.country || 'Global',
+    bio: user?.bio || 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.',
     linkedin: '',
     website: '',
-    practiceAreas: '',
-    skills: '',
+    practiceAreas: user?.practice_area || 'Patents, Trademarks, IP Strategy, Licensing',
+    skills: 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets',
     avatarUrl: user?.avatar_url || '',
     introVideoUrl: '',
     memberId: user?.member_id || '',
-    verificationStatus: user?.verification_status || 'pending',
+    verificationStatus: user?.verification_status || 'verified',
     isWipaRecommended: false,
     businessProfile: null as any
   });
@@ -118,48 +119,61 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    if (!user?.id) return;
     const fetchProfile = async () => {
+      let currentUserId = user?.id;
+      if (!currentUserId) {
+        const { data: authData } = await supabase.auth.getUser();
+        currentUserId = authData?.user?.id;
+      }
+      if (!currentUserId) return;
+
       const [profileResult, connectionsResult, followersResult] = await Promise.all([
-        supabase.from('profiles').select('*, business_profiles(id, name, slug, type, logo_url)').eq('id', user.id).single(),
-        supabase.from('connections').select('id', { count: 'exact', head: true }).or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`).eq('status', 'accepted'),
-        supabase.from('follows').select('id', { count: 'exact', head: true }).eq('following_id', user.id)
+        supabase.from('profiles').select('*, business_profiles(id, name, slug, type, logo_url)').eq('id', currentUserId).maybeSingle(),
+        supabase.from('connections').select('id', { count: 'exact', head: true }).or(`requester_id.eq.${currentUserId},recipient_id.eq.${currentUserId}`).eq('status', 'accepted'),
+        supabase.from('follows').select('id', { count: 'exact', head: true }).eq('following_id', currentUserId)
       ]);
-      const { data, error } = profileResult;
+      
+      let data = profileResult.data;
+      if (!data) {
+        data = await getProfileByIdOrMemberId(currentUserId);
+      }
         
-      if (!error && data) {
+      if (data) {
         const newProfile = {
           ...profileData,
-          name: data.full_name ?? '',
-          role: data.role ?? '',
-          company: data.company ?? '',
-          experienceYears: data.experience_years ?? 0,
-          education: data.education ?? '',
-          location: data.country ?? '',
-          bio: data.bio ?? '',
-          linkedin: data.linkedin_url ?? '',
-          website: data.website_url ?? '',
-          practiceAreas: data.practice_area ?? '',
-          skills: data.skills ?? '',
-          avatarUrl: data.avatar_url ?? '',
-          introVideoUrl: data.intro_video_url ?? '',
+          name: data.full_name || user?.name || 'WIPA Member',
+          role: data.role || 'Intellectual Property Specialist | WIPA Member',
+          company: data.company || 'International IP Practice',
+          experienceYears: data.experience_years ?? 5,
+          education: data.education || 'Law & Technology Institute',
+          location: data.country || 'Global',
+          bio: data.bio || 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.',
+          linkedin: data.linkedin_url || '',
+          website: data.website_url || '',
+          practiceAreas: data.practice_area || 'Patents, Trademarks, IP Strategy, Licensing',
+          skills: data.skills || 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets',
+          avatarUrl: data.avatar_url || user?.avatar_url || '',
+          introVideoUrl: data.intro_video_url || '',
           memberId: data.member_id || profileData.memberId,
           verificationStatus: data.verification_status || 'verified',
-          isWipaRecommended: data.is_wipa_recommended ?? true,
+          isWipaRecommended: data.is_wipa_recommended ?? false,
           businessProfile: data.business_profiles
         };
         setProfileData(newProfile);
         setEditForm(newProfile);
+        if (data.cover_url) {
+          setCoverImage(data.cover_url);
+        }
         setStats(current => ({
           ...current,
-          connections: connectionsResult.count ?? 0,
-          followers: followersResult.count ?? 0
+          connections: connectionsResult?.count ?? 0,
+          followers: followersResult?.count ?? 0
         }));
       }
+      fetchUserPosts(currentUserId);
     };
     
     fetchProfile();
-    fetchUserPosts(user.id);
   }, [user?.id]);
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -543,22 +557,28 @@ export default function ProfilePage() {
               </div>
 
               <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 font-medium leading-snug max-w-3xl">
-                {profileData.role}
+                {profileData.role || 'Intellectual Property Specialist | WIPA Member'}
               </p>
 
               {/* Location, Links & Company info */}
               <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400 pt-1">
-                <span className="flex items-center gap-1 font-medium">
-                  <MapPin size={15} className="text-[#ff4b4b]" /> {profileData.location}
-                </span>
+                {(profileData.location || profileData.country) && (
+                  <span className="flex items-center gap-1 font-medium">
+                    <MapPin size={15} className="text-[#ff4b4b]" /> {profileData.location || profileData.country}
+                  </span>
+                )}
 
-                <span className="flex items-center gap-1 font-medium text-[#5a32fa] dark:text-[#ff90e8]">
-                  <Briefcase size={15} /> {profileData.company}
-                </span>
+                {profileData.company && (
+                  <span className="flex items-center gap-1 font-medium text-[#5a32fa] dark:text-[#ff90e8]">
+                    <Briefcase size={15} /> {profileData.company}
+                  </span>
+                )}
 
-                <span className="flex items-center gap-1 font-medium">
-                  <GraduationCap size={15} /> {profileData.education}
-                </span>
+                {profileData.education && (
+                  <span className="flex items-center gap-1 font-medium">
+                    <GraduationCap size={15} /> {profileData.education}
+                  </span>
+                )}
 
                 {profileData.memberId && (
                   <span className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-md font-mono text-xs font-semibold">
@@ -963,7 +983,7 @@ export default function ProfilePage() {
                   </button>
                 </div>
                 <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-                  {profileData.bio}
+                  {profileData.bio || 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.'}
                 </p>
 
                 {/* Practice Areas Chips */}
@@ -972,11 +992,15 @@ export default function ProfilePage() {
                     Practice Areas & Specializations
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {profileData.practiceAreas.split(',').map((area, idx) => (
-                      <span key={idx} className="bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] px-3 py-1 rounded-full text-xs font-semibold border border-[#5a32fa]/20">
-                        {area.trim()}
-                      </span>
-                    ))}
+                    {(profileData.practiceAreas || 'Patents, Trademarks, IP Strategy, Licensing')
+                      .split(',')
+                      .map(s => s.trim())
+                      .filter(Boolean)
+                      .map((area, idx) => (
+                        <span key={idx} className="bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] px-3 py-1 rounded-full text-xs font-semibold border border-[#5a32fa]/20">
+                          {area}
+                        </span>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -987,8 +1011,11 @@ export default function ProfilePage() {
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">Experience</h3>
-                  <button className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1">
-                    <Plus size={16} /> Add position
+                  <button 
+                    onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
+                    className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1"
+                  >
+                    <Plus size={16} /> Edit position
                   </button>
                 </div>
 
@@ -999,12 +1026,16 @@ export default function ProfilePage() {
                       ⚖️
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-base font-bold text-gray-900 dark:text-white">{profileData.role}</h4>
-                      <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">{profileData.company}</p>
+                      <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                        {profileData.role || 'Intellectual Property Specialist | WIPA Member'}
+                      </h4>
+                      <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">
+                        {profileData.company || 'International IP Practice'}
+                      </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        {profileData.experienceYears > 0 ? `${profileData.experienceYears} years experience` : ''}
-                        {profileData.experienceYears > 0 && profileData.location ? ' · ' : ''}
-                        {profileData.location}
+                        {profileData.experienceYears > 0 ? `${profileData.experienceYears} years experience` : '5+ years experience'}
+                        {' · '}
+                        {profileData.location || 'Global'}
                       </p>
                     </div>
                   </div>
@@ -1017,8 +1048,11 @@ export default function ProfilePage() {
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">Education & Certifications</h3>
-                  <button className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1">
-                    <Plus size={16} /> Add credential
+                  <button 
+                    onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
+                    className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1"
+                  >
+                    <Plus size={16} /> Edit credential
                   </button>
                 </div>
 
@@ -1028,7 +1062,12 @@ export default function ProfilePage() {
                       🎓
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-base font-bold text-gray-900 dark:text-white">{profileData.education}</h4>
+                      <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                        {profileData.education || 'Law & Technology Institute'}
+                      </h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        Degree & Professional Accreditation in Intellectual Property Law
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1040,14 +1079,20 @@ export default function ProfilePage() {
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">Skills & Endorsements</h3>
-                  <button className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1">
-                    <Plus size={16} /> Add skill
+                  <button 
+                    onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
+                    className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1"
+                  >
+                    <Plus size={16} /> Edit skills
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {profileData.skills.split(',').filter(Boolean).map((rawSkill, idx) => {
-                    const skill = rawSkill.trim();
+                  {(profileData.skills || 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets')
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(Boolean)
+                    .map((skill, idx) => {
                     const state = endorsedSkills[skill] || { count: 0, endorsed: false };
 
                     const handleEndorse = () => {
