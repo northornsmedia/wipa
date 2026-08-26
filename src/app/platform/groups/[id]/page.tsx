@@ -35,6 +35,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { compressPostMedia } from '@/lib/imageCompressor';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 interface GroupData {
   id: string;
@@ -117,7 +118,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         // Query by ID or Slug
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawId);
         
-        let query = supabase.from('groups').select('*');
+        let query = supabase.from('groups').select('id, name, slug, description, type, icon, color, avatar_url, cover_url, members_count, created_at');
         if (isUuid) {
           query = query.or(`id.eq.${rawId},slug.eq.${rawId}`);
         } else {
@@ -337,12 +338,16 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
       // Auto-compress heavy images (2MB-200MB) down to optimized WebP/JPEG (< 400KB)
       const compressed = await compressPostMedia(file);
 
-      const fileName = `group-${group?.id || 'post'}-${Date.now()}.jpg`;
+      const fileName = `group-${group?.id || 'post'}-${Date.now()}.webp`;
       const filePath = `posts/${fileName}`;
 
       const { data, error } = await supabase.storage
         .from('feed-media')
-        .upload(filePath, compressed.blob, { contentType: 'image/jpeg', upsert: true });
+        .upload(filePath, compressed.blob, { 
+          contentType: 'image/webp',
+          cacheControl: '31536000, public, immutable', 
+          upsert: true 
+        });
 
       if (error) throw error;
 
@@ -431,12 +436,12 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           
           {/* Group Cover Photo */}
           <div className="relative h-48 sm:h-72 md:h-80 w-full overflow-hidden rounded-none sm:rounded-b-3xl bg-gray-900">
-            <img 
+            <OptimizedImage 
               src={group.cover_url} 
               alt={group.name} 
               className="w-full h-full object-cover object-center" 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
 
             {/* Back Button */}
             <button 
@@ -458,7 +463,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                   style={{ backgroundColor: group.color || '#5a32fa' }}
                 >
                   {group.avatar_url ? (
-                    <img src={group.avatar_url} alt={group.name} className="w-full h-full object-cover" />
+                    <OptimizedImage src={group.avatar_url} alt={group.name} className="w-full h-full object-cover" />
                   ) : (
                     <span>{group.icon || group.name.charAt(0)}</span>
                   )}

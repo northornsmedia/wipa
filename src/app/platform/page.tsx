@@ -432,7 +432,7 @@ export default function PlatformPage() {
           .from('feed-media')
           .upload(fileName, uploadFile, {
             upsert: false,
-            cacheControl: '31536000',
+            cacheControl: '31536000, public, immutable',
             contentType: uploadFile.type || undefined,
           });
 

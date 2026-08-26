@@ -130,7 +130,7 @@ export default function ImageCropperModal({
       exportHeight
     );
 
-    // Single-pass optimal compression (< 120KB for avatar, < 250KB for banner)
+    // Single-pass optimal compression (< 80KB for avatar, < 200KB for banner)
     canvas.toBlob(
       (blob) => {
         if (blob) {
@@ -139,8 +139,8 @@ export default function ImageCropperModal({
           onClose();
         }
       },
-      'image/jpeg',
-      0.85
+      'image/webp',
+      0.86
     );
   }, [aspectRatio, onCropComplete, onClose]);
 

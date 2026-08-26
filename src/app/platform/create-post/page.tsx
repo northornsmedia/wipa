@@ -254,7 +254,7 @@ export default function CreatePostPage() {
             .from('feed-media')
             .upload(fileName, uploadFile, {
               upsert: true,
-              cacheControl: '31536000',
+              cacheControl: '31536000, public, immutable',
               contentType: uploadFile.type || undefined,
             }), publishDeadline);
 

@@ -25,6 +25,8 @@ import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import ImageCropperModal from '@/components/ImageCropperModal';
 import { compressImage } from '@/lib/imageCompressor';
+import { readCachedGroups, writeCachedGroups } from '@/lib/feedPerformance';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 interface GroupItem {
   id: string;
@@ -69,18 +71,28 @@ export default function GroupsPage() {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch groups and user memberships from Supabase
+  // 1. Initial 0ms Load from SWR Cache
+  useEffect(() => {
+    async function loadCache() {
+      const cached = await readCachedGroups<GroupItem>();
+      if (cached && cached.length > 0) {
+        setGroups(cached);
+        setLoading(false);
+      }
+    }
+    loadCache();
+  }, []);
+
+  // 2. Fetch groups and user memberships from Supabase (Selective Column Projections)
   const fetchGroups = async () => {
     try {
-      setLoading(true);
       const { data: dbGroups, error } = await supabase
         .from('groups')
-        .select('*')
+        .select('id, name, slug, description, type, icon, color, avatar_url, cover_url, members_count')
         .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching groups:', error);
-        setGroups([]);
         return;
       }
 
@@ -111,6 +123,7 @@ export default function GroupsPage() {
       }));
 
       setGroups(mapped);
+      void writeCachedGroups(mapped);
     } catch (err) {
       console.error('Failed to load groups:', err);
     } finally {
@@ -237,29 +250,37 @@ export default function GroupsPage() {
       let finalAvatarUrl = '';
       let finalCoverUrl = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200';
 
-      // 1. Upload Avatar if cropped
+      // 1. Upload Avatar if cropped (Deterministic path + 1-Year CDN Cache)
       if (avatarBlob) {
-        const avatarPath = `groups/avatar-${slug}-${Date.now()}.jpg`;
+        const avatarPath = `groups/avatar-${slug}.webp`;
         const { error: avatarErr } = await supabase.storage
           .from('feed-media')
-          .upload(avatarPath, avatarBlob, { contentType: 'image/jpeg', upsert: true });
+          .upload(avatarPath, avatarBlob, { 
+            contentType: 'image/webp', 
+            cacheControl: '31536000, public, immutable',
+            upsert: true 
+          });
 
         if (!avatarErr) {
           const { data: pubData } = supabase.storage.from('feed-media').getPublicUrl(avatarPath);
-          finalAvatarUrl = pubData.publicUrl;
+          finalAvatarUrl = `${pubData.publicUrl}?t=${Date.now()}`;
         }
       }
 
-      // 2. Upload Cover if cropped
+      // 2. Upload Cover if cropped (Deterministic path + 1-Year CDN Cache)
       if (coverBlob) {
-        const coverPath = `groups/cover-${slug}-${Date.now()}.jpg`;
+        const coverPath = `groups/cover-${slug}.webp`;
         const { error: coverErr } = await supabase.storage
           .from('feed-media')
-          .upload(coverPath, coverBlob, { contentType: 'image/jpeg', upsert: true });
+          .upload(coverPath, coverBlob, { 
+            contentType: 'image/webp', 
+            cacheControl: '31536000, public, immutable',
+            upsert: true 
+          });
 
         if (!coverErr) {
           const { data: pubData } = supabase.storage.from('feed-media').getPublicUrl(coverPath);
-          finalCoverUrl = pubData.publicUrl;
+          finalCoverUrl = `${pubData.publicUrl}?t=${Date.now()}`;
         }
       }
 
@@ -416,7 +437,7 @@ export default function GroupsPage() {
                     style={{ backgroundColor: group.color || '#5a32fa' }}
                   >
                     {group.avatar_url ? (
-                      <img 
+                      <OptimizedImage 
                         src={group.avatar_url} 
                         alt={group.name} 
                         className="w-full h-full object-cover" 

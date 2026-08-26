@@ -185,15 +185,16 @@ export default function ProfilePage() {
       setProfileData(prev => ({ ...prev, avatarUrl: url }));
 
       try {
-        const uploadFile = await optimizeFeedUpload(file, 512, 0.8);
-        const fileName = `${user.id}/${Date.now()}-${uploadFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        const uploadFile = await optimizeFeedUpload(file, 512, 0.82);
+        const fileName = `${user.id}/avatar.webp`;
         const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, uploadFile, {
-          upsert: false, cacheControl: '31536000', contentType: uploadFile.type || undefined
+          upsert: true, cacheControl: '31536000, public, immutable', contentType: 'image/webp'
         });
         if (!uploadError) {
           const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
-          await supabase.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', user.id);
-          setUser({ ...user, avatar_url: data.publicUrl });
+          const avatarUrlWithTimestamp = `${data.publicUrl}?t=${Date.now()}`;
+          await supabase.from('profiles').update({ avatar_url: avatarUrlWithTimestamp }).eq('id', user.id);
+          setUser({ ...user, avatar_url: avatarUrlWithTimestamp });
         }
       } catch (err) {
         console.error('Error uploading avatar:', err);
@@ -206,16 +207,17 @@ export default function ProfilePage() {
     if (file && user?.id) {
       setIsUploadingCover(true);
       try {
-        const uploadFile = await optimizeFeedUpload(file, 1600, 0.78);
-        const fileName = `${user.id}/${Date.now()}-cover-${uploadFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        const uploadFile = await optimizeFeedUpload(file, 1600, 0.8);
+        const fileName = `${user.id}/cover.webp`;
         const { error: uploadError } = await supabase.storage.from('covers').upload(fileName, uploadFile, {
-          upsert: false, cacheControl: '31536000', contentType: uploadFile.type || undefined
+          upsert: true, cacheControl: '31536000, public, immutable', contentType: 'image/webp'
         });
         if (!uploadError) {
           const { data } = supabase.storage.from('covers').getPublicUrl(fileName);
-          await supabase.from('profiles').update({ cover_url: data.publicUrl }).eq('id', user.id);
-          setUser({ ...user, cover_url: data.publicUrl });
-          setCoverImage(data.publicUrl);
+          const coverUrlWithTimestamp = `${data.publicUrl}?t=${Date.now()}`;
+          await supabase.from('profiles').update({ cover_url: coverUrlWithTimestamp }).eq('id', user.id);
+          setUser({ ...user, cover_url: coverUrlWithTimestamp });
+          setCoverImage(coverUrlWithTimestamp);
         }
       } catch (err) {
         console.error('Error uploading cover:', err);
