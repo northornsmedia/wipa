@@ -234,7 +234,7 @@ export default function ForumPostDetailPage({ params }: { params: { forumId: str
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
                 placeholder="Type your reply here..." 
-                className="flex-1 bg-gray-50 dark:bg-white/5 border-2 border-gray-200 dark:border-white/20 rounded-xl px-4 py-3 text-gray-800 dark:text-gray-100 font-medium focus:outline-none focus:border-[#5a32fa] focus:bg-white dark:bg-[#0f172a] transition-colors resize-none h-[100px]"
+                className="flex-1 bg-gray-50 dark:bg-[#151c2c] border-2 border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-800 dark:text-gray-100 font-medium focus:outline-none focus:border-[#5a32fa] dark:focus:border-[#5a32fa] transition-colors resize-none h-[100px]"
               />
             </div>
             <div className="flex justify-end">

@@ -1176,29 +1176,34 @@ export default function PlatformPage() {
       
       {/* Comment Modal */}
       {activeCommentPost && isDesktopViewport === true && (
-        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-[600px] overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-[620px] overflow-hidden flex flex-col max-h-[85vh] border border-gray-100 dark:border-white/10 animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 border-b border-gray-50 dark:border-white/5 pt-6 shrink-0">
-              <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Comments</h2>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10 shrink-0 bg-white dark:bg-[#0f172a]">
+              <div className="flex items-center gap-2">
+                <MessageCircle size={18} className="text-[#5a32fa] dark:text-[#ff90e8]" />
+                <h2 className="text-lg font-black text-gray-900 dark:text-white tracking-tight">
+                  Comments <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">({postComments[activeCommentPost.id]?.length || 0})</span>
+                </h2>
+              </div>
               <button 
                 onClick={() => {
                   setActiveCommentPost(null);
                   setCommentText('');
                 }}
-                className="p-2 hover:bg-gray-100 dark:bg-white/10 rounded-full transition-colors group/close"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors group/close"
               >
-                <X size={20} className="text-gray-400 group-hover/close:text-gray-900 dark:text-white transition-colors" />
+                <X size={18} className="text-gray-400 group-hover/close:text-gray-900 dark:group-hover/close:text-white transition-colors" />
               </button>
             </div>
             
             {/* Original Post Context */}
-            <div className="p-5 border-b border-gray-50 dark:border-white/5 bg-gray-50 dark:bg-white/5/50 shrink-0">
-              <div className="flex items-center gap-3 mb-3">
+            <div className="p-5 border-b border-gray-100 dark:border-white/10 bg-gray-50/80 dark:bg-[#151c2c]/80 shrink-0">
+              <div className="flex items-center gap-3 mb-2.5">
                 {activeCommentPost.author?.avatar_url ? (
-                  <img src={activeCommentPost.author.avatar_url} alt="Author" className="w-8 h-8 rounded-full object-cover shadow-sm" />
+                  <img src={activeCommentPost.author.avatar_url} alt="Author" className="w-9 h-9 rounded-full object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10" />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
                     {activeCommentPost.author?.full_name?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                 )}
@@ -1207,16 +1212,20 @@ export default function PlatformPage() {
                   <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">{formatDistanceToNow(parseISO(activeCommentPost.created_at), { addSuffix: true })}</span>
                 </div>
               </div>
-              <p className="text-[13px] text-gray-800 dark:text-gray-100 leading-relaxed font-medium whitespace-pre-wrap">
+              <p className="text-[13px] text-gray-800 dark:text-gray-200 leading-relaxed font-normal whitespace-pre-wrap">
                 {activeCommentPost.content}
               </p>
             </div>
 
             {/* Comments List Area */}
-            <div className="p-5 overflow-y-auto flex-1 space-y-4">
+            <div className="p-6 overflow-y-auto flex-1 space-y-4 bg-white dark:bg-[#0b101d] [scrollbar-width:thin]">
               {!postComments[activeCommentPost.id] || postComments[activeCommentPost.id].length === 0 ? (
-                <div className="text-center py-10">
-                  <p className="text-gray-400 text-[13px] font-medium">No comments yet. Be the first to reply!</p>
+                <div className="text-center py-12 space-y-2">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 dark:bg-white/5 text-indigo-500 dark:text-[#ff90e8] flex items-center justify-center mx-auto mb-3">
+                    <MessageCircle size={22} />
+                  </div>
+                  <p className="text-sm font-bold text-gray-800 dark:text-gray-200">No comments yet</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Be the first to share your thoughts!</p>
                 </div>
               ) : (
                 postComments[activeCommentPost.id].map(comment => {
@@ -1226,19 +1235,19 @@ export default function PlatformPage() {
                   const cTime = formatDistanceToNow(parseISO(comment.created_at), { addSuffix: true });
                   
                   return (
-                    <div key={comment.id} className="flex gap-3">
+                    <div key={comment.id} className="flex gap-3 items-start">
                       {commentAuthor.avatar_url ? (
-                        <img src={commentAuthor.avatar_url} alt={cName} className="w-8 h-8 rounded-full object-cover shadow-sm mt-0.5" />
+                        <img src={commentAuthor.avatar_url} alt={cName} className="w-8 h-8 rounded-full object-cover shadow-sm mt-0.5 ring-1 ring-black/5 dark:ring-white/10" />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 dark:text-gray-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-0.5">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-0.5">
                           {cInitial}
                         </div>
                       )}
-                      <div className="flex-1 bg-gray-50 dark:bg-white/5 p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-white/10">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-bold text-[13px] text-gray-900 dark:text-white leading-none flex items-center gap-1">
+                      <div className="flex-1 bg-gray-50 dark:bg-[#151c2c] p-3.5 rounded-2xl rounded-tl-none border border-gray-100 dark:border-white/10">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <h4 className="font-bold text-[13px] text-gray-900 dark:text-white leading-none flex items-center gap-1.5">
                             {cName}
-                            {commentAuthor.is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>}
+                            {commentAuthor.is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1.5 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>}
                           </h4>
                           <span className="text-[11px] text-gray-400 font-medium leading-none">{cTime}</span>
                         </div>
@@ -1251,32 +1260,43 @@ export default function PlatformPage() {
             </div>
             
             {/* Add Comment Input Area (Footer) */}
-            <div className="p-5 border-t border-gray-50 dark:border-white/5 bg-white dark:bg-[#0f172a] shrink-0">
+            <div className="p-5 border-t border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] shrink-0">
               <div className="flex gap-3">
                 {user?.avatar_url ? (
-                  <img src={user.avatar_url} alt={user?.name || 'User'} className="w-8 h-8 rounded-full object-cover shadow-sm mt-0.5" />
+                  <img src={user.avatar_url} alt={user?.name || 'User'} className="w-9 h-9 rounded-full object-cover shadow-sm mt-0.5 ring-1 ring-black/5 dark:ring-white/10" />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-0.5">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-0.5">
                     {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                 )}
-                <div className="flex-1 flex flex-col items-end gap-2">
+                <div className="flex-1 flex flex-col items-end gap-2.5">
                   <textarea 
-                    className="w-full min-h-[80px] resize-none outline-none text-[13px] text-gray-900 dark:text-white placeholder-gray-400 bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/10 focus:border-gray-200 dark:border-white/20 focus:bg-white dark:bg-[#0f172a] transition-colors disabled:opacity-50"
+                    className="w-full min-h-[75px] max-h-[160px] resize-none outline-none text-[13px] text-gray-900 dark:text-white placeholder-gray-400 bg-gray-50 dark:bg-[#151c2c] p-3 rounded-xl border border-gray-200 dark:border-white/10 focus:border-[#5a32fa] dark:focus:border-[#5a32fa] focus:ring-1 focus:ring-[#5a32fa] transition-all disabled:opacity-50"
                     placeholder={activeCommentPost.comments_disabled ? "Comments are turned off" : "Write a comment..."}
                     autoFocus
                     disabled={activeCommentPost.comments_disabled}
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                        e.preventDefault();
+                        if (commentText.trim() && !isSubmittingComment && !activeCommentPost.comments_disabled) {
+                          handleCommentSubmit(activeCommentPost.id);
+                        }
+                      }
+                    }}
                   ></textarea>
-                  <button 
-                    className="bg-gray-900 text-white px-5 py-2 rounded-xl text-[13px] font-bold hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm"
-                    disabled={!commentText.trim() || isSubmittingComment || activeCommentPost.comments_disabled}
-                    onClick={() => handleCommentSubmit(activeCommentPost.id)}
-                  >
-                    {isSubmittingComment ? <Loader2 size={14} className="animate-spin" /> : null}
-                    Post Reply
-                  </button>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-[11px] text-gray-400">Press Ctrl+Enter to post</span>
+                    <button 
+                      className="bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] text-white px-5 py-2 rounded-xl text-[13px] font-bold shadow-md hover:shadow-indigo-500/25 hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                      disabled={!commentText.trim() || isSubmittingComment || activeCommentPost.comments_disabled}
+                      onClick={() => handleCommentSubmit(activeCommentPost.id)}
+                    >
+                      {isSubmittingComment ? <Loader2 size={14} className="animate-spin" /> : <Send size={13} />}
+                      Post Reply
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
