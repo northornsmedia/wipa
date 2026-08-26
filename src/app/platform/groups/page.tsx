@@ -1,10 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ArrowLeft, Users, Search, Plus, Hash, ShieldCheck, Lock, Globe, ArrowUpRight, Loader2, Sparkles, Check, X, Image as ImageIcon } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { 
+  ArrowLeft, 
+  Users, 
+  Search, 
+  Plus, 
+  Hash, 
+  ShieldCheck, 
+  Lock, 
+  Globe, 
+  ArrowUpRight, 
+  Loader2, 
+  Sparkles, 
+  Check, 
+  X, 
+  Image as ImageIcon,
+  UploadCloud,
+  Crop,
+  Layers
+} from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
+import ImageCropperModal from '@/components/ImageCropperModal';
 
 interface GroupItem {
   id: string;
@@ -12,9 +31,10 @@ interface GroupItem {
   slug: string;
   description: string;
   type: 'Public' | 'Private';
+  avatar_url?: string;
+  cover_url?: string;
   icon: string;
   color: string;
-  cover_url?: string;
   members_count: number;
   isJoined?: boolean;
 }
@@ -34,8 +54,19 @@ export default function GroupsPage() {
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupDesc, setNewGroupDesc] = useState("");
   const [newGroupType, setNewGroupType] = useState<'Public' | 'Private'>('Public');
-  const [newGroupIcon, setNewGroupIcon] = useState("👥");
   const [newGroupColor, setNewGroupColor] = useState("#5a32fa");
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverBlob, setCoverBlob] = useState<Blob | null>(null);
+
+  // Cropper Modal States
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [rawImageForCrop, setRawImageForCrop] = useState<string | null>(null);
+  const [cropTarget, setCropTarget] = useState<'avatar' | 'cover'>('avatar');
+
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch groups and user memberships from Supabase
   const fetchGroups = async () => {
@@ -72,6 +103,7 @@ export default function GroupsPage() {
         type: g.type === 'Private' ? 'Private' : 'Public',
         icon: g.icon || '👥',
         color: g.color || '#5a32fa',
+        avatar_url: g.avatar_url || '',
         cover_url: g.cover_url || '',
         members_count: g.members_count || 1,
         isJoined: userJoinedGroupIds.has(g.id)
@@ -133,13 +165,43 @@ export default function GroupsPage() {
       }
     } catch (err) {
       console.error('Error toggling membership:', err);
-      // Revert if error
       fetchGroups();
     } finally {
       setJoiningGroupId(null);
     }
   };
 
+  // Image Selection Handler (Triggers Cropper)
+  const handleSelectImageForCrop = (e: React.ChangeEvent<HTMLInputElement>, target: 'avatar' | 'cover') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (reader.result) {
+        setRawImageForCrop(reader.result as string);
+        setCropTarget(target);
+        setCropperOpen(true);
+      }
+    };
+    reader.readAsDataURL(file);
+    // Reset file input so re-selecting same image works
+    e.target.value = '';
+  };
+
+  // Callback when Crop is confirmed in modal
+  const handleCropComplete = (blob: Blob, previewUrl: string) => {
+    if (cropTarget === 'avatar') {
+      setAvatarBlob(blob);
+      setAvatarPreview(previewUrl);
+    } else {
+      setCoverBlob(blob);
+      setCoverPreview(previewUrl);
+    }
+    setCropperOpen(false);
+  };
+
+  // Create Group Submission
   const handleCreateGroup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newGroupName.trim()) return;
@@ -156,6 +218,36 @@ export default function GroupsPage() {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '') + '-' + Math.floor(Math.random() * 1000);
 
+      let finalAvatarUrl = '';
+      let finalCoverUrl = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200';
+
+      // 1. Upload Avatar if cropped
+      if (avatarBlob) {
+        const avatarPath = `groups/avatar-${slug}-${Date.now()}.jpg`;
+        const { error: avatarErr } = await supabase.storage
+          .from('feed-media')
+          .upload(avatarPath, avatarBlob, { contentType: 'image/jpeg', upsert: true });
+
+        if (!avatarErr) {
+          const { data: pubData } = supabase.storage.from('feed-media').getPublicUrl(avatarPath);
+          finalAvatarUrl = pubData.publicUrl;
+        }
+      }
+
+      // 2. Upload Cover if cropped
+      if (coverBlob) {
+        const coverPath = `groups/cover-${slug}-${Date.now()}.jpg`;
+        const { error: coverErr } = await supabase.storage
+          .from('feed-media')
+          .upload(coverPath, coverBlob, { contentType: 'image/jpeg', upsert: true });
+
+        if (!coverErr) {
+          const { data: pubData } = supabase.storage.from('feed-media').getPublicUrl(coverPath);
+          finalCoverUrl = pubData.publicUrl;
+        }
+      }
+
+      // 3. Insert into Supabase groups table
       const { data: createdGroup, error: createError } = await supabase
         .from('groups')
         .insert({
@@ -163,9 +255,10 @@ export default function GroupsPage() {
           slug,
           description: newGroupDesc.trim(),
           type: newGroupType,
-          icon: newGroupIcon,
+          avatar_url: finalAvatarUrl || null,
+          cover_url: finalCoverUrl,
+          icon: newGroupName.trim().charAt(0).toUpperCase() || '👥',
           color: newGroupColor,
-          cover_url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200',
           members_count: 1,
           created_by: user.id
         })
@@ -175,7 +268,7 @@ export default function GroupsPage() {
       if (createError) throw createError;
 
       if (createdGroup) {
-        // Auto add creator as admin member
+        // Auto add creator as admin
         await supabase.from('group_members').insert({
           group_id: createdGroup.id,
           user_id: user.id,
@@ -185,6 +278,10 @@ export default function GroupsPage() {
         setIsCreateModalOpen(false);
         setNewGroupName("");
         setNewGroupDesc("");
+        setAvatarPreview(null);
+        setAvatarBlob(null);
+        setCoverPreview(null);
+        setCoverBlob(null);
         fetchGroups();
       }
     } catch (err) {
@@ -296,13 +393,21 @@ export default function GroupsPage() {
                 href={`/platform/groups/${group.slug || group.id}`}
                 className="group bg-white dark:bg-[#11141f] rounded-3xl border border-gray-200 dark:border-white/10 p-6 shadow-sm flex flex-col hover:-translate-y-1 hover:shadow-xl hover:border-[#5a32fa]/40 transition-all cursor-pointer relative overflow-hidden"
               >
-                {/* Top Row: Icon + Type Badge */}
+                {/* Top Row: Group Image / Avatar + Type Badge */}
                 <div className="flex justify-between items-start mb-4">
                   <div 
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl text-white shadow-md border border-white/20 shrink-0 transform group-hover:scale-105 transition-transform"
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl text-white shadow-md border border-white/20 shrink-0 transform group-hover:scale-105 transition-transform overflow-hidden relative"
                     style={{ backgroundColor: group.color || '#5a32fa' }}
                   >
-                    {group.icon}
+                    {group.avatar_url ? (
+                      <img 
+                        src={group.avatar_url} 
+                        alt={group.name} 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <span>{group.icon || group.name.charAt(0)}</span>
+                    )}
                   </div>
                   
                   <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-[#1c2233] px-3 py-1 rounded-full border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-700 dark:text-gray-300">
@@ -363,11 +468,11 @@ export default function GroupsPage() {
       </div>
 
       {/* ========================================================================= */}
-      {/* CREATE GROUP MODAL */}
+      {/* CREATE GROUP MODAL WITH ADVANCED IMAGE CROPPING & FRAME SUGGESTIONS */}
       {/* ========================================================================= */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#11141f] rounded-[2rem] p-6 sm:p-8 max-w-lg w-full border border-gray-200 dark:border-white/10 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+          <div className="bg-white dark:bg-[#11141f] rounded-[2rem] p-6 sm:p-8 max-w-xl w-full border border-gray-200 dark:border-white/10 shadow-2xl relative my-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2">
                 <Users size={24} className="text-[#5a32fa]" /> Create New Group
@@ -380,7 +485,9 @@ export default function GroupsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateGroup} className="space-y-4">
+            <form onSubmit={handleCreateGroup} className="space-y-5">
+              
+              {/* Group Name */}
               <div>
                 <label className="block text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
                   Group Name *
@@ -395,12 +502,13 @@ export default function GroupsPage() {
                 />
               </div>
 
+              {/* Description */}
               <div>
                 <label className="block text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
                   Description
                 </label>
                 <textarea 
-                  rows={3}
+                  rows={2}
                   placeholder="What is the mission and topic of this group?"
                   value={newGroupDesc}
                   onChange={(e) => setNewGroupDesc(e.target.value)}
@@ -408,73 +516,174 @@ export default function GroupsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* ============================================================= */}
+              {/* GROUP IMAGE / LOGO UPLOAD WITH FRAME PREVIEW */}
+              {/* ============================================================= */}
+              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-gray-200 flex items-center gap-1.5">
+                      <ImageIcon size={14} className="text-[#5a32fa]" /> Group Logo / Image
+                    </label>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                      Recommended: <span className="text-indigo-600 dark:text-indigo-400 font-bold">500 × 500 px (1:1 Square)</span>
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => avatarInputRef.current?.click()}
+                    className="bg-[#5a32fa] hover:bg-[#4927cb] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+                  >
+                    <UploadCloud size={14} />
+                    {avatarPreview ? 'Change & Crop' : 'Upload Image'}
+                  </button>
+                  <input
+                    type="file"
+                    ref={avatarInputRef}
+                    onChange={(e) => handleSelectImageForCrop(e, 'avatar')}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
+
+                {/* Avatar Preview & Guidelines */}
+                <div className="flex items-center gap-4 pt-1">
+                  <div 
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center font-black text-xl text-white shadow-md border-2 border-dashed border-[#5a32fa]/40 overflow-hidden relative shrink-0"
+                    style={{ backgroundColor: newGroupColor }}
+                  >
+                    {avatarPreview ? (
+                      <img src={avatarPreview} alt="Group Logo Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xs opacity-70">1:1 Frame</span>
+                    )}
+                  </div>
+
+                  <div className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                    {avatarPreview ? (
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                        <Check size={13} strokeWidth={3} /> Framed & cropped perfectly for cards and directory.
+                      </span>
+                    ) : (
+                      <span>Upload your organization logo or custom illustration. The cropping tool allows precision zooming and centering.</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* ============================================================= */}
+              {/* GROUP COVER BANNER UPLOAD WITH FRAME PREVIEW */}
+              {/* ============================================================= */}
+              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-gray-200 flex items-center gap-1.5">
+                      <Layers size={14} className="text-[#5a32fa]" /> Group Cover Banner
+                    </label>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                      Recommended: <span className="text-indigo-600 dark:text-indigo-400 font-bold">1200 × 400 px (3:1 Widescreen)</span>
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => coverInputRef.current?.click()}
+                    className="bg-gray-200 hover:bg-gray-300 dark:bg-white/10 dark:hover:bg-white/20 text-gray-800 dark:text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <UploadCloud size={14} />
+                    {coverPreview ? 'Change Banner' : 'Upload Banner'}
+                  </button>
+                  <input
+                    type="file"
+                    ref={coverInputRef}
+                    onChange={(e) => handleSelectImageForCrop(e, 'cover')}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
+
+                {/* Banner Preview */}
+                {coverPreview && (
+                  <div className="rounded-xl overflow-hidden h-20 w-full border border-gray-200 dark:border-white/10 relative">
+                    <img src={coverPreview} alt="Cover Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+
+              {/* Privacy & Theme Color Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
-                    Privacy
+                    Privacy Setting
                   </label>
                   <select 
                     value={newGroupType}
                     onChange={(e) => setNewGroupType(e.target.value as any)}
                     className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl p-3 text-sm font-bold text-gray-900 dark:text-white focus:border-[#5a32fa] outline-none"
                   >
-                    <option value="Public">Public Group</option>
-                    <option value="Private">Private Group</option>
+                    <option value="Public">Public (Anyone can view)</option>
+                    <option value="Private">Private (Members only)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
-                    Icon / Symbol
+                  <label className="block text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Accent Color
                   </label>
-                  <input 
-                    type="text" 
-                    maxLength={3}
-                    value={newGroupIcon}
-                    onChange={(e) => setNewGroupIcon(e.target.value)}
-                    className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl p-3 text-sm font-bold text-center text-gray-900 dark:text-white focus:border-[#5a32fa] outline-none"
-                  />
+                  <div className="flex gap-2 items-center h-11">
+                    {['#5a32fa', '#00d26a', '#ff90e8', '#ffc900', '#ff4b4b', '#0984e3'].map(c => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setNewGroupColor(c)}
+                        className={`w-7 h-7 rounded-full border-2 transition-transform cursor-pointer ${
+                          newGroupColor === c ? 'scale-110 border-black dark:border-white shadow-md' : 'border-transparent'
+                        }`}
+                        style={{ backgroundColor: c }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                  Theme Color
-                </label>
-                <div className="flex gap-2">
-                  {['#5a32fa', '#00d26a', '#ff90e8', '#ffc900', '#ff4b4b', '#0984e3'].map(c => (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => setNewGroupColor(c)}
-                      className={`w-8 h-8 rounded-full border-2 transition-transform cursor-pointer ${
-                        newGroupColor === c ? 'scale-110 border-black dark:border-white shadow-md' : 'border-transparent'
-                      }`}
-                      style={{ backgroundColor: c }}
-                    />
-                  ))}
-                </div>
-              </div>
-
+              {/* Form Buttons */}
               <div className="pt-4 flex gap-3">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="flex-1 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 py-3 rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-white/20 transition-all"
+                  className="flex-1 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 py-3 rounded-xl font-bold text-xs sm:text-sm cursor-pointer hover:bg-gray-200 dark:hover:bg-white/20 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="flex-1 bg-[#5a32fa] hover:bg-[#4927cb] text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-500/25 transition-all"
+                  className="flex-1 bg-gradient-to-r from-[#5a32fa] to-[#7952ff] hover:from-[#4927cb] hover:to-[#6841ea] text-white py-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-500/25 transition-all"
                 >
                   {isCreating ? <Loader2 size={16} className="animate-spin" /> : 'Create Group'}
                 </button>
               </div>
+
             </form>
           </div>
         </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* INTERACTIVE CROPPER MODAL */}
+      {/* ========================================================================= */}
+      {rawImageForCrop && (
+        <ImageCropperModal
+          isOpen={cropperOpen}
+          imageSrc={rawImageForCrop}
+          title={cropTarget === 'avatar' ? "Crop Group Logo / Avatar" : "Crop Group Cover Banner"}
+          recommendedPx={cropTarget === 'avatar' ? "500 × 500 px (1:1 Ratio)" : "1200 × 400 px (3:1 Panoramic)"}
+          aspectRatio={cropTarget === 'avatar' ? 1 : 3}
+          shape={cropTarget === 'avatar' ? 'rounded' : 'banner'}
+          onClose={() => setCropperOpen(false)}
+          onCropComplete={handleCropComplete}
+        />
       )}
 
     </div>

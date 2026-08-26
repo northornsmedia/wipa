@@ -41,6 +41,7 @@ interface GroupData {
   slug: string;
   description: string;
   type: 'Public' | 'Private';
+  avatar_url?: string;
   icon: string;
   color: string;
   cover_url: string;
@@ -132,6 +133,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             slug: data.slug || data.id,
             description: data.description || '',
             type: data.type === 'Private' ? 'Private' : 'Public',
+            avatar_url: data.avatar_url || '',
             icon: data.icon || '👥',
             color: data.color || '#5a32fa',
             cover_url: cover,
@@ -448,10 +450,14 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
               {/* Left Identity: Avatar Icon + Title + Meta */}
               <div className="flex items-start sm:items-center gap-4">
                 <div 
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center font-black text-2xl sm:text-3xl text-white shadow-xl border-4 border-white dark:border-[#11141f] -mt-8 sm:-mt-10 relative z-10 shrink-0"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center font-black text-2xl sm:text-3xl text-white shadow-xl border-4 border-white dark:border-[#11141f] -mt-8 sm:-mt-10 relative z-10 shrink-0 overflow-hidden"
                   style={{ backgroundColor: group.color || '#5a32fa' }}
                 >
-                  {group.icon}
+                  {group.avatar_url ? (
+                    <img src={group.avatar_url} alt={group.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{group.icon || group.name.charAt(0)}</span>
+                  )}
                 </div>
 
                 <div>
@@ -947,10 +953,14 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-white/10 mb-4">
               <div className="flex items-center gap-2">
                 <div 
-                  className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs text-white"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs text-white overflow-hidden shrink-0"
                   style={{ backgroundColor: group.color || '#5a32fa' }}
                 >
-                  {group.icon}
+                  {group.avatar_url ? (
+                    <img src={group.avatar_url} alt={group.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{group.icon || group.name.charAt(0)}</span>
+                  )}
                 </div>
                 <h3 className="font-bold text-base text-gray-900 dark:text-white">
                   Post in {group.name}
