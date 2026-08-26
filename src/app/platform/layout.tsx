@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type CSSProperties } from "react";
+import { usePathname } from "next/navigation";
 import PlatformHeader from "@/components/PlatformHeader";
 import MobileTopBar from "@/components/MobileTopBar";
 import AuthGuard from "@/components/AuthGuard";
@@ -15,9 +16,12 @@ export default function PlatformLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isMessagesPage = pathname?.startsWith('/platform/messages');
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const shellStyle = {
-    '--desktop-sidebar-width': isSidebarOpen ? '260px' : '64px',
+    '--desktop-sidebar-width': isMessagesPage ? '0px' : (isSidebarOpen ? '260px' : '64px'),
     '--platform-header-height': '72px',
   } as CSSProperties;
 
@@ -33,17 +37,23 @@ export default function PlatformLayout({
           <MobileTopBar />
           
           <div className="flex-1 flex w-full max-w-full min-w-0 box-border pt-0 md:pt-[var(--platform-header-height)]">
-            <Sidebar
-              isOpen={isSidebarOpen}
-              onToggle={() => setIsSidebarOpen((open) => !open)}
-              onOpen={() => setIsSidebarOpen(true)}
-            />
-            <div className="flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-hidden box-border transition-[padding-left] duration-300 ease-out lg:pl-[var(--desktop-sidebar-width)]">
-              <main className="flex-1 w-full max-w-full min-w-0 pb-20 md:pb-0 overflow-x-hidden box-border">
+            {!isMessagesPage && (
+              <Sidebar
+                isOpen={isSidebarOpen}
+                onToggle={() => setIsSidebarOpen((open) => !open)}
+                onOpen={() => setIsSidebarOpen(true)}
+              />
+            )}
+            <div className={`flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-hidden box-border transition-[padding-left] duration-300 ease-out ${
+              isMessagesPage ? 'pl-0' : 'lg:pl-[var(--desktop-sidebar-width)]'
+            }`}>
+              <main className={`flex-1 w-full max-w-full min-w-0 overflow-x-hidden box-border ${
+                isMessagesPage ? 'pb-0' : 'pb-20 md:pb-0'
+              }`}>
                 {children}
               </main>
-              {/* Mobile 5-Tab Bottom Navigation Bar */}
-              <MobileBottomNav />
+              {/* Mobile 5-Tab Bottom Navigation Bar (Hidden on messages page to give 100% full screen chat) */}
+              {!isMessagesPage && <MobileBottomNav />}
             </div>
           </div>
         </AuthGuard>

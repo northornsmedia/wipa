@@ -1288,20 +1288,18 @@ function MessagesContent() {
   };
 
   return (
-    <div className="h-[calc(100vh-73px)] overflow-hidden bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col font-sans">
+    <div className="h-[calc(100vh-72px)] overflow-hidden bg-white dark:bg-[#0f172a] flex flex-col font-sans w-full max-w-full">
 
       {/* Offline / Queued Connection Alert Banner */}
       {!isOnline && (
-        <div className="bg-amber-500 text-black px-4 py-2 text-xs font-bold flex items-center justify-center gap-2 shadow-md z-50 animate-in slide-in-from-top duration-200">
+        <div className="bg-amber-500 text-black px-4 py-2 text-xs font-bold flex items-center justify-center gap-2 shadow-md z-50 animate-in slide-in-from-top duration-200 shrink-0">
           <WifiOff size={16} />
           <span>You&apos;re offline. Messages retry for 15 seconds, then you can tap the failed message to send again.</span>
         </div>
       )}
 
-      {/* Lock-Screen Push Notifications Opt-In Banner */}
-
-      {/* Main Messaging UI */}
-      <div className="flex-1 flex w-full p-0 md:p-6 lg:p-8 min-h-0 md:gap-6 bg-white dark:bg-[#0f172a] md:bg-transparent">
+      {/* Main Messaging UI (100% Edge-to-Edge Full Screen Layout) */}
+      <div className="flex-1 flex w-full p-0 min-h-0 gap-0 bg-white dark:bg-[#0f172a] overflow-hidden">
         
         {/* Left Pane: Conversations List */}
         <ChatSidebar 
@@ -1323,10 +1321,10 @@ function MessagesContent() {
             top: 'var(--chat-viewport-top, 0px)',
             maxHeight: 'var(--chat-viewport-height, 100dvh)',
           } : undefined}
-          className={`bg-white dark:bg-[#0f172a] md:rounded-3xl border-0 md:border border-gray-200 dark:border-white/10 md:shadow-xl flex-col overflow-hidden ${
+          className={`bg-white dark:bg-[#0f172a] rounded-none border-0 flex-col overflow-hidden ${
             !showMobileChat 
               ? 'hidden md:flex flex-1 h-full min-h-0 relative' 
-              : 'flex fixed inset-x-0 bottom-auto z-[100] md:relative md:flex-1 md:inset-auto md:z-auto md:h-full min-h-0'
+              : 'flex fixed inset-0 z-[100] md:relative md:flex-1 md:inset-auto md:z-auto md:h-full min-h-0'
           }`}
         >
           
