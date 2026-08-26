@@ -268,6 +268,7 @@ function parseRssFeed(xml: string): IPNewsItem[] {
 
 export async function fetchLiveIPNews(): Promise<IPNewsItem[]> {
   const feedUrls = [
+    'https://www.globalipmagazine.com/blog-feed.xml',
     'https://news.google.com/rss/search?q=intellectual+property+OR+patent+litigation+OR+trademark+law+when:7d&hl=en-US&gl=US&ceid=US:en',
     'https://news.google.com/rss/search?q=USPTO+OR+WIPO+OR+EPO+patent+copyright+when:7d&hl=en-US&gl=US&ceid=US:en',
     'https://news.google.com/rss/search?q=trademark+infringement+OR+patent+licensing+when:7d&hl=en-US&gl=US&ceid=US:en',
