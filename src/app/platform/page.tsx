@@ -191,9 +191,10 @@ export default function PlatformPage() {
         .from('feed_posts')
         .select(`
           id, author_id, content, media_urls, media_type, document_name, privacy,
-          likes_count, comments_count, comments_disabled, created_at,
+          likes_count, comments_count, comments_disabled, created_at, group_id, post_to_feed,
           author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, practice_area, created_at, is_wipa_recommended)
         `)
+        .or('group_id.is.null,post_to_feed.eq.true')
         .order('created_at', { ascending: false })
         .limit(FEED_PAGE_SIZE);
 
