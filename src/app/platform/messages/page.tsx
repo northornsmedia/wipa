@@ -1,10 +1,10 @@
 'use client';
 
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
-import { useState, useRef, useEffect, useCallback } from 'react';
 import { 
   Paperclip, Send, Camera, Mic, MapPin, Image as ImageIcon, Video, FileText, 
-  X, Square, WifiOff, Sparkles, ChevronDown, Play, Pause, Trash2
+  X, Square, WifiOff, Sparkles, ChevronDown, Play, Pause, Trash2, ShieldCheck
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -43,6 +43,20 @@ const removeOutboxMessage = (messageId: string) => {
   localStorage.setItem(MESSAGE_OUTBOX_KEY, JSON.stringify(readMessageOutbox().filter(entry => entry.message.id !== messageId)));
 };
 
+function getDateDivider(dateStr?: string): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
+  if (isToday) return 'Today';
+  if (isYesterday) return 'Yesterday';
+  return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 function MessagesContent() {
   const router = useRouter();
   const { user, cachedConversations, setCachedConversations } = useAppStore();
@@ -55,6 +69,7 @@ function MessagesContent() {
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [inChatSearchQuery, setInChatSearchQuery] = useState("");
   const [chatFilter, setChatFilter] = useState<'all' | 'unread' | 'direct' | 'groups'>('all');
   const [isAttachmentMenuOpen, setIsAttachmentMenuOpen] = useState(false);
   const [isChatOptionsOpen, setIsChatOptionsOpen] = useState(false);
@@ -1345,60 +1360,88 @@ function MessagesContent() {
                 isOptionsOpen={isChatOptionsOpen}
                 onBlockUser={() => { setIsChatOptionsOpen(false); alert("User blocked!"); }}
                 onClearChat={() => { setIsChatOptionsOpen(false); alert("Chat cleared!"); }}
+                inChatSearchQuery={inChatSearchQuery}
+                onInChatSearchChange={setInChatSearchQuery}
               />
 
-              {/* Chat Messages Body */}
+              {/* Chat Messages Body with Luxury Textured Wallpaper & Centered Container */}
               <div 
                 ref={scrollContainerRef}
                 onScroll={() => {
                   handleScroll();
                   if (isAttachmentMenuOpen) setIsAttachmentMenuOpen(false);
                 }}
-                className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#f8f9fa] dark:bg-[#0a0f1d] space-y-4 relative"
+                className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 bg-[#f8f9fc] dark:bg-[#0b0f19] bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px] relative"
               >
-                {isLoadingMessages && activeChat.messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2">
-                    <Loader2 size={24} className="animate-spin text-[#5a32fa]" />
-                    <span className="text-xs font-semibold">Loading messages...</span>
+                <div className="max-w-4xl mx-auto w-full flex flex-col space-y-3 min-h-full justify-end pb-2">
+                  
+                  {/* End-to-End Encryption Security Pill */}
+                  <div className="mx-auto flex items-center gap-1.5 px-3.5 py-1 bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/20 text-amber-700 dark:text-amber-300 rounded-full text-[11px] font-semibold select-none mb-3 shadow-xs">
+                    <ShieldCheck size={13} className="text-amber-500 shrink-0" />
+                    <span>Messages are end-to-end encrypted & secure</span>
                   </div>
-                ) : activeChat.messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                    <div className="w-12 h-12 rounded-2xl bg-[#5a32fa]/10 text-[#5a32fa] flex items-center justify-center mb-3">
-                      <Sparkles size={20} />
-                    </div>
-                    <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200">No messages yet</h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Send a message to start this conversation.</p>
-                  </div>
-                ) : (
-                  activeChat.messages.map((msg) => (
-                    <MessageBubble 
-                      key={msg.id}
-                      message={msg}
-                      onRetry={handleRetryMessage}
-                      onImageClick={setLightboxImageUrl}
-                    />
-                  ))
-                )}
 
-                {/* WhatsApp-Style Bouncy Dots Typing Bubble */}
-                {activeChat.isTyping && (
-                  <div className="flex items-end gap-2.5 my-2 animate-in fade-in slide-in-from-bottom-2 duration-150">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm overflow-hidden mb-0.5">
-                      {activeChat.avatarUrl ? (
-                        <img src={activeChat.avatarUrl} alt={activeChat.name} className="w-full h-full object-cover" />
-                      ) : (
-                        activeChat.initial || 'U'
-                      )}
+                  {isLoadingMessages && activeChat.messages.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2 my-auto">
+                      <Loader2 size={24} className="animate-spin text-[#5a32fa]" />
+                      <span className="text-xs font-semibold">Loading messages...</span>
                     </div>
-                    <div className="bg-gray-100 dark:bg-[#1a2333] border border-gray-200/80 dark:border-white/10 px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.3s]" />
-                      <span className="w-2 h-2 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.15s]" />
-                      <span className="w-2 h-2 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce" />
+                  ) : activeChat.messages.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-center p-8 my-auto">
+                      <div className="w-14 h-14 rounded-3xl bg-[#5a32fa]/10 text-[#5a32fa] flex items-center justify-center mb-3 shadow-sm">
+                        <Sparkles size={24} />
+                      </div>
+                      <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200">No messages yet</h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Send a message to start this conversation.</p>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    activeChat.messages
+                      .filter(m => !inChatSearchQuery.trim() || (m.text && m.text.toLowerCase().includes(inChatSearchQuery.toLowerCase())))
+                      .map((msg, index, arr) => {
+                        const currentDateDivider = getDateDivider(msg.created_at);
+                        const prevMsg = arr[index - 1];
+                        const prevDateDivider = prevMsg ? getDateDivider(prevMsg.created_at) : '';
+                        const showDivider = currentDateDivider && currentDateDivider !== prevDateDivider;
 
-                <div ref={messagesEndRef} className="h-0 w-0 pointer-events-none" />
+                        return (
+                          <React.Fragment key={msg.id}>
+                            {showDivider && (
+                              <div className="flex items-center justify-center my-3 select-none">
+                                <span className="px-3.5 py-1 rounded-full bg-white/90 dark:bg-[#1a2333]/90 border border-gray-200 dark:border-white/10 text-[10px] font-bold text-gray-600 dark:text-gray-300 shadow-xs backdrop-blur-md">
+                                  {currentDateDivider}
+                                </span>
+                              </div>
+                            )}
+                            <MessageBubble 
+                              message={msg}
+                              onRetry={handleRetryMessage}
+                              onImageClick={setLightboxImageUrl}
+                            />
+                          </React.Fragment>
+                        );
+                      })
+                  )}
+
+                  {/* WhatsApp-Style Bouncy Dots Typing Bubble */}
+                  {activeChat.isTyping && (
+                    <div className="flex items-end gap-2.5 my-2 animate-in fade-in slide-in-from-bottom-2 duration-150">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm overflow-hidden mb-0.5">
+                        {activeChat.avatarUrl ? (
+                          <img src={activeChat.avatarUrl} alt={activeChat.name} className="w-full h-full object-cover" />
+                        ) : (
+                          activeChat.initial || 'U'
+                        )}
+                      </div>
+                      <div className="bg-white dark:bg-[#1a2333] border border-gray-200/80 dark:border-white/10 px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.3s]" />
+                        <span className="w-2 h-2 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce [animation-delay:-0.15s]" />
+                        <span className="w-2 h-2 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8] animate-bounce" />
+                      </div>
+                    </div>
+                  )}
+
+                  <div ref={messagesEndRef} className="h-0 w-0 pointer-events-none" />
+                </div>
 
                 {/* Floating "Scroll to Bottom" button */}
                 {showScrollBottomPill && (
@@ -1412,216 +1455,223 @@ function MessagesContent() {
                 )}
               </div>
 
-              {/* Chat Input Bar */}
+              {/* Chat Input Bar with Centered Container */}
               <div className="sticky bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pb-[max(env(safe-area-inset-bottom,0px),1rem)] md:pb-4 border-t border-gray-100 dark:border-white/10 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-xl shrink-0 w-full">
-                {isVoiceRecording ? (
-                  /* 1. Live Recording Mode */
-                  <div className="flex items-center justify-between gap-3 px-3.5 py-2.5 bg-rose-500/10 dark:bg-rose-500/20 border border-rose-500/30 rounded-2xl animate-in fade-in duration-150">
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
-                      <span className="text-rose-600 dark:text-rose-400 font-mono font-bold text-xs tracking-wider">
-                        {formatDuration(recordingDuration)}
-                      </span>
-                    </div>
+                <div className="max-w-4xl mx-auto w-full">
+                  {isVoiceRecording ? (
+                    /* 1. Live Recording Mode */
+                    <div className="flex items-center justify-between gap-3 px-3.5 py-2.5 bg-rose-500/10 dark:bg-rose-500/20 border border-rose-500/30 rounded-2xl animate-in fade-in duration-150">
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+                        <span className="text-rose-600 dark:text-rose-400 font-mono font-bold text-xs tracking-wider">
+                          {formatDuration(recordingDuration)}
+                        </span>
+                      </div>
 
-                    {/* Animated Soundwave Oscillators */}
-                    <div className="flex items-center gap-1">
-                      <span className="w-1 h-3 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                      <span className="w-1 h-5 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                      <span className="w-1 h-7 bg-rose-500 rounded-full animate-bounce" />
-                      <span className="w-1 h-4 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.2s]" />
-                      <span className="w-1 h-6 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.1s]" />
-                      <span className="w-1 h-3 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.35s]" />
-                    </div>
+                      {/* Animated Soundwave Oscillators */}
+                      <div className="flex items-center gap-1">
+                        <span className="w-1 h-3 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                        <span className="w-1 h-5 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                        <span className="w-1 h-7 bg-rose-500 rounded-full animate-bounce" />
+                        <span className="w-1 h-4 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.2s]" />
+                        <span className="w-1 h-6 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.1s]" />
+                        <span className="w-1 h-3 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.35s]" />
+                      </div>
 
-                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={cancelVoiceRecord}
+                          className="p-2 rounded-xl text-gray-500 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                          title="Cancel recording"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={stopVoiceRecord}
+                          className="px-3.5 py-1.5 rounded-xl bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform"
+                        >
+                          <Square size={12} className="fill-white" /> Stop
+                        </button>
+                      </div>
+                    </div>
+                  ) : recordedAudioBlob ? (
+                    /* 2. Voice Note Review & Preview Player Mode */
+                    <div className="flex items-center justify-between gap-3 px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl animate-in fade-in duration-150">
                       <button
                         type="button"
                         onClick={cancelVoiceRecord}
-                        className="p-2 rounded-xl text-gray-500 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
-                        title="Cancel recording"
+                        className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors shrink-0"
+                        title="Discard recording"
                       >
                         <Trash2 size={18} />
                       </button>
+
                       <button
                         type="button"
-                        onClick={stopVoiceRecord}
-                        className="px-3.5 py-1.5 rounded-xl bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform"
+                        onClick={togglePlayPreview}
+                        className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#5a32fa] text-white shadow-sm shrink-0 active:scale-95 transition-transform"
                       >
-                        <Square size={12} className="fill-white" /> Stop
-                      </button>
-                    </div>
-                  </div>
-                ) : recordedAudioBlob ? (
-                  /* 2. Voice Note Review & Preview Player Mode */
-                  <div className="flex items-center justify-between gap-3 px-3 py-2 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl animate-in fade-in duration-150">
-                    <button
-                      type="button"
-                      onClick={cancelVoiceRecord}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors shrink-0"
-                      title="Discard recording"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={togglePlayPreview}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#5a32fa] text-white shadow-sm shrink-0 active:scale-95 transition-transform"
-                    >
-                      {isPreviewPlaying ? <Pause size={15} className="fill-white" /> : <Play size={15} className="fill-white ml-0.5" />}
-                    </button>
-
-                    {/* Progress Track & Duration */}
-                    <div className="flex-1 flex flex-col justify-center min-w-0">
-                      <div className="w-full bg-gray-200 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
-                        <div 
-                          className="bg-[#5a32fa] h-full transition-all duration-100 rounded-full"
-                          style={{ width: `${previewProgress}%` }}
-                        />
-                      </div>
-                      <div className="flex justify-between items-center text-[10px] text-gray-400 mt-1 font-mono">
-                        <span>{formatDuration(previewCurrentTime)}</span>
-                        <span>{formatDuration(previewTotalDuration || recordingDuration)}</span>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleSendVoiceNote}
-                      disabled={isUploading}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shrink-0 active:scale-95 transition-transform"
-                      title="Send voice note"
-                    >
-                      {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                    </button>
-                  </div>
-                ) : (
-                  /* 3. Standard Typing Bar with Attachment Clip & Right-Corner Action Switcher */
-                  <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                    <div ref={attachmentMenuRef} className="relative">
-                      <button 
-                        type="button" 
-                        onClick={() => setIsAttachmentMenuOpen(!isAttachmentMenuOpen)}
-                        className={`w-10 h-10 flex items-center justify-center shrink-0 rounded-2xl border transition-colors ${
-                          isAttachmentMenuOpen 
-                            ? 'border-[#5a32fa] text-[#5a32fa] bg-[#5a32fa]/10' 
-                            : 'border-gray-200 dark:border-white/10 text-gray-400 hover:text-gray-700 dark:hover:text-white'
-                        }`}
-                      >
-                        <Paperclip size={18} />
+                        {isPreviewPlaying ? <Pause size={15} className="fill-white" /> : <Play size={15} className="fill-white ml-0.5" />}
                       </button>
 
-                      {/* Attachment Menu Popover (WITHOUT Voice Note) */}
-                      {isAttachmentMenuOpen && (
-                        <div className="absolute bottom-[calc(100%+12px)] left-0 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl py-2 w-52 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                          <button type="button" onClick={openCamera} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                            <Camera size={16} /> Take Photo
-                          </button>
-                          <button type="button" onClick={handleLocationShare} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                            <MapPin size={16} /> Share Location
-                          </button>
-                          <div className="h-px bg-gray-100 dark:bg-white/10 my-1"></div>
-                          <button type="button" onClick={() => imageInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                            <ImageIcon size={16} /> Image File
-                          </button>
-                          <button type="button" onClick={() => videoInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                            <Video size={16} /> Video File
-                          </button>
-                          <button type="button" onClick={() => docInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
-                            <FileText size={16} /> PDF / Document
-                          </button>
+                      {/* Progress Track & Duration */}
+                      <div className="flex-1 flex flex-col justify-center min-w-0">
+                        <div className="w-full bg-gray-200 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-[#5a32fa] h-full transition-all duration-100 rounded-full"
+                            style={{ width: `${previewProgress}%` }}
+                          />
                         </div>
-                      )}
+                        <div className="flex justify-between items-center text-[10px] text-gray-400 mt-1 font-mono">
+                          <span>{formatDuration(previewCurrentTime)}</span>
+                          <span>{formatDuration(previewTotalDuration || recordingDuration)}</span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleSendVoiceNote}
+                        disabled={isUploading}
+                        className="w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shrink-0 active:scale-95 transition-transform"
+                        title="Send voice note"
+                      >
+                        {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                      </button>
                     </div>
+                  ) : (
+                    /* 3. Standard Typing Bar with Attachment Clip & Right-Corner Action Switcher */
+                    <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                      <div ref={attachmentMenuRef} className="relative">
+                        <button 
+                          type="button" 
+                          onClick={() => setIsAttachmentMenuOpen(!isAttachmentMenuOpen)}
+                          className={`w-10 h-10 flex items-center justify-center shrink-0 rounded-2xl border transition-colors ${
+                            isAttachmentMenuOpen 
+                              ? 'border-[#5a32fa] text-[#5a32fa] bg-[#5a32fa]/10' 
+                              : 'border-gray-200 dark:border-white/10 text-gray-400 hover:text-gray-700 dark:hover:text-white'
+                          }`}
+                        >
+                          <Paperclip size={18} />
+                        </button>
 
-                    {/* Hidden inputs */}
-                    <input type="file" ref={imageInputRef} accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'image')} />
-                    <input type="file" ref={videoInputRef} accept="video/*" className="hidden" onChange={(e) => handleFileUpload(e, 'video')} />
-                    <input type="file" ref={docInputRef} accept=".pdf,.doc,.docx,.txt" className="hidden" onChange={(e) => handleFileUpload(e, 'document')} />
+                        {/* Attachment Menu Popover */}
+                        {isAttachmentMenuOpen && (
+                          <div className="absolute bottom-[calc(100%+12px)] left-0 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl py-2 w-52 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                            <button type="button" onClick={openCamera} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
+                              <Camera size={16} /> Take Photo
+                            </button>
+                            <button type="button" onClick={handleLocationShare} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
+                              <MapPin size={16} /> Share Location
+                            </button>
+                            <div className="h-px bg-gray-100 dark:bg-white/10 my-1"></div>
+                            <button type="button" onClick={() => imageInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
+                              <ImageIcon size={16} /> Image File
+                            </button>
+                            <button type="button" onClick={() => videoInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
+                              <Video size={16} /> Video File
+                            </button>
+                            <button type="button" onClick={() => docInputRef.current?.click()} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
+                              <FileText size={16} /> PDF / Document
+                            </button>
+                          </div>
+                        )}
+                      </div>
 
-                    <input 
-                      ref={textInputRef}
-                      type="text" 
-                      placeholder="Type a message..."
-                      value={newMessage}
-                      autoComplete="off"
-                      autoCorrect="off"
-                      autoCapitalize="sentences"
-                      spellCheck={false}
-                      onFocus={() => {
-                        setIsAttachmentMenuOpen(false);
-                        if (typeof window !== 'undefined') {
-                          window.scrollTo(0, 0);
-                          document.body.scrollTop = 0;
-                          requestAnimationFrame(() => {
+                      {/* Hidden inputs */}
+                      <input type="file" ref={imageInputRef} accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'image')} />
+                      <input type="file" ref={videoInputRef} accept="video/*" className="hidden" onChange={(e) => handleFileUpload(e, 'video')} />
+                      <input type="file" ref={docInputRef} accept=".pdf,.doc,.docx,.txt" className="hidden" onChange={(e) => handleFileUpload(e, 'document')} />
+
+                      <input 
+                        ref={textInputRef}
+                        type="text" 
+                        placeholder="Type a message..."
+                        value={newMessage}
+                        autoComplete="off"
+                        autoCorrect="off"
+                        autoCapitalize="sentences"
+                        spellCheck={false}
+                        onFocus={() => {
+                          setIsAttachmentMenuOpen(false);
+                          if (typeof window !== 'undefined') {
                             window.scrollTo(0, 0);
                             document.body.scrollTop = 0;
-                            scrollToBottom('auto');
-                          });
-                          setTimeout(() => {
-                            window.scrollTo(0, 0);
-                            document.body.scrollTop = 0;
-                            scrollToBottom('auto');
-                          }, 80);
-                        }
-                      }}
-                      onChange={(e) => {
-                        setNewMessage(e.target.value);
-                        handleTypingEvent();
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }
-                      }}
-                      className="flex-1 min-w-0 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-[16px] leading-normal caret-[#5a32fa] transition-colors bg-gray-50/70 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
-                    />
+                            requestAnimationFrame(() => {
+                              window.scrollTo(0, 0);
+                              document.body.scrollTop = 0;
+                              scrollToBottom('auto');
+                            });
+                            setTimeout(() => {
+                              window.scrollTo(0, 0);
+                              document.body.scrollTop = 0;
+                              scrollToBottom('auto');
+                            }, 80);
+                          }
+                        }}
+                        onChange={(e) => {
+                          setNewMessage(e.target.value);
+                          handleTypingEvent();
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendMessage();
+                          }
+                        }}
+                        className="flex-1 min-w-0 px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] font-medium text-[15px] sm:text-[16px] leading-normal caret-[#5a32fa] transition-colors bg-gray-50/80 dark:bg-white/5 text-gray-900 dark:text-white placeholder:text-gray-400"
+                      />
 
-                    {/* Right Corner Action: Dynamic Switcher (Mic vs Send) */}
-                    {newMessage.trim() ? (
-                      <button 
-                        key="chat-send-btn"
-                        type="button"
-                        onMouseDown={(e) => {
-                          // Prevent button touch from stealing text input focus
-                          e.preventDefault();
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }}
-                        aria-label="Send message"
-                        className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white transition-all shadow-md shadow-[#5a32fa]/30 shrink-0 active:scale-95"
-                      >
-                        <Send size={16} />
-                      </button>
-                    ) : (
-                      <button 
-                        key="chat-mic-btn"
-                        type="button"
-                        onClick={startVoiceRecord}
-                        aria-label="Record voice message"
-                        title="Tap to record voice message"
-                        className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-600 dark:text-gray-300 transition-all shrink-0 active:scale-90 active:bg-rose-500 active:text-white"
-                      >
-                        <Mic size={18} />
-                      </button>
-                    )}
-                  </form>
-                )}
+                      {/* Right Corner Action: Dynamic Switcher (Mic vs Send) */}
+                      {newMessage.trim() ? (
+                        <button 
+                          key="chat-send-btn"
+                          type="button"
+                          onMouseDown={(e) => {
+                            // Prevent button touch from stealing text input focus
+                            e.preventDefault();
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSendMessage();
+                          }}
+                          aria-label="Send message"
+                          className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white transition-all shadow-md shadow-[#5a32fa]/30 shrink-0 active:scale-95"
+                        >
+                          <Send size={16} />
+                        </button>
+                      ) : (
+                        <button 
+                          key="chat-mic-btn"
+                          type="button"
+                          onClick={startVoiceRecord}
+                          aria-label="Record voice message"
+                          title="Tap to record voice message"
+                          className="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/10 hover:bg-[#5a32fa] hover:text-white text-gray-600 dark:text-gray-300 transition-all shrink-0 active:scale-90 active:bg-rose-500 active:text-white"
+                        >
+                          <Mic size={18} />
+                        </button>
+                      )}
+                    </form>
+                  )}
+                </div>
               </div>
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#f8f9fa] dark:bg-[#0a0f1d]">
-              <div className="w-16 h-16 rounded-3xl bg-[#5a32fa]/10 text-[#5a32fa] flex items-center justify-center mb-4 shadow-sm">
-                <Sparkles size={28} />
+            /* Premium Empty State */
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#f8f9fc] dark:bg-[#0b0f19] bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px]">
+              <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center mb-5 shadow-xl shadow-[#5a32fa]/20 animate-in zoom-in duration-300">
+                <Sparkles size={36} />
               </div>
-              <h3 className="text-lg font-black text-gray-900 dark:text-white mb-1">Select a Conversation</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm">
-                Choose a contact from your inbox or start a direct message from any member profile.
+              <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">WIPA Direct Messenger</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm leading-relaxed mb-6">
+                Select a conversation from your inbox or reach out directly to members across the network.
               </p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-700 dark:text-gray-300 shadow-xs">
+                <ShieldCheck size={14} className="text-emerald-500" />
+                <span>End-to-End Encrypted</span>
+              </div>
             </div>
           )}
 
