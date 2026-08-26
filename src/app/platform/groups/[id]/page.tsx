@@ -336,13 +336,13 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
       const filePath = `posts/${fileName}`;
 
       const { data, error } = await supabase.storage
-        .from('posts')
+        .from('feed-media')
         .upload(filePath, file, { upsert: true });
 
       if (error) throw error;
 
       const { data: publicUrlData } = supabase.storage
-        .from('posts')
+        .from('feed-media')
         .getPublicUrl(filePath);
 
       setSelectedMediaUrl(publicUrlData.publicUrl);
