@@ -114,6 +114,7 @@ export default function PublicFooter() {
         <p>© {new Date().getFullYear()} Women&apos;s IP World Alliance (WIPA). All rights reserved.</p>
         <div className="flex items-center gap-6">
           <Link href="/privacy-policy" className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Privacy Policy</Link>
+          <Link href="/child-safety" className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Child Safety (CSAE)</Link>
           <Link href="/about" className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Terms of Service</Link>
           <Link href="/contact" className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Security</Link>
         </div>
