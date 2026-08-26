@@ -618,7 +618,13 @@ export default function WellnessPage() {
                       </div>
 
                       <div className="absolute bottom-5 left-5 right-5">
-                        <h3 className="text-xl sm:text-2xl font-black text-white mb-2 leading-tight group-hover:text-[#00d26a] transition-colors">
+                        <h3 className={`${
+                          (resource.title || '').length > 60
+                            ? 'text-base sm:text-lg'
+                            : (resource.title || '').length > 40
+                            ? 'text-lg sm:text-xl'
+                            : 'text-xl sm:text-2xl'
+                        } font-black text-white mb-2 leading-tight group-hover:text-[#00d26a] transition-colors line-clamp-2`}>
                           {resource.title}
                         </h3>
                         <div className="flex items-center justify-between text-xs text-white/90 font-medium">

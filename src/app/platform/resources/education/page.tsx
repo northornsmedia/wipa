@@ -288,41 +288,53 @@ export default function EducationHubPage() {
             <Star className="text-indigo-500 fill-indigo-500" size={24} /> Featured Masterclasses
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {featuredResources.map(resource => (
-              <Link key={resource.id} href={`/platform/resources/education/${resource.id}`} className="group relative rounded-[2rem] overflow-hidden aspect-[4/3] md:aspect-[16/10] bg-gray-100 dark:bg-[#111] border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500">
-                <img src={resource.image} alt={resource.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent" />
-                
-                {/* Play Button Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-indigo-900/20 backdrop-blur-sm">
-                  <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-2xl shadow-indigo-600/50 scale-75 group-hover:scale-100 transition-transform duration-500">
-                    <PlayCircle size={40} className="ml-1" />
-                  </div>
-                </div>
+            {featuredResources.map(resource => {
+              const titleLength = (resource.title || '').length;
+              const titleSizeClass = 
+                titleLength > 85 
+                  ? 'text-lg sm:text-xl md:text-2xl lg:text-[1.65rem]'
+                  : titleLength > 50 
+                  ? 'text-xl sm:text-2xl md:text-3xl'
+                  : 'text-2xl sm:text-3xl md:text-4xl';
 
-                <div className="absolute top-0 right-0 p-6">
-                   {resource.university && (
-                      <div className="bg-white/90 dark:bg-black/50 backdrop-blur-md rounded-2xl p-2 px-4 border border-white/20">
-                        <img src={resource.university.logoLight} alt={resource.university.name} className="h-8 w-auto object-contain dark:hidden" />
-                        <img src={resource.university.logoDark} alt={resource.university.name} className="h-8 w-auto object-contain hidden dark:block" />
-                      </div>
-                   )}
-                </div>
+              return (
+                <Link key={resource.id} href={`/platform/resources/education/${resource.id}`} className="group relative rounded-[2rem] overflow-hidden min-h-[360px] sm:min-h-[380px] md:min-h-[400px] aspect-[4/3] md:aspect-[16/10] bg-gray-100 dark:bg-[#111] border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500">
+                  <img src={resource.image} alt={resource.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent" />
+                  
+                  {/* Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-indigo-900/20 backdrop-blur-sm">
+                    <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-2xl shadow-indigo-600/50 scale-75 group-hover:scale-100 transition-transform duration-500">
+                      <PlayCircle size={40} className="ml-1" />
+                    </div>
+                  </div>
 
-                <div className="absolute bottom-0 left-0 right-0 p-8 md:p-10">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="bg-white/20 backdrop-blur-md text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full border border-white/30">
-                      {resource.type}
-                    </span>
-                    <span className="text-white/80 text-sm font-bold">{resource.time}</span>
+                  <div className="absolute top-0 right-0 p-6">
+                     {resource.university && (
+                        <div className="bg-white/90 dark:bg-black/50 backdrop-blur-md rounded-2xl p-2 px-4 border border-white/20">
+                          <img src={resource.university.logoLight} alt={resource.university.name} className="h-8 w-auto object-contain dark:hidden" />
+                          <img src={resource.university.logoDark} alt={resource.university.name} className="h-8 w-auto object-contain hidden dark:block" />
+                        </div>
+                     )}
                   </div>
-                  <h3 className="text-3xl md:text-4xl font-black text-white mb-2 leading-tight drop-shadow-md group-hover:text-indigo-200 transition-colors">{resource.title}</h3>
-                  <div className="flex items-center gap-2 text-indigo-300 font-bold text-base">
-                    <GraduationCap size={18} /> {resource.expert}
+
+                  <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 md:p-8">
+                    <div className="flex items-center gap-3 mb-2.5 sm:mb-3">
+                      <span className="bg-white/20 backdrop-blur-md text-white text-[11px] sm:text-xs font-black uppercase tracking-widest px-3.5 py-1 rounded-full border border-white/30">
+                        {resource.type}
+                      </span>
+                      <span className="text-white/80 text-xs sm:text-sm font-bold">{resource.time}</span>
+                    </div>
+                    <h3 className={`${titleSizeClass} font-black text-white mb-2 leading-snug md:leading-tight drop-shadow-md group-hover:text-indigo-200 transition-colors line-clamp-3`}>
+                      {resource.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs sm:text-sm md:text-base">
+                      <GraduationCap size={16} /> {resource.expert}
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}
