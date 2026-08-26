@@ -14,19 +14,24 @@ AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.profiles
-    WHERE id = auth.uid() AND is_admin = true
+    WHERE id = auth.uid() 
+      AND (
+        is_admin = true 
+        OR is_subadmin = true 
+        OR role IN ('admin', 'subadmin') 
+        OR admin_role IN ('admin', 'subadmin')
+      )
   );
 END;
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.is_admin() FROM public, anon;
-GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, anon, service_role;
 
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'protect_wipa_recommended') THEN
     ALTER FUNCTION public.protect_wipa_recommended() SET search_path = public, pg_temp;
-    REVOKE EXECUTE ON FUNCTION public.protect_wipa_recommended() FROM public, anon, authenticated;
+    GRANT EXECUTE ON FUNCTION public.protect_wipa_recommended() TO authenticated, service_role;
   END IF;
 
   IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'are_users_connected') THEN

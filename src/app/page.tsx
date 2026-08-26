@@ -158,7 +158,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <main className="min-h-screen bg-white dark:bg-[#060608] text-slate-900 dark:text-white flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw] relative selection:bg-pink-500 selection:text-white transition-colors duration-300">
+      <main className="min-h-screen bg-white dark:bg-[#060608] text-slate-900 dark:text-white flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw] relative selection:bg-pink-500 selection:text-white transition-colors duration-300 no-scrollbar scrollbar-hide">
         
         {/* Background Glowing Wavy Line Gradient SVG (Adapts to Light and Dark) */}
         <div className="absolute top-16 left-0 right-0 w-full overflow-hidden pointer-events-none opacity-85 z-0">
@@ -203,14 +203,6 @@ export default function Home() {
             className="w-full max-w-5xl mx-auto relative flex flex-col items-center"
           >
             
-            {/* Top Glowing Floating Pill Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 px-4 py-1.5 mb-8 shadow-sm backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-[#ff2a70] animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-orange-500 to-purple-600 dark:from-pink-400 dark:via-orange-300 dark:to-purple-400">
-                Women&apos;s IP World Alliance Platform
-              </span>
-            </div>
-
             {/* Editorial Futuristic Headline */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-black text-slate-900 dark:text-white leading-[1.12] mb-6 w-full px-2 tracking-tight">
               <span className="block md:whitespace-nowrap">A Global, Empowering</span>

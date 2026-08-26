@@ -1,4 +1,5 @@
 import { getSupabaseServerClient } from './supabase-server';
+import { cleanIPNewsText, formatCleanSummary, formatCleanContent } from './ipNewsCleaner';
 
 const supabase = getSupabaseServerClient();
 
@@ -230,7 +231,7 @@ function parseRssFeed(xml: string): IPNewsItem[] {
     const rawTitle = titleMatch[1];
     const rawDesc = descMatch ? descMatch[1] : '';
     const cleanedTitleText = cleanTitle(rawTitle);
-    const cleanedDescText = cleanHtml(rawDesc).replace(/<[^>]*>/g, '').trim();
+    const cleanedDescText = cleanIPNewsText(rawDesc);
 
     if (!cleanedTitleText || cleanedTitleText.length < 15) continue;
     if (!isRelevantIPNews(cleanedTitleText, cleanedDescText)) continue;
@@ -240,25 +241,8 @@ function parseRssFeed(xml: string): IPNewsItem[] {
     const cover_image_url = CURATED_IP_COVERS[index % CURATED_IP_COVERS.length];
     const pubDate = pubDateMatch ? new Date(pubDateMatch[1]).toISOString() : new Date().toISOString();
 
-    const summaryText = cleanedDescText.length > 50 
-      ? cleanedDescText 
-      : `${cleanedTitleText}. Strategic developments highlight evolving legal frameworks and procedural updates for practitioners worldwide.`;
-
-    const formattedContent = `
-      <p class="mb-4 text-base leading-relaxed text-slate-700 dark:text-slate-300 font-medium">
-        ${summaryText}
-      </p>
-      <h3 class="text-xl font-bold mt-6 mb-3 text-slate-900 dark:text-white">Executive Analysis & Background</h3>
-      <p class="mb-4 text-base leading-relaxed text-slate-700 dark:text-slate-300">
-        This matter represents a notable development in ${subcategory.toUpperCase()} intellectual property administration. Legal and commercial stakeholders are closely evaluating the strategic impact on ongoing portfolio management, licensing arrangements, and dispute mitigation strategies.
-      </p>
-      <h3 class="text-xl font-bold mt-6 mb-3 text-slate-900 dark:text-white">Key Takeaways for Practitioners</h3>
-      <ul class="list-disc pl-5 mb-4 space-y-2 text-slate-700 dark:text-slate-300">
-        <li><strong>Prosecution Strategy:</strong> Review pending portfolio filings to ensure alignment with prevailing examination baselines.</li>
-        <li><strong>Risk Assessment:</strong> Evaluate exposure across commercial contracts and IP agreements in affected jurisdictions.</li>
-        <li><strong>Cross-Border Coordination:</strong> Synchronize multi-jurisdictional filings to preempt potential priority or enforcement discrepancies.</li>
-      </ul>
-    `;
+    const summaryText = formatCleanSummary(cleanedDescText, cleanedTitleText);
+    const formattedContent = formatCleanContent('', cleanedTitleText, summaryText, subcategory);
 
     items.push({
       title: cleanedTitleText,

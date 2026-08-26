@@ -11,6 +11,7 @@ import {
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import { optimizeFeedUpload } from '@/lib/feedPerformance';
+import AiPostPromptModal from '@/components/AiPostPromptModal';
 
 const POPULAR_TOPICS = ['Patents', 'Trademarks', 'AI Law', 'Copyright', 'Litigation', 'Career Advice'];
 const POST_DRAFT_KEY = 'wipa_create_post_draft';
@@ -74,6 +75,8 @@ export default function CreatePostPage() {
   const [publishSuccess, setPublishSuccess] = useState(false);
   const [publishFailed, setPublishFailed] = useState(false);
   const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [isAiTyping, setIsAiTyping] = useState(false);
   const [showDraftDecision, setShowDraftDecision] = useState(false);
   const [isDraftRestored, setIsDraftRestored] = useState(false);
 
@@ -81,10 +84,20 @@ export default function CreatePostPage() {
   const videoInputRef = useRef<HTMLInputElement>(null);
   const docInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const typewriterTimerRef = useRef<NodeJS.Timeout | null>(null);
   const uploadedMediaRef = useRef<{ fingerprint: string; publicUrl: string } | null>(null);
   const pendingPostIdRef = useRef<string | null>(null);
 
-  // Auto-focus textarea on load
+  // Clear typewriter timer on unmount
+  useEffect(() => {
+    return () => {
+      if (typewriterTimerRef.current) {
+        clearInterval(typewriterTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Auto-focus textarea on load & handle URL parameters
   useEffect(() => {
     const savedDraft = localStorage.getItem(POST_DRAFT_KEY);
     if (savedDraft) {
@@ -93,6 +106,22 @@ export default function CreatePostPage() {
     }
     if (textareaRef.current) {
       textareaRef.current.focus();
+    }
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const typeParam = params.get('type');
+      const topicParam = params.get('topic');
+      if (topicParam) setSelectedTopic(topicParam);
+      if (typeParam === 'photo') {
+        setTimeout(() => imageInputRef.current?.click(), 300);
+      } else if (typeParam === 'video') {
+        setTimeout(() => videoInputRef.current?.click(), 300);
+      } else if (typeParam === 'doc') {
+        setTimeout(() => docInputRef.current?.click(), 300);
+      } else if (typeParam === 'ai') {
+        setTimeout(() => setIsAiModalOpen(true), 300);
+      }
     }
   }, []);
 
@@ -139,29 +168,50 @@ export default function CreatePostPage() {
     setUploadError(null);
   };
 
-  const handleAiDraft = async () => {
-    setIsAiGenerating(true);
-    try {
-      const topic = selectedTopic || 'Intellectual Property and technology innovation';
-      const prompt = `Draft a concise, high-engagement professional LinkedIn/community post about ${topic} from a modern IP legal expert's perspective. Include relevant hashtags.`;
-      
-      const res = await fetch('/api/proxy-ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, model: 'gemini-1.5-flash' })
-      });
-      
-      const data = await res.json();
-      if (data?.text) {
-        setPostContent(data.text);
-      } else {
-        setPostContent(`Excited to share insights on ${topic}! Navigating international IP protection requires strategic foresight and cross-border alignment. What key trends are you observing in your practice? #IPLaw #IntellectualProperty #WIPA`);
-      }
-    } catch (e) {
-      setPostContent(`Excited to share insights on ${selectedTopic || 'global IP trends'}! Navigating international IP protection requires strategic foresight and cross-border alignment. What key trends are you observing in your practice? #IPLaw #IntellectualProperty #WIPA`);
-    } finally {
-      setIsAiGenerating(false);
+  const handleAiDraft = () => {
+    setIsAiModalOpen(true);
+  };
+
+  const handleTypewriterDraft = (fullText: string) => {
+    if (!fullText) return;
+    
+    if (typewriterTimerRef.current) {
+      clearInterval(typewriterTimerRef.current);
+      typewriterTimerRef.current = null;
     }
+
+    setIsAiTyping(true);
+    setPostContent('');
+
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+
+    // Tokenize text into words / whitespace tokens for smooth streaming
+    const tokens = fullText.split(/(\s+)/);
+    let currentIdx = 0;
+    let accumulated = '';
+
+    const stepSpeedMs = Math.max(14, Math.min(26, Math.floor(1600 / tokens.length)));
+
+    typewriterTimerRef.current = setInterval(() => {
+      if (currentIdx < tokens.length) {
+        accumulated += tokens[currentIdx];
+        setPostContent(accumulated);
+        currentIdx++;
+
+        if (textareaRef.current) {
+          textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+        }
+      } else {
+        if (typewriterTimerRef.current) {
+          clearInterval(typewriterTimerRef.current);
+          typewriterTimerRef.current = null;
+        }
+        setIsAiTyping(false);
+        localStorage.setItem(POST_DRAFT_KEY, fullText);
+      }
+    }, stepSpeedMs);
   };
 
   const handlePublish = async () => {
@@ -443,16 +493,11 @@ export default function CreatePostPage() {
         <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar [scrollbar-width:none]">
           {/* AI Drafting Pill */}
           <button
-            onClick={handleAiDraft}
-            disabled={isAiGenerating}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#5a32fa]/10 via-[#ff90e8]/10 to-purple-500/10 border border-[#5a32fa]/30 text-[#5a32fa] dark:text-[#ff90e8] text-xs font-bold shrink-0 active:scale-95 transition-transform"
+            onClick={() => setIsAiModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#5a32fa]/10 hover:bg-[#5a32fa]/20 border border-[#5a32fa]/30 text-[#5a32fa] dark:text-purple-300 text-xs font-bold shrink-0 active:scale-95 transition-all"
           >
-            {isAiGenerating ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <img src="/lexiq.png" alt="LexIQ AI" className="w-4 h-4 object-contain rounded-full" />
-            )}
-            <span>{isAiGenerating ? 'Drafting...' : 'AI Assist'}</span>
+            <Sparkles size={14} className="text-[#5a32fa]" />
+            <span>AI Assist</span>
           </button>
 
           {/* Topic Selector */}
@@ -550,6 +595,14 @@ export default function CreatePostPage() {
           </div>
         )}
 
+        {/* Live AI Typing Indicator */}
+        {isAiTyping && (
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 border border-[#5a32fa]/30 text-[#5a32fa] dark:text-purple-300 text-xs font-bold animate-pulse mb-2 shadow-xs">
+            <Sparkles size={14} className="animate-spin text-[#5a32fa] dark:text-purple-300" />
+            <span>AI is writing your post live...</span>
+          </div>
+        )}
+
         {/* Main Textarea (Full-height, frictionless typing) */}
         <div className="flex-1 min-h-[220px] flex flex-col">
           <textarea
@@ -557,7 +610,14 @@ export default function CreatePostPage() {
             rows={8}
             placeholder="What's on your mind?"
             value={postContent}
-            onChange={(e) => setPostContent(e.target.value)}
+            onChange={(e) => {
+              if (isAiTyping && typewriterTimerRef.current) {
+                clearInterval(typewriterTimerRef.current);
+                typewriterTimerRef.current = null;
+                setIsAiTyping(false);
+              }
+              setPostContent(e.target.value);
+            }}
             className="w-full flex-1 bg-transparent text-base sm:text-lg text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none resize-none leading-relaxed border-none p-0 font-normal"
           />
         </div>
@@ -694,6 +754,15 @@ export default function CreatePostPage() {
           </div>
         </div>
       )}
+
+      {/* AI Post Prompt Modal */}
+      <AiPostPromptModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        onApplyDraft={handleTypewriterDraft}
+        initialTopic={selectedTopic || ''}
+        initialDraft={postContent}
+      />
 
     </div>
   );

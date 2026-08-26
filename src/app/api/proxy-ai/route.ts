@@ -179,3 +179,97 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to proxy AI site' }, { status: 500 });
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const { intention, tone, topic, rawDraft, prompt, text } = await request.json();
+    const openRouterKey = process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_NEMOTRON_KEY;
+    const geminiKey = process.env.GEMINI_API_KEY;
+
+    const userTopic = intention || topic || text || 'Key trends and strategic developments in Intellectual Property';
+    const userTone = tone || 'Thought Leadership';
+
+    const systemPrompt = `You are an elite AI post copilot for the Women's IP World Alliance (WIPA) professional platform.
+The author is an Intellectual Property professional, patent attorney, trademark counsel, or innovation leader.
+
+Your task: Write an engaging, high-impact, authentic community post (100 to 180 words) reflecting the user's specific intention and chosen tone.
+Guidelines:
+- Chosen Tone: ${userTone}
+- Style: Professional, articulate, clear paragraph breaks, natural prose, no robotic fluff.
+- Formatting: Do NOT use markdown stars/asterisks like **bold** or *italic*. Write in clean, elegant, ready-to-publish plain text suitable for social feeds.
+- End with 2-4 strategic hashtags (e.g. #IPLaw, #Patents, #Trademarks, #WomenInIP, #AILaw, #Innovation, #WIPA).
+- Output ONLY the clean post content. Do not include quotes, meta explanations, or introductory labels like "Here is your post:".`;
+
+    const userPrompt = prompt || `User's Post Idea / Intention: "${userTopic}"
+${rawDraft ? `Existing notes to polish / incorporate: "${rawDraft}"` : ''}
+Tone / Angle: ${userTone}`;
+
+    // 1. Prioritize OpenRouter with openai/gpt-4o-mini
+    if (openRouterKey) {
+      try {
+        const orRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${openRouterKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://platform.womensipalliance.com",
+            "X-Title": "WIPA Platform AI Copilot"
+          },
+          body: JSON.stringify({
+            model: "openai/gpt-4o-mini",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 600
+          })
+        });
+
+        if (orRes.ok) {
+          const data = await orRes.json();
+          const generated = data.choices?.[0]?.message?.content?.trim();
+          if (generated) {
+            return NextResponse.json({ text: generated });
+          }
+        } else {
+          const errData = await orRes.json().catch(() => ({}));
+          console.warn('OpenRouter non-200 response:', orRes.status, errData);
+        }
+      } catch (orErr) {
+        console.warn('OpenRouter API call failed, trying Gemini fallback:', orErr);
+      }
+    }
+
+    // 2. Direct Gemini Fallback
+    if (geminiKey) {
+      try {
+        const { GoogleGenerativeAI } = await import('@google/generative-ai');
+        const genAI = new GoogleGenerativeAI(geminiKey);
+        const model = genAI.getGenerativeModel({
+          model: 'gemini-1.5-flash',
+          systemInstruction: systemPrompt
+        });
+
+        const result = await model.generateContent(userPrompt);
+        const generatedText = result.response.text()?.trim();
+        if (generatedText) {
+          return NextResponse.json({ text: generatedText });
+        }
+      } catch (geminiErr) {
+        console.warn('Gemini API call failed:', geminiErr);
+      }
+    }
+
+    // 3. Smart contextual fallback
+    const fallbackText = `Navigating modern ${userTopic} demands strategic foresight, cross-border alignment, and rigorous portfolio governance.\n\nAs regulatory frameworks and litigation standards evolve, what key strategies is your team prioritizing this quarter?\n\n#IPLaw #IntellectualProperty #WomenInIP #Innovation #WIPA`;
+    return NextResponse.json({ text: fallbackText });
+
+  } catch (error: any) {
+    console.error('AI Post Generation error:', error);
+    return NextResponse.json(
+      { error: error.message || 'Failed to generate post' },
+      { status: 500 }
+    );
+  }
+}

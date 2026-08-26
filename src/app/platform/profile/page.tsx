@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { optimizeFeedUpload } from '@/lib/feedPerformance';
+import FormattedPostText from '@/components/FormattedPostText';
 
 export default function ProfilePage() {
   const { user, setUser } = useAppStore();
@@ -814,11 +815,13 @@ export default function ProfilePage() {
 
                           {/* LinkedIn-Style Content */}
                           {post.content && (
-                            <div className="mb-3">
-                              <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
-                                {post.content.length > 180 && !expandedPosts.has(post.id)
-                                  ? `${post.content.slice(0, 180)}...`
-                                  : post.content}
+                            <div className="mb-3 text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed">
+                              <div>
+                                <FormattedPostText 
+                                  text={post.content.length > 180 && !expandedPosts.has(post.id)
+                                    ? `${post.content.slice(0, 180)}...`
+                                    : post.content} 
+                                />
                                 {post.content.length > 180 && !expandedPosts.has(post.id) && (
                                   <button
                                     onClick={() => toggleExpandPost(post.id)}
@@ -827,7 +830,7 @@ export default function ProfilePage() {
                                     ...read more
                                   </button>
                                 )}
-                              </p>
+                              </div>
                               {post.content.length > 180 && expandedPosts.has(post.id) && (
                                 <button
                                   onClick={() => toggleExpandPost(post.id)}

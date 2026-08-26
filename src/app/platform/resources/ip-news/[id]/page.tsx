@@ -19,6 +19,7 @@ import {
 import Link from 'next/link';
 import DOMPurify from 'dompurify';
 import { supabase } from '@/lib/supabase';
+import { formatCleanSummary, formatCleanContent, cleanIPNewsText } from '@/lib/ipNewsCleaner';
 
 export default function IPNewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
@@ -88,23 +89,16 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
   }
 
   // Fallback if item was not found in DB
-  const displayTitle = article?.title || "Global Intellectual Property Intelligence Briefing";
+  const rawTitle = article?.title || "Global Intellectual Property Intelligence Briefing";
+  const displayTitle = cleanIPNewsText(rawTitle) || "Global Intellectual Property Intelligence Briefing";
   const displayType = article?.resource_type || "Legal Update";
   const displayJurisdiction = article?.subcategory ? article.subcategory.toUpperCase() : "GLOBAL";
   const displayDate = article?.created_at 
     ? new Date(article.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : 'Recent Analysis';
   const displayReadTime = article?.read_time || "4 min read";
-  const displaySummary = article?.summary || article?.description || "In-depth legal breakdown and practice notes for intellectual property practitioners worldwide.";
-  const displayContent = article?.content || `
-    <p class="mb-4">This intelligence briefing covers strategic and procedural developments across international intellectual property registries and courts.</p>
-    <h3 class="text-xl font-bold mt-6 mb-3 text-slate-900 dark:text-white">Core Highlights & Practice Notes</h3>
-    <ul class="list-disc pl-5 mb-4 space-y-2 text-slate-700 dark:text-slate-300">
-      <li><strong>Portfolio Strategy:</strong> Review prosecution timelines and filing classifications in response to current examination shifts.</li>
-      <li><strong>Dispute Mitigation:</strong> Evaluate freedom-to-operate frameworks and standard essential licensing provisions across relevant markets.</li>
-      <li><strong>Enforcement Coordination:</strong> Maintain consistent multi-jurisdictional evidentiary records for brand protection and patent enforcement.</li>
-    </ul>
-  `;
+  const displaySummary = formatCleanSummary(article?.summary || article?.description, displayTitle);
+  const displayContent = formatCleanContent(article?.content, displayTitle, displaySummary, article?.subcategory);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] pb-24 text-slate-900 dark:text-slate-100">

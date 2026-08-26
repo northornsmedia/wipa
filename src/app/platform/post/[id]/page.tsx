@@ -6,6 +6,7 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';
 import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import ProgressiveFeedImage from '@/components/ProgressiveFeedImage';
+import FormattedPostText from '@/components/FormattedPostText';
 import { supabase } from '@/lib/supabase';
 
 export default function SharedPostPage() {
@@ -54,7 +55,11 @@ export default function SharedPostPage() {
             {author?.avatar_url ? <img src={author.avatar_url} alt="" className="h-11 w-11 rounded-full object-cover" /> : <div className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-100 font-black text-[#6600FF]">{author?.full_name?.charAt(0) || 'W'}</div>}
             <div className="min-w-0"><h2 className="truncate font-black">{author?.full_name || 'WIPA Member'}</h2><p className="truncate text-xs text-gray-500">{author?.practice_area || 'WIPA'} · {formatDistanceToNow(parseISO(post.created_at), { addSuffix: true })}</p></div>
           </div>
-          {post.content && <p className="whitespace-pre-wrap py-5 text-[15px] leading-relaxed">{post.content}</p>}
+          {post.content && (
+            <div className="py-5 text-[15px] leading-relaxed text-gray-900 dark:text-gray-100">
+              <FormattedPostText text={post.content} />
+            </div>
+          )}
           {post.media_urls?.map((url: string, index: number) => post.media_type === 'video' ? (
             <video key={url} src={url} controls playsInline preload="metadata" className="mb-3 w-full rounded-2xl bg-black" />
           ) : (

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Providers from "@/lib/query-provider";
+import ThemeSynchronizer from "@/components/ThemeSynchronizer";
 import ImageProtection from "@/components/ImageProtection";
 import TelemetryTracker from "@/components/TelemetryTracker";
 import PWARegister from "@/components/PWARegister";
@@ -83,6 +84,7 @@ export default function RootLayout({
           <TelemetryTracker />
         </Suspense>
         <Providers>
+          <ThemeSynchronizer />
           {children}
         </Providers>
         <NativeBackHandler />

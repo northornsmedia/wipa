@@ -19,6 +19,8 @@ import FeedStoriesCarousel from '@/components/FeedStoriesCarousel';
 import MobileCommentDrawer from '@/components/MobileCommentDrawer';
 import ProgressiveFeedImage from '@/components/ProgressiveFeedImage';
 import FeedShareSheet from '@/components/FeedShareSheet';
+import FeedQuickComposer from '@/components/FeedQuickComposer';
+import FormattedPostText from '@/components/FormattedPostText';
 import { optimizeFeedUpload, readCachedFeed, writeCachedFeed } from '@/lib/feedPerformance';
 
 const FEED_PAGE_SIZE = 8;
@@ -655,7 +657,7 @@ export default function PlatformPage() {
         <div className="flex flex-1 w-full max-w-full min-w-0">
           
           {/* MAIN CONTENT AREA */}
-          <main className="flex-1 w-full max-w-full min-w-0 bg-[#f8f9fa] dark:bg-[#070b14] md:bg-slate-50/50 md:dark:bg-[#0b1120] p-0 sm:p-6 md:p-8 flex flex-col xl:flex-row gap-0 xl:gap-8">
+          <main className="flex-1 w-full max-w-full min-w-0 bg-[#f8f9fa] dark:bg-[#070b14] md:bg-slate-50/50 md:dark:bg-[#0b1120] p-0 sm:p-6 md:p-8 flex flex-col xl:flex-row gap-0 xl:gap-8 items-start">
             
             {/* LEFT COLUMN */}
             <div className="flex-1 w-full max-w-full min-w-0 flex justify-center pb-36 sm:pb-24 md:pb-20 box-border">
@@ -753,44 +755,8 @@ export default function PlatformPage() {
                 </div>
               </div>
 
-              {/* DESKTOP PREMIUM COMPOSER (DESKTOP ONLY) */}
-              <div 
-                className="hidden md:flex bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] border border-white dark:border-white/10 flex-col overflow-hidden cursor-pointer hover:shadow-[0_20px_40px_rgb(0,0,0,0.12)] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 relative group z-20"
-                onClick={() => router.push('/platform/create-post')}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 pointer-events-none rounded-[2rem]" />
-                
-                <div className="relative z-10 flex gap-4 p-6 border-b border-gray-100 dark:border-white/5">
-                  <div className="relative shrink-0">
-                    {user?.avatar_url ? (
-                      <img src={user.avatar_url} alt={user?.name || 'User'} className="relative z-10 w-12 h-12 rounded-full object-cover border-2 border-white dark:border-[#1e293b]" />
-                    ) : (
-                      <div className="relative z-10 w-12 h-12 rounded-full bg-gradient-to-br from-[#ff90e8] to-[#ff4b4b] text-white flex items-center justify-center font-black text-lg border-2 border-white dark:border-[#1e293b]">
-                        {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex-1 bg-gray-50/50 dark:bg-black/20 hover:bg-white dark:hover:bg-white/5 transition-all duration-300 rounded-2xl p-4 min-h-[80px] border border-gray-200/50 dark:border-white/10 group-hover:border-[#5a32fa]/30 group-hover:shadow-[0_0_20px_rgba(90,50,250,0.1)] flex items-center">
-                    <span className="text-gray-400 dark:text-gray-500 font-bold text-lg tracking-tight group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">Start a conversation...</span>
-                  </div>
-                </div>
-                
-                <div className="relative z-10 flex items-center justify-between gap-2 px-6 py-4 bg-gray-50/30 dark:bg-[#020617]/30">
-                  {[
-                    { icon: ImageIcon, label: 'Photo', color: 'text-[#00d26a]', bg: 'hover:bg-[#00d26a]/10' },
-                    { icon: Video, label: 'Video', color: 'text-[#ff4b4b]', bg: 'hover:bg-[#ff4b4b]/10' },
-                    { icon: Calendar, label: 'Event', color: 'text-[#ffc900]', bg: 'hover:bg-[#ffc900]/10' },
-                    { icon: Paperclip, label: 'Attach', color: 'text-[#5a32fa]', bg: 'hover:bg-[#5a32fa]/10' },
-                    { icon: Smile, label: 'Feeling', color: 'text-[#ff90e8]', bg: 'hover:bg-[#ff90e8]/10' },
-                  ].map((btn, i) => (
-                    <button key={i} className={`flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 p-3 ${btn.bg} text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-2xl transition-all duration-300 ease-out group/btn hover:-translate-y-1 hover:shadow-sm font-bold text-[13px]`}>
-                      <btn.icon size={20} className={`${btn.color} transition-transform duration-300 group-hover/btn:scale-110 group-hover/btn:rotate-[-5deg]`} />
-                      <span className="hidden sm:block">{btn.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* DESKTOP ENHANCED COMPOSER */}
+              <FeedQuickComposer user={user} />
 
               {/* DESKTOP STORIES (DESKTOP ONLY) */}
               <div className="hidden md:block">
@@ -951,8 +917,8 @@ export default function PlatformPage() {
                       ) : (
                         post.content && (
                           <div className="mb-2.5">
-                            <p className="text-[13px] sm:text-[14px] text-gray-900 dark:text-gray-100 leading-relaxed font-normal whitespace-pre-wrap">
-                              {displayContent}
+                            <div className="text-[13px] sm:text-[14px] text-gray-900 dark:text-gray-100 leading-relaxed font-normal">
+                              <FormattedPostText text={displayContent} />
                               {isLongText && !isExpanded && (
                                 <button 
                                   onClick={() => toggleExpandPost(post.id)} 
@@ -961,7 +927,7 @@ export default function PlatformPage() {
                                   ...read more
                                 </button>
                               )}
-                            </p>
+                            </div>
                             {isLongText && isExpanded && (
                               <button 
                                 onClick={() => toggleExpandPost(post.id)} 
@@ -1125,8 +1091,8 @@ export default function PlatformPage() {
               </div>
             </div>
 
-            {/* RIGHT SIDEBAR */}
-            <aside className="hidden xl:flex flex-col w-[320px] shrink-0 space-y-6 pb-20">
+            {/* RIGHT SIDEBAR - Sticky & Independent Scroll */}
+            <aside className="hidden xl:flex flex-col w-[320px] shrink-0 space-y-6 sticky top-6 self-start max-h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar overscroll-contain pb-10 pr-1">
                 
                 {/* Dynamic Advertisement Space */}
                 <AdSlot placement="sidebar_banner" />

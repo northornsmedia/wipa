@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 const DEFAULT_MOCK_VIDEO = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
 
 import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
+import FormattedPostText from '@/components/FormattedPostText';
 
 export default function PublicProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
@@ -612,11 +613,13 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
 
                         {/* LinkedIn-Style Content */}
                         {post.content && (
-                          <div className="mb-3">
-                            <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
-                              {post.content.length > 180 && !expandedPosts.has(post.id)
-                                ? `${post.content.slice(0, 180)}...`
-                                : post.content}
+                          <div className="mb-3 text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed">
+                            <div>
+                              <FormattedPostText 
+                                text={post.content.length > 180 && !expandedPosts.has(post.id)
+                                  ? `${post.content.slice(0, 180)}...`
+                                  : post.content} 
+                              />
                               {post.content.length > 180 && !expandedPosts.has(post.id) && (
                                 <button
                                   onClick={() => toggleExpandPost(post.id)}
@@ -625,7 +628,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                                   ...read more
                                 </button>
                               )}
-                            </p>
+                            </div>
                             {post.content.length > 180 && expandedPosts.has(post.id) && (
                               <button
                                 onClick={() => toggleExpandPost(post.id)}

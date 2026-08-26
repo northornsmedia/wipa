@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { cleanIPNewsText, formatCleanSummary } from '@/lib/ipNewsCleaner';
 
 const JURISDICTION_FILTERS = [
   { id: 'all', name: 'All Jurisdictions' },
@@ -71,20 +72,24 @@ export default function IPNewsHubPage() {
         .limit(200);
 
       if (!error && data && data.length > 0) {
-        const mapped = data.map((d: any) => ({
-          id: d.id,
-          title: d.title,
-          slug: d.slug || d.id,
-          type: d.resource_type || "News",
-          jurisdiction: d.tags?.[1] || d.tags?.[0] || (d.subcategory ? d.subcategory.toUpperCase() : "Global"),
-          subcategory: d.subcategory || "global",
-          date: d.created_at ? new Date(d.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently',
-          featured: d.is_featured || false,
-          image: d.cover_image_url || "/resourceimg1.jpg",
-          summary: d.summary || d.description || "",
-          read_time: d.read_time || "4 min read",
-          tags: d.tags || ['Intellectual Property', 'Legal']
-        }));
+        const mapped = data.map((d: any) => {
+          const cleanTitle = cleanIPNewsText(d.title) || d.title;
+          const cleanSummary = formatCleanSummary(d.summary || d.description, cleanTitle);
+          return {
+            id: d.id,
+            title: cleanTitle,
+            slug: d.slug || d.id,
+            type: d.resource_type || "News",
+            jurisdiction: d.tags?.[1] || d.tags?.[0] || (d.subcategory ? d.subcategory.toUpperCase() : "Global"),
+            subcategory: d.subcategory || "global",
+            date: d.created_at ? new Date(d.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently',
+            featured: d.is_featured || false,
+            image: d.cover_image_url || "/resourceimg1.jpg",
+            summary: cleanSummary,
+            read_time: d.read_time || "4 min read",
+            tags: d.tags || ['Intellectual Property', 'Legal']
+          };
+        });
         setNewsItems(mapped);
       }
     } catch (err) {

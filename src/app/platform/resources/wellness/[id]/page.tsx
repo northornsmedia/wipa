@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
   ExternalLink, 
@@ -19,9 +19,12 @@ import {
   Building2, 
   Award, 
   ArrowRight, 
-  BookOpen
+  BookOpen,
+  Loader2,
+  FileText
 } from 'lucide-react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase-browser';
 
 function InstagramIcon({ size = 16, className = '' }: { size?: number; className?: string }) {
   return (
@@ -43,7 +46,7 @@ function InstagramIcon({ size = 16, className = '' }: { size?: number; className
   );
 }
 
-const DETAILS_DB = {
+const DETAILS_DB: Record<string, any> = {
   'jel-1to1': {
     title: "1:1 Nutrition & Lifestyle Support",
     type: "Service",
@@ -124,7 +127,7 @@ const DETAILS_DB = {
       "Vagus Nerve & Nervous System Resets",
       "Community Connection & Stress Relief"
     ],
-    linkUrl: "https://www.budding-minds.com/specialoffer-service-with-jel",
+    linkUrl: "https://www.budding-minds.com",
     linkText: "View Upcoming Wellness Events",
     tags: ["Sensory Events", "In-Person", "Community", "Somatic"]
   },
@@ -151,7 +154,7 @@ const DETAILS_DB = {
       "Somatic Practices & Restorative Movement",
       "Stepping Away from Everyday Career Pressures"
     ],
-    linkUrl: "https://www.budding-minds.com/s-projects-basic-1",
+    linkUrl: "https://www.budding-minds.com",
     linkText: "Explore Upcoming International Retreats",
     tags: ["Retreats", "International", "Nourishment", "Restoration"]
   },
@@ -198,20 +201,20 @@ const DETAILS_DB = {
     ],
     linkUrl: "https://www.budding-minds.com",
     linkText: "Start Movement Session",
-    tags: ["Video", "Mobility", "Physical Health"]
+    tags: ["Quick Reset", "Physical", "Ergonomics"]
   },
   'client-boundaries': {
     title: "Setting Boundaries with Demanding Clients",
     type: "Guide",
     expert: "Marcus Thorne",
-    expertRole: "Legal Practice Consultant & Executive Coach",
-    price: "Free Resource",
+    expertRole: "Executive Career & Boundaries Coach",
+    price: "Free Guide",
     image: "/resourceimg3.jpg",
-    description: "Learn practical communication scripts and operational boundaries to protect your personal time while strengthening client trust and professional reputation.",
+    description: "Scripts and mental frameworks for protecting personal time and managing client expectations without compromising reputation or quality of service.",
     includes: [
-      "Written 15-minute executive guide",
-      "Email and communication templates for urgent out-of-hours requests",
-      "Boundary-setting frameworks for legal practitioners"
+      "Word-for-word email and phone templates for challenging conversations",
+      "Boundary-setting algorithms for out-of-hours emergencies",
+      "Techniques for setting client expectations from engagement day one"
     ],
     areasOfFocus: [
       "Work-Life Balance",
@@ -231,9 +234,74 @@ DETAILS_DB['jel-events'] = DETAILS_DB['budding-minds-events'];
 
 export default function WellnessDetailRoute({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
-  const data = DETAILS_DB[id] || DETAILS_DB['jel-1to1'];
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const isBuddingMinds = data.expert.includes('Budding Minds');
+  useEffect(() => {
+    async function loadItem() {
+      try {
+        // Query by id OR slug
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        
+        let query = supabase.from('resources').select('*');
+        if (isUUID) {
+          query = query.eq('id', id);
+        } else {
+          query = query.or(`slug.eq.${id},id.eq.${id}`);
+        }
+
+        const { data: dbItem, error } = await query.maybeSingle();
+
+        if (dbItem) {
+          setData({
+            title: dbItem.title,
+            type: dbItem.resource_type || dbItem.type || "Wellness Offering",
+            expert: dbItem.author_name || "Budding Minds · Jel",
+            expertRole: dbItem.author_title || dbItem.organization || "Wellness Specialist",
+            price: "Included / Special Rates Available",
+            image: dbItem.cover_image_url || "/jel.jpg",
+            partnerHubUrl: "/platform/resources/wellness/budding-minds",
+            description: dbItem.description || dbItem.content || dbItem.summary,
+            content: dbItem.content || dbItem.description || dbItem.summary,
+            includes: [
+              "Comprehensive consultation and evidence-based guidance",
+              "Personalized wellbeing strategies tailored to your lifestyle",
+              "Practical daily habits and actionable takeaway resources",
+              "Direct expert support and follow-up guidance"
+            ],
+            areasOfFocus: [
+              dbItem.subcategory ? dbItem.subcategory.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) : "Whole-Person Wellness",
+              "Evidence-Based Health Optimization",
+              "Stress Reduction & Resilience"
+            ],
+            linkUrl: dbItem.external_url || dbItem.url || "https://www.budding-minds.com",
+            linkText: dbItem.external_url ? "Book or Access Offering" : "Explore Wellness Offering",
+            tags: Array.isArray(dbItem.tags) && dbItem.tags.length > 0 ? dbItem.tags : ["Wellness", "Wellbeing"]
+          });
+        } else if (DETAILS_DB[id]) {
+          setData(DETAILS_DB[id]);
+        } else {
+          setData(DETAILS_DB['jel-1to1']);
+        }
+      } catch (e) {
+        console.error("Error loading wellness details:", e);
+        setData(DETAILS_DB[id] || DETAILS_DB['jel-1to1']);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadItem();
+  }, [id]);
+
+  if (loading || !data) {
+    return (
+      <div className="min-h-screen bg-[#f4f6f9] dark:bg-[#0a0a0f] flex items-center justify-center">
+        <Loader2 className="animate-spin text-[#00d26a]" size={36} />
+      </div>
+    );
+  }
+
+  const isBuddingMinds = data.expert && data.expert.includes('Budding Minds');
 
   return (
     <div className="min-h-screen bg-[#f4f6f9] dark:bg-[#0a0a0f] text-slate-900 dark:text-white font-sans transition-colors duration-300 pb-24">
@@ -271,7 +339,7 @@ export default function WellnessDetailRoute({ params }: { params: Promise<{ id: 
               <span className="bg-[#00d26a]/10 text-[#00d26a] font-black text-xs px-3.5 py-1.5 rounded-full border border-[#00d26a]/20">
                 {data.type}
               </span>
-              {data.tags && data.tags.map(tag => (
+              {data.tags && data.tags.map((tag: string) => (
                 <span key={tag} className="bg-pink-500/10 text-pink-500 font-bold text-xs px-3 py-1.5 rounded-full border border-pink-500/20">
                   {tag}
                 </span>
@@ -299,53 +367,29 @@ export default function WellnessDetailRoute({ params }: { params: Promise<{ id: 
                   href="https://www.instagram.com/buddingminds__" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-pink-500 hover:text-pink-600 bg-pink-50 dark:bg-pink-950/30 px-3 py-1.5 rounded-xl border border-pink-100 dark:border-pink-500/20 transition-colors"
+                  className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-pink-500 hover:text-pink-600 bg-pink-50 dark:bg-pink-950/30 px-3 py-1.5 rounded-full border border-pink-200 dark:border-pink-500/20"
                 >
                   <InstagramIcon size={14} /> @buddingminds__
                 </a>
               )}
             </div>
 
-            {/* Main Image */}
-            <div className="rounded-[2.5rem] overflow-hidden aspect-[16/9] mb-10 shadow-lg border border-gray-200 dark:border-white/10">
-              <img src={data.image} alt={data.title} className="w-full h-full object-cover object-top" />
-            </div>
-
-            {/* Description */}
-            <div className="bg-white/80 dark:bg-[#161622]/80 backdrop-blur-xl rounded-[2rem] p-6 sm:p-8 border border-gray-200 dark:border-white/10 mb-8 shadow-sm">
-              <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white mb-4">About this Offering</h2>
-              <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
+            {/* Overview / Description */}
+            <div className="bg-white/70 dark:bg-[#161622]/70 backdrop-blur-xl rounded-[2.5rem] p-6 sm:p-8 border border-gray-200 dark:border-white/10 shadow-sm mb-8">
+              <h2 className="text-xl font-black text-gray-900 dark:text-white mb-4">About this Offering</h2>
+              <p className="text-gray-700 dark:text-gray-300 font-medium leading-relaxed text-sm sm:text-base whitespace-pre-line">
                 {data.description}
               </p>
             </div>
 
-            {/* What's Included */}
-            {data.includes && (
-              <div className="bg-white/80 dark:bg-[#161622]/80 backdrop-blur-xl rounded-[2rem] p-6 sm:p-8 border border-gray-200 dark:border-white/10 mb-8 shadow-sm">
-                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                  <ShieldCheck size={20} className="text-[#00d26a]" /> What&apos;s Included & What to Expect
-                </h3>
-                <ul className="space-y-3.5">
-                  {data.includes.map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-gray-700 dark:text-gray-300 font-medium text-sm sm:text-base">
-                      <CheckCircle2 size={18} className="text-[#00d26a] shrink-0 mt-0.5" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Areas of Focus */}
+            {/* Key Focus Areas */}
             {data.areasOfFocus && (
-              <div className="bg-white/80 dark:bg-[#161622]/80 backdrop-blur-xl rounded-[2rem] p-6 sm:p-8 border border-gray-200 dark:border-white/10 mb-8 shadow-sm">
-                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Sparkles size={20} className="text-[#00d26a]" /> Key Areas of Focus
-                </h3>
+              <div className="bg-white/70 dark:bg-[#161622]/70 backdrop-blur-xl rounded-[2.5rem] p-6 sm:p-8 border border-gray-200 dark:border-white/10 shadow-sm mb-8">
+                <h2 className="text-xl font-black text-gray-900 dark:text-white mb-4">Core Areas of Focus</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {data.areasOfFocus.map((area, idx) => (
-                    <div key={idx} className="p-3.5 rounded-xl bg-gray-50 dark:bg-[#1e1e2c] border border-gray-100 dark:border-white/5 text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#00d26a] shrink-0" />
+                  {data.areasOfFocus.map((area: string, idx: number) => (
+                    <div key={idx} className="flex items-start gap-2 text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-200 p-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                      <Sparkles size={16} className="text-[#00d26a] shrink-0 mt-0.5" />
                       <span>{area}</span>
                     </div>
                   ))}
@@ -353,110 +397,67 @@ export default function WellnessDetailRoute({ params }: { params: Promise<{ id: 
               </div>
             )}
 
-            {/* Budding Minds Practitioner Bio */}
-            {isBuddingMinds && (
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-[2rem] p-6 sm:p-8 border border-emerald-200/60 dark:border-emerald-500/20">
-                <div className="flex items-center gap-3 mb-4">
-                  <Award size={22} className="text-[#00d26a]" />
-                  <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white">About Jel & Budding Minds</h3>
-                </div>
-                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium leading-relaxed mb-5">
-                  Jel is a qualified Nutritional Therapist specialising in gut and hormone health, with additional training in nervous system support and polyvagal-informed approaches. Her work brings together nutrition, lifestyle and nervous system support to help women better understand the relationship between their physical health, stress levels and overall wellbeing.
-                </p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Link 
-                    href="/platform/resources/wellness/budding-minds" 
-                    className="bg-[#00d26a] text-white text-xs font-black px-4 py-2.5 rounded-xl inline-flex items-center gap-1.5 shadow-md hover:bg-[#00c060] transition-colors"
-                  >
-                    View Full Budding Minds Hub <ArrowRight size={14} />
-                  </Link>
-                  <a 
-                    href="https://www.budding-minds.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="bg-white dark:bg-[#1a1a26] text-gray-900 dark:text-white text-xs font-bold px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 inline-flex items-center gap-1.5 shadow-sm"
-                  >
-                    <Globe size={14} className="text-[#00d26a]" /> budding-minds.com
-                  </a>
-                  <a 
-                    href="https://www.instagram.com/buddingminds__" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-pink-500 font-bold text-xs px-3 py-2 inline-flex items-center gap-1.5"
-                  >
-                    <InstagramIcon size={14} /> @buddingminds__
-                  </a>
+            {/* What is Included */}
+            {data.includes && (
+              <div className="bg-white/70 dark:bg-[#161622]/70 backdrop-blur-xl rounded-[2.5rem] p-6 sm:p-8 border border-gray-200 dark:border-white/10 shadow-sm">
+                <h2 className="text-xl font-black text-gray-900 dark:text-white mb-4">What is Included</h2>
+                <div className="space-y-3">
+                  {data.includes.map((inc: string, idx: number) => (
+                    <div key={idx} className="flex items-start gap-3 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <CheckCircle2 size={16} className="text-[#00d26a] shrink-0 mt-0.5" />
+                      <span>{inc}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
 
           </div>
 
-          {/* Sidebar CTA Card */}
+          {/* Sidebar Booking / Action Card */}
           <div className="lg:col-span-4">
-            <div className="sticky top-24 bg-white/90 dark:bg-[#161622]/90 backdrop-blur-2xl rounded-[2.5rem] p-6 sm:p-8 border border-gray-200 dark:border-white/10 shadow-2xl space-y-6">
+            <div className="sticky top-20 space-y-6">
               
-              <div>
-                <div className="text-[11px] font-black uppercase tracking-wider text-gray-400 mb-1">Pricing & Access</div>
-                <div className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">{data.price}</div>
+              <div className="bg-white/80 dark:bg-[#161622]/80 backdrop-blur-2xl rounded-[2.5rem] p-6 sm:p-8 border border-gray-200 dark:border-white/10 shadow-xl text-center relative overflow-hidden">
+                <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-5 border-4 border-[#00d26a] shadow-lg">
+                  <img src={data.image} alt={data.expert} className="w-full h-full object-cover object-top" />
+                </div>
+
+                <span className="inline-block bg-[#00d26a]/15 text-[#00d26a] font-bold text-xs px-3.5 py-1 rounded-full mb-3">
+                  {data.price}
+                </span>
+
+                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">{data.title}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-6">Delivered by {data.expert}</p>
+
+                <a 
+                  href={data.linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-[#00d26a] hover:bg-[#00c060] text-white py-4 rounded-2xl font-black text-sm shadow-lg shadow-[#00d26a]/25 hover:shadow-xl hover:shadow-[#00d26a]/40 hover:-translate-y-0.5 transition-all inline-flex items-center justify-center gap-2 mb-3"
+                >
+                  {data.linkText} <ExternalLink size={16} />
+                </a>
+
+                {isBuddingMinds && (
+                  <Link 
+                    href="/platform/resources/wellness/budding-minds"
+                    className="w-full bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-900 dark:text-white py-3.5 rounded-2xl font-bold text-xs transition-colors inline-flex items-center justify-center gap-1.5"
+                  >
+                    View All Budding Minds Services <ArrowRight size={13} />
+                  </Link>
+                )}
               </div>
 
-              <a 
-                href={data.linkUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-full bg-[#00d26a] text-white py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2 hover:bg-[#00c060] shadow-xl shadow-[#00d26a]/25 hover:shadow-2xl hover:shadow-[#00d26a]/40 hover:-translate-y-0.5 transition-all text-center"
-              >
-                {data.linkText} <ExternalLink size={16} />
-              </a>
-
-              {isBuddingMinds && (
-                <div className="space-y-2.5 pt-2 border-t border-gray-100 dark:border-white/5">
-                  <div className="text-[11px] font-black uppercase tracking-wider text-gray-400 mb-2">Budding Minds Links</div>
-                  <a 
-                    href="https://www.budding-minds.com/copy-of-services" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-full bg-gray-50 dark:bg-[#1e1e2c] hover:bg-gray-100 dark:hover:bg-[#28283a] text-gray-800 dark:text-white p-3 rounded-xl text-xs font-bold flex items-center justify-between transition-colors border border-gray-100 dark:border-white/5"
-                  >
-                    <span>1:1 Support & Consultations</span>
-                    <ExternalLink size={13} className="text-[#00d26a]" />
-                  </a>
-                  <a 
-                    href="https://www.budding-minds.com/specialoffer-service-with-jel" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-full bg-gray-50 dark:bg-[#1e1e2c] hover:bg-gray-100 dark:hover:bg-[#28283a] text-gray-800 dark:text-white p-3 rounded-xl text-xs font-bold flex items-center justify-between transition-colors border border-gray-100 dark:border-white/5"
-                  >
-                    <span>Wellness Events with Jel</span>
-                    <ExternalLink size={13} className="text-[#00d26a]" />
-                  </a>
-                  <a 
-                    href="https://www.budding-minds.com/s-projects-basic-1" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-full bg-gray-50 dark:bg-[#1e1e2c] hover:bg-gray-100 dark:hover:bg-[#28283a] text-gray-800 dark:text-white p-3 rounded-xl text-xs font-bold flex items-center justify-between transition-colors border border-gray-100 dark:border-white/5"
-                  >
-                    <span>International Retreats</span>
-                    <ExternalLink size={13} className="text-[#00d26a]" />
-                  </a>
-                  <a 
-                    href="https://www.instagram.com/buddingminds__" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="w-full bg-gray-50 dark:bg-[#1e1e2c] hover:bg-gray-100 dark:hover:bg-[#28283a] text-gray-800 dark:text-white p-3 rounded-xl text-xs font-bold flex items-center justify-between transition-colors border border-gray-100 dark:border-white/5"
-                  >
-                    <span className="flex items-center gap-1.5 text-pink-500">
-                      <InstagramIcon size={14} /> @buddingminds__
-                    </span>
-                    <ExternalLink size={13} className="text-pink-500" />
-                  </a>
+              {/* Safe & Evidence-Based Notice */}
+              <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-medium space-y-2">
+                <div className="flex items-center gap-2 font-bold text-emerald-900 dark:text-emerald-200">
+                  <ShieldCheck size={16} className="text-[#00d26a]" /> Evidence-Informed Wellbeing
                 </div>
-              )}
-
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 text-center leading-relaxed pt-2">
-                Exclusive wellness partner resources curated for WIPA members.
-              </p>
+                <p className="leading-relaxed">
+                  All wellness resources and partner collaborations on WIPA adhere to professional standards in nutritional science and nervous system somatic care.
+                </p>
+              </div>
 
             </div>
           </div>
@@ -464,7 +465,6 @@ export default function WellnessDetailRoute({ params }: { params: Promise<{ id: 
         </div>
 
       </div>
-
     </div>
   );
 }
