@@ -283,53 +283,67 @@ export default function EducationHubPage() {
 
       {/* Featured Masterclasses - Cinematic Cards */}
       {featuredResources.length > 0 && (
-        <div className="px-6 max-w-7xl mx-auto mb-20">
+        <div className="px-4 sm:px-6 max-w-7xl mx-auto mb-16 sm:mb-20">
           <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             <Star className="text-indigo-500 fill-indigo-500" size={24} /> Featured Masterclasses
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-stretch w-full">
             {featuredResources.map(resource => {
               const titleLength = (resource.title || '').length;
               const titleSizeClass = 
                 titleLength > 85 
-                  ? 'text-lg sm:text-xl md:text-2xl lg:text-[1.65rem]'
+                  ? 'text-lg sm:text-xl md:text-2xl'
                   : titleLength > 50 
                   ? 'text-xl sm:text-2xl md:text-3xl'
                   : 'text-2xl sm:text-3xl md:text-4xl';
 
               return (
-                <Link key={resource.id} href={`/platform/resources/education/${resource.id}`} className="group relative rounded-[2rem] overflow-hidden min-h-[360px] sm:min-h-[380px] md:min-h-[400px] aspect-[4/3] md:aspect-[16/10] bg-gray-100 dark:bg-[#111] border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500">
-                  <img src={resource.image} alt={resource.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/60 to-transparent" />
+                <Link 
+                  key={resource.id} 
+                  href={`/platform/resources/education/${resource.id}`} 
+                  className="group relative rounded-[2rem] overflow-hidden min-h-[380px] sm:min-h-[420px] md:min-h-[440px] flex flex-col justify-between p-6 sm:p-8 bg-gray-950 border border-gray-200 dark:border-white/10 shadow-md hover:shadow-2xl hover:shadow-indigo-500/15 transition-all duration-500 w-full"
+                >
+                  {/* Background Image */}
+                  <img 
+                    src={resource.image} 
+                    alt={resource.title} 
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/65 to-black/30" />
                   
-                  {/* Play Button Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-indigo-900/20 backdrop-blur-sm">
-                    <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-2xl shadow-indigo-600/50 scale-75 group-hover:scale-100 transition-transform duration-500">
-                      <PlayCircle size={40} className="ml-1" />
-                    </div>
-                  </div>
-
-                  <div className="absolute top-0 right-0 p-6">
-                     {resource.university && (
-                        <div className="bg-white/90 dark:bg-black/50 backdrop-blur-md rounded-2xl p-2 px-4 border border-white/20">
-                          <img src={resource.university.logoLight} alt={resource.university.name} className="h-8 w-auto object-contain dark:hidden" />
-                          <img src={resource.university.logoDark} alt={resource.university.name} className="h-8 w-auto object-contain hidden dark:block" />
-                        </div>
-                     )}
-                  </div>
-
-                  <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 md:p-8">
-                    <div className="flex items-center gap-3 mb-2.5 sm:mb-3">
-                      <span className="bg-white/20 backdrop-blur-md text-white text-[11px] sm:text-xs font-black uppercase tracking-widest px-3.5 py-1 rounded-full border border-white/30">
+                  {/* Top Row: Badges & University Logo */}
+                  <div className="relative z-10 flex items-start justify-between gap-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="bg-white/20 backdrop-blur-md text-white text-[11px] sm:text-xs font-black uppercase tracking-widest px-3.5 py-1.5 rounded-full border border-white/30 shadow-sm">
                         {resource.type}
                       </span>
-                      <span className="text-white/80 text-xs sm:text-sm font-bold">{resource.time}</span>
+                      <span className="bg-black/40 backdrop-blur-md text-white/90 text-xs font-bold px-3 py-1.5 rounded-full border border-white/10">
+                        {resource.time}
+                      </span>
                     </div>
-                    <h3 className={`${titleSizeClass} font-black text-white mb-2 leading-snug md:leading-tight drop-shadow-md group-hover:text-indigo-200 transition-colors line-clamp-3`}>
+
+                    {resource.university && (
+                      <div className="bg-white/90 dark:bg-black/60 backdrop-blur-md rounded-2xl p-1.5 px-3 border border-white/20 shrink-0">
+                        <img src={resource.university.logoLight} alt={resource.university.name} className="h-6 sm:h-7 w-auto object-contain dark:hidden" />
+                        <img src={resource.university.logoDark} alt={resource.university.name} className="h-6 sm:h-7 w-auto object-contain hidden dark:block" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Center Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-indigo-950/30 backdrop-blur-[2px] pointer-events-none">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-2xl shadow-indigo-600/50 scale-75 group-hover:scale-100 transition-transform duration-500">
+                      <PlayCircle size={36} className="ml-1" />
+                    </div>
+                  </div>
+
+                  {/* Bottom Row: Dynamic Title & Instructor */}
+                  <div className="relative z-10 pt-8">
+                    <h3 className={`${titleSizeClass} font-black text-white mb-2.5 leading-snug drop-shadow-md group-hover:text-indigo-200 transition-colors line-clamp-3`}>
                       {resource.title}
                     </h3>
                     <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs sm:text-sm md:text-base">
-                      <GraduationCap size={16} /> {resource.expert}
+                      <GraduationCap size={16} className="text-indigo-400" /> {resource.expert}
                     </div>
                   </div>
                 </Link>
