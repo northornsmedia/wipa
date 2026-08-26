@@ -24,6 +24,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import ImageCropperModal from '@/components/ImageCropperModal';
+import { compressImage } from '@/lib/imageCompressor';
 
 interface GroupItem {
   id: string;
@@ -171,20 +172,35 @@ export default function GroupsPage() {
     }
   };
 
-  // Image Selection Handler (Triggers Cropper)
-  const handleSelectImageForCrop = (e: React.ChangeEvent<HTMLInputElement>, target: 'avatar' | 'cover') => {
+  // Image Selection Handler (Triggers Cropper with automatic pre-compression for huge images)
+  const handleSelectImageForCrop = async (e: React.ChangeEvent<HTMLInputElement>, target: 'avatar' | 'cover') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result) {
-        setRawImageForCrop(reader.result as string);
-        setCropTarget(target);
-        setCropperOpen(true);
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Auto-compress heavy files (2MB - 200MB+) to lightweight working image
+      const compressed = await compressImage(file, {
+        maxWidth: target === 'avatar' ? 1200 : 2400,
+        maxHeight: target === 'avatar' ? 1200 : 1200,
+        quality: 0.9,
+        mimeType: 'image/jpeg'
+      });
+
+      setRawImageForCrop(compressed.dataUrl);
+      setCropTarget(target);
+      setCropperOpen(true);
+    } catch (err) {
+      // Fallback to normal FileReader if canvas compression fails
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.result) {
+          setRawImageForCrop(reader.result as string);
+          setCropTarget(target);
+          setCropperOpen(true);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
     // Reset file input so re-selecting same image works
     e.target.value = '';
   };

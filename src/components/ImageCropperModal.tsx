@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { X, Check, ZoomIn, ZoomOut, RotateCw, Move, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { compressImage } from '@/lib/imageCompressor';
 
 interface ImageCropperModalProps {
   isOpen: boolean;
@@ -126,15 +127,26 @@ export default function ImageCropperModal({
     );
 
     canvas.toBlob(
-      (blob) => {
+      async (blob) => {
         if (blob) {
-          const previewUrl = URL.createObjectURL(blob);
-          onCropComplete(blob, previewUrl);
+          try {
+            const compressed = await compressImage(blob, {
+              maxWidth: exportWidth,
+              maxHeight: exportHeight,
+              quality: 0.85,
+              mimeType: 'image/jpeg',
+              maxSizeBytes: aspectRatio === 1 ? 200 * 1024 : 400 * 1024
+            });
+            onCropComplete(compressed.blob, compressed.dataUrl);
+          } catch (err) {
+            const previewUrl = URL.createObjectURL(blob);
+            onCropComplete(blob, previewUrl);
+          }
           onClose();
         }
       },
       'image/jpeg',
-      0.92
+      0.88
     );
   }, [aspectRatio, onCropComplete, onClose]);
 

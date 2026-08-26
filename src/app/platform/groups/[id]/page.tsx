@@ -34,6 +34,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
+import { compressPostMedia } from '@/lib/imageCompressor';
 
 interface GroupData {
   id: string;
@@ -326,20 +327,22 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
     }
   };
 
-  // Handle Image Upload
+  // Handle Image Upload with Automatic Smart Compression
   const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user?.id) return;
 
     setIsUploadingMedia(true);
     try {
-      const ext = file.name.split('.').pop();
-      const fileName = `group-${group?.id || 'post'}-${Date.now()}.${ext}`;
+      // Auto-compress heavy images (2MB-200MB) down to optimized WebP/JPEG (< 400KB)
+      const compressed = await compressPostMedia(file);
+
+      const fileName = `group-${group?.id || 'post'}-${Date.now()}.jpg`;
       const filePath = `posts/${fileName}`;
 
       const { data, error } = await supabase.storage
         .from('feed-media')
-        .upload(filePath, file, { upsert: true });
+        .upload(filePath, compressed.blob, { contentType: 'image/jpeg', upsert: true });
 
       if (error) throw error;
 
@@ -349,10 +352,11 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
       setSelectedMediaUrl(publicUrlData.publicUrl);
     } catch (err) {
-      console.error('Error uploading image:', err);
+      console.error('Error uploading compressed image:', err);
       alert('Failed to upload image. Please try again.');
     } finally {
       setIsUploadingMedia(false);
+      e.target.value = '';
     }
   };
 
