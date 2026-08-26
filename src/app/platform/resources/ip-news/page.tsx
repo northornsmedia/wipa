@@ -150,9 +150,11 @@ export default function IPNewsHubPage() {
   }, [loadNewsFromDatabase, triggerBackgroundSync]);
 
   const filteredNews = newsItems.filter(item => {
-    const matchesSearch = searchQuery === '' || 
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      item.summary.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = searchQuery.toLowerCase().trim();
+    const matchesSearch = q === '' || 
+      item.title.toLowerCase().includes(q) || 
+      item.summary.toLowerCase().includes(q) ||
+      (Array.isArray(item.tags) && item.tags.some((t: string) => t.toLowerCase().includes(q)));
     
     const matchesSub = activeSub === 'all' || item.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || item.type === typeFilter;
