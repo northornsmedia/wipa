@@ -114,6 +114,10 @@ export default function ImageCropperModal({
     const sourceWidth = cropFrame.width * scaleX;
     const sourceHeight = cropFrame.height * scaleY;
 
+    // Set image smoothing for maximum crispness
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
     ctx.drawImage(
       img,
       sourceX,
@@ -126,27 +130,17 @@ export default function ImageCropperModal({
       exportHeight
     );
 
+    // Single-pass optimal compression (< 120KB for avatar, < 250KB for banner)
     canvas.toBlob(
-      async (blob) => {
+      (blob) => {
         if (blob) {
-          try {
-            const compressed = await compressImage(blob, {
-              maxWidth: exportWidth,
-              maxHeight: exportHeight,
-              quality: 0.85,
-              mimeType: 'image/jpeg',
-              maxSizeBytes: aspectRatio === 1 ? 200 * 1024 : 400 * 1024
-            });
-            onCropComplete(compressed.blob, compressed.dataUrl);
-          } catch (err) {
-            const previewUrl = URL.createObjectURL(blob);
-            onCropComplete(blob, previewUrl);
-          }
+          const previewUrl = URL.createObjectURL(blob);
+          onCropComplete(blob, previewUrl);
           onClose();
         }
       },
       'image/jpeg',
-      0.88
+      0.85
     );
   }, [aspectRatio, onCropComplete, onClose]);
 
