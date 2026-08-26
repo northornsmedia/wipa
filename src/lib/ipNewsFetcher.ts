@@ -15,6 +15,8 @@ export interface IPNewsItem {
   cover_image_url: string;
   category: string;
   type: string;
+  organization?: string;
+  external_url?: string;
   is_featured: boolean;
   read_time: string;
   created_at: string;
@@ -241,8 +243,30 @@ function parseRssFeed(xml: string): IPNewsItem[] {
     const cover_image_url = CURATED_IP_COVERS[index % CURATED_IP_COVERS.length];
     const pubDate = pubDateMatch ? new Date(pubDateMatch[1]).toISOString() : new Date().toISOString();
 
+    const linkMatch = /<link>([\s\S]*?)<\/link>/.exec(itemXml);
+    const linkUrl = linkMatch ? linkMatch[1].trim() : '';
+
     const summaryText = formatCleanSummary(cleanedDescText, cleanedTitleText);
     const formattedContent = formatCleanContent('', cleanedTitleText, summaryText, subcategory);
+
+    let organization = 'The Global IP Magazine';
+    if (linkUrl.includes('globalipmagazine.com')) {
+      organization = 'The Global IP Magazine';
+    } else if (/reuters\.com/i.test(linkUrl) || /reuters/i.test(rawTitle)) {
+      organization = 'Reuters Legal';
+    } else if (/bloomberg\.com/i.test(linkUrl) || /bloomberg/i.test(rawTitle)) {
+      organization = 'Bloomberg Law';
+    } else if (/law360\.com/i.test(linkUrl) || /law360/i.test(rawTitle)) {
+      organization = 'Law360';
+    } else if (/uspto\.gov/i.test(linkUrl) || /uspto/i.test(rawTitle)) {
+      organization = 'USPTO Newsroom';
+    } else if (/wipo\.int/i.test(linkUrl) || /wipo/i.test(rawTitle)) {
+      organization = 'WIPO';
+    } else if (/epo\.org/i.test(linkUrl) || /epo/i.test(rawTitle)) {
+      organization = 'European Patent Office';
+    } else if (/gov\.uk/i.test(linkUrl) || /ukipo/i.test(rawTitle)) {
+      organization = 'UKIPO';
+    }
 
     items.push({
       title: cleanedTitleText,
@@ -255,6 +279,8 @@ function parseRssFeed(xml: string): IPNewsItem[] {
       cover_image_url,
       category: 'ip-news',
       type: 'ip_news',
+      organization,
+      external_url: linkUrl || 'https://www.globalipmagazine.com/news/breaking-ip-wire',
       is_featured: items.length < 5,
       read_time: `${Math.max(3, Math.ceil(cleanedTitleText.length / 25))} min read`,
       created_at: pubDate,

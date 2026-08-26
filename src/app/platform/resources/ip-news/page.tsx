@@ -18,7 +18,10 @@ import {
   Pause,
   Play,
   Flame,
-  Plus
+  Plus,
+  ExternalLink,
+  ShieldAlert,
+  ShieldCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -75,6 +78,12 @@ export default function IPNewsHubPage() {
         const mapped = data.map((d: any) => {
           const cleanTitle = cleanIPNewsText(d.title) || d.title;
           const cleanSummary = formatCleanSummary(d.summary || d.description, cleanTitle);
+          const createdDate = d.created_at ? new Date(d.created_at) : new Date();
+          const timeStr = createdDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const dateStr = d.created_at ? createdDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
+          const sourceOrg = d.organization || (d.tags?.includes('GlobalIPMagazineNews') ? 'The Global IP Magazine' : 'The Global IP Magazine');
+          const sourceLink = d.external_url || d.url || (d.slug && d.slug.includes('breaking-ip-wire') ? 'https://www.globalipmagazine.com/news/breaking-ip-wire' : `https://www.globalipmagazine.com/post/${d.slug || ''}`);
+
           return {
             id: d.id,
             title: cleanTitle,
@@ -82,7 +91,11 @@ export default function IPNewsHubPage() {
             type: d.resource_type || "News",
             jurisdiction: d.tags?.[1] || d.tags?.[0] || (d.subcategory ? d.subcategory.toUpperCase() : "Global"),
             subcategory: d.subcategory || "global",
-            date: d.created_at ? new Date(d.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently',
+            date: dateStr,
+            time: timeStr,
+            fullTimestamp: `${dateStr} • ${timeStr}`,
+            sourceName: sourceOrg,
+            sourceUrl: sourceLink,
             featured: d.is_featured || false,
             image: d.cover_image_url || "/resourceimg1.jpg",
             summary: cleanSummary,
@@ -460,10 +473,24 @@ export default function IPNewsHubPage() {
                           </p>
                         </div>
 
-                        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
-                          <span className="text-xs font-bold text-slate-400">
-                            {currentFeatured.date}
-                          </span>
+                        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5 flex flex-wrap items-center justify-between gap-3">
+                          <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                            <span className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
+                              <Clock size={13} className="text-orange-500" /> {currentFeatured.fullTimestamp || currentFeatured.date}
+                            </span>
+                            <span>•</span>
+                            <a 
+                              href={currentFeatured.sourceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1 font-bold text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-500 transition-colors"
+                              title="Open original reporting at publisher"
+                            >
+                              <span>Source: {currentFeatured.sourceName}</span>
+                              <ExternalLink size={12} />
+                            </a>
+                          </div>
                           <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform">
                             Read Full Briefing <ArrowRight size={15} />
                           </span>
@@ -522,6 +549,17 @@ export default function IPNewsHubPage() {
                 </div>
               )}
 
+              {/* Fair Use & Attribution Disclaimer Banner */}
+              <div className="rounded-2xl p-4 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40 flex items-start gap-3 text-xs text-amber-900 dark:text-amber-200 shadow-2xs">
+                <ShieldCheck size={18} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <span className="font-bold block">Publisher Attribution & Legal Safe Harbor</span>
+                  <p className="text-[11px] leading-relaxed text-amber-800/90 dark:text-amber-300/80">
+                    All original intellectual property reporting, trademarks, and excerpts belong exclusively to their respective publishers (including The Global IP Magazine, USPTO, WIPO, etc.). WIPA indexes these intelligence briefings solely for educational reference. Click any story's <strong>Source ↗</strong> link to view the complete reporting on the original publisher's platform.
+                  </p>
+                </div>
+              </div>
+
               {/* Grid of Stories */}
               {displayedListItems.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -560,11 +598,28 @@ export default function IPNewsHubPage() {
                         </p>
                       </div>
 
-                      <div className="pt-3 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs">
-                        <span className="font-semibold text-slate-400">{item.date}</span>
-                        <span className="inline-flex items-center gap-1 font-bold text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform">
-                          View Briefing <ArrowRight size={13} />
-                        </span>
+                      <div className="pt-3 border-t border-slate-100 dark:border-white/5 flex flex-col gap-2 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-slate-500 dark:text-slate-400 text-[11px] flex items-center gap-1">
+                            <Clock size={11} className="text-orange-500" /> {item.fullTimestamp || item.date}
+                          </span>
+                          <span className="inline-flex items-center gap-1 font-bold text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform text-xs">
+                            Briefing <ArrowRight size={12} />
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between border-t border-dashed border-slate-100 dark:border-white/5 pt-1.5">
+                          <a 
+                            href={item.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 hover:underline transition-colors"
+                            title={`Visit ${item.sourceName}`}
+                          >
+                            <span>Source: {item.sourceName}</span>
+                            <ExternalLink size={10} className="shrink-0" />
+                          </a>
+                        </div>
                       </div>
                     </Link>
                   ))}

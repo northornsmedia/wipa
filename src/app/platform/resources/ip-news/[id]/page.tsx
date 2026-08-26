@@ -14,7 +14,8 @@ import {
   CheckCircle2, 
   ShieldCheck,
   ChevronRight,
-  BookOpen
+  BookOpen,
+  ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
 import DOMPurify from 'dompurify';
@@ -93,10 +94,16 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
   const displayTitle = cleanIPNewsText(rawTitle) || "Global Intellectual Property Intelligence Briefing";
   const displayType = article?.resource_type || "Legal Update";
   const displayJurisdiction = article?.subcategory ? article.subcategory.toUpperCase() : "GLOBAL";
-  const displayDate = article?.created_at 
-    ? new Date(article.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  const createdDate = article?.created_at ? new Date(article.created_at) : null;
+  const displayDate = createdDate 
+    ? createdDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : 'Recent Analysis';
+  const displayTime = createdDate
+    ? createdDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : '';
   const displayReadTime = article?.read_time || "4 min read";
+  const displaySource = article?.organization || 'The Global IP Magazine';
+  const displayExternalUrl = article?.external_url || article?.url || (article?.slug && article.slug.includes('breaking-ip-wire') ? 'https://www.globalipmagazine.com/news/breaking-ip-wire' : `https://www.globalipmagazine.com/post/${article?.slug || ''}`);
   const displaySummary = formatCleanSummary(article?.summary || article?.description, displayTitle);
   const displayContent = formatCleanContent(article?.content, displayTitle, displaySummary, article?.subcategory);
 
@@ -124,16 +131,37 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
             <span className="inline-flex items-center gap-1.5 text-slate-400 text-[11px]">
               <Clock size={13} /> {displayReadTime}
             </span>
+            <a
+              href={displayExternalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/25 text-orange-600 dark:text-orange-400 text-[11px] font-bold hover:bg-orange-500 hover:text-white transition-colors"
+              title="Read full article on publisher site"
+            >
+              <span>Source: {displaySource}</span>
+              <ExternalLink size={11} />
+            </a>
           </div>
           
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-[1.1] tracking-tight mb-6">
             {displayTitle}
           </h1>
 
-          <div className="flex items-center justify-between border-t border-slate-100 dark:border-white/5 pt-6">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
-              <Calendar size={15} className="text-orange-500" />
-              <span>{displayDate}</span>
+          <div className="flex flex-wrap items-center justify-between border-t border-slate-100 dark:border-white/5 pt-6 gap-4">
+            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <div className="flex items-center gap-1.5">
+                <Calendar size={15} className="text-orange-500" />
+                <span>{displayDate}</span>
+              </div>
+              {displayTime && (
+                <>
+                  <span>•</span>
+                  <div className="flex items-center gap-1">
+                    <Clock size={13} className="text-slate-400" />
+                    <span>{displayTime}</span>
+                  </div>
+                </>
+              )}
             </div>
             
             <div className="flex items-center gap-2">
@@ -176,7 +204,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Detailed Analysis / Formatted HTML */}
-        <div className="bg-white dark:bg-[#0d1322] rounded-3xl p-7 md:p-10 shadow-xs border border-slate-200/80 dark:border-white/10 mb-12">
+        <div className="bg-white dark:bg-[#0d1322] rounded-3xl p-7 md:p-10 shadow-xs border border-slate-200/80 dark:border-white/10 mb-8">
           <h2 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-4">
             <Scale className="text-orange-500" size={20} /> Legal Intelligence & Practice Analysis
           </h2>
@@ -187,6 +215,28 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
               __html: typeof window !== 'undefined' ? DOMPurify.sanitize(displayContent) : displayContent 
             }}
           />
+        </div>
+
+        {/* Publisher Attribution & Legal Safe Harbor Card */}
+        <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-100 to-amber-50/40 dark:from-[#0d1322] dark:to-amber-950/20 border border-slate-200 dark:border-white/10 mb-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 shadow-xs">
+          <div className="space-y-1">
+            <h4 className="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <ShieldCheck size={18} className="text-emerald-500 shrink-0" />
+              Publisher Credit & Safe Harbor Notice
+            </h4>
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl">
+              This intelligence briefing was originally published by <strong className="text-slate-900 dark:text-white">{displaySource}</strong>. All original reporting, trademarks, and copyright remain the exclusive property of the publisher. WIPA provides these curated excerpts for educational & informational reference.
+            </p>
+          </div>
+          <a
+            href={displayExternalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold text-xs shadow-md transition-all shrink-0"
+          >
+            <span>Read Original Article</span>
+            <ExternalLink size={14} />
+          </a>
         </div>
 
         {/* Related Intelligence Briefings */}
