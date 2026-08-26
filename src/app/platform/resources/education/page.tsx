@@ -21,87 +21,6 @@ const CONTENT_TYPES = [
   "Workshop"
 ];
 
-const MOCK_EDU_RESOURCES = [
-  {
-    id: 24,
-    title: "LL.M. in Intellectual Property (Online)",
-    type: "Online Degree",
-    topic: "Intellectual Property",
-    subcategory: "ip-strategy",
-    expert: "UNH Law Faculty",
-    time: "1-2 years",
-    featured: true,
-    university: {
-      logoLight: "/academic-partner-logo.svg",
-      logoDark: "/academic-partner-logo.svg",
-      name: "University of New Hampshire",
-      description: "A top-ranked powerhouse for intellectual property law education, producing leaders in the IP field for over 50 years."
-    },
-    image: "/resource3.jpg"
-  },
-  {
-    id: 25,
-    title: "Master's in Intellectual Property (Online)",
-    type: "Online Degree",
-    topic: "Intellectual Property",
-    subcategory: "patent-law",
-    expert: "UNH Law Faculty",
-    time: "1-2 years",
-    featured: true,
-    university: {
-      logoLight: "/academic-partner-logo.svg",
-      logoDark: "/academic-partner-logo.svg",
-      name: "University of New Hampshire",
-      description: "A top-ranked powerhouse for intellectual property law education, producing leaders in the IP field for over 50 years."
-    },
-    image: "/resourceimg1.jpg"
-  },
-  {
-    id: 3,
-    title: "Trademarks in the Digital Age",
-    type: "University Course",
-    topic: "Trademark Law",
-    subcategory: "trademark-law",
-    expert: "Dr. Amanda Lewis",
-    time: "8 weeks",
-    featured: false,
-    image: "/resourceimg2.jpg"
-  },
-  {
-    id: 4,
-    title: "Drafting Claims effectively",
-    type: "Workshop",
-    topic: "Patent Law",
-    subcategory: "patent-law",
-    expert: "Robert Smith Esq.",
-    time: "1 day",
-    featured: false,
-    image: "/resource3.jpg"
-  },
-  {
-    id: 5,
-    title: "Negotiation Skills for IP Lawyers",
-    type: "CPD Programme",
-    topic: "Career Skills",
-    subcategory: "career-skills",
-    expert: "Sarah Jenkins",
-    time: "3 CPD hours",
-    featured: false,
-    image: "/resourceimg1.jpg"
-  },
-  {
-    id: 6,
-    title: "IP Portfolio Management",
-    type: "Certification",
-    topic: "IP Strategy",
-    subcategory: "ip-strategy",
-    expert: "IP Institute",
-    time: "Self-paced",
-    featured: false,
-    image: "/resourceimg2.jpg"
-  }
-];
-
 import { supabase } from "@/lib/supabase";
 
 export default function EducationHubPage() {
@@ -110,15 +29,18 @@ export default function EducationHubPage() {
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dbResources, setDbResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchLiveEdu() {
+      setLoading(true);
       try {
         const { data, error } = await supabase
           .from("resources")
           .select("*")
           .eq("category", "education")
           .order("created_at", { ascending: false });
+
         if (!error && data && data.length > 0) {
           const mapped = data.map((d: any) => ({
             id: d.id,
@@ -137,10 +59,13 @@ export default function EducationHubPage() {
           }));
           setDbResources(mapped);
         } else {
-          setDbResources(MOCK_EDU_RESOURCES);
+          setDbResources([]);
         }
       } catch (err) {
-        setDbResources(MOCK_EDU_RESOURCES);
+        console.error("Error loading education resources:", err);
+        setDbResources([]);
+      } finally {
+        setLoading(false);
       }
     }
     fetchLiveEdu();
@@ -167,9 +92,7 @@ export default function EducationHubPage() {
     });
   }, []);
 
-  const resourcesToFilter = dbResources.length > 0 ? dbResources : MOCK_EDU_RESOURCES;
-
-  const filteredResources = resourcesToFilter.filter(r => {
+  const filteredResources = dbResources.filter(r => {
     const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesSub = activeSub === 'all' || r.subcategory === activeSub;
     const matchesType = typeFilter === 'All Types' || r.type === typeFilter;
@@ -282,7 +205,29 @@ export default function EducationHubPage() {
       </div>
 
       {/* Featured Masterclasses - Cinematic Cards */}
-      {featuredResources.length > 0 && (
+      {loading ? (
+        <div className="px-4 sm:px-6 max-w-7xl mx-auto mb-16 sm:mb-20">
+          <div className="h-8 w-64 bg-gray-200 dark:bg-white/10 rounded-xl animate-pulse mb-6" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-stretch w-full">
+            {[1, 2].map((i) => (
+              <div 
+                key={i} 
+                className="rounded-[2rem] overflow-hidden min-h-[380px] sm:min-h-[420px] md:min-h-[440px] flex flex-col justify-between p-6 sm:p-8 bg-gray-100 dark:bg-[#11141f] border border-gray-200 dark:border-white/10 animate-pulse w-full"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="h-6 w-24 bg-gray-300 dark:bg-white/10 rounded-full" />
+                  <div className="h-8 w-24 bg-gray-300 dark:bg-white/10 rounded-xl" />
+                </div>
+                <div className="space-y-3 pt-8">
+                  <div className="h-7 w-3/4 bg-gray-300 dark:bg-white/10 rounded-xl" />
+                  <div className="h-7 w-1/2 bg-gray-300 dark:bg-white/10 rounded-xl" />
+                  <div className="h-4 w-40 bg-gray-300 dark:bg-white/10 rounded-lg pt-2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : featuredResources.length > 0 ? (
         <div className="px-4 sm:px-6 max-w-7xl mx-auto mb-16 sm:mb-20">
           <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             <Star className="text-indigo-500 fill-indigo-500" size={24} /> Featured Masterclasses
@@ -351,7 +296,7 @@ export default function EducationHubPage() {
             })}
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Curriculum List */}
       <div className="px-6 max-w-7xl mx-auto">
