@@ -144,15 +144,23 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           });
 
           // Check if current user is member
-          if (user?.id) {
+          let effectiveUserId = user?.id;
+          if (!effectiveUserId) {
+            const { data: authData } = await supabase.auth.getUser();
+            effectiveUserId = authData?.user?.id;
+          }
+
+          if (effectiveUserId) {
             const { data: memberRow } = await supabase
               .from('group_members')
-              .select('id')
+              .select('user_id, role')
               .eq('group_id', data.id)
-              .eq('user_id', user.id)
+              .eq('user_id', effectiveUserId)
               .maybeSingle();
 
             setIsJoined(!!memberRow);
+          } else {
+            setIsJoined(false);
           }
 
           // Fetch group posts
@@ -241,7 +249,13 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
   // Toggle Join/Leave Group
   const handleToggleJoin = async () => {
-    if (!user?.id) {
+    let effectiveUserId = user?.id;
+    if (!effectiveUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      effectiveUserId = authData?.user?.id;
+    }
+
+    if (!effectiveUserId) {
       alert("Please log in to join this group.");
       return;
     }
@@ -259,7 +273,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
       if (nextState) {
         await supabase.from('group_members').insert({
           group_id: group.id,
-          user_id: user.id,
+          user_id: effectiveUserId,
           role: 'member'
         });
         await supabase.from('groups').update({
@@ -268,7 +282,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
       } else {
         await supabase.from('group_members').delete()
           .eq('group_id', group.id)
-          .eq('user_id', user.id);
+          .eq('user_id', effectiveUserId);
         await supabase.from('groups').update({
           members_count: Math.max(1, group.members_count - 1)
         }).eq('id', group.id);

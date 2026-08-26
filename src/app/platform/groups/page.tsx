@@ -96,12 +96,18 @@ export default function GroupsPage() {
         return;
       }
 
+      let effectiveUserId = user?.id;
+      if (!effectiveUserId) {
+        const { data: authData } = await supabase.auth.getUser();
+        effectiveUserId = authData?.user?.id;
+      }
+
       let userJoinedGroupIds = new Set<string>();
-      if (user?.id) {
+      if (effectiveUserId) {
         const { data: memberRows } = await supabase
           .from('group_members')
           .select('group_id')
-          .eq('user_id', user.id);
+          .eq('user_id', effectiveUserId);
 
         if (memberRows) {
           memberRows.forEach(row => userJoinedGroupIds.add(row.group_id));
@@ -139,7 +145,13 @@ export default function GroupsPage() {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!user?.id) {
+    let effectiveUserId = user?.id;
+    if (!effectiveUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      effectiveUserId = authData?.user?.id;
+    }
+
+    if (!effectiveUserId) {
       alert("Please log in to join groups.");
       return;
     }
@@ -163,7 +175,7 @@ export default function GroupsPage() {
       if (willJoin) {
         await supabase.from('group_members').insert({
           group_id: group.id,
-          user_id: user.id,
+          user_id: effectiveUserId,
           role: 'member'
         });
         await supabase.from('groups').update({
@@ -172,7 +184,7 @@ export default function GroupsPage() {
       } else {
         await supabase.from('group_members').delete()
           .eq('group_id', group.id)
-          .eq('user_id', user.id);
+          .eq('user_id', effectiveUserId);
         await supabase.from('groups').update({
           members_count: Math.max(1, group.members_count - 1)
         }).eq('id', group.id);
