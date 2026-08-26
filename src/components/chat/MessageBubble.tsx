@@ -214,7 +214,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
   return (
     <div 
       className={`group relative flex flex-col max-w-[85%] sm:max-w-[72%] transition-all duration-150 ${
-        isMe ? 'self-end items-end ml-auto' : 'self-start items-start mr-auto'
+        isMe 
+          ? 'self-end items-end ml-auto animate-message-fly-in-me origin-bottom-right' 
+          : 'self-start items-start mr-auto animate-message-fly-in-them origin-bottom-left'
       }`}
       onMouseLeave={() => setShowReactions(false)}
     >
