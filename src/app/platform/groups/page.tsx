@@ -114,6 +114,18 @@ export default function GroupsPage() {
         }
       }
 
+      // Query live member counts per group
+      const { data: allGroupMembers } = await supabase
+        .from('group_members')
+        .select('group_id');
+
+      const memberCountsMap: Record<string, number> = {};
+      if (allGroupMembers) {
+        allGroupMembers.forEach(m => {
+          memberCountsMap[m.group_id] = (memberCountsMap[m.group_id] || 0) + 1;
+        });
+      }
+
       const mapped: GroupItem[] = (dbGroups || []).map((g: any) => ({
         id: g.id,
         name: g.name,
@@ -124,7 +136,7 @@ export default function GroupsPage() {
         color: g.color || '#5a32fa',
         avatar_url: g.avatar_url || '',
         cover_url: g.cover_url || '',
-        members_count: g.members_count || 1,
+        members_count: Math.max(g.members_count || 1, memberCountsMap[g.id] || 1),
         isJoined: userJoinedGroupIds.has(g.id)
       }));
 

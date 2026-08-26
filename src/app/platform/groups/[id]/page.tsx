@@ -129,6 +129,15 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
         if (data) {
           const cover = data.cover_url || DEFAULT_GROUP_COVERS[data.slug] || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1400';
+          
+          // Query exact live member count
+          const { count: liveCount } = await supabase
+            .from('group_members')
+            .select('user_id', { count: 'exact', head: true })
+            .eq('group_id', data.id);
+
+          const finalInitialCount = Math.max(liveCount || 0, data.members_count || 1);
+
           setGroup({
             id: data.id,
             name: data.name,
@@ -139,7 +148,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             icon: data.icon || '👥',
             color: data.color || '#5a32fa',
             cover_url: cover,
-            members_count: data.members_count || 1,
+            members_count: finalInitialCount,
             created_at: data.created_at
           });
 
@@ -226,6 +235,11 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
   // 3. Fetch Group Members
   const loadGroupMembers = async (groupId: string) => {
     try {
+      const { count: exactCount } = await supabase
+        .from('group_members')
+        .select('user_id', { count: 'exact', head: true })
+        .eq('group_id', groupId);
+
       const { data } = await supabase
         .from('group_members')
         .select(`
@@ -233,14 +247,20 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
           profile:profiles(id, full_name, avatar_url, role, company, practice_area)
         `)
         .eq('group_id', groupId)
-        .limit(20);
+        .order('joined_at', { ascending: false })
+        .limit(100);
 
       if (data) {
-        setMembers(data.map((d: any) => ({
+        const mappedMembers = data.map((d: any) => ({
           ...d.profile,
           roleInGroup: d.role,
           joined_at: d.joined_at
-        })).filter(Boolean));
+        })).filter(Boolean);
+
+        setMembers(mappedMembers);
+
+        const realCount = Math.max(exactCount ?? mappedMembers.length, mappedMembers.length);
+        setGroup(prev => prev ? { ...prev, members_count: realCount } : null);
       }
     } catch (err) {
       console.error('Error loading members:', err);
