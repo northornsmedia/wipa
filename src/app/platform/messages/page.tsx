@@ -332,7 +332,9 @@ function MessagesContent() {
               messages: existingMessagesMap[String(c.id)] || []
             }));
 
-            useAppStore.getState().setCachedConversations(merged);
+            queueMicrotask(() => {
+              useAppStore.getState().setCachedConversations(merged);
+            });
             return merged;
           });
 
@@ -434,7 +436,9 @@ function MessagesContent() {
       const updated = prev.map(chat => 
         String(chat.id) === currentId ? { ...chat, unread: 0 } : chat
       );
-      useAppStore.getState().setCachedConversations(updated);
+      queueMicrotask(() => {
+        useAppStore.getState().setCachedConversations(updated);
+      });
       return updated;
     });
 
@@ -621,7 +625,9 @@ function MessagesContent() {
             };
             const others = prev.filter(chat => String(chat.id) !== currentChatId);
             const nextList = [updatedChat, ...others];
-            useAppStore.getState().setCachedConversations(nextList);
+            queueMicrotask(() => {
+              useAppStore.getState().setCachedConversations(nextList);
+            });
             return nextList;
           });
           
@@ -878,7 +884,9 @@ function MessagesContent() {
 
       const others = prev.filter(chat => String(chat.id) !== String(activeChatId));
       const nextList = [updatedChat, ...others];
-      useAppStore.getState().setCachedConversations(nextList);
+      queueMicrotask(() => {
+        useAppStore.getState().setCachedConversations(nextList);
+      });
       return nextList;
     });
 
@@ -1288,7 +1296,9 @@ function MessagesContent() {
       // 2. Remove from local state
       setConversations(prev => {
         const next = prev.filter(c => String(c.id) !== String(chatId));
-        useAppStore.getState().setCachedConversations(next);
+        queueMicrotask(() => {
+          useAppStore.getState().setCachedConversations(next);
+        });
         return next;
       });
 

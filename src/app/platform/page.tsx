@@ -209,8 +209,10 @@ export default function PlatformPage() {
           const merged = append
             ? [...current, ...nextPage.filter((post) => !current.some((existing) => existing.id === post.id))]
             : nextPage;
-          useAppStore.getState().setCachedFeedPosts(merged.slice(0, FEED_PAGE_SIZE));
-          void writeCachedFeed(merged);
+          queueMicrotask(() => {
+            useAppStore.getState().setCachedFeedPosts(merged.slice(0, FEED_PAGE_SIZE));
+            void writeCachedFeed(merged);
+          });
           return merged;
         });
 

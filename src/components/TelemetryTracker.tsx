@@ -35,7 +35,7 @@ export function trackEvent(eventName: string, metadata: Record<string, any> = {}
 export default function TelemetryTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { user } = useAppStore();
+  const user = useAppStore((state) => state.user);
   const lastTrackedPath = useRef<string>("");
 
   useEffect(() => {
