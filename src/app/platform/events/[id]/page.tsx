@@ -608,32 +608,6 @@ export default function EventDetailsPage() {
                   </div>
                 )}
 
-                {/* Currency Switcher Control Pill */}
-                {!isFree && (
-                  <div className="p-3 rounded-2xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 flex items-center justify-between shadow-sm">
-                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                      <DollarSign size={14} className="text-[#5a32fa]" /> Currency:
-                    </span>
-
-                    <div className="flex items-center gap-1">
-                      {CURRENCIES.map((c) => (
-                        <button
-                          key={c.code}
-                          type="button"
-                          onClick={() => setSelectedCurrency(c.code)}
-                          className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
-                            selectedCurrency === c.code
-                              ? 'bg-[#5a32fa] text-white shadow-sm scale-105'
-                              : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/20'
-                          }`}
-                        >
-                          {c.code}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* Attendee Statistics Box */}
                 <div className="p-4 rounded-2xl bg-white dark:bg-black/30 border border-slate-200 dark:border-white/10 flex items-center justify-between shadow-sm">
                   <div>
