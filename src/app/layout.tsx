@@ -40,9 +40,6 @@ export const metadata: Metadata = {
     apple: [
       { url: "/wipaoffm.png", sizes: "180x180", type: "image/png" }
     ]
-  },
-  other: {
-    "strix-verification": "strix-verify-536d356a852e88a3035f41cb267dc27d"
   }
 };
 
@@ -54,7 +51,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="strix-verification" content="strix-verify-536d356a852e88a3035f41cb267dc27d" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
