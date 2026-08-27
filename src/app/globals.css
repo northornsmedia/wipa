@@ -518,4 +518,39 @@ img, video {
   will-change: transform, opacity, filter;
 }
 
+/* ========================================================================= */
+/* INDUSTRIAL-GRADE ANTI-SCRAPING & EXTENSION PROTECTION SHIELD */
+/* ========================================================================= */
+img, video, [data-protected-media], .protected-media {
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+/* Invisible overlay shield that absorbs hover grabbers and right-clicks */
+.protected-image-wrapper {
+  position: relative;
+  display: inline-block;
+  user-select: none;
+}
+
+.protected-image-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.protected-image-wrapper img {
+  pointer-events: none !important;
+}
+
 

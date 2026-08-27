@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="genieIconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6" />
+      <stop offset="50%" stop-color="#673AB7" />
+      <stop offset="100%" stop-color="#4C1D95" />
+    </linearGradient>
+    <linearGradient id="sparkGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F472B6" />
+      <stop offset="100%" stop-color="#A855F7" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="64" height="64" rx="18" fill="url(#genieIconGrad)" />
+  
+  <!-- Spark / Genie AI mark inside -->
+  <path d="M32 14C32 24 43 32 43 32C43 32 32 40 32 50C32 40 21 32 21 32C21 32 32 24 32 14Z" fill="white" />
+  <circle cx="45" cy="18" r="4.5" fill="url(#sparkGrad2)" />
+  <circle cx="19" cy="45" r="3" fill="#E9D5FF" />
+</svg>

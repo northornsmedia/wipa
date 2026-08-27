@@ -20,12 +20,13 @@ const DEFAULT_IP_SERVICES = [
   },
   {
     id: "3022bf12-b177-4387-a478-1e86178adda2",
-    title: "Tech Way (AIP Genius)",
-    description: "Explore AI, technology and innovation transforming the way intellectual property professionals work.",
+    title: "Genie AI",
+    description: "AI-powered legal drafting, review and contract intelligence.",
     type: "ip_services",
-    url: "",
+    url: "/genie-ai-logo.svg",
     category: "tech-way",
-    subcategory: "AI & Automation"
+    slug: "genie-ai",
+    subcategory: "Legal AI & Contracts"
   },
   {
     id: "92eb3db7-9c95-4c01-ad32-f5c3fbe07538",
@@ -98,18 +99,15 @@ export default function IPServicesPage() {
           normal.push(item);
         });
 
-        // Ensure PSS is strictly first at index 0
-        const pssIndex = normal.findIndex(s => 
-          s.slug === 'pss-solutions' || 
-          s.title?.toLowerCase().includes('pss') || 
-          s.category === 'tech-operations'
-        );
-        
+        // Ensure PSS is strictly first at index 0 and Genie AI is second
         let sorted = [...normal];
-        if (pssIndex > 0) {
-          const [pssItem] = sorted.splice(pssIndex, 1);
-          sorted.unshift(pssItem);
-        }
+        sorted.sort((a, b) => {
+          if (a.slug === 'pss-solutions' || a.id === '821d981f-54f5-4d57-976f-6fd1cb998022') return -1;
+          if (b.slug === 'pss-solutions' || b.id === '821d981f-54f5-4d57-976f-6fd1cb998022') return 1;
+          if (a.slug === 'genie-ai' || a.id === '3022bf12-b177-4387-a478-1e86178adda2') return -1;
+          if (b.slug === 'genie-ai' || b.id === '3022bf12-b177-4387-a478-1e86178adda2') return 1;
+          return (a.display_order || 0) - (b.display_order || 0);
+        });
 
         setSplashServices(splash);
         setIpServices(sorted);

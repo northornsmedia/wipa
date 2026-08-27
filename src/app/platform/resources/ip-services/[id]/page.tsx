@@ -1,10 +1,43 @@
 'use client';
 
-import React, { use } from 'react';
-import { ArrowLeft, ArrowRight, Building, MapPin, Globe, Mail, Phone, Shield, FileText, CheckCircle2, Quote, Users, Map, Play, X, Calendar, Clock, Video } from 'lucide-react';
+import React, { use, useState, useEffect } from 'react';
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  Building, 
+  MapPin, 
+  Globe, 
+  Mail, 
+  Phone, 
+  Shield, 
+  FileText, 
+  CheckCircle2, 
+  Quote, 
+  Users, 
+  Map, 
+  Play, 
+  X, 
+  Calendar, 
+  Clock, 
+  Video, 
+  Sparkles, 
+  Copy, 
+  Check, 
+  ExternalLink, 
+  Bot, 
+  Zap, 
+  Award, 
+  Tag, 
+  Gift, 
+  Layers, 
+  FileCode,
+  Scale
+} from 'lucide-react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { IPServiceConfig, parseIPServiceConfig, DEFAULT_PSS_CONFIG, DEFAULT_GENIE_CONFIG } from '@/lib/ip-services-config';
 
-// Using the same mock data to find the specific company
+// Mock companies fallback database for IP Services directory
 const MOCK_COMPANIES = [
   {
     id: "pss-solutions",
@@ -44,7 +77,7 @@ const MOCK_COMPANIES = [
         description: "Join Nadine Stuttle and industry experts to explore how top organizations are leveraging new tech to streamline their intellectual property operations.", 
         date: "Nov 15, 2024", 
         time: "10:00 AM EST", 
-        status: "Upcoming",
+        status: "Upcoming", 
         image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=600&h=400",
         speakers: [
           { name: "Nadine Stuttle", role: "Founder & CEO, PSS Solutions", avatar: "/Nadine Stuttle Picture.jpg" }
@@ -106,6 +139,46 @@ const MOCK_COMPANIES = [
     }
   },
   {
+    id: "genie-ai",
+    name: "Genie AI",
+    type: "AI-Powered Legal Drafting & Contract Intelligence",
+    location: "London, UK & Worldwide (150+ Jurisdictions)",
+    website: "www.genieai.co",
+    landingPage: "https://www.genieai.co/partners/wipa",
+    promoCode: "WIPA",
+    offer: "50% off Genie Pro for your first 3 months",
+    sponsored: true,
+    logo: "/genie-ai-logo.svg",
+    icon: "/genie-icon.svg",
+    headline: "AI-powered legal drafting, review and contract intelligence.",
+    subheadline: "Genie AI helps legal and business teams draft, review, edit and negotiate contracts using purpose-built legal AI.",
+    quote: "Rather than operating as a general-purpose AI assistant, Genie is designed specifically for legal work and can work with an organisation's own templates, contract standards and playbooks.",
+    description: "Genie AI is a specialist legal AI platform designed to make contract work faster, more consistent and easier to manage. The platform supports teams across the contract lifecycle — from creating agreements and reviewing complex documents to identifying risks, negotiating terms and managing organisational legal knowledge.",
+    backedBy: ["Google Ventures", "Khosla Ventures"],
+    metrics: [
+      { label: "Active Users", value: "200,000+" },
+      { label: "Contract Types", value: "1,000+" },
+      { label: "Jurisdictions", value: "150+" },
+      { label: "Languages", value: "40+" }
+    ],
+    services: [
+      "AI Contract Drafting & Editing",
+      "Automated Legal Document & NDA Review",
+      "Risk Identification & Redlining",
+      "Playbooks & Custom Template Standards",
+      "IP Licensing & Assignment Agreements",
+      "NDAs & Commercial Deal Negotiation",
+      "Multi-Jurisdiction Compliance (150+)",
+      "Organisational Legal Knowledge Base"
+    ],
+    contact: {
+      phone: "+44 20 8068 5060",
+      email: "partnerships@genieai.co",
+      address: "Genie AI Ltd, London, United Kingdom"
+    },
+    locations: ["United Kingdom", "United States", "European Union", "150+ Jurisdictions Worldwide"]
+  },
+  {
     id: "tech-protect-llp",
     name: "TechProtect LLP",
     type: "Digital IP Specialists",
@@ -129,22 +202,112 @@ const MOCK_COMPANIES = [
 
 export default function CompanyProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
-  const company = MOCK_COMPANIES.find(c => c.id === resolvedParams.id) || MOCK_COMPANIES[0];
-  const [activeTab, setActiveTab] = React.useState('Overview');
-  const [selectedVideo, setSelectedVideo] = React.useState<string | null>(null);
+  const paramId = resolvedParams.id;
 
-  const TABS = ['Overview', 'Tech Operations', 'Videos', 'Articles', 'Webinars', 'Events'];
+  const [dbConfig, setDbConfig] = useState<IPServiceConfig | null>(null);
+  const [activeTab, setActiveTab] = useState('Overview');
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [selectedVersion, setSelectedVersion] = useState<'v1' | 'v2' | 'v3'>('v2');
+
+  // Fetch dynamic configuration from Supabase
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('resources')
+          .select('*')
+          .or(`id.eq.${paramId},slug.eq.${paramId}`)
+          .single();
+
+        if (data) {
+          setDbConfig(parseIPServiceConfig(data));
+        }
+      } catch (err) {
+        console.warn("Could not load dynamic service from DB, using defaults:", err);
+      }
+    };
+    fetchServiceData();
+  }, [paramId]);
+
+  // Merge database configuration with mock fallback
+  const mockCompany = MOCK_COMPANIES.find(c => 
+    c.id === paramId || 
+    (paramId === '3022bf12-b177-4387-a478-1e86178adda2' && c.id === 'genie-ai') ||
+    (paramId === 'genie-ai' && c.id === 'genie-ai') ||
+    (paramId === '821d981f-54f5-4d57-976f-6fd1cb998022' && c.id === 'pss-solutions')
+  ) || (paramId === 'genie-ai' ? DEFAULT_GENIE_CONFIG : DEFAULT_PSS_CONFIG);
+
+  const isGenie = paramId === 'genie-ai' || dbConfig?.slug === 'genie-ai' || paramId === '3022bf12-b177-4387-a478-1e86178adda2';
+  const isPss = paramId === 'pss-solutions' || dbConfig?.slug === 'pss-solutions' || paramId === '821d981f-54f5-4d57-976f-6fd1cb998022';
+
+  const company = {
+    id: dbConfig?.slug || mockCompany.id,
+    name: dbConfig?.title || (mockCompany as any).name || (mockCompany as any).title,
+    location: dbConfig?.location || (mockCompany as any).location || "Global",
+    website: dbConfig?.website || (mockCompany as any).website,
+    logo: dbConfig?.url || (mockCompany as any).logo,
+    description: dbConfig?.description || (mockCompany as any).description,
+    quote: dbConfig?.about?.quote || (mockCompany as any).quote,
+    services: dbConfig?.services || (mockCompany as any).services || DEFAULT_PSS_CONFIG.services || [],
+    pillarsTitle: dbConfig?.pillarsTitle || (mockCompany as any).pillarsTitle || DEFAULT_PSS_CONFIG.pillarsTitle,
+    pillarsSubtitle: dbConfig?.pillarsSubtitle || (mockCompany as any).pillarsSubtitle || DEFAULT_PSS_CONFIG.pillarsSubtitle,
+    pillars: dbConfig?.pillars || (mockCompany as any).pillars || DEFAULT_PSS_CONFIG.pillars,
+    videos: dbConfig?.videos || (mockCompany as any).videos,
+    articles: dbConfig?.articles || (mockCompany as any).articles,
+    webinars: dbConfig?.webinars || (mockCompany as any).webinars,
+    events: dbConfig?.events || (mockCompany as any).events,
+    locations: dbConfig?.expert?.locations || (mockCompany as any).locations,
+    contact: {
+      phone: dbConfig?.expert?.phone || (mockCompany as any).contact?.phone,
+      email: dbConfig?.expert?.email || (mockCompany as any).contact?.email,
+      address: dbConfig?.expert?.address || (mockCompany as any).contact?.address,
+    },
+    sponsored: dbConfig?.is_splash_sponsored ?? (mockCompany as any).sponsored,
+    theme: dbConfig?.theme || (isGenie ? DEFAULT_GENIE_CONFIG.theme : DEFAULT_PSS_CONFIG.theme),
+    hero: dbConfig?.hero || (isGenie ? DEFAULT_GENIE_CONFIG.hero : DEFAULT_PSS_CONFIG.hero),
+    backedBy: dbConfig?.backedBy || (mockCompany as any).backedBy || (isGenie ? DEFAULT_GENIE_CONFIG.backedBy : DEFAULT_PSS_CONFIG.backedBy),
+    about: dbConfig?.about || (isGenie ? DEFAULT_GENIE_CONFIG.about : DEFAULT_PSS_CONFIG.about),
+    metrics: dbConfig?.metrics || (isGenie ? DEFAULT_GENIE_CONFIG.metrics : DEFAULT_PSS_CONFIG.metrics),
+    offer: dbConfig?.offer || (isGenie ? DEFAULT_GENIE_CONFIG.offer : DEFAULT_PSS_CONFIG.offer),
+    versions: dbConfig?.versions || (isGenie ? DEFAULT_GENIE_CONFIG.versions : DEFAULT_PSS_CONFIG.versions),
+    featuresTitle: dbConfig?.featuresTitle || (isGenie ? DEFAULT_GENIE_CONFIG.featuresTitle : DEFAULT_PSS_CONFIG.featuresTitle),
+    featuresSubtitle: dbConfig?.featuresSubtitle || (isGenie ? DEFAULT_GENIE_CONFIG.featuresSubtitle : DEFAULT_PSS_CONFIG.featuresSubtitle),
+    features: dbConfig?.features || (isGenie ? DEFAULT_GENIE_CONFIG.features : DEFAULT_PSS_CONFIG.features),
+    expert: dbConfig?.expert || (isGenie ? DEFAULT_GENIE_CONFIG.expert : DEFAULT_PSS_CONFIG.expert),
+  };
+
+  const handleCopyPromoCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const TABS = isGenie
+    ? ['Overview', 'Legal AI & Features', 'WIPA Exclusive Offer']
+    : isPss
+    ? ['Overview', 'Tech Operations', 'Videos', 'Articles', 'Webinars', 'Events']
+    : dbConfig?.tabs || ['Overview', 'Capabilities', 'WIPA Exclusive Offer'];
+
+  const primaryColor = company.theme?.primaryColor || (isGenie ? '#7c3aed' : '#0284c7');
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden pb-20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 overflow-x-hidden pb-20">
       
       {/* Cinematic Header */}
       <div className="relative min-h-[480px] w-full flex flex-col justify-end pb-16 pt-40 overflow-hidden border-b border-slate-200 dark:border-white/10">
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-100 via-white to-slate-100 dark:from-[#082f49] dark:via-[#020617] dark:to-black z-0"></div>
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-sky-300/30 dark:bg-sky-600/20 rounded-full blur-[150px] pointer-events-none z-0 mix-blend-screen"></div>
+        <div className={`absolute inset-0 bg-gradient-to-br ${
+          company.theme?.gradientFrom || 'from-sky-100 dark:from-[#082f49]'
+        } via-white dark:via-[#020617] ${
+          company.theme?.gradientTo || 'to-slate-100 dark:to-black'
+        } z-0`}></div>
+        <div 
+          className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none z-0 mix-blend-screen opacity-30"
+          style={{ backgroundColor: primaryColor }}
+        ></div>
         
         <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 relative z-10 flex flex-col items-start justify-end h-full">
-          <Link href="/platform/resources/ip-services" className="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-bold mb-10 hover:-translate-x-1 transition-transform">
+          <Link href="/platform/resources/ip-services" className="flex items-center gap-2 font-bold mb-10 hover:-translate-x-1 transition-transform" style={{ color: primaryColor }}>
             <ArrowLeft size={16} /> Back to IP Services
           </Link>
           
@@ -159,21 +322,33 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
             </div>
             <div>
               {company.sponsored && (
-                <div className="inline-block px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-black uppercase tracking-[0.2em] rounded-full mb-4 shadow-sm backdrop-blur-sm">
-                  Sponsored Partner
+                <div className={`inline-flex items-center gap-1.5 px-4 py-1.5 ${
+                  company.theme?.badgeBg || 'bg-amber-500/10'
+                } border border-amber-500/20 ${
+                  company.theme?.badgeText || 'text-amber-600 dark:text-amber-400'
+                } text-xs font-black uppercase tracking-[0.2em] rounded-full mb-4 shadow-sm backdrop-blur-sm`}>
+                  <Sparkles size={14} /> {company.theme?.badgeLabel || "Official WIPA Partner"}
                 </div>
               )}
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 dark:text-white mb-4 tracking-tight drop-shadow-sm">
                 {company.name}
               </h1>
-              <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300 font-bold text-lg">
-                <MapPin size={20} className="text-sky-500" /> {company.location}
+              <div className="flex flex-wrap items-center gap-4 text-slate-600 dark:text-slate-300 font-bold text-base md:text-lg">
+                <span className="flex items-center gap-2">
+                  <MapPin size={20} style={{ color: primaryColor }} /> {company.location}
+                </span>
+                {company.offer?.enabled !== false && company.offer?.promoCode && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-black px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/40">
+                    <Tag size={13} /> Code: {company.offer.promoCode}
+                  </span>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Tabs Bar */}
       <div className="border-b border-slate-200 dark:border-white/10 bg-white/50 dark:bg-[#020617]/50 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6">
           <div className="flex items-center gap-8 md:gap-12 overflow-x-auto no-scrollbar py-6">
@@ -181,7 +356,12 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
               <button 
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`text-2xl md:text-3xl font-black whitespace-nowrap transition-colors duration-300 tracking-tight ${activeTab === tab ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400'}`}
+                className={`text-2xl md:text-3xl font-black whitespace-nowrap transition-colors duration-300 tracking-tight ${
+                  activeTab === tab 
+                    ? 'text-slate-900 dark:text-white' 
+                    : 'text-slate-400 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-400'
+                }`}
+                style={activeTab === tab ? { color: primaryColor } : undefined}
               >
                 {tab}
               </button>
@@ -190,299 +370,522 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
         </div>
       </div>
 
+      {/* Main Container */}
       <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 py-12 relative z-10">
-        <div className={`grid grid-cols-1 gap-8 ${company.id === 'pss-solutions' ? 'lg:grid-cols-1' : 'lg:grid-cols-3'}`}>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-1">
           
-          {/* Main Content */}
-          <div className={`${company.id === 'pss-solutions' ? 'lg:col-span-1' : 'lg:col-span-2'} space-y-12`}>
+          <div className="space-y-12">
             
-            {activeTab === 'Overview' && company.id === 'pss-solutions' && (
+            {/* ========================================================================= */}
+            {/* GENIE AI & DYNAMIC PARTNER OVERVIEW */}
+            {/* ========================================================================= */}
+            {activeTab === 'Overview' && (isGenie || (!isPss && isGenie)) && (
               <div className="flex flex-col gap-12 w-full">
                 
-                {/* Top Section: Hero + About + Nadine */}
+                {/* 1. Hero Banner */}
+                <div className="bg-gradient-to-br from-white via-purple-50/40 to-indigo-50/30 dark:from-[#0f172a] dark:via-[#1e1b4b]/30 dark:to-[#0B1221] rounded-[2.5rem] border border-purple-200/70 dark:border-purple-500/20 p-8 md:p-12 shadow-xl overflow-hidden relative w-full">
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 blur-[90px] rounded-full pointer-events-none"></div>
+                  
+                  <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
+                    <div className="max-w-3xl">
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-100 dark:bg-purple-950/60 border border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-black uppercase tracking-wider mb-6">
+                        <Bot size={15} /> Legal AI Platform
+                      </div>
+                      <h2 className="text-3xl md:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.1] mb-6 tracking-tight">
+                        {company.hero?.headline || "AI-powered legal drafting, review and contract intelligence."}
+                      </h2>
+                      <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-8">
+                        {company.hero?.subheadline || "Genie AI helps legal and business teams draft, review, edit and negotiate contracts using purpose-built legal AI."}
+                      </p>
+                      
+                      <div className="flex flex-wrap items-center gap-4">
+                        <a 
+                          href={company.hero?.ctaUrl || "https://www.genieai.co/partners/wipa"} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-2xl font-black flex items-center gap-3 transition-all shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:-translate-y-0.5 active:scale-95 text-base"
+                        >
+                          {company.hero?.ctaText || "Visit Genie AI"} <ArrowRight size={18} />
+                        </a>
+                        {company.offer?.enabled !== false && (
+                          <button 
+                            onClick={() => setActiveTab('WIPA Exclusive Offer')}
+                            className="bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 px-6 py-4 rounded-2xl font-bold flex items-center gap-2 hover:bg-purple-50 dark:hover:bg-purple-950/50 transition-colors text-base"
+                          >
+                            <Gift size={18} /> View {company.offer?.discount || "50% Off"} Offer
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="w-full lg:w-auto shrink-0 flex flex-col items-center bg-white dark:bg-slate-800/80 p-8 rounded-3xl border border-purple-100 dark:border-white/10 shadow-lg">
+                      <div className="h-28 w-56 flex items-center justify-center p-4">
+                        {company.logo ? (
+                          <img src={company.logo} alt={company.name} className="max-h-full max-w-full object-contain" />
+                        ) : (
+                          <Building size={48} className="text-purple-500" />
+                        )}
+                      </div>
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-2">
+                        Official Partner of WIPA
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Key Scale Metrics */}
+                {company.metrics && company.metrics.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
+                    {company.metrics.map((stat, idx) => (
+                      <div key={idx} className="bg-white dark:bg-[#0f172a] p-6 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm flex flex-col">
+                        <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/50 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-4 border border-purple-100 dark:border-purple-900/40">
+                          <Layers size={20} />
+                        </div>
+                        <span className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-1">
+                          {stat.value}
+                        </span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                          {stat.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Backed by Investors Callout */}
+                {company.backedBy && company.backedBy.length > 0 && (
+                  <div className="bg-white dark:bg-[#0f172a] p-6 rounded-3xl border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-3 text-sm font-bold text-slate-700 dark:text-slate-200">
+                      <Award className="text-purple-600 dark:text-purple-400" size={24} />
+                      <span>Backed by premier technology investors:</span>
+                    </div>
+                    <div className="flex items-center flex-wrap gap-3">
+                      {company.backedBy.map((inv: string, i: number) => (
+                        <span key={i} className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-extrabold text-sm border border-slate-200 dark:border-white/5">
+                          {inv}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. About Section */}
+                <section className="bg-white dark:bg-[#0f172a] p-8 md:p-12 rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-sm w-full">
+                  <div className="inline-block px-3.5 py-1.5 rounded-full bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-black uppercase tracking-wider mb-4">
+                    {company.about?.badge || `About ${company.name}`}
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-6">
+                    {company.about?.heading || "Legal AI built for modern business teams"}
+                  </h3>
+                  <div className="space-y-5 text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-medium max-w-5xl">
+                    {company.about?.paragraphs?.map((para, idx) => (
+                      <p key={idx}>{para}</p>
+                    ))}
+                    {company.about?.quote && (
+                      <p className="border-l-4 border-purple-500 pl-5 italic text-slate-800 dark:text-slate-200 font-semibold bg-purple-50/50 dark:bg-purple-950/20 py-3 rounded-r-2xl">
+                        "{company.about.quote}"
+                      </p>
+                    )}
+                  </div>
+                </section>
+
+                {/* 4. Exclusive Offer Banner Card */}
+                {company.offer?.enabled !== false && (
+                  <div className="bg-gradient-to-br from-purple-950 via-[#2e1065] to-slate-950 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-purple-500/30 w-full text-white">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+                    
+                    <div className="relative z-10 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-10">
+                      <div className="flex-1">
+                        <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-500/30 border border-purple-400/40 text-purple-200 text-xs font-black uppercase tracking-widest rounded-full mb-6">
+                          <Sparkles size={14} className="text-yellow-400" /> {company.offer?.badge || "Exclusive WIPA Member Benefit"}
+                        </span>
+                        
+                        <h3 className="text-3xl md:text-5xl font-black text-white mb-4 leading-tight">
+                          {company.offer?.title || "50% off Genie Pro for your first 3 months"}
+                        </h3>
+                        
+                        <p className="text-purple-200 text-lg leading-relaxed mb-6 max-w-2xl font-medium">
+                          {company.offer?.description}
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-4">
+                          <a 
+                            href={company.offer?.ctaUrl || "https://www.genieai.co/partners/wipa"} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="bg-white hover:bg-purple-50 text-purple-950 px-8 py-4 rounded-2xl font-black flex items-center gap-2 shadow-xl hover:scale-105 transition-all text-base"
+                          >
+                            {company.offer?.ctaText || "Claim Your Discount"} <ArrowRight size={18} />
+                          </a>
+                          {company.offer?.contactEmail && (
+                            <a 
+                              href={`mailto:${company.offer.contactEmail}`} 
+                              className="bg-purple-900/60 hover:bg-purple-900 text-white border border-purple-400/30 px-6 py-4 rounded-2xl font-bold flex items-center gap-2 transition-colors text-base"
+                            >
+                              <Mail size={18} /> Contact Partnerships
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Promo Code Box */}
+                      {company.offer?.promoCode && (
+                        <div className="w-full xl:w-auto shrink-0">
+                          <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl flex flex-col items-center text-center shadow-2xl min-w-[280px]">
+                            <span className="text-purple-300 text-xs font-black uppercase tracking-widest mb-2">
+                              Checkout Promo Code
+                            </span>
+                            <div className="my-3 px-6 py-3 bg-black/40 rounded-2xl border border-purple-400/50 flex items-center gap-4">
+                              <span className="text-3xl font-black tracking-widest text-purple-300">
+                                {company.offer.promoCode}
+                              </span>
+                              <button 
+                                onClick={() => handleCopyPromoCode(company.offer?.promoCode || 'WIPA')}
+                                className="p-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-colors flex items-center gap-1.5 text-xs font-bold"
+                                title="Copy Promo Code"
+                              >
+                                {copiedCode ? <Check size={16} /> : <Copy size={16} />}
+                                {copiedCode ? 'Copied' : 'Copy'}
+                              </button>
+                            </div>
+                            <p className="text-xs text-purple-200/80 mt-2 font-medium">
+                              Use code <strong>{company.offer.promoCode}</strong> at checkout
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. Three Content Versions */}
+                {company.versions && (
+                  <section className="bg-white dark:bg-[#0f172a] p-8 md:p-12 rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-sm w-full">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                      <div>
+                        <h3 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">
+                          {company.name} Overview Summaries
+                        </h3>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">
+                          Select a summary version tailored for different communication channels:
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl">
+                        <button 
+                          onClick={() => setSelectedVersion('v1')}
+                          className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${
+                            selectedVersion === 'v1' 
+                              ? 'bg-purple-600 text-white shadow-md' 
+                              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                          }`}
+                        >
+                          Version 1 (Short)
+                        </button>
+                        <button 
+                          onClick={() => setSelectedVersion('v2')}
+                          className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${
+                            selectedVersion === 'v2' 
+                              ? 'bg-purple-600 text-white shadow-md' 
+                              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                          }`}
+                        >
+                          Version 2 (Standard)
+                        </button>
+                        <button 
+                          onClick={() => setSelectedVersion('v3')}
+                          className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${
+                            selectedVersion === 'v3' 
+                              ? 'bg-purple-600 text-white shadow-md' 
+                              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                          }`}
+                        >
+                          Version 3 (Detailed)
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-white/5 rounded-3xl p-8 transition-all">
+                      <div className="space-y-4 whitespace-pre-line text-slate-700 dark:text-slate-200 text-base leading-relaxed font-medium">
+                        <span className="text-xs font-black uppercase tracking-widest text-purple-600 dark:text-purple-400 block mb-2">
+                          {company.versions[selectedVersion]?.hint || `Summary Version: ${selectedVersion.toUpperCase()}`}
+                        </span>
+                        {company.versions[selectedVersion]?.text || "No summary text configured."}
+                      </div>
+                    </div>
+                  </section>
+                )}
+
+                {/* 6. Areas of Expertise */}
+                {company.services && company.services.length > 0 && (
+                  <section className="bg-white dark:bg-[#0f172a] p-8 md:p-12 rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-sm w-full">
+                    <h3 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+                      <Shield className="text-purple-600 dark:text-purple-400" size={28} /> Areas of Expertise & Capabilities
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {company.services.map((service: string, idx: number) => (
+                        <div key={idx} className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-white/5 hover:border-purple-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-center gap-4 group cursor-default">
+                          <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-950 flex items-center justify-center shrink-0 group-hover:bg-purple-600 transition-colors duration-300">
+                            <CheckCircle2 size={20} className="text-purple-600 dark:text-purple-400 group-hover:text-white transition-colors duration-300" />
+                          </div>
+                          <span className="font-bold text-slate-800 dark:text-slate-200 text-base md:text-lg">{service}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+              </div>
+            )}
+
+            {/* ========================================================================= */}
+            {/* PSS SOLUTIONS OVERVIEW */}
+            {/* ========================================================================= */}
+            {activeTab === 'Overview' && isPss && (
+              <div className="flex flex-col gap-12 w-full">
+                
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                  {/* Left: Hero & About */}
                   <div className="xl:col-span-2 flex flex-col justify-between h-full gap-8 w-full">
-                    {/* 1. Hero / Banner */}
                     <div className="bg-white dark:bg-[#0f172a] rounded-[2rem] border border-slate-200 dark:border-white/10 p-8 md:p-10 shadow-sm overflow-hidden relative w-full shrink-0">
                       <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/10 blur-[50px] rounded-full pointer-events-none"></div>
                       <div className="relative z-10 flex flex-col items-start">
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-4 tracking-tight">
-                          Transforming IP operations through strategy, technology, process and people.
+                          {company.hero?.headline || "Transforming IP operations through strategy, technology, process and people."}
                         </h2>
                         <p className="text-lg md:text-xl font-bold text-sky-600 dark:text-sky-400 mb-8">
-                          PSS Solutions – The IP Operations Consultancy
+                          {company.hero?.subheadline || "PSS Solutions – The IP Operations Consultancy"}
                         </p>
                         
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 w-full">
                           <div className="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-white/5 rounded-2xl p-6 h-28 flex items-center justify-center shadow-inner shrink-0">
-                            <img src={company.logo} alt="PSS Solutions" className="h-full object-contain mix-blend-multiply dark:mix-blend-normal" />
+                            {company.logo && <img src={company.logo} alt="PSS Solutions" className="h-full object-contain mix-blend-multiply dark:mix-blend-normal" />}
                           </div>
-                          <a href={`https://${company.website}`} target="_blank" rel="noopener noreferrer" className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-md ml-auto mt-4 sm:mt-0">
-                            Visit PSS Solutions <ArrowRight size={16} />
+                          <a href={company.hero?.ctaUrl || `https://${company.website}`} target="_blank" rel="noopener noreferrer" className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-md ml-auto mt-4 sm:mt-0">
+                            {company.hero?.ctaText || "Visit PSS Solutions"} <ArrowRight size={16} />
                           </a>
                         </div>
                       </div>
                     </div>
 
-                    {/* 2. About PSS Solutions */}
                     <section className="bg-white dark:bg-[#0f172a] p-8 md:p-10 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm w-full shrink-0">
                       <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-6">
-                        Independent expertise in IP operations
+                        {company.about?.heading || "Independent expertise in IP operations"}
                       </h3>
                       <div className="space-y-4 text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-                        <p>PSS Solutions is an independent consulting and advisory firm dedicated to IP operations. The company supports organisations seeking to transform, optimise and modernise the way their intellectual property functions operate.</p>
-                        <p>PSS combines specialist IP industry knowledge with operational, technology and transformation expertise, helping organisations navigate change and build more efficient and sustainable IP operating models. PSS describes itself as fully independent, allowing its consultants to provide impartial advice rather than being tied to particular technology vendors or service providers.</p>
+                        {company.about?.paragraphs?.map((p, idx) => (
+                          <p key={idx}>{p}</p>
+                        ))}
                       </div>
                     </section>
                   </div>
 
-                  {/* Right: Nadine Connection Sidebar Card */}
+                  {/* Right: Nadine Connection Card */}
                   <div className="xl:col-span-1 flex flex-col justify-between h-full gap-8">
                     <div className="bg-gradient-to-br from-[#12121a] to-[#20202a] rounded-[2rem] p-8 shadow-2xl relative overflow-hidden border border-white/10 flex flex-col justify-center shrink-0">
                       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-sky-500/30 to-cyan-500/30 blur-[60px] rounded-full pointer-events-none"></div>
-                      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-overlay"></div>
                       
                       <div className="relative z-10 flex flex-col items-center text-center mb-8">
                         <div className="w-32 h-32 rounded-full border-[4px] border-white/10 overflow-hidden mb-6 shadow-xl relative">
                           <img 
-                            src="/Nadine Stuttle Picture.jpg" 
-                            alt="Nadine Stuttle" 
+                            src={company.expert?.avatar || "/Nadine Stuttle Picture.jpg"} 
+                            alt={company.expert?.name || "Nadine Stuttle"} 
                             className="w-full h-full object-cover object-top"
                           />
                           <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-2 border-[#1a1a24] rounded-full shadow-sm"></div>
                         </div>
                         
-                        <h3 className="text-2xl font-black text-white mb-1">Nadine Stuttle</h3>
-                        <p className="text-sky-400 font-bold text-sm mb-4 uppercase tracking-widest">Founder & CEO, PSS Solutions</p>
+                        <h3 className="text-2xl font-black text-white mb-1">{company.expert?.name || "Nadine Stuttle"}</h3>
+                        <p className="text-sky-400 font-bold text-sm mb-4 uppercase tracking-widest">{company.expert?.role || "Founder & CEO, PSS Solutions"}</p>
                         
                         <p className="text-white/80 font-medium text-sm leading-relaxed">
-                          Connect with Nadine to discuss how PSS can transform your intellectual property function.
+                          {company.expert?.bio || "Connect with Nadine to discuss how PSS can transform your intellectual property function."}
                         </p>
                       </div>
 
                       <div className="relative z-10 bg-white/5 rounded-2xl p-6 border border-white/10 mb-8 space-y-4 text-left">
-                        <div className="flex items-start gap-4">
-                          <Globe size={20} className="text-sky-400 shrink-0 mt-0.5" /> 
-                          <a href={`https://${company.website}`} target="_blank" className="text-white hover:text-sky-400 text-sm font-medium transition-colors break-all">{company.website}</a>
-                        </div>
-                        {company.contact && (
-                          <>
-                            <div className="flex items-start gap-4">
-                              <Mail size={20} className="text-sky-400 shrink-0 mt-0.5" /> 
-                              <a href={`mailto:${company.contact.email}`} className="text-white hover:text-sky-400 text-sm font-medium transition-colors break-all">{company.contact.email}</a>
-                            </div>
-                            <div className="flex items-start gap-4">
-                              <Phone size={20} className="text-sky-400 shrink-0 mt-0.5" /> 
-                              <span className="text-white text-sm font-medium">{company.contact.phone}</span>
-                            </div>
-                            <div className="flex items-start gap-4">
-                              <MapPin size={20} className="text-sky-400 shrink-0 mt-0.5" /> 
-                              <span className="text-white text-sm font-medium leading-relaxed">{company.contact.address}</span>
-                            </div>
-                          </>
+                        {company.website && (
+                          <div className="flex items-start gap-4">
+                            <Globe size={20} className="text-sky-400 shrink-0 mt-0.5" /> 
+                            <a href={`https://${company.website}`} target="_blank" className="text-white hover:text-sky-400 text-sm font-medium transition-colors break-all">{company.website}</a>
+                          </div>
+                        )}
+                        {company.contact?.email && (
+                          <div className="flex items-start gap-4">
+                            <Mail size={20} className="text-sky-400 shrink-0 mt-0.5" /> 
+                            <a href={`mailto:${company.contact.email}`} className="text-white hover:text-sky-400 text-sm font-medium transition-colors break-all">{company.contact.email}</a>
+                          </div>
+                        )}
+                        {company.contact?.phone && (
+                          <div className="flex items-start gap-4">
+                            <Phone size={20} className="text-sky-400 shrink-0 mt-0.5" /> 
+                            <span className="text-white text-sm font-medium">{company.contact.phone}</span>
+                          </div>
                         )}
                       </div>
                       
-                      <button className="relative z-10 w-full bg-white text-slate-900 py-4 rounded-xl font-black shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mt-auto shrink-0">
-                        <ArrowRight size={18} className="text-sky-500" /> Connect with Nadine
-                      </button>
+                      <a href={`mailto:${company.contact?.email || 'info@pss-solutions.com'}`} className="relative z-10 w-full bg-white text-slate-900 py-4 rounded-xl font-black shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mt-auto shrink-0">
+                        <ArrowRight size={18} className="text-sky-500" /> Connect with {company.expert?.name?.split(' ')[0] || "Nadine"}
+                      </a>
                     </div>
-
-                    {company.locations && (
-                      <div className="p-8 rounded-[2rem] bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-white/10 shadow-lg shrink-0">
-                        <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
-                          <Map className="text-sky-500" size={24} /> Global Presence
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {company.locations.map((loc: string, idx: number) => (
-                            <span key={idx} className="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold border border-slate-200 dark:border-white/5">
-                              {loc}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
 
-                {/* The Rest spans FULL WIDTH */}
-
-                {/* 3. The PSS Approach */}
+                {/* The PSS Approach / Pillars */}
                 <section className="bg-white dark:bg-[#0f172a] p-8 md:p-10 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm w-full">
                   <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4">
-                    People. Structure. Strategy.
+                    {company.pillarsTitle || "People. Structure. Strategy."}
                   </h3>
                   <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-8">
-                    PSS believes successful IP transformation requires more than technology alone. Its approach brings together three core elements:
+                    {company.pillarsSubtitle || "PSS believes successful IP transformation requires more than technology alone. Its approach brings together three core elements:"}
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-                    <div className="bg-sky-50 dark:bg-sky-900/20 rounded-3xl p-8 border border-sky-100 dark:border-sky-800/30 shadow-sm flex flex-col h-full">
-                      <div className="w-12 h-12 rounded-full bg-sky-200 dark:bg-sky-800 flex items-center justify-center mb-6 text-sky-700 dark:text-sky-300 font-black shrink-0">1</div>
-                      <h4 className="text-xl font-black text-slate-900 dark:text-white mb-3">People</h4>
-                      <p className="text-slate-600 dark:text-slate-300 font-medium">Ensuring teams have the knowledge, skills and support required to successfully adopt and sustain change.</p>
-                    </div>
-                    <div className="bg-sky-50 dark:bg-sky-900/20 rounded-3xl p-8 border border-sky-100 dark:border-sky-800/30 shadow-sm flex flex-col h-full">
-                      <div className="w-12 h-12 rounded-full bg-sky-200 dark:bg-sky-800 flex items-center justify-center mb-6 text-sky-700 dark:text-sky-300 font-black shrink-0">2</div>
-                      <h4 className="text-xl font-black text-slate-900 dark:text-white mb-3">Structure</h4>
-                      <p className="text-slate-600 dark:text-slate-300 font-medium">Developing the right processes, governance and operational framework to support an effective IP function.</p>
-                    </div>
-                    <div className="bg-sky-50 dark:bg-sky-900/20 rounded-3xl p-8 border border-sky-100 dark:border-sky-800/30 shadow-sm flex flex-col h-full">
-                      <div className="w-12 h-12 rounded-full bg-sky-200 dark:bg-sky-800 flex items-center justify-center mb-6 text-sky-700 dark:text-sky-300 font-black shrink-0">3</div>
-                      <h4 className="text-xl font-black text-slate-900 dark:text-white mb-3">Strategy</h4>
-                      <p className="text-slate-600 dark:text-slate-300 font-medium">Creating a clear direction and roadmap aligned with the organisation's objectives and future requirements.</p>
-                    </div>
-                  </div>
-                  <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-bold mt-8 italic border-l-4 border-sky-500 pl-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-r-xl w-full">
-                    PSS positions this combination of people, structure and strategy as central to achieving sustainable and profitable IP operations.
-                  </p>
-                </section>
-
-                {/* 4. What PSS Helps Organisations Achieve */}
-                <section className="bg-white dark:bg-[#0f172a] p-8 md:p-10 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm w-full">
-                  <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4">
-                    Supporting Better IP Operations
-                  </h3>
-                  <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-8">
-                    PSS works with organisations to help them:
-                  </p>
-                  <ul className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-8 w-full">
-                    {[
-                      "Improve operational efficiency",
-                      "Transform outdated IP processes",
-                      "Make more informed technology decisions",
-                      "Optimise IP expenditure and supplier relationships",
-                      "Improve the use and management of IP data",
-                      "Successfully manage operational and organisational change",
-                      "Build stronger skills and capabilities within IP teams"
-                    ].map((item, idx) => (
-                      <li key={idx} className="flex items-center gap-4 text-slate-700 dark:text-slate-300 font-bold text-lg bg-slate-50 dark:bg-slate-800/50 p-5 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow">
-                        <CheckCircle2 className="text-emerald-500 shrink-0" size={24} /> {item}
-                      </li>
+                    {(company.pillars || DEFAULT_PSS_CONFIG.pillars || []).map((pillar: any, idx: number) => (
+                      <div key={idx} className="bg-sky-50 dark:bg-sky-900/20 rounded-3xl p-8 border border-sky-100 dark:border-sky-800/30 shadow-sm flex flex-col h-full">
+                        <div className="w-12 h-12 rounded-full bg-sky-200 dark:bg-sky-800 flex items-center justify-center mb-6 text-sky-700 dark:text-sky-300 font-black shrink-0">
+                          {pillar.number || idx + 1}
+                        </div>
+                        <h4 className="text-xl font-black text-slate-900 dark:text-white mb-3">{pillar.title}</h4>
+                        <p className="text-slate-600 dark:text-slate-300 font-medium">{pillar.description}</p>
+                      </div>
                     ))}
-                  </ul>
-                  <button 
-                    onClick={() => setActiveTab('Tech Operations')}
-                    className="bg-sky-50 dark:bg-sky-900/20 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800/50 px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors w-max"
-                  >
-                    Explore Tech Operations <ArrowRight size={16} />
-                  </button>
+                  </div>
                 </section>
-
-                {/* 5. IP Operations Expertise & Why PSS? */}
-                <div className="flex flex-col gap-12 w-full">
-                  <section className="bg-white dark:bg-[#0f172a] p-8 md:p-10 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm w-full">
-                    <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4">
-                      Specialist Experience. Global Perspective.
-                    </h3>
-                    <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-medium mb-8">
-                      PSS works through a team of experienced IP operations specialists with backgrounds spanning corporate IP departments, private practice, legal operations, technology and major transformation programmes. Its consultants have supported projects internationally, including across Europe, Asia-Pacific and the United States.
-                    </p>
-                    <button 
-                      onClick={() => setActiveTab('Meet the Experts')}
-                      className="bg-sky-50 dark:bg-sky-900/20 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800/50 px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors w-max"
-                    >
-                      Meet the PSS Experts <ArrowRight size={16} />
-                    </button>
-                  </section>
-
-                  <section className="w-full">
-                    <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-6">
-                      Why PSS?
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-                      <div className="bg-white dark:bg-[#0f172a] p-8 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-xl transition-shadow flex flex-col h-full">
-                        <h4 className="text-xl font-black text-slate-900 dark:text-white mb-4 flex items-center gap-3">
-                          <Shield className="text-sky-500 shrink-0" size={24} /> Independent
-                        </h4>
-                        <p className="text-slate-600 dark:text-slate-400 font-medium leading-relaxed">PSS is not tied to particular technology vendors, enabling recommendations to be based on the organisation's actual requirements.</p>
-                      </div>
-                      <div className="bg-white dark:bg-[#0f172a] p-8 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-xl transition-shadow flex flex-col h-full">
-                        <h4 className="text-xl font-black text-slate-900 dark:text-white mb-4 flex items-center gap-3">
-                          <CheckCircle2 className="text-sky-500 shrink-0" size={24} /> IP Focused
-                        </h4>
-                        <p className="text-slate-600 dark:text-slate-400 font-medium leading-relaxed">Its consulting work is specifically centred around IP operations and transformation.</p>
-                      </div>
-                      <div className="bg-white dark:bg-[#0f172a] p-8 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-xl transition-shadow flex flex-col h-full">
-                        <h4 className="text-xl font-black text-slate-900 dark:text-white mb-4 flex items-center gap-3">
-                          <Globe className="text-sky-500 shrink-0" size={24} /> Experienced
-                        </h4>
-                        <p className="text-slate-600 dark:text-slate-400 font-medium leading-relaxed">The team brings extensive experience across IP operations, technology, legal operations and organisational transformation.</p>
-                      </div>
-                      <div className="bg-white dark:bg-[#0f172a] p-8 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-xl transition-shadow flex flex-col h-full">
-                        <h4 className="text-xl font-black text-slate-900 dark:text-white mb-4 flex items-center gap-3">
-                          <ArrowRight className="text-sky-500 shrink-0" size={24} /> Transformation
-                        </h4>
-                        <p className="text-slate-600 dark:text-slate-400 font-medium leading-relaxed">PSS looks beyond individual tools or processes to address the wider operating model, including people, processes, technology and change.</p>
-                      </div>
-                    </div>
-                  </section>
-                </div>
 
               </div>
             )}
 
-            {activeTab === 'Overview' && company.id !== 'pss-solutions' && (
-              <>
-                {/* Quote Banner */}
-                {company.quote && (
-                  <div className="relative p-8 md:p-10 rounded-[2rem] bg-gradient-to-br from-sky-500 to-cyan-500 text-white overflow-hidden shadow-2xl shadow-sky-500/20 group">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-                    <Quote size={80} className="absolute -top-4 -left-4 text-white/10 rotate-180 group-hover:scale-110 transition-transform duration-700" />
-                    <h3 className="text-2xl md:text-3xl font-black leading-snug relative z-10 mb-6 italic tracking-tight text-white/95">
-                      "{company.quote}"
-                    </h3>
-                  </div>
-                )}
-
-                <section>
-                  <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                    <FileText className="text-sky-500" size={28} /> Our Philosophy
+            {/* ========================================================================= */}
+            {/* OTHER TABS (Tech Operations, Legal AI & Features, Offer, Videos, Articles) */}
+            {/* ========================================================================= */}
+            {activeTab === 'Legal AI & Features' && (
+              <div className="flex flex-col gap-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="bg-white dark:bg-[#0f172a] p-8 md:p-12 rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-sm">
+                  <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">
+                    {company.featuresTitle || "Purpose-Built Legal AI Architecture"}
                   </h2>
-                  <div className="p-8 rounded-3xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 shadow-lg text-slate-700 dark:text-slate-300 text-lg md:text-xl font-medium leading-relaxed">
-                    {company.description}
+                  <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-medium max-w-4xl mb-8">
+                    {company.featuresSubtitle || "Genie AI does not rely on generic chatbots. It is engineered with deep legal context, precise clause libraries, and intelligent risk detection to handle mission-critical legal and IP documents."}
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {(company.features && company.features.length > 0 ? company.features : [
+                      { title: "AI Contract Drafting", description: "Generate full, compliant agreements from scratch or bespoke clauses in seconds, tailored to your governing law and industry requirements." },
+                      { title: "Automated Document Review", description: "Instantly scan inbound third-party contracts, identify non-standard clauses, flag missing protections, and highlight deal risks." },
+                      { title: "Playbook & Template Standards", description: "Upload your organization's own playbooks and standard templates so Genie drafts and negotiates strictly in alignment with your corporate standards." },
+                      { title: "IP Licensing & NDAs", description: "Specialized workflows for IP assignments, patent licenses, technology transfers, and multi-party non-disclosure agreements." },
+                      { title: "Cross-Border Jurisdictions", description: "Coverage across 150+ legal jurisdictions and 40+ languages, helping international teams negotiate global agreements with confidence." },
+                      { title: "Enterprise Grade Security", description: "Confidentiality guaranteed. Your data is isolated, encrypted in transit and at rest, and never used to train public LLM models." }
+                    ]).map((feature: any, idx: number) => (
+                      <div key={idx} className="p-8 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-white/5 flex flex-col justify-between h-full">
+                        <div>
+                          <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950 flex items-center justify-center text-purple-600 dark:text-purple-300 font-black mb-4">
+                            {idx + 1}
+                          </div>
+                          <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">{feature.title}</h3>
+                          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">{feature.description || feature.desc}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </section>
+                </div>
+              </div>
+            )}
 
-                {company.services && (
-                  <section>
-                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                      <Shield className="text-sky-500" size={28} /> Areas of Expertise
+            {activeTab === 'Tech Operations' && isPss && (
+              <div className="flex flex-col gap-12 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="bg-white dark:bg-[#0f172a] rounded-[2rem] border border-slate-200 dark:border-white/10 p-8 md:p-12 shadow-sm relative overflow-hidden w-full">
+                  <div className="relative z-10">
+                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-6 tracking-tight leading-tight">
+                      {company.featuresTitle || "Transforming IP operations through strategy, technology, process and people."}
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {company.services.map((service: string, idx: number) => (
-                        <div key={idx} className="p-6 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-white/10 hover:border-sky-500 dark:hover:border-sky-500 hover:shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1 transition-all duration-300 flex items-center gap-4 group cursor-default">
-                          <div className="w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center shrink-0 group-hover:bg-sky-500 transition-colors duration-300">
-                            <CheckCircle2 size={20} className="text-sky-500 group-hover:text-white transition-colors duration-300" />
-                          </div>
-                          <span className="font-bold text-slate-800 dark:text-slate-200 text-lg">{service}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
+                    <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-medium max-w-4xl">
+                      {company.featuresSubtitle || "Explore PSS Solutions' specialist services designed to help IP teams improve operational performance, adopt the right technology, manage costs and successfully deliver organisational change."}
+                    </p>
+                  </div>
+                </div>
 
-                {company.team && (
-                  <section>
-                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                      <Users className="text-sky-500" size={28} /> Key Operations Experts
-                    </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {company.team.map((member: any, idx: number) => (
-                        <div key={idx} className="p-6 rounded-2xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 flex items-center gap-5 hover:shadow-lg transition-shadow">
-                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-xl font-black text-slate-500 dark:text-slate-300 shadow-inner">
-                            {member.initials}
-                          </div>
-                          <div>
-                            <h4 className="font-black text-lg text-slate-900 dark:text-white">{member.name}</h4>
-                            <p className="text-sm font-medium text-sky-600 dark:text-sky-400">{member.role}</p>
-                          </div>
+                <div className="w-full">
+                  <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-8">How PSS Can Support Your IP Operations</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                    {(company.features && company.features.length > 0 ? company.features : [
+                      { title: "Strategic IP Operations", subtitle: "Assess and transform the way your IP function operates.", description: "PSS reviews existing operations, processes and technology to identify opportunities for improvement and develop an actionable transformation roadmap." },
+                      { title: "IP Technology Advisory", subtitle: "Make better technology decisions for your IP function.", description: "PSS helps organisations evaluate their existing technology, identify what is genuinely missing, select suitable IP technology and support implementation." },
+                      { title: "IP Spend Management", subtitle: "Gain greater visibility and control over IP expenditure.", description: "PSS works with in-house legal teams, general counsel and senior management to analyse IP spend, identify cost-saving opportunities, and benchmark expenditure." },
+                      { title: "IP Data Analytics", subtitle: "Turn IP data into better business decisions.", description: "PSS supports organisations with data audits, analytics and reporting frameworks, alongside data governance, compliance, and security." },
+                      { title: "IP Project & Change Management", subtitle: "Successfully deliver complex IP transformation projects.", description: "PSS provides structured project and change management support, including requirements definition, project roadmaps, and stakeholder engagement." },
+                      { title: "Training & Upskilling", subtitle: "Prepare your people for changing IP operations.", description: "PSS provides tailored training designed around the needs of individual teams, helping organisations bridge knowledge gaps." }
+                    ]).map((svc: any, idx: number) => (
+                      <div key={idx} className="bg-white dark:bg-[#0f172a] p-8 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-xl transition-all group flex flex-col h-full">
+                        <div className="flex-1">
+                          <h4 className="text-xl font-black text-slate-900 dark:text-white mb-2 group-hover:text-sky-500 transition-colors">{svc.title}</h4>
+                          {svc.subtitle && <p className="text-sky-600 dark:text-sky-400 font-bold text-sm mb-4">{svc.subtitle}</p>}
+                          <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">{svc.description || svc.desc}</p>
                         </div>
-                      ))}
+                        <a href={company.hero?.ctaUrl || "https://www.pss-solutions.com"} target="_blank" className="text-sky-500 font-bold flex items-center gap-2 group-hover:gap-3 transition-all text-sm mt-auto w-max">
+                          Explore Service <ArrowRight size={16} />
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'WIPA Exclusive Offer' && (
+              <div className="flex flex-col gap-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="bg-gradient-to-br from-[#2e1065] via-purple-950 to-black rounded-[2.5rem] p-8 md:p-12 shadow-2xl border border-purple-500/30 text-white relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+
+                  <div className="relative z-10 max-w-3xl">
+                    <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-500/30 border border-purple-400/40 text-purple-200 text-xs font-black uppercase tracking-widest rounded-full mb-6">
+                      <Gift size={15} /> {company.offer?.badge || "Exclusive Partner Discount"}
+                    </span>
+                    <h2 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
+                      {company.offer?.title || "50% Off Genie Pro for 3 Months"}
+                    </h2>
+                    <p className="text-purple-200 text-lg md:text-xl font-medium leading-relaxed mb-8">
+                      {company.offer?.description || "Through its partnership with Women's IP Alliance, you get 50% off Genie Pro for your first three months."}
+                    </p>
+
+                    <div className="p-6 bg-white/10 rounded-2xl border border-white/20 mb-8 space-y-4">
+                      <h4 className="text-lg font-black text-white">How to Redeem:</h4>
+                      <ol className="list-decimal list-inside space-y-2 text-purple-200 font-medium text-base">
+                        {company.offer?.steps && company.offer.steps.length > 0 ? (
+                          company.offer.steps.map((st: string, i: number) => (
+                            <li key={i}>{st}</li>
+                          ))
+                        ) : (
+                          <>
+                            <li>Visit the partner landing page: <a href={company.offer?.ctaUrl || "https://www.genieai.co/partners/wipa"} target="_blank" className="underline font-bold text-white">{company.offer?.ctaUrl || "genieai.co/partners/wipa"}</a></li>
+                            <li>Sign up for an account with your business email.</li>
+                            <li>Enter promo code <strong>{company.offer?.promoCode || "WIPA"}</strong> at checkout.</li>
+                            <li>Enjoy your exclusive member rate!</li>
+                          </>
+                        )}
+                      </ol>
                     </div>
-                  </section>
-                )}
-              </>
+
+                    <div className="flex flex-wrap items-center gap-4">
+                      <a 
+                        href={company.offer?.ctaUrl || "https://www.genieai.co/partners/wipa"} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="bg-white hover:bg-purple-50 text-purple-950 px-8 py-4 rounded-2xl font-black flex items-center gap-2 shadow-xl hover:scale-105 transition-all text-lg"
+                      >
+                        {company.offer?.ctaText || "Claim Discount Now"} <ArrowRight size={18} />
+                      </a>
+                      {company.offer?.contactEmail && (
+                        <a 
+                          href={`mailto:${company.offer.contactEmail}`} 
+                          className="bg-purple-900/50 hover:bg-purple-900 text-white border border-purple-400/30 px-6 py-4 rounded-2xl font-bold flex items-center gap-2 text-lg transition-colors"
+                        >
+                          <Mail size={18} /> Contact Partnerships
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
             {activeTab === 'Videos' && company.videos && (
@@ -574,7 +977,7 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                       
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-auto pt-6 border-t border-slate-100 dark:border-white/5 gap-6">
                         <div className="flex items-center gap-4">
-                          {webinar.speakers.map((speaker: any, idx: number) => (
+                          {webinar.speakers?.map((speaker: any, idx: number) => (
                             <div key={idx} className="flex items-center gap-3">
                               <img src={speaker.avatar} alt={speaker.name} className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-[#0f172a] shadow-sm" />
                               <div>
@@ -628,184 +1031,8 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                 ))}
               </div>
             )}
-
-            {activeTab === 'Tech Operations' && company.id === 'pss-solutions' && (
-              <div className="flex flex-col gap-12 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {/* Header */}
-                <div className="bg-white dark:bg-[#0f172a] rounded-[2rem] border border-slate-200 dark:border-white/10 p-8 md:p-12 shadow-sm relative overflow-hidden w-full">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/10 blur-[50px] rounded-full pointer-events-none"></div>
-                  <div className="relative z-10">
-                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white mb-6 tracking-tight leading-tight">
-                      Transforming IP operations through strategy, technology, process and people.
-                    </h2>
-                    <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-medium max-w-4xl">
-                      Explore PSS Solutions' specialist services designed to help IP teams improve operational performance, adopt the right technology, manage costs and successfully deliver organisational change. PSS takes a holistic approach to IP operations, bringing together people, structure and strategy rather than treating technology as a solution in isolation.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Services Section */}
-                <div className="w-full">
-                  <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-8">How PSS Can Support Your IP Operations</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-                    {[
-                      {
-                        title: "Strategic IP Operations",
-                        subtitle: "Assess and transform the way your IP function operates.",
-                        desc: "PSS reviews existing operations, processes and technology to identify opportunities for improvement and develop an actionable transformation roadmap. This includes process optimisation, governance, technology integration, change management and identifying achievable “quick wins”."
-                      },
-                      {
-                        title: "IP Technology Advisory",
-                        subtitle: "Make better technology decisions for your IP function.",
-                        desc: "PSS helps organisations evaluate their existing technology, identify what is genuinely missing, select suitable IP technology and support implementation. As an independent advisory firm, PSS states that it is not tied to technology vendors, allowing recommendations to be based on the organisation's requirements."
-                      },
-                      {
-                        title: "IP Spend Management",
-                        subtitle: "Gain greater visibility and control over IP expenditure.",
-                        desc: "PSS works with in-house legal teams, general counsel and senior management to analyse IP spend, identify cost-saving opportunities, benchmark expenditure, improve outside counsel management and establish performance metrics and KPIs."
-                      },
-                      {
-                        title: "IP Data Analytics",
-                        subtitle: "Turn IP data into better business decisions.",
-                        desc: "PSS supports organisations with data audits, analytics and reporting frameworks, alongside data governance, compliance, security and the management of IP data across jurisdictions."
-                      },
-                      {
-                        title: "IP Project & Change Management",
-                        subtitle: "Successfully deliver complex IP transformation projects.",
-                        desc: "PSS provides structured project and change management support, including requirements definition, project roadmaps, stakeholder engagement, implementation and organisational change — with a focus on delivering projects within agreed time and budget parameters."
-                      },
-                      {
-                        title: "Training & Upskilling",
-                        subtitle: "Prepare your people for changing IP operations.",
-                        desc: "PSS provides tailored training designed around the needs of individual teams, helping organisations bridge knowledge gaps, develop new skills and support employees through operational and technological change."
-                      },
-                      {
-                        title: "IP Procurement",
-                        subtitle: "Specialist support for procurement within the IP environment.",
-                        desc: "PSS lists IP Procurement as one of its core IP operations services. This can have its own service card and link through to further information or an enquiry with the PSS team."
-                      }
-                    ].map((svc, idx) => (
-                      <div key={idx} className="bg-white dark:bg-[#0f172a] p-8 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-xl transition-all group flex flex-col h-full">
-                        <div className="flex-1">
-                          <h4 className="text-xl font-black text-slate-900 dark:text-white mb-2 group-hover:text-sky-500 transition-colors">{svc.title}</h4>
-                          <p className="text-sky-600 dark:text-sky-400 font-bold text-sm mb-4">{svc.subtitle}</p>
-                          <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">{svc.desc}</p>
-                        </div>
-                        <button className="text-sky-500 font-bold flex items-center gap-2 group-hover:gap-3 transition-all text-sm mt-auto w-max">
-                          Explore Service <ArrowRight size={16} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Exclusive Benefit Banner */}
-                <div className="bg-gradient-to-br from-[#1e1b4b] to-[#0B1221] rounded-[2rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-indigo-500/20 w-full">
-                  <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 blur-[80px] rounded-full pointer-events-none"></div>
-                  <div className="absolute bottom-0 left-0 w-64 h-64 bg-sky-500/20 blur-[60px] rounded-full pointer-events-none"></div>
-                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-overlay"></div>
-                  
-                  <div className="relative z-10 flex flex-col lg:flex-row items-center gap-10">
-                    <div className="flex-1 text-center lg:text-left">
-                      <div className="inline-block px-4 py-1.5 bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 font-black text-xs uppercase tracking-widest rounded-full mb-6">
-                        Exclusive for WIPA Members
-                      </div>
-                      <h3 className="text-3xl md:text-4xl font-black text-white mb-4 leading-tight">
-                        Access preferential rates on selected PSS Solutions services.
-                      </h3>
-                      <p className="text-indigo-200 text-lg mb-8 max-w-2xl leading-relaxed mx-auto lg:mx-0">
-                        Women's IP Alliance members can access an exclusive PSS member benefit when engaging PSS for selected IP operations and advisory services.
-                      </p>
-                      <button className="bg-white text-indigo-950 px-8 py-4 rounded-xl font-black shadow-xl hover:scale-105 transition-transform flex items-center gap-2 mx-auto lg:mx-0 w-max">
-                        Claim Your Member Benefit <ArrowRight size={18} />
-                      </button>
-                      <p className="text-indigo-300/60 text-xs mt-6 max-w-xl mx-auto lg:mx-0">
-                        Available to eligible Women's IP Alliance members. Applicable services and terms to be agreed with PSS Solutions.
-                      </p>
-                    </div>
-                    
-                    <div className="w-full lg:w-auto shrink-0">
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 p-10 rounded-3xl text-center shadow-inner">
-                        <p className="text-indigo-300 font-bold text-sm uppercase tracking-widest mb-3">WIPA Member Benefit:</p>
-                        <div className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400 mb-2">
-                          [X]%
-                        </div>
-                        <p className="text-white font-bold text-lg">exclusive member discount<br/>/ preferential rate</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab !== 'Overview' && activeTab !== 'Tech Operations' && activeTab !== 'Videos' && activeTab !== 'Articles' && activeTab !== 'Webinars' && activeTab !== 'Events' && (
-              <div className="py-20 flex flex-col items-center justify-center text-center bg-white/30 dark:bg-slate-900/20 rounded-[2rem] border border-slate-200 dark:border-white/5 border-dashed">
-                <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800/50 rounded-full flex items-center justify-center mb-6">
-                  <FileText size={32} className="text-slate-400 dark:text-slate-500" />
-                </div>
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">No {activeTab} Yet</h3>
-                <p className="text-slate-500 dark:text-slate-400 font-medium text-lg max-w-sm">
-                  {company.name} hasn't uploaded any {activeTab.toLowerCase()} to their profile at this time.
-                </p>
-              </div>
-            )}
             
           </div>
-
-          {/* Sidebar */}
-          {company.id !== 'pss-solutions' && (
-            <div className="space-y-8 lg:sticky lg:top-28 self-start">
-              
-              <div className="p-8 rounded-[2rem] bg-sky-500 text-white shadow-2xl shadow-sky-500/20 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-                
-                <h3 className="text-3xl font-black mb-8 relative z-10 tracking-tight">Contact & Connect</h3>
-                
-                <div className="space-y-6 font-medium relative z-10 text-lg">
-                  <div className="flex items-start gap-4">
-                    <Globe size={24} className="text-sky-200 shrink-0 mt-1" /> 
-                    <a href={`https://${company.website}`} target="_blank" className="hover:text-white hover:underline underline-offset-4">{company.website}</a>
-                  </div>
-                  {company.contact && (
-                    <>
-                      <div className="flex items-start gap-4">
-                        <Mail size={24} className="text-sky-200 shrink-0 mt-1" /> 
-                        <a href={`mailto:${company.contact.email}`} className="hover:text-white hover:underline underline-offset-4">{company.contact.email}</a>
-                      </div>
-                      <div className="flex items-start gap-4">
-                        <Phone size={24} className="text-sky-200 shrink-0 mt-1" /> 
-                        {company.contact.phone}
-                      </div>
-                      <div className="flex items-start gap-4">
-                        <MapPin size={24} className="text-sky-200 shrink-0 mt-1" /> 
-                        <span className="leading-snug">{company.contact.address}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <button className="w-full mt-10 bg-white text-sky-600 font-black py-4 rounded-xl hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:-translate-y-1 transition-all duration-300 text-lg">
-                  Request Consultation
-                </button>
-              </div>
-
-              {company.locations && (
-                <div className="p-8 rounded-[2rem] bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 shadow-lg">
-                  <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-slate-900 dark:text-white">
-                    <Map className="text-sky-500" size={24} /> Global Presence
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {company.locations.map((loc: string, idx) => (
-                      <span key={idx} className="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold border border-slate-200 dark:border-white/5">
-                        {loc}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-            </div>
-          )}
           
         </div>
       </div>

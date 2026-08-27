@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import Link from 'next/link';
-import { LayoutDashboard, Users, Calendar, Briefcase, FileText, ArrowLeft, Building2, DollarSign } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, Briefcase, FileText, ArrowLeft, Building2, DollarSign, Sparkles } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAppStore();
@@ -23,11 +23,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       
       const { data, error } = await supabase
         .from('profiles')
-        .select('is_admin')
+        .select('is_admin, is_subadmin')
         .eq('id', user.id)
         .single();
         
-      if (error || !data?.is_admin) {
+      if (error || (!data?.is_admin && !data?.is_subadmin)) {
         router.push('/platform');
         return;
       }
@@ -48,6 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'Events', path: '/admin/events', icon: Calendar },
     { label: 'Jobs', path: '/admin/jobs', icon: Briefcase },
     { label: 'Resources', path: '/admin/content', icon: FileText },
+    { label: 'IP Services', path: '/admin/ip-services', icon: Sparkles },
     { label: 'Firms', path: '/admin/firms', icon: Building2 },
     { label: 'Businesses', path: '/admin/business', icon: Building2 },
     { label: 'Sponsorships', path: '/admin/sponsorships', icon: DollarSign },
