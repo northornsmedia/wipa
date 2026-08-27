@@ -382,10 +382,10 @@ export default function EventDetailsPage() {
         {/* ========================================================================= */}
         {/* HERO BANNER SECTION */}
         {/* ========================================================================= */}
-        <section className="relative overflow-hidden rounded-[2.5rem] bg-[#0c1020] text-white shadow-2xl border border-white/10 mb-8">
+        <section className="relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#0c1020] text-slate-900 dark:text-white shadow-xl dark:shadow-2xl border border-slate-200 dark:border-white/10 mb-8 transition-colors">
           {/* Glowing Gradient Ambient Lights */}
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-purple-600/30 via-indigo-600/20 to-transparent blur-[120px] rounded-full pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-sky-600/20 to-transparent blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-purple-500/10 dark:from-purple-600/30 via-indigo-500/5 dark:via-indigo-600/20 to-transparent blur-[120px] rounded-full pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-sky-500/10 dark:from-sky-600/20 to-transparent blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 sm:p-10 lg:p-12 items-center">
             
@@ -394,58 +394,58 @@ export default function EventDetailsPage() {
               
               {/* Badges Bar */}
               <div className="flex flex-wrap items-center gap-3">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-purple-500/20 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-purple-300">
-                  <Sparkles size={13} className="text-purple-400" /> {eventCategory}
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-200 dark:border-purple-500/40 bg-purple-50 dark:bg-purple-500/20 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-purple-700 dark:text-purple-300 shadow-sm">
+                  <Sparkles size={13} className="text-purple-600 dark:text-purple-400" /> {eventCategory}
                 </span>
 
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-slate-200">
-                  {isVirtual ? <MonitorPlay size={13} className="text-sky-400" /> : <MapPin size={13} className="text-rose-400" />}
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-white/15 bg-slate-100 dark:bg-white/10 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200 shadow-sm">
+                  {isVirtual ? <MonitorPlay size={13} className="text-sky-500 dark:text-sky-400" /> : <MapPin size={13} className="text-rose-500 dark:text-rose-400" />}
                   {isVirtual ? 'Virtual Online Event' : 'In-Person Global Summit'}
                 </span>
 
                 {event.is_featured && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 text-xs font-black uppercase">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 px-3 py-1 text-xs font-black uppercase shadow-sm">
                     ⭐ Featured Summit
                   </span>
                 )}
               </div>
 
               {/* Event Title */}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.15] tracking-tight text-white">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.15] tracking-tight text-slate-900 dark:text-white">
                 {event.title}
               </h1>
 
               {/* Organizer Byline */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full border-2 border-white/20 overflow-hidden bg-white/10 shrink-0 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full border-2 border-slate-200 dark:border-white/20 overflow-hidden bg-slate-100 dark:bg-white/10 shrink-0 flex items-center justify-center shadow-sm">
                   {organizer?.avatar_url ? (
                     <img src={organizer.avatar_url} alt="Organizer" className="w-full h-full object-cover" />
                   ) : (
-                    <Building size={18} className="text-purple-400" />
+                    <Building size={18} className="text-[#5a32fa] dark:text-purple-400" />
                   )}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white flex items-center gap-1.5">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                     By {organizer?.full_name || 'WIPA Global Community'}
-                    <span className="text-[10px] bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 px-2 py-0.5 rounded-full font-black">
+                    <span className="text-[10px] bg-yellow-100 dark:bg-yellow-400/20 text-yellow-800 dark:text-yellow-300 border border-yellow-300 dark:border-yellow-400/30 px-2 py-0.5 rounded-full font-black">
                       ⭐ WIPA Verified
                     </span>
                   </p>
-                  <p className="text-xs text-slate-400 font-medium">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                     {organizer?.role || "Women's IP Alliance Leader"}
                   </p>
                 </div>
               </div>
 
               {/* Quick Details Chips */}
-              <div className="flex flex-wrap items-center gap-y-3 gap-x-6 pt-2 border-t border-white/10 text-sm font-bold text-slate-200">
+              <div className="flex flex-wrap items-center gap-y-3 gap-x-6 pt-3 border-t border-slate-100 dark:border-white/10 text-sm font-bold text-slate-700 dark:text-slate-200">
                 <div className="flex items-center gap-2">
-                  <CalendarDays size={16} className="text-[#a78bfa]" />
+                  <CalendarDays size={16} className="text-[#5a32fa] dark:text-[#a78bfa]" />
                   <span>{start ? dateFormatter.format(start) : 'Date to be announced'}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Clock3 size={16} className="text-[#a78bfa]" />
+                  <Clock3 size={16} className="text-[#5a32fa] dark:text-[#a78bfa]" />
                   <span>
                     {start ? timeFormatter.format(start) : '08:00 AM'}
                     {end ? ` – ${timeFormatter.format(end)}` : ''}
@@ -454,7 +454,7 @@ export default function EventDetailsPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <MapPin size={16} className="text-[#a78bfa]" />
+                  <MapPin size={16} className="text-[#5a32fa] dark:text-[#a78bfa]" />
                   <span className="line-clamp-1">{event.location || (isVirtual ? 'Virtual (Online)' : 'Global Venue')}</span>
                 </div>
               </div>
@@ -486,20 +486,20 @@ export default function EventDetailsPage() {
                 )}
 
                 {/* Calendar Dropdown */}
-                <div className="flex items-center gap-2 bg-white/10 rounded-2xl p-1 border border-white/15">
+                <div className="flex items-center gap-2 bg-slate-100 dark:bg-white/10 rounded-2xl p-1 border border-slate-200 dark:border-white/15">
                   <button
                     onClick={() => handleAddToCalendar('google')}
-                    className="px-3 py-2 rounded-xl text-xs font-bold hover:bg-white/10 text-slate-200 transition-colors flex items-center gap-1.5"
+                    className="px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-white dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-all flex items-center gap-1.5 shadow-sm"
                     title="Add to Google Calendar"
                   >
-                    <Calendar size={13} className="text-purple-400" /> Google Cal
+                    <Calendar size={13} className="text-[#5a32fa] dark:text-purple-400" /> Google Cal
                   </button>
                   <button
                     onClick={() => handleAddToCalendar('ics')}
-                    className="px-3 py-2 rounded-xl text-xs font-bold hover:bg-white/10 text-slate-200 transition-colors flex items-center gap-1.5"
+                    className="px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-white dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-all flex items-center gap-1.5 shadow-sm"
                     title="Download Apple iCal (.ics)"
                   >
-                    <CalendarDays size={13} className="text-purple-400" /> Apple / iCal
+                    <CalendarDays size={13} className="text-[#5a32fa] dark:text-purple-400" /> Apple / iCal
                   </button>
                 </div>
               </div>
@@ -508,45 +508,45 @@ export default function EventDetailsPage() {
 
             {/* Right Ticket Preview Card */}
             <div className="lg:col-span-5 xl:col-span-4">
-              <div className="rounded-3xl border border-white/15 bg-white/5 backdrop-blur-xl p-6 shadow-2xl space-y-5">
+              <div className="rounded-3xl border border-slate-200 dark:border-white/15 bg-slate-50/80 dark:bg-white/5 backdrop-blur-xl p-6 shadow-xl space-y-5">
                 
                 {/* Event Cover Image */}
                 {event.cover_image_url ? (
-                  <div className="w-full h-52 rounded-2xl overflow-hidden bg-black/40 border border-white/10 relative shadow-inner">
+                  <div className="w-full h-52 rounded-2xl overflow-hidden bg-slate-200 dark:bg-black/40 border border-slate-200 dark:border-white/10 relative shadow-inner">
                     <img
                       src={event.cover_image_url}
                       alt={event.title}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-black text-white border border-white/20">
+                    <div className="absolute top-3 right-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-black text-white border border-white/20 shadow-md">
                       {priceDisplay}
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full h-44 rounded-2xl bg-gradient-to-br from-purple-900/40 to-slate-900 border border-white/10 flex flex-col items-center justify-center text-purple-300">
+                  <div className="w-full h-44 rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-50 dark:from-purple-900/40 dark:to-slate-900 border border-purple-200 dark:border-white/10 flex flex-col items-center justify-center text-[#5a32fa] dark:text-purple-300">
                     <CalendarDays size={48} className="mb-2 opacity-80" />
                     <span className="text-xs font-black uppercase tracking-widest">{eventCategory}</span>
                   </div>
                 )}
 
                 {/* Attendee Statistics Box */}
-                <div className="p-4 rounded-2xl bg-black/30 border border-white/10 flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-white dark:bg-black/30 border border-slate-200 dark:border-white/10 flex items-center justify-between shadow-sm">
                   <div>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Total Attending</span>
-                    <span className="text-2xl font-black text-white">+{registrationCount}</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Total Attending</span>
+                    <span className="text-2xl font-black text-slate-900 dark:text-white">+{registrationCount}</span>
                   </div>
 
                   <div className="flex -space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-purple-500 border-2 border-slate-900 flex items-center justify-center text-[10px] font-black text-white">W</div>
-                    <div className="w-8 h-8 rounded-full bg-indigo-500 border-2 border-slate-900 flex items-center justify-center text-[10px] font-black text-white">I</div>
-                    <div className="w-8 h-8 rounded-full bg-pink-500 border-2 border-slate-900 flex items-center justify-center text-[10px] font-black text-white">P</div>
-                    <div className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-slate-900 flex items-center justify-center text-[10px] font-black text-white">A</div>
+                    <div className="w-8 h-8 rounded-full bg-purple-500 border-2 border-white dark:border-slate-900 flex items-center justify-center text-[10px] font-black text-white shadow-sm">W</div>
+                    <div className="w-8 h-8 rounded-full bg-indigo-500 border-2 border-white dark:border-slate-900 flex items-center justify-center text-[10px] font-black text-white shadow-sm">I</div>
+                    <div className="w-8 h-8 rounded-full bg-pink-500 border-2 border-white dark:border-slate-900 flex items-center justify-center text-[10px] font-black text-white shadow-sm">P</div>
+                    <div className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 flex items-center justify-center text-[10px] font-black text-white shadow-sm">A</div>
                   </div>
                 </div>
 
                 {/* Quick Registration Status */}
                 <div className="text-center pt-1">
-                  <p className="text-xs text-slate-300 font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
                     {isRegistered
                       ? '🎉 You have a confirmed spot for this event!'
                       : 'Spots are available. Register now to secure your pass.'}
