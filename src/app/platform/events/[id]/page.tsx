@@ -28,7 +28,9 @@ import {
   Mail,
   ArrowRight,
   Handshake,
-  Award
+  Award,
+  ChevronDown,
+  DollarSign
 } from 'lucide-react';
 import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import { supabase } from '@/lib/supabase';
@@ -41,6 +43,7 @@ type Organizer = {
   role: string | null;
   headline?: string | null;
   is_wipa_recommended?: boolean | null;
+  is_verified?: boolean | null;
 };
 
 type EventRecord = {
@@ -54,10 +57,15 @@ type EventRecord = {
   is_virtual: boolean | null;
   cover_image_url: string | null;
   organizer_id: string | null;
+  organizer_name?: string | null;
+  organizer_logo_url?: string | null;
+  organizer_role?: string | null;
   category?: string | null;
   timezone?: string | null;
   meeting_url?: string | null;
+  registration_url?: string | null;
   price?: string | number | null;
+  currency?: string | null;
   current_attendees?: number | null;
   max_attendees: number | null;
   is_featured?: boolean | null;
@@ -71,6 +79,17 @@ type Sponsor = {
   sponsor_website_url: string | null;
   sponsor_tagline: string | null;
 };
+
+const CURRENCIES = [
+  { code: 'USD', symbol: '$', rate: 1.0, label: 'USD ($)' },
+  { code: 'EUR', symbol: '€', rate: 0.92, label: 'EUR (€)' },
+  { code: 'GBP', symbol: '£', rate: 0.79, label: 'GBP (£)' },
+  { code: 'CHF', symbol: 'CHF ', rate: 0.88, label: 'CHF (CHF)' },
+  { code: 'SGD', symbol: 'S$', rate: 1.34, label: 'SGD (S$)' },
+  { code: 'AED', symbol: 'AED ', rate: 3.67, label: 'AED (AED)' }
+] as const;
+
+type CurrencyCode = typeof CURRENCIES[number]['code'];
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   weekday: 'long',
@@ -143,6 +162,8 @@ export default function EventDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyCode>('USD');
+  const [isCurrencyDropdownOpen, setIsCurrencyDropdownOpen] = useState(false);
 
   const loadEvent = useCallback(async () => {
     if (!eventParam) {
@@ -188,7 +209,20 @@ export default function EventDetailsPage() {
   }, [eventParam, user?.id]);
 
   const setupEventData = async (data: any) => {
-    setEvent(data as EventRecord);
+    const isInta = data.slug === 'inta-annual-meeting-2027' || data.id === '36810299-1062-48c6-9691-da1e6d311b17';
+
+    // Enhance record with specific overrides if it's the INTA event
+    const enhancedData: EventRecord = {
+      ...data,
+      organizer_name: isInta ? (data.organizer_name || 'International Trademark Association') : data.organizer_name,
+      organizer_logo_url: isInta ? (data.organizer_logo_url || '/inta-logo.png') : data.organizer_logo_url,
+      organizer_role: isInta ? (data.organizer_role || 'Global Association of Brand Owners & IP Professionals') : data.organizer_role,
+      price: isInta ? (data.price && Number(data.price) > 0 ? data.price : 1800) : data.price,
+      registration_url: isInta ? (data.registration_url || 'https://www.inta.org/meetings/2027-annual-meeting/registration/') : data.registration_url,
+      meeting_url: isInta ? (data.meeting_url || 'https://www.inta.org/meetings/2027-annual-meeting/registration/') : data.meeting_url,
+    };
+
+    setEvent(enhancedData);
 
     // Fetch Registrations Count & User Registration Status
     const [{ count }, sponsorResult, registrationResult, otherEventsResult] = await Promise.all([
@@ -207,8 +241,17 @@ export default function EventDetailsPage() {
     setIsRegistered(Boolean(registrationResult.data));
     setOtherEvents(otherEventsResult.data || []);
 
-    // Fetch Organizer Profile if organizer_id exists
-    if (data.organizer_id) {
+    // Set Organizer
+    if (isInta || enhancedData.organizer_name) {
+      setOrganizer({
+        id: 'inta-org',
+        full_name: enhancedData.organizer_name || 'International Trademark Association',
+        avatar_url: enhancedData.organizer_logo_url || '/inta-logo.png',
+        role: enhancedData.organizer_role || 'Global Association of Brand Owners & IP Professionals',
+        is_wipa_recommended: true,
+        is_verified: true
+      });
+    } else if (data.organizer_id) {
       const { data: prof } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url, role, headline, is_wipa_recommended')
@@ -246,6 +289,25 @@ export default function EventDetailsPage() {
 
   const toggleRegistration = async () => {
     if (!event) return;
+
+    const externalUrl = event.registration_url || event.meeting_url;
+    const isInta = event.slug === 'inta-annual-meeting-2027' || event.id === '36810299-1062-48c6-9691-da1e6d311b17';
+
+    // If there is an external registration redirect URL (e.g. INTA official registration)
+    if (isInta || (externalUrl && externalUrl.startsWith('http') && !externalUrl.includes('meetn.com'))) {
+      if (user?.id) {
+        // Register locally in background if not already
+        if (!isRegistered) {
+          await supabase.from('event_registrations').insert({ event_id: event.id, user_id: user.id });
+          setIsRegistered(true);
+          setRegistrationCount((c) => c + 1);
+        }
+      }
+      // Redirect to official registration page
+      window.open(externalUrl || 'https://www.inta.org/meetings/2027-annual-meeting/registration/', '_blank');
+      return;
+    }
+
     if (!user?.id) {
       router.push('/login?redirect=' + encodeURIComponent(window.location.pathname));
       return;
@@ -318,6 +380,18 @@ export default function EventDetailsPage() {
     }
   };
 
+  // Calculate formatted price based on active currency
+  const isFree = !event?.price || String(event.price) === '0';
+  const basePriceNum = Number(event?.price) || 0;
+
+  const currentCurrencyObj = CURRENCIES.find(c => c.code === selectedCurrency) || CURRENCIES[0];
+  const convertedPrice = Math.round(basePriceNum * currentCurrencyObj.rate);
+  const formattedConvertedPrice = convertedPrice.toLocaleString();
+
+  const priceDisplay = isFree 
+    ? 'Free for Members' 
+    : `${currentCurrencyObj.symbol}${formattedConvertedPrice} ${currentCurrencyObj.code}`;
+
   if (loading) {
     return (
       <div className="flex min-h-[80vh] flex-col items-center justify-center bg-slate-50 dark:bg-[#080b13] gap-4">
@@ -349,11 +423,10 @@ export default function EventDetailsPage() {
     );
   }
 
-  const isFree = !event.price || String(event.price) === '0';
-  const priceDisplay = isFree ? 'Free for Members' : `$${event.price}`;
   const isVirtual = Boolean(event.is_virtual);
   const eventCategory = event.category || 'Summit';
   const hasPhysicalLocation = Boolean(event.location && event.location.trim().length > 0 && !isVirtual);
+  const isIntaEvent = event.slug === 'inta-annual-meeting-2027' || event.id === '36810299-1062-48c6-9691-da1e6d311b17';
 
   return (
     <main className="min-h-screen bg-[#f8f9fc] pb-24 dark:bg-[#080b13] transition-colors">
@@ -380,10 +453,10 @@ export default function EventDetailsPage() {
         </div>
 
         {/* ========================================================================= */}
-        {/* HERO BANNER SECTION */}
+        {/* HERO BANNER SECTION (LIGHT / DARK ALIGNED) */}
         {/* ========================================================================= */}
         <section className="relative overflow-hidden rounded-[2.5rem] bg-white dark:bg-[#0c1020] text-slate-900 dark:text-white shadow-xl dark:shadow-2xl border border-slate-200 dark:border-white/10 mb-8 transition-colors">
-          {/* Glowing Gradient Ambient Lights */}
+          {/* Glowing Ambient Lights */}
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-purple-500/10 dark:from-purple-600/30 via-indigo-500/5 dark:via-indigo-600/20 to-transparent blur-[120px] rounded-full pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-sky-500/10 dark:from-sky-600/20 to-transparent blur-[100px] rounded-full pointer-events-none" />
 
@@ -415,24 +488,28 @@ export default function EventDetailsPage() {
                 {event.title}
               </h1>
 
-              {/* Organizer Byline */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full border-2 border-slate-200 dark:border-white/20 overflow-hidden bg-slate-100 dark:bg-white/10 shrink-0 flex items-center justify-center shadow-sm">
+              {/* Organizer Byline (International Trademark Association for INTA) */}
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl border-2 border-slate-200 dark:border-white/20 overflow-hidden bg-white dark:bg-slate-800 shrink-0 p-1 flex items-center justify-center shadow-sm">
                   {organizer?.avatar_url ? (
-                    <img src={organizer.avatar_url} alt="Organizer" className="w-full h-full object-cover" />
+                    <img 
+                      src={organizer.avatar_url} 
+                      alt={organizer.full_name || "Organizer"} 
+                      className="max-h-full max-w-full object-contain" 
+                    />
                   ) : (
-                    <Building size={18} className="text-[#5a32fa] dark:text-purple-400" />
+                    <Building size={20} className="text-[#5a32fa] dark:text-purple-400" />
                   )}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                    By {organizer?.full_name || 'WIPA Global Community'}
-                    <span className="text-[10px] bg-yellow-100 dark:bg-yellow-400/20 text-yellow-800 dark:text-yellow-300 border border-yellow-300 dark:border-yellow-400/30 px-2 py-0.5 rounded-full font-black">
-                      ⭐ WIPA Verified
+                  <p className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                    By {organizer?.full_name || (isIntaEvent ? 'International Trademark Association' : 'WIPA Global Community')}
+                    <span className="text-[10px] bg-amber-100 dark:bg-amber-400/20 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-400/30 px-2 py-0.5 rounded-full font-black">
+                      {isIntaEvent ? '⭐ INTA Official' : '⭐ WIPA Verified'}
                     </span>
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    {organizer?.role || "Women's IP Alliance Leader"}
+                    {organizer?.role || (isIntaEvent ? 'Global Association of Brand Owners & IP Professionals' : "Women's IP Alliance Leader")}
                   </p>
                 </div>
               </div>
@@ -471,10 +548,10 @@ export default function EventDetailsPage() {
                   }`}
                 >
                   {isRegistered ? <CheckCircle2 size={18} /> : <Ticket size={18} />}
-                  {saving ? 'Updating Status...' : isRegistered ? '✓ You Are Registered' : 'RSVP / Register Now'}
+                  {saving ? 'Processing...' : isIntaEvent ? 'Register on Official INTA Site ↗' : isRegistered ? '✓ You Are Registered' : 'RSVP / Register Now'}
                 </button>
 
-                {event.meeting_url && isRegistered && (
+                {event.meeting_url && isRegistered && !isIntaEvent && (
                   <a
                     href={event.meeting_url}
                     target="_blank"
@@ -506,7 +583,7 @@ export default function EventDetailsPage() {
 
             </div>
 
-            {/* Right Ticket Preview Card */}
+            {/* Right Ticket Preview Card with Dynamic Currency Switcher */}
             <div className="lg:col-span-5 xl:col-span-4">
               <div className="rounded-3xl border border-slate-200 dark:border-white/15 bg-slate-50/80 dark:bg-white/5 backdrop-blur-xl p-6 shadow-xl space-y-5">
                 
@@ -518,14 +595,42 @@ export default function EventDetailsPage() {
                       alt={event.title}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-3 right-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-black text-white border border-white/20 shadow-md">
-                      {priceDisplay}
+                    
+                    {/* Price Tag with Currency Switcher Badge */}
+                    <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-[11px] font-black text-white border border-white/20 shadow-md">
+                      <span>{priceDisplay}</span>
                     </div>
                   </div>
                 ) : (
                   <div className="w-full h-44 rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-50 dark:from-purple-900/40 dark:to-slate-900 border border-purple-200 dark:border-white/10 flex flex-col items-center justify-center text-[#5a32fa] dark:text-purple-300">
                     <CalendarDays size={48} className="mb-2 opacity-80" />
                     <span className="text-xs font-black uppercase tracking-widest">{eventCategory}</span>
+                  </div>
+                )}
+
+                {/* Currency Switcher Control Pill */}
+                {!isFree && (
+                  <div className="p-3 rounded-2xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 flex items-center justify-between shadow-sm">
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                      <DollarSign size={14} className="text-[#5a32fa]" /> Currency:
+                    </span>
+
+                    <div className="flex items-center gap-1">
+                      {CURRENCIES.map((c) => (
+                        <button
+                          key={c.code}
+                          type="button"
+                          onClick={() => setSelectedCurrency(c.code)}
+                          className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${
+                            selectedCurrency === c.code
+                              ? 'bg-[#5a32fa] text-white shadow-sm scale-105'
+                              : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/20'
+                          }`}
+                        >
+                          {c.code}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -547,7 +652,9 @@ export default function EventDetailsPage() {
                 {/* Quick Registration Status */}
                 <div className="text-center pt-1">
                   <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-                    {isRegistered
+                    {isIntaEvent
+                      ? '🎟️ Official registration is open on inta.org.'
+                      : isRegistered
                       ? '🎉 You have a confirmed spot for this event!'
                       : 'Spots are available. Register now to secure your pass.'}
                   </p>
@@ -583,6 +690,30 @@ export default function EventDetailsPage() {
               <div className="prose dark:prose-invert max-w-none">
                 {renderFormattedDescription(event.description)}
               </div>
+
+              {/* Official Registration Action Banner for INTA */}
+              {isIntaEvent && (
+                <div className="p-6 rounded-2xl bg-gradient-to-r from-orange-500/10 via-purple-500/10 to-indigo-500/10 border border-orange-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-white p-1 border border-orange-200 shrink-0 flex items-center justify-center">
+                      <img src="/inta-logo.png" alt="INTA Logo" className="max-h-full max-w-full object-contain" />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-sm text-gray-900 dark:text-white">Official INTA 2027 Portal</h4>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">Complete your delegate badge and hotel booking on the official INTA website.</p>
+                    </div>
+                  </div>
+
+                  <a
+                    href="https://www.inta.org/meetings/2027-annual-meeting/registration/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 rounded-xl bg-[#e35205] hover:bg-[#c94500] text-white font-black text-xs shadow-md transition-all shrink-0 flex items-center gap-1.5"
+                  >
+                    Visit inta.org Registration <ExternalLink size={13} />
+                  </a>
+                </div>
+              )}
             </section>
 
             {/* Event Sponsors & Partners */}
@@ -682,29 +813,56 @@ export default function EventDetailsPage() {
           {/* Right Sidebar (4 cols): Ticket, Location, Organizer, Help */}
           <div className="lg:col-span-4 space-y-6">
             
-            {/* 1. Ticket Action Box */}
+            {/* 1. Ticket Action Box with Live Currency Switcher */}
             <div className="rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0f1422] p-6 shadow-sm space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-white/5">
                 <span className="text-xs font-black uppercase tracking-wider text-gray-400">Pass / Ticket</span>
-                <span className="text-lg font-black text-[#5a32fa] dark:text-purple-300">{priceDisplay}</span>
+                <span className="text-xl font-black text-[#5a32fa] dark:text-purple-300">{priceDisplay}</span>
               </div>
+
+              {/* Currency Selector Buttons */}
+              {!isFree && (
+                <div className="flex items-center justify-between bg-slate-50 dark:bg-white/5 p-2 rounded-xl border border-slate-200 dark:border-white/10">
+                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Select Currency:</span>
+                  <div className="flex items-center gap-1">
+                    {CURRENCIES.map((c) => (
+                      <button
+                        key={c.code}
+                        type="button"
+                        onClick={() => setSelectedCurrency(c.code)}
+                        className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${
+                          selectedCurrency === c.code
+                            ? 'bg-[#5a32fa] text-white shadow-sm'
+                            : 'bg-white dark:bg-black/40 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                        }`}
+                      >
+                        {c.code}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <button
                 onClick={toggleRegistration}
                 disabled={saving}
                 className={`w-full py-4 rounded-2xl font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${
-                  isRegistered
+                  isIntaEvent
+                    ? 'bg-[#e35205] hover:bg-[#c94500] text-white shadow-orange-600/30'
+                    : isRegistered
                     ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20'
                     : 'bg-[#5a32fa] hover:bg-[#4a24db] text-white shadow-purple-600/30'
                 }`}
               >
-                {isRegistered ? <Check size={18} /> : <Ticket size={18} />}
-                {saving ? 'Processing...' : isRegistered ? 'You Are Attending' : 'Register for Event'}
+                {isIntaEvent ? <ExternalLink size={18} /> : isRegistered ? <Check size={18} /> : <Ticket size={18} />}
+                {saving ? 'Processing...' : isIntaEvent ? 'Register on INTA.org ↗' : isRegistered ? 'You Are Attending' : 'Register for Event'}
               </button>
 
               <div className="text-center">
                 <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                  {isRegistered
+                  {isIntaEvent
+                    ? 'Official INTA Annual Meeting registration pass.'
+                    : isRegistered
                     ? 'Need to cancel? Click above to withdraw your RSVP.'
                     : 'Free access for registered Women’s IP Alliance members.'}
                 </p>
@@ -742,9 +900,9 @@ export default function EventDetailsPage() {
               </h3>
 
               <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 overflow-hidden shrink-0 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 overflow-hidden shrink-0 p-1 flex items-center justify-center shadow-sm">
                   {organizer?.avatar_url ? (
-                    <img src={organizer.avatar_url} alt="Organizer" className="w-full h-full object-cover" />
+                    <img src={organizer.avatar_url} alt="Organizer" className="max-h-full max-w-full object-contain" />
                   ) : (
                     <Building size={24} className="text-[#5a32fa]" />
                   )}
@@ -752,13 +910,13 @@ export default function EventDetailsPage() {
 
                 <div className="space-y-1">
                   <h4 className="font-black text-sm text-gray-900 dark:text-white">
-                    {organizer?.full_name || 'WIPA Global Community'}
+                    {organizer?.full_name || (isIntaEvent ? 'International Trademark Association' : 'WIPA Global Community')}
                   </h4>
                   <p className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-tight">
-                    {organizer?.role || "Women's IP Alliance Host"}
+                    {organizer?.role || (isIntaEvent ? 'Global Association of Brand Owners & IP Professionals' : "Women's IP Alliance Host")}
                   </p>
-                  <span className="inline-block mt-1 text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                    Verified Host
+                  <span className="inline-block mt-1 text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                    {isIntaEvent ? 'Official Organizer' : 'Verified Host'}
                   </span>
                 </div>
               </div>
@@ -770,7 +928,7 @@ export default function EventDetailsPage() {
                 <Award size={16} className="text-[#5a32fa]" /> Want to Sponsor this Event?
               </h4>
               <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                Gain brand visibility with 2,000+ intellectual property executives and legal innovators.
+                Gain brand visibility with 10,000+ intellectual property executives and brand counsel.
               </p>
               <Link
                 href={`/platform/events/${event.id}/sponsor`}

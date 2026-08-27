@@ -79,8 +79,10 @@ export default function EventsPage() {
               description: e.description || '',
               cover_image_url: e.cover_image_url,
               color: colors[idx % colors.length],
-              organizerName: 'WIPA Global Community',
+              organizerName: e.organizer_name || (e.slug === 'inta-annual-meeting-2027' ? 'International Trademark Association' : 'WIPA Global Community'),
+              organizerLogo: e.organizer_logo_url || (e.slug === 'inta-annual-meeting-2027' ? '/inta-logo.png' : null),
               organizerIsWipaRecommended: true,
+              registrationUrl: e.registration_url || e.meeting_url,
               event_date: e.event_date
             };
           });
@@ -281,8 +283,18 @@ export default function EventsPage() {
                     <h3 className="text-2xl md:text-3xl font-black mb-1 leading-tight text-gray-900 dark:text-white">
                       {event.title}
                     </h3>
-                    <p className="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-1">
-                      By {event.organizerName} {event.organizerIsWipaRecommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>}
+                    <p className="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
+                      {event.organizerLogo && (
+                        <span className="w-5 h-5 rounded-md bg-white dark:bg-slate-800 p-0.5 border border-gray-200 dark:border-white/10 inline-flex items-center justify-center shrink-0 shadow-sm">
+                          <img src={event.organizerLogo} alt="" className="max-h-full max-w-full object-contain" />
+                        </span>
+                      )}
+                      <span>By {event.organizerName}</span>
+                      {event.organizerIsWipaRecommended && (
+                        <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-0.5 rounded-full whitespace-nowrap font-black">
+                          {event.title.includes('INTA') ? '⭐ INTA Official' : '⭐ WIPA'}
+                        </span>
+                      )}
                     </p>
                     
                     <p className="text-gray-600 dark:text-gray-400 font-medium mb-8 text-sm md:text-base line-clamp-2">
