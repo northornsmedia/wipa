@@ -55,6 +55,48 @@ const ASSOCIATION_SUBCATEGORIES = [
   { value: 'Social Media Handles and Domain Conflicts', label: 'Social Media Handles and Domain Conflicts', icon: BookOpen }
 ];
 
+const ATTORNEY_SUBCATEGORIES = [
+  { value: '', label: 'All', icon: Globe },
+  { value: 'Account Manager', label: 'Account Manager', icon: Users },
+  { value: 'Associate', label: 'Associate', icon: Briefcase },
+  { value: 'Biotech', label: 'Biotech', icon: Sparkles },
+  { value: 'Brand protection', label: 'Brand protection', icon: CheckCircle2 },
+  { value: 'Cancellation application', label: 'Cancellation application', icon: FileText },
+  { value: 'Cease & Desits', label: 'Cease & Desits', icon: FileText },
+  { value: 'Certificates', label: 'Certificates', icon: Award },
+  { value: 'Circuit layouts', label: 'Circuit layouts', icon: LayoutGrid },
+  { value: 'Compliance', label: 'Compliance', icon: CheckCircle2 },
+  { value: 'Consumer brands', label: 'Consumer brands', icon: Sparkles },
+  { value: 'Contracts', label: 'Contracts', icon: FileText },
+  { value: 'Copyright', label: 'Copyright', icon: BookOpen },
+  { value: 'Copyright Protections', label: 'Copyright Protections', icon: BookOpen },
+  { value: 'Copyright service', label: 'Copyright service', icon: BookOpen },
+  { value: 'Counseling', label: 'Counseling', icon: UsersRound },
+  { value: 'Counterfeit', label: 'Counterfeit', icon: Sparkles },
+  { value: 'Cybersquatting', label: 'Cybersquatting', icon: Globe },
+  { value: 'Data protection', label: 'Data protection', icon: Sparkles },
+  { value: 'Doc Management', label: 'Doc Management', icon: FileText },
+  { value: 'Domain Management', label: 'Domain Management', icon: Globe },
+  { value: 'Domain Name Disputes', label: 'Domain Name Disputes', icon: Globe },
+  { value: 'Domain Name in Mergers and Acquisitions', label: 'Domain Name in Mergers and Acquisitions', icon: Globe },
+  { value: 'Domain registration', label: 'Domain registration', icon: Globe },
+  { value: 'Drafting', label: 'Drafting', icon: FileText },
+  { value: 'Ecommerce', label: 'Ecommerce', icon: LayoutGrid },
+  { value: 'Enforcement', label: 'Enforcement', icon: ArrowUpRight },
+  { value: 'Enforcement of Rights', label: 'Enforcement of Rights', icon: ArrowUpRight },
+  { value: 'Foreign Associates', label: 'Foreign Associates', icon: Globe },
+  { value: 'Founder & CEO', label: 'Founder & CEO', icon: Briefcase },
+  { value: 'Franchise', label: 'Franchise', icon: Briefcase },
+  { value: 'Freedom to operate', label: 'Freedom to operate', icon: CheckCircle2 },
+  { value: 'Industrial design', label: 'Industrial design', icon: LayoutGrid },
+  { value: 'Innovation', label: 'Innovation', icon: Sparkles },
+  { value: 'Int registrations', label: 'Int registrations', icon: Globe },
+  { value: 'Invoicing services', label: 'Invoicing services', icon: FileText },
+  { value: 'IP Dispute', label: 'IP Dispute', icon: ArrowUpRight },
+  { value: 'IP Landscape', label: 'IP Landscape', icon: Sparkles },
+  { value: 'IP Management', label: 'IP Management', icon: Briefcase }
+];
+
 const DEFAULT_SPECIALTY_OPTIONS = [
   { value: '', label: 'Select Sub-Category (All)', icon: Globe },
   { value: 'Patents', label: 'Patents & Inventions', icon: FileText },
@@ -67,6 +109,12 @@ const DEFAULT_SPECIALTY_OPTIONS = [
   { value: 'Pharma', label: 'Life Sciences & Pharma', icon: GraduationCap },
   { value: 'Design', label: 'Design Rights & Trade Dress', icon: LayoutGrid }
 ];
+
+function getSpecialtyOptions(needCategory: string) {
+  if (needCategory === 'IP Associations members') return ASSOCIATION_SUBCATEGORIES;
+  if (needCategory === 'IP Attorneys') return ATTORNEY_SUBCATEGORIES;
+  return DEFAULT_SPECIALTY_OPTIONS;
+}
 
 export default function MembersDirectoryPage() {
   const { user } = useAppStore();
@@ -477,7 +525,7 @@ export default function MembersDirectoryPage() {
                             }`}
                           >
                             <span className="truncate text-gray-800 dark:text-gray-100 font-semibold">
-                              {(needCategory === 'IP Associations members' ? ASSOCIATION_SUBCATEGORIES : DEFAULT_SPECIALTY_OPTIONS).find(o => o.value === specialty)?.label || (needCategory === 'IP Associations members' ? 'All' : 'Select Sub-Category')}
+                              {getSpecialtyOptions(needCategory).find(o => o.value === specialty)?.label || (needCategory === 'IP Associations members' || needCategory === 'IP Attorneys' ? 'All' : 'Select Sub-Category')}
                             </span>
                             <div className="flex items-center gap-1">
                               {specialty && (
@@ -515,7 +563,7 @@ export default function MembersDirectoryPage() {
                               </div>
 
                               <div className="max-h-60 overflow-y-auto no-scrollbar space-y-0.5">
-                                {(needCategory === 'IP Associations members' ? ASSOCIATION_SUBCATEGORIES : DEFAULT_SPECIALTY_OPTIONS)
+                                {getSpecialtyOptions(needCategory)
                                   .filter(o => o.label.toLowerCase().includes(specFilterText.toLowerCase()))
                                   .map((opt) => {
                                     const IconComp = opt.icon;
