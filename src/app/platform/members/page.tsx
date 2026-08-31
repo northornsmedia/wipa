@@ -1,14 +1,14 @@
 'use client';
 
 import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { 
   Search, UserPlus, MapPin, Briefcase, Mail, ArrowLeft, UsersRound,
   Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, LayoutGrid,
   ThumbsUp, MessageSquare, BookOpen, Calendar, FileText, GraduationCap,
-  Users, Navigation, ChevronDown, X, SlidersHorizontal, Sparkles
+  Users, Navigation, ChevronDown, X, SlidersHorizontal, Sparkles, Check, Globe
 } from 'lucide-react';
 import Link from 'next/link';
 import AdSlot from '@/components/AdSlot';
@@ -28,6 +28,31 @@ type Profile = {
   slug?: string;
 };
 
+const NEED_OPTIONS = [
+  { value: '', label: 'All Categories & Roles', icon: Users, badge: 'All' },
+  { value: 'IP Service providers', label: 'IP Service Providers & Firms', icon: Briefcase, badge: 'Provider' },
+  { value: 'Patent Attorney', label: 'Patent Attorneys & Agents', icon: FileText, badge: 'Patent' },
+  { value: 'Trademark', label: 'Trademark Specialists', icon: CheckCircle2, badge: 'Brand' },
+  { value: 'Litigation', label: 'IP Litigators & Counsel', icon: ArrowUpRight, badge: 'Litigation' },
+  { value: 'In-House', label: 'In-House IP Counsel', icon: GraduationCap, badge: 'Corporate' },
+  { value: 'Law Firm', label: 'IP Law Firms & Practices', icon: LayoutGrid, badge: 'Firm' },
+  { value: 'Consultant', label: 'IP Consultants & Strategists', icon: Sparkles, badge: 'Advisory' },
+  { value: 'Search', label: 'Search & Translation Specialists', icon: Search, badge: 'Research' }
+];
+
+const SPECIALTY_OPTIONS = [
+  { value: '', label: 'Select Sub-Category (All)', icon: Globe },
+  { value: 'Patents', label: 'Patents & Inventions', icon: FileText },
+  { value: 'Trademarks', label: 'Trademarks & Brand Protection', icon: CheckCircle2 },
+  { value: 'Copyright', label: 'Copyright & Digital Media', icon: BookOpen },
+  { value: 'Litigation', label: 'Litigation & Dispute Resolution', icon: ArrowUpRight },
+  { value: 'Licensing', label: 'Licensing & Commercial Deals', icon: Briefcase },
+  { value: 'Trade Secrets', label: 'Trade Secrets & Data Rights', icon: Sparkles },
+  { value: 'AI', label: 'AI & DeepTech IP', icon: Sparkles },
+  { value: 'Pharma', label: 'Life Sciences & Pharma', icon: GraduationCap },
+  { value: 'Design', label: 'Design Rights & Trade Dress', icon: LayoutGrid }
+];
+
 export default function MembersDirectoryPage() {
   const { user } = useAppStore();
   const [members, setMembers] = useState<Profile[]>([]);
@@ -41,6 +66,24 @@ export default function MembersDirectoryPage() {
   const [isConnecting, setIsConnecting] = useState<Record<string, boolean>>({});
   const [isFollowingMap, setIsFollowingMap] = useState<Record<string, boolean>>({});
   const [filter, setFilter] = useState<'all' | 'recommended'>('all');
+
+  const [needOpen, setNeedOpen] = useState(false);
+  const [specOpen, setSpecOpen] = useState(false);
+  const needRef = useRef<HTMLDivElement>(null);
+  const specRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (needRef.current && !needRef.current.contains(event.target as Node)) {
+        setNeedOpen(false);
+      }
+      if (specRef.current && !specRef.current.contains(event.target as Node)) {
+        setSpecOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const fetchMembers = async () => {
     setLoading(true);
@@ -285,161 +328,245 @@ export default function MembersDirectoryPage() {
                 Discover, connect, and collaborate with brilliant minds across the global platform.
               </p>
               
-              {/* ================= EXACT SCREENSHOT DIRECTORY FILTER BAR ================= */}
-              <div className="w-full max-w-5xl text-left mt-2">
-                <div className="bg-[#1e2e46]/95 dark:bg-[#0c182b]/95 backdrop-blur-md rounded-2xl border border-sky-900/40 dark:border-white/10 p-4 sm:p-5 shadow-2xl">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 items-end">
-                    
-                    {/* 1. What do you need: */}
-                    <div className="lg:col-span-4 space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-200 tracking-wide">
-                        What do you need:
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={needCategory}
-                          onChange={(e) => setNeedCategory(e.target.value)}
-                          className="w-full bg-white text-slate-800 text-xs sm:text-sm font-medium py-3 px-3.5 pr-9 rounded-xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00a8cc] appearance-none cursor-pointer"
-                        >
-                          <option value="">IP Service providers</option>
-                          <option value="All">All Categories</option>
-                          <option value="Patent">Patent Attorneys & Agents</option>
-                          <option value="Trademark">Trademark Specialists</option>
-                          <option value="Litigation">IP Litigators & Counsel</option>
-                          <option value="In-House">In-House IP Counsel</option>
-                          <option value="Law Firm">IP Law Firms & Practices</option>
-                          <option value="Consultant">IP Consultants & Strategists</option>
-                        </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400 pointer-events-none">
-                          {needCategory && (
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setNeedCategory(''); }}
-                              className="pointer-events-auto hover:text-slate-600 p-0.5"
-                            >
-                              <X size={13} />
-                            </button>
-                          )}
-                          <ChevronDown size={14} className="text-slate-500" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 2. Specialising in: */}
-                    <div className="lg:col-span-3 space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-200 tracking-wide">
-                        Specialising in:
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={specialty}
-                          onChange={(e) => setSpecialty(e.target.value)}
-                          className="w-full bg-white text-slate-800 text-xs sm:text-sm font-medium py-3 px-3.5 pr-9 rounded-xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00a8cc] appearance-none cursor-pointer"
-                        >
-                          <option value="">Select Sub-Category</option>
-                          <option value="Patents">Patents & Inventions</option>
-                          <option value="Trademarks">Trademarks & Brand Protection</option>
-                          <option value="Copyright">Copyright & Digital Content</option>
-                          <option value="Litigation">Litigation & Enforcement</option>
-                          <option value="Licensing">Licensing & Commercial Deals</option>
-                          <option value="Trade Secrets">Trade Secrets & Data Rights</option>
-                          <option value="AI">AI & DeepTech</option>
-                          <option value="Pharma">Life Sciences & Pharma</option>
-                          <option value="Design">Design Rights & Trade Dress</option>
-                        </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400 pointer-events-none">
-                          {specialty && (
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setSpecialty(''); }}
-                              className="pointer-events-auto hover:text-slate-600 p-0.5"
-                            >
-                              <X size={13} />
-                            </button>
-                          )}
-                          <ChevronDown size={14} className="text-slate-500" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 3. Search by location: */}
-                    <div className="lg:col-span-3 space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-200 tracking-wide">
-                        Search by location:
-                      </label>
-                      <div className="relative flex items-center bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-[#00a8cc]">
-                        <div className="bg-slate-100 px-3 py-3 text-slate-500 border-r border-slate-200 shrink-0 flex items-center justify-center">
-                          <Navigation size={14} className="rotate-45 text-[#00a8cc] fill-current" />
-                        </div>
-                        <input
-                          type="text"
-                          value={locationQuery}
-                          onChange={(e) => setLocationQuery(e.target.value)}
-                          placeholder="City or Post Code"
-                          className="w-full bg-transparent py-2.5 px-3 text-xs sm:text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none"
-                        />
-                        {locationQuery && (
+              {/* ================= PREMIUM WIPA-THEMED DIRECTORY FILTER BAR ================= */}
+              <div className="w-full max-w-5xl text-left mt-2 relative z-30">
+                <div className="relative group/filter">
+                  {/* Subtle Ambient Glow matching page theme */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-[#5a32fa]/25 via-[#ff90e8]/20 to-[#00d26a]/20 rounded-[2rem] blur-xl opacity-75 group-hover/filter:opacity-100 transition duration-700 pointer-events-none" />
+                  
+                  <div className="relative bg-white/90 dark:bg-[#11162b]/95 backdrop-blur-2xl rounded-2xl md:rounded-[1.75rem] border border-purple-200/70 dark:border-purple-500/20 p-4 sm:p-5 md:p-6 shadow-[0_20px_50px_rgba(90,50,250,0.08)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.7)] transition-all">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 sm:gap-4 items-end">
+                      
+                      {/* 1. What do you need: (Custom Animated Dropdown) */}
+                      <div className="lg:col-span-4 space-y-1.5 relative" ref={needRef}>
+                        <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center gap-1.5">
+                          <Briefcase size={13} className="text-[#5a32fa]" />
+                          <span>What do you need:</span>
+                        </label>
+                        
+                        <div className="relative">
                           <button
                             type="button"
-                            onClick={() => setLocationQuery('')}
-                            className="p-2 text-slate-400 hover:text-slate-700"
+                            onClick={() => { setNeedOpen(!needOpen); setSpecOpen(false); }}
+                            className={`w-full bg-white dark:bg-[#182038] text-left text-xs sm:text-sm font-medium py-3 px-3.5 pr-8 rounded-xl border transition-all duration-200 flex items-center justify-between cursor-pointer shadow-sm ${
+                              needOpen 
+                                ? 'border-[#5a32fa] ring-2 ring-[#5a32fa]/20 shadow-md' 
+                                : 'border-gray-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/50'
+                            }`}
                           >
-                            <X size={14} />
+                            <span className="truncate text-gray-800 dark:text-gray-100 font-semibold">
+                              {NEED_OPTIONS.find(o => o.value === needCategory)?.label || 'IP Service providers'}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              {needCategory && (
+                                <span
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setNeedCategory('');
+                                  }}
+                                  className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-full transition-colors"
+                                >
+                                  <X size={13} />
+                                </span>
+                              )}
+                              <ChevronDown 
+                                size={15} 
+                                className={`text-gray-400 transition-transform duration-200 ${needOpen ? 'rotate-180 text-[#5a32fa]' : ''}`} 
+                              />
+                            </div>
+                          </button>
+
+                          {/* Animated Dropdown Menu */}
+                          {needOpen && (
+                            <div className="absolute left-0 right-0 top-full mt-2 bg-white/95 dark:bg-[#161c33]/95 backdrop-blur-2xl border border-purple-200/80 dark:border-purple-500/30 rounded-2xl p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 animate-in fade-in zoom-in-95 duration-150 max-h-64 overflow-y-auto no-scrollbar">
+                              {NEED_OPTIONS.map((opt) => {
+                                const IconComp = opt.icon;
+                                const isSelected = needCategory === opt.value;
+                                return (
+                                  <button
+                                    key={opt.value || 'all'}
+                                    type="button"
+                                    onClick={() => {
+                                      setNeedCategory(opt.value);
+                                      setNeedOpen(false);
+                                    }}
+                                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                                      isSelected
+                                        ? 'bg-purple-100/80 dark:bg-purple-900/40 text-[#5a32fa] dark:text-purple-300 font-bold'
+                                        : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-white/5 hover:text-[#5a32fa] dark:hover:text-purple-300'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2.5 truncate">
+                                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-[#5a32fa] text-white' : 'bg-purple-50 dark:bg-purple-950/50 text-[#5a32fa]'}`}>
+                                        <IconComp size={13} />
+                                      </div>
+                                      <span className="truncate">{opt.label}</span>
+                                    </div>
+                                    {isSelected && <Check size={14} className="text-[#5a32fa] shrink-0 ml-2" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 2. Specialising in: (Custom Animated Dropdown) */}
+                      <div className="lg:col-span-3 space-y-1.5 relative" ref={specRef}>
+                        <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center gap-1.5">
+                          <Sparkles size={13} className="text-[#ff90e8]" />
+                          <span>Specialising in:</span>
+                        </label>
+                        
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => { setSpecOpen(!specOpen); setNeedOpen(false); }}
+                            className={`w-full bg-white dark:bg-[#182038] text-left text-xs sm:text-sm font-medium py-3 px-3.5 pr-8 rounded-xl border transition-all duration-200 flex items-center justify-between cursor-pointer shadow-sm ${
+                              specOpen 
+                                ? 'border-[#5a32fa] ring-2 ring-[#5a32fa]/20 shadow-md' 
+                                : 'border-gray-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/50'
+                            }`}
+                          >
+                            <span className="truncate text-gray-800 dark:text-gray-100 font-semibold">
+                              {SPECIALTY_OPTIONS.find(o => o.value === specialty)?.label || 'Select Sub-Category'}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              {specialty && (
+                                <span
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSpecialty('');
+                                  }}
+                                  className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-full transition-colors"
+                                >
+                                  <X size={13} />
+                                </span>
+                              )}
+                              <ChevronDown 
+                                size={15} 
+                                className={`text-gray-400 transition-transform duration-200 ${specOpen ? 'rotate-180 text-[#5a32fa]' : ''}`} 
+                              />
+                            </div>
+                          </button>
+
+                          {/* Animated Dropdown Menu */}
+                          {specOpen && (
+                            <div className="absolute left-0 right-0 top-full mt-2 bg-white/95 dark:bg-[#161c33]/95 backdrop-blur-2xl border border-purple-200/80 dark:border-purple-500/30 rounded-2xl p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 animate-in fade-in zoom-in-95 duration-150 max-h-64 overflow-y-auto no-scrollbar">
+                              {SPECIALTY_OPTIONS.map((opt) => {
+                                const IconComp = opt.icon;
+                                const isSelected = specialty === opt.value;
+                                return (
+                                  <button
+                                    key={opt.value || 'all'}
+                                    type="button"
+                                    onClick={() => {
+                                      setSpecialty(opt.value);
+                                      setSpecOpen(false);
+                                    }}
+                                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                                      isSelected
+                                        ? 'bg-purple-100/80 dark:bg-purple-900/40 text-[#5a32fa] dark:text-purple-300 font-bold'
+                                        : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-white/5 hover:text-[#5a32fa] dark:hover:text-purple-300'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2.5 truncate">
+                                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-[#5a32fa] text-white' : 'bg-purple-50 dark:bg-purple-950/50 text-[#5a32fa]'}`}>
+                                        <IconComp size={13} />
+                                      </div>
+                                      <span className="truncate">{opt.label}</span>
+                                    </div>
+                                    {isSelected && <Check size={14} className="text-[#5a32fa] shrink-0 ml-2" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 3. Search by location: */}
+                      <div className="lg:col-span-3 space-y-1.5">
+                        <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center gap-1.5">
+                          <MapPin size={13} className="text-[#00d26a]" />
+                          <span>Search by location:</span>
+                        </label>
+                        <div className="relative flex items-center bg-white dark:bg-[#182038] rounded-xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-[#5a32fa]/30 focus-within:border-[#5a32fa] transition-all">
+                          <div className="bg-purple-50 dark:bg-purple-950/40 px-3 py-3 text-slate-500 border-r border-gray-100 dark:border-white/10 shrink-0 flex items-center justify-center">
+                            <Navigation size={14} className="rotate-45 text-[#5a32fa] fill-current" />
+                          </div>
+                          <input
+                            type="text"
+                            value={locationQuery}
+                            onChange={(e) => setLocationQuery(e.target.value)}
+                            placeholder="City or Post Code"
+                            className="w-full bg-transparent py-2.5 px-3 text-xs sm:text-sm font-semibold text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none"
+                          />
+                          {locationQuery && (
+                            <button
+                              type="button"
+                              onClick={() => setLocationQuery('')}
+                              className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors"
+                            >
+                              <X size={14} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* 4. Search Now Action Button (WIPA Vibrant Gradient) */}
+                      <div className="lg:col-span-2">
+                        <button
+                          type="button"
+                          onClick={fetchMembers}
+                          className="w-full bg-gradient-to-r from-[#5a32fa] via-[#7c3aed] to-[#ff90e8] hover:from-[#4c28db] hover:to-[#f472b6] active:scale-[0.97] text-white font-bold text-xs sm:text-sm py-3 px-4 rounded-xl shadow-lg shadow-purple-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer h-[46px] group"
+                        >
+                          <Search size={15} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
+                          <span>Search Now</span>
+                        </button>
+                      </div>
+
+                    </div>
+
+                    {/* Fast live keyword search & active filter pill reset bar */}
+                    <div className="mt-4 pt-3.5 border-t border-purple-100 dark:border-white/10 flex flex-wrap items-center gap-2.5 text-xs">
+                      <div className="relative flex-1 min-w-[200px] max-w-md">
+                        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                        <input
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="Instant search by name, firm, or bio..."
+                          className="w-full bg-gray-50 dark:bg-[#182038]/80 text-gray-900 dark:text-white placeholder-gray-400 text-xs rounded-xl pl-8 pr-7 py-2 border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] focus:ring-1 focus:ring-[#5a32fa] transition-all"
+                        />
+                        {searchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => setSearchQuery('')}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:hover:text-white"
+                          >
+                            <X size={12} />
                           </button>
                         )}
                       </div>
-                    </div>
 
-                    {/* 4. Search Now Action Button */}
-                    <div className="lg:col-span-2">
-                      <button
-                        type="button"
-                        onClick={fetchMembers}
-                        className="w-full bg-[#00a8cc] hover:bg-[#0092b3] active:scale-[0.98] text-white font-bold text-xs sm:text-sm py-3 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer h-[46px]"
-                      >
-                        <span>Search Now</span>
-                      </button>
-                    </div>
-
-                  </div>
-
-                  {/* Keyword search & active filter tags */}
-                  <div className="mt-3.5 pt-3 border-t border-slate-700/60 flex flex-wrap items-center gap-2 text-xs">
-                    <div className="relative flex-1 min-w-[200px] max-w-md">
-                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search by name, company, or keyword..."
-                        className="w-full bg-slate-900/60 text-white placeholder-slate-400 text-xs rounded-lg pl-8 pr-7 py-1.5 border border-slate-600/50 focus:outline-none focus:border-[#00a8cc]"
-                      />
-                      {searchQuery && (
+                      {(needCategory || specialty || locationQuery || searchQuery) && (
                         <button
-                          type="button"
-                          onClick={() => setSearchQuery('')}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                          onClick={() => {
+                            setNeedCategory('');
+                            setSpecialty('');
+                            setLocationQuery('');
+                            setSearchQuery('');
+                          }}
+                          className="text-[#5a32fa] dark:text-purple-400 hover:underline ml-auto text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
                         >
                           <X size={12} />
+                          Reset All Filters
                         </button>
                       )}
                     </div>
 
-                    {(needCategory || specialty || locationQuery || searchQuery) && (
-                      <button
-                        onClick={() => {
-                          setNeedCategory('');
-                          setSpecialty('');
-                          setLocationQuery('');
-                          setSearchQuery('');
-                        }}
-                        className="text-cyan-300 hover:text-cyan-200 underline ml-auto text-xs font-semibold cursor-pointer"
-                      >
-                        Reset All Filters
-                      </button>
-                    )}
                   </div>
-
                 </div>
               </div>
             </div>
