@@ -373,7 +373,7 @@ export default function CreatePostPage() {
       <header className="shrink-0 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800/80 px-4 h-14 flex items-center justify-between pt-safe z-10">
         <button
           onClick={handleCloseComposer}
-          className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-200 flex items-center justify-center active:scale-90 transition-transform"
+          className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-200 flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
           aria-label="Cancel and close"
         >
           <X size={20} />
@@ -383,29 +383,7 @@ export default function CreatePostPage() {
           New post
         </h1>
 
-        <button
-          onClick={handlePublish}
-          disabled={isPostEmpty || isPublishing || publishSuccess}
-          className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm ${
-            isPostEmpty || isPublishing
-              ? 'bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-              : 'bg-[#5a32fa] hover:bg-[#4a24db] text-white active:scale-95 shadow-[#5a32fa]/30'
-          }`}
-        >
-          {isPublishing ? (
-            <>
-              <Loader2 size={13} className="animate-spin" />
-              <span>Posting...</span>
-            </>
-          ) : publishSuccess ? (
-            <>
-              <Check size={14} className="text-emerald-400" />
-              <span>Shared!</span>
-            </>
-          ) : (
-            <span>{publishFailed ? 'Try again' : 'Share'}</span>
-          )}
-        </button>
+        <div className="w-9 h-9" />
       </header>
 
       {/* MAIN CONTENT AREA */}
