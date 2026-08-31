@@ -183,7 +183,7 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
           <div className="px-5 pb-6 pt-2 bg-transparent shrink-0">
             <PromptInput
               onSubmit={handleSend}
-              placeholder="Ask Sally 4.1 Pro (e.g. 101 case law, claim review)..."
+              placeholder="Ask Sally 4.1 Pro..."
               disabled={isTyping}
               models={[
                 "Sally 4.1 Pro (LexisNexis® Deep Legal)",

@@ -831,7 +831,7 @@ export const PromptInput = React.forwardRef<HTMLDivElement, PromptInputProps>(
               onClick={expand}
               style={{ transition: isSmoothResize ? "none" : "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)" }}
               className={cn(
-                "absolute inset-x-0 top-0 z-[1] cursor-text pl-4 pr-12 py-[15px] text-left text-sm font-medium leading-[17px] text-gray-500 outline-none",
+                "absolute inset-x-0 top-0 z-[1] cursor-text pl-4 pr-12 py-[15px] text-left text-sm font-medium leading-[17px] text-gray-500 outline-none truncate block",
                 !expanded ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-105 translate-y-1 pointer-events-none"
               )}
               aria-label="Open prompt input"
