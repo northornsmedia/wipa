@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { optimizeFeedUpload } from '@/lib/feedPerformance';
 import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
-import FormattedPostText from '@/components/FormattedPostText';
+import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
 import ImageCropperModal from '@/components/ImageCropperModal';
 
 export default function ProfilePage() {
@@ -786,33 +786,43 @@ export default function ProfilePage() {
                           </div>
 
                           {/* LinkedIn-Style Content */}
-                          {post.content && (
-                            <div className="mb-3 text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed">
-                              <div>
-                                <FormattedPostText 
-                                  text={post.content.length > 180 && !expandedPosts.has(post.id)
-                                    ? `${post.content.slice(0, 180)}...`
-                                    : post.content} 
-                                />
-                                {post.content.length > 180 && !expandedPosts.has(post.id) && (
+                          {post.content && (() => {
+                            const isExpanded = expandedPosts.has(post.id);
+                            const { preview, hasMore } = getPostPreview(post.content || '');
+                            const displayContent = isExpanded ? (post.content || '') : preview;
+
+                            return (
+                              <div className="mb-3">
+                                <div className="text-sm sm:text-base text-gray-800 dark:text-gray-200 leading-relaxed font-normal inline">
+                                  <FormattedPostText text={displayContent} />
+                                  {hasMore && !isExpanded && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleExpandPost(post.id);
+                                      }}
+                                      className="inline text-gray-500 hover:text-[#5a32fa] dark:text-gray-400 dark:hover:text-[#ff90e8] font-bold text-xs ml-1 cursor-pointer transition-colors"
+                                    >
+                                      ...read more
+                                    </button>
+                                  )}
+                                </div>
+                                {hasMore && isExpanded && (
                                   <button
-                                    onClick={() => toggleExpandPost(post.id)}
-                                    className="text-gray-500 hover:text-[#5a32fa] dark:text-gray-400 dark:hover:text-[#ff90e8] font-bold text-xs ml-1"
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleExpandPost(post.id);
+                                    }}
+                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-medium mt-1.5 block cursor-pointer"
                                   >
-                                    ...read more
+                                    Show less
                                   </button>
                                 )}
                               </div>
-                              {post.content.length > 180 && expandedPosts.has(post.id) && (
-                                <button
-                                  onClick={() => toggleExpandPost(post.id)}
-                                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-medium mt-1 block"
-                                >
-                                  Show less
-                                </button>
-                              )}
-                            </div>
-                          )}
+                            );
+                          })()}
 
                           {/* Post Media Attachments (Images, Videos, Documents/PDFs) */}
                           {post.media_urls && post.media_urls.length > 0 && post.media_urls.map((url: string, mIdx: number) => {

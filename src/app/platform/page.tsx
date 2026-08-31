@@ -20,7 +20,7 @@ import MobileCommentDrawer from '@/components/MobileCommentDrawer';
 import ProgressiveFeedImage from '@/components/ProgressiveFeedImage';
 import FeedShareSheet from '@/components/FeedShareSheet';
 import FeedQuickComposer from '@/components/FeedQuickComposer';
-import FormattedPostText from '@/components/FormattedPostText';
+import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
 import { optimizeFeedUpload, readCachedFeed, writeCachedFeed } from '@/lib/feedPerformance';
 
 const FEED_PAGE_SIZE = 8;
@@ -788,10 +788,8 @@ export default function PlatformPage() {
                   const initial = authorName.charAt(0).toUpperCase();
                   const timeAgo = formatDistanceToNow(parseISO(post.created_at), { addSuffix: true });
                   const isExpanded = expandedPosts.has(post.id);
-                  const isLongText = (post.content || '').length > 180;
-                  const displayContent = isLongText && !isExpanded 
-                    ? `${post.content.slice(0, 180)}...` 
-                    : post.content;
+                  const { preview, hasMore } = getPostPreview(post.content || '');
+                  const displayContent = isExpanded ? (post.content || '') : preview;
                     
                   return (
                     <React.Fragment key={post.id}>
@@ -920,21 +918,29 @@ export default function PlatformPage() {
                       ) : (
                         post.content && (
                           <div className="mb-2.5">
-                            <div className="text-[13px] sm:text-[14px] text-gray-900 dark:text-gray-100 leading-relaxed font-normal">
+                            <div className="text-[13px] sm:text-[14px] text-gray-900 dark:text-gray-100 leading-relaxed font-normal inline">
                               <FormattedPostText text={displayContent} />
-                              {isLongText && !isExpanded && (
+                              {hasMore && !isExpanded && (
                                 <button 
-                                  onClick={() => toggleExpandPost(post.id)} 
-                                  className="text-gray-500 hover:text-[#5a32fa] dark:text-gray-400 dark:hover:text-[#ff90e8] font-bold text-xs ml-1 transition-colors"
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleExpandPost(post.id);
+                                  }} 
+                                  className="inline text-gray-500 hover:text-[#5a32fa] dark:text-gray-400 dark:hover:text-[#ff90e8] font-bold text-xs ml-1 cursor-pointer transition-colors"
                                 >
                                   ...read more
                                 </button>
                               )}
                             </div>
-                            {isLongText && isExpanded && (
+                            {hasMore && isExpanded && (
                               <button 
-                                onClick={() => toggleExpandPost(post.id)} 
-                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-medium mt-1 block"
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleExpandPost(post.id);
+                                }} 
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-medium mt-1.5 block cursor-pointer"
                               >
                                 Show less
                               </button>
