@@ -176,7 +176,7 @@ const DEFAULT_SPECIALTY_OPTIONS = [
 
 function getSpecialtyOptions(needCategory: string) {
   if (needCategory === 'IP Associations members') return ASSOCIATION_SUBCATEGORIES;
-  if (needCategory === 'IP Attorneys') return ATTORNEY_SUBCATEGORIES;
+  if (needCategory === 'IP Attorneys' || needCategory === 'IP Service providers') return ATTORNEY_SUBCATEGORIES;
   if (needCategory === 'IP Organisations') return ORGANISATION_SUBCATEGORIES;
   return DEFAULT_SPECIALTY_OPTIONS;
 }
