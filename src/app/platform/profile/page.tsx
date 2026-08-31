@@ -19,6 +19,7 @@ import { supabase } from '@/lib/supabase';
 import { optimizeFeedUpload } from '@/lib/feedPerformance';
 import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
 import FormattedPostText from '@/components/FormattedPostText';
+import ImageCropperModal from '@/components/ImageCropperModal';
 
 export default function ProfilePage() {
   const { user, setUser } = useAppStore();
@@ -79,6 +80,12 @@ export default function ProfilePage() {
   const [profileSaveError, setProfileSaveError] = useState<string | null>(null);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   
+  // Cover & Avatar Cropper states
+  const [isCoverCropperOpen, setIsCoverCropperOpen] = useState(false);
+  const [coverCropSrc, setCoverCropSrc] = useState<string | null>(null);
+  const [isAvatarCropperOpen, setIsAvatarCropperOpen] = useState(false);
+  const [avatarCropSrc, setAvatarCropSrc] = useState<string | null>(null);
+
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -176,54 +183,80 @@ export default function ProfilePage() {
     fetchProfile();
   }, [user?.id]);
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Avatar Cropper Handlers
+  const onAvatarFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && user?.id) {
-      setAvatarFile(file);
-      const url = URL.createObjectURL(file);
-      setEditForm(prev => ({ ...prev, avatarUrl: url }));
-      setProfileData(prev => ({ ...prev, avatarUrl: url }));
-
-      try {
-        const uploadFile = await optimizeFeedUpload(file, 512, 0.82);
-        const fileName = `${user.id}/avatar.webp`;
-        const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, uploadFile, {
-          upsert: true, cacheControl: '31536000, public, immutable', contentType: 'image/webp'
-        });
-        if (!uploadError) {
-          const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
-          const avatarUrlWithTimestamp = `${data.publicUrl}?t=${Date.now()}`;
-          await supabase.from('profiles').update({ avatar_url: avatarUrlWithTimestamp }).eq('id', user.id);
-          setUser({ ...user, avatar_url: avatarUrlWithTimestamp });
-        }
-      } catch (err) {
-        console.error('Error uploading avatar:', err);
-      }
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setAvatarCropSrc(reader.result as string);
+        setIsAvatarCropperOpen(true);
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
     }
   };
 
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && user?.id) {
-      setIsUploadingCover(true);
-      try {
-        const uploadFile = await optimizeFeedUpload(file, 1600, 0.8);
-        const fileName = `${user.id}/cover.webp`;
-        const { error: uploadError } = await supabase.storage.from('covers').upload(fileName, uploadFile, {
-          upsert: true, cacheControl: '31536000, public, immutable', contentType: 'image/webp'
-        });
-        if (!uploadError) {
-          const { data } = supabase.storage.from('covers').getPublicUrl(fileName);
-          const coverUrlWithTimestamp = `${data.publicUrl}?t=${Date.now()}`;
-          await supabase.from('profiles').update({ cover_url: coverUrlWithTimestamp }).eq('id', user.id);
-          setUser({ ...user, cover_url: coverUrlWithTimestamp });
-          setCoverImage(coverUrlWithTimestamp);
-        }
-      } catch (err) {
-        console.error('Error uploading cover:', err);
-      } finally {
-        setIsUploadingCover(false);
+  const handleAvatarCropComplete = async (croppedBlob: Blob, previewUrl: string) => {
+    if (!user?.id) return;
+    setProfileData(prev => ({ ...prev, avatarUrl: previewUrl }));
+    setEditForm(prev => ({ ...prev, avatarUrl: previewUrl }));
+
+    try {
+      const fileName = `${user.id}/avatar.webp`;
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, croppedBlob, {
+        upsert: true,
+        cacheControl: '31536000, public, immutable',
+        contentType: 'image/webp',
+      });
+      if (!uploadError) {
+        const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+        const avatarUrlWithTimestamp = `${data.publicUrl}?t=${Date.now()}`;
+        await supabase.from('profiles').update({ avatar_url: avatarUrlWithTimestamp }).eq('id', user.id);
+        setUser({ ...user, avatar_url: avatarUrlWithTimestamp });
       }
+    } catch (err) {
+      console.error('Error uploading avatar:', err);
+    }
+  };
+
+  // Cover Cropper Handlers
+  const onCoverFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCoverCropSrc(reader.result as string);
+        setIsCoverCropperOpen(true);
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+  };
+
+  const handleCoverCropComplete = async (croppedBlob: Blob, previewUrl: string) => {
+    if (!user?.id) return;
+    setIsUploadingCover(true);
+    setCoverImage(previewUrl);
+
+    try {
+      const fileName = `${user.id}/cover.webp`;
+      const { error: uploadError } = await supabase.storage.from('covers').upload(fileName, croppedBlob, {
+        upsert: true,
+        cacheControl: '31536000, public, immutable',
+        contentType: 'image/webp',
+      });
+      if (!uploadError) {
+        const { data } = supabase.storage.from('covers').getPublicUrl(fileName);
+        const coverUrlWithTimestamp = `${data.publicUrl}?t=${Date.now()}`;
+        await supabase.from('profiles').update({ cover_url: coverUrlWithTimestamp }).eq('id', user.id);
+        setUser({ ...user, cover_url: coverUrlWithTimestamp });
+        setCoverImage(coverUrlWithTimestamp);
+      }
+    } catch (err) {
+      console.error('Error uploading cover:', err);
+    } finally {
+      setIsUploadingCover(false);
     }
   };
 
@@ -444,7 +477,7 @@ export default function ProfilePage() {
               {isUploadingCover ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
               <span>{isUploadingCover ? 'Uploading...' : 'Edit Cover'}</span>
             </button>
-            <input type="file" ref={coverInputRef} onChange={handleCoverUpload} accept="image/*" className="hidden" />
+            <input type="file" ref={coverInputRef} onChange={onCoverFileSelected} accept="image/*" className="hidden" />
           </div>
 
           {/* Profile Header Info */}
@@ -483,12 +516,12 @@ export default function ProfilePage() {
                 {/* Camera Upload Badge for Photo */}
                 <button 
                   onClick={(e) => { e.stopPropagation(); avatarInputRef.current?.click(); }}
-                  className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 p-2 bg-[#5a32fa] hover:bg-[#4a24db] text-white rounded-full shadow-lg border-2 border-white dark:border-[#151c2c] transition-transform hover:scale-110 z-10"
+                  className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 p-2 bg-[#5a32fa] hover:bg-[#4a24db] text-white rounded-full shadow-lg border-2 border-white dark:border-[#151c2c] transition-transform hover:scale-110 z-10 cursor-pointer"
                   title="Change Profile Photo"
                 >
                   <Camera size={15} />
                 </button>
-                <input type="file" ref={avatarInputRef} onChange={handleAvatarUpload} accept="image/*" className="hidden" />
+                <input type="file" ref={avatarInputRef} onChange={onAvatarFileSelected} accept="image/*" className="hidden" />
                 <input type="file" ref={videoInputRef} onChange={handleVideoUpload} accept="video/*" className="hidden" />
               </div>
 
@@ -1544,6 +1577,37 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      {/* Profile Cover Image Cropper Modal */}
+      <ImageCropperModal
+        isOpen={isCoverCropperOpen}
+        imageSrc={coverCropSrc || ''}
+        title="Position & Crop Cover Banner"
+        recommendedPx="1440 × 450 px (3.2:1 Ratio)"
+        aspectRatio={3.2}
+        shape="banner"
+        showAvatarGuide={true}
+        onClose={() => {
+          setIsCoverCropperOpen(false);
+          setCoverCropSrc(null);
+        }}
+        onCropComplete={handleCoverCropComplete}
+      />
+
+      {/* Profile Avatar Image Cropper Modal */}
+      <ImageCropperModal
+        isOpen={isAvatarCropperOpen}
+        imageSrc={avatarCropSrc || ''}
+        title="Crop Profile Avatar"
+        recommendedPx="600 × 600 px (1:1 Ratio)"
+        aspectRatio={1}
+        shape="rounded"
+        onClose={() => {
+          setIsAvatarCropperOpen(false);
+          setAvatarCropSrc(null);
+        }}
+        onCropComplete={handleAvatarCropComplete}
+      />
 
     </div>
   );
