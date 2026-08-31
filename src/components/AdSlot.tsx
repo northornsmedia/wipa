@@ -263,12 +263,12 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleAdClick}
-          className="block w-full aspect-square bg-black overflow-hidden relative"
+          className="block w-full overflow-hidden relative"
         >
           <img 
             src={ad.banner_image_url} 
-            alt={ad.headline} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            alt={ad.headline || "Sponsored Banner"} 
+            className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500 block" 
           />
           <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-black/70 backdrop-blur-md text-amber-300 border border-amber-400/40">
             {ad.badge_text || "Sponsored"}
