@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 const MOCK_RESEARCH_SUBCATEGORIES = [
   { id: 'all', name: 'All Reports' },
+  { id: 'lexisnexis-exclusives', name: 'LexisNexis® Exclusives' },
   { id: 'wipa-research', name: 'WIPA Research' },
   { id: 'partner', name: 'Partner Research' },
   { id: 'market-data', name: 'Market Data' },
@@ -31,7 +32,7 @@ const MOCK_RESEARCH_RESOURCES = [
     title: "LexisNexis® Top 100 Global Innovators: The Patent Asset Index™ Benchmark",
     type: "Partner Research",
     topic: "Global IP",
-    subcategory: "partner",
+    subcategory: "lexisnexis-exclusives",
     author: "LexisNexis® PatentSight+™ & WIPA Intelligence",
     time: "Published 2026 • Partner Edition",
     featured: true,
@@ -42,11 +43,22 @@ const MOCK_RESEARCH_RESOURCES = [
     title: "5G & 6G Standard Essential Patents (SEPs): IPlytics™ Industry Benchmark",
     type: "White Paper",
     topic: "AI in IP",
-    subcategory: "partner",
+    subcategory: "lexisnexis-exclusives",
     author: "IPlytics™ by LexisNexis®",
     time: "Published 2026 • Exclusive Brief",
     featured: true,
     image: "/resourceimg2.jpg"
+  },
+  {
+    id: 103,
+    title: "USPTO Examiner Prosecution Trends: PatentAdvisor® Efficiency Playbook",
+    type: "Industry Report",
+    topic: "Patent Law",
+    subcategory: "lexisnexis-exclusives",
+    author: "LexisNexis® IP Solutions",
+    time: "Published 2026 • Executive Edition",
+    featured: false,
+    image: "/resource3.jpg"
   },
   {
     id: 1,
@@ -214,20 +226,27 @@ export default function ResearchReportsHubPage() {
           
           {/* Minimalist Tab Navigation */}
           <div className="flex gap-8 overflow-x-auto no-scrollbar border-b border-gray-200 dark:border-white/10">
-            {MOCK_RESEARCH_SUBCATEGORIES.map(sub => (
-              <button
-                key={sub.id}
-                onClick={() => setActiveSub(sub.id)}
-                className={`pb-4 text-sm font-black uppercase tracking-widest transition-colors whitespace-nowrap relative ${
-                  activeSub === sub.id ? 'text-red-500' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                {sub.name}
-                {activeSub === sub.id && (
-                  <span className="absolute bottom-0 left-0 right-0 h-1 bg-red-500 rounded-t-full" />
-                )}
-              </button>
-            ))}
+            {MOCK_RESEARCH_SUBCATEGORIES.map(sub => {
+              const isLexis = sub.id === 'lexisnexis-exclusives';
+              const isActive = activeSub === sub.id;
+              return (
+                <button
+                  key={sub.id}
+                  onClick={() => setActiveSub(sub.id)}
+                  className={`pb-4 text-sm font-black uppercase tracking-widest transition-colors whitespace-nowrap relative flex items-center gap-1.5 ${
+                    isActive 
+                      ? (isLexis ? 'text-blue-600 dark:text-blue-400' : 'text-red-500') 
+                      : (isLexis ? 'text-blue-600/80 hover:text-blue-600 dark:text-blue-400/80' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white')
+                  }`}
+                >
+                  {isLexis && <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />}
+                  <span>{sub.name}</span>
+                  {isActive && (
+                    <span className={`absolute bottom-0 left-0 right-0 h-1 rounded-t-full ${isLexis ? 'bg-blue-600' : 'bg-red-500'}`} />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
