@@ -134,7 +134,13 @@ const ATTORNEY_SUBCATEGORIES = [
   { value: 'TM Management', label: 'TM Management', icon: CheckCircle2 },
   { value: 'TM Prosecution', label: 'TM Prosecution', icon: CheckCircle2 },
   { value: 'TM Renewals', label: 'TM Renewals', icon: CheckCircle2 },
-  { value: 'Trade secrets', label: 'Trade secrets', icon: Sparkles }
+  { value: 'Trade secrets', label: 'Trade secrets', icon: Sparkles },
+  { value: 'Trademark', label: 'Trademark', icon: CheckCircle2 },
+  { value: 'Trademark search', label: 'Trademark search', icon: Search },
+  { value: 'Trademark service', label: 'Trademark service', icon: CheckCircle2 },
+  { value: 'Unfair competition', label: 'Unfair competition', icon: ArrowUpRight },
+  { value: 'Utility Models', label: 'Utility Models', icon: FileText },
+  { value: 'Watch service', label: 'Watch service', icon: Search }
 ];
 
 const DEFAULT_SPECIALTY_OPTIONS = [
