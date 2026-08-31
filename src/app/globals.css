@@ -317,14 +317,12 @@ img, video {
   html {
     font-size: 102%;
   }
+/* Instant Zero-Delay Page Transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none !important;
+  mix-blend-mode: normal !important;
 }
-
-/* Zero-Latency Page Transition Smoothness */
-@view-transition {
-  navigation: auto;
-}
-
-/* PSS sponsor introduction ------------------------------------------------ */
 .pss-sponsor-grid {
   background-image:
     linear-gradient(rgba(14, 165, 233, 0.055) 1px, transparent 1px),

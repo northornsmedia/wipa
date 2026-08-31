@@ -161,7 +161,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
     const active = isActive(path);
     return (
       <Link 
-        prefetch={false} 
+        prefetch={true} 
         href={path} 
         className={`group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 ${
           active 
@@ -271,7 +271,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
               <div className="flex flex-col">
                 <div className="flex items-center group relative">
                   <Link 
-                    prefetch={false} 
+                    prefetch={true} 
                     href="/platform/resources" 
                     className={`group/res relative flex flex-1 items-center justify-between px-3.5 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 pr-10 ${
                       isActive('/platform/resources') || isPublicationRoute
@@ -312,7 +312,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
                       return (
                         <Link 
                           key={item.path}
-                          prefetch={false} 
+
                           href={item.path} 
                           className={`group/sub flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all duration-150 ${
                             isSubActive 
@@ -384,14 +384,14 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
               </span>
             </div>
             {user?.business_profile_id ? (
-              <Link prefetch={false} href="/platform/business" className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-semibold text-slate-700 hover:bg-purple-50 dark:text-slate-300 dark:hover:bg-white/5 transition-colors">
+              <Link href="/platform/business" className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-semibold text-slate-700 hover:bg-purple-50 dark:text-slate-300 dark:hover:bg-white/5 transition-colors">
                 <div className="flex items-center gap-2">
                   <Building2 size={15} className="text-[#5a32fa]" /> My Business
                 </div>
                 <ArrowUpRight size={13} className="text-slate-400" />
               </Link>
             ) : (
-              <Link prefetch={false} href="/platform/business/create" className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-bold text-[#5a32fa] bg-purple-50/80 hover:bg-gradient-to-r hover:from-[#5a32fa] hover:to-[#7c3aed] hover:text-white dark:bg-purple-950/40 dark:text-purple-300 dark:hover:text-white transition-all duration-200 shadow-xs border border-purple-200/50 dark:border-purple-500/20">
+              <Link href="/platform/business/create" className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-bold text-[#5a32fa] bg-purple-50/80 hover:bg-gradient-to-r hover:from-[#5a32fa] hover:to-[#7c3aed] hover:text-white dark:bg-purple-950/40 dark:text-purple-300 dark:hover:text-white transition-all duration-200 shadow-xs border border-purple-200/50 dark:border-purple-500/20">
                 <div className="flex items-center gap-2">
                   <Plus size={14} className="transition-transform group-hover:rotate-90" /> Create Business Profile
                 </div>
@@ -414,7 +414,6 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
                 {upcomingEvents.map((ev) => (
                   <Link 
                     key={ev.id} 
-                    prefetch={false} 
                     href="/platform/calendar" 
                     className="flex items-start gap-2.5 rounded-lg p-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5 transition-colors"
                   >

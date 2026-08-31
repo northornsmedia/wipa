@@ -198,7 +198,6 @@ export default function PlatformHeader() {
           <>
             <div className="flex items-center gap-2">
               <Link 
-                prefetch={false} 
                 href="/platform"
                 onClick={(e) => {
                   const now = Date.now();
@@ -253,7 +252,7 @@ export default function PlatformHeader() {
                 }
 
                 return (
-                  <Link prefetch={false} 
+                  <Link 
                     key={item.name} 
                     href={item.path} 
                     className={`group relative flex h-[42px] w-[54px] flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ease-out ${
@@ -501,7 +500,7 @@ export default function PlatformHeader() {
               <button onClick={() => setIsSearchOpen(true)} className="hidden sm:block">
                 <Search size={20} className="cursor-pointer hover:text-gray-900 dark:text-white transition-colors" />
               </button>
-              <Link prefetch={false} href="/platform/notifications" className="relative cursor-pointer hover:text-gray-900 dark:text-white transition-colors">
+              <Link href="/platform/notifications" className="relative cursor-pointer hover:text-gray-900 dark:text-white transition-colors">
                 <Bell size={20} />
                 {unreadNotificationsCount > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-[3px] bg-red-500 border-2 border-white rounded-full flex items-center justify-center text-[8px] text-white font-bold">
@@ -509,7 +508,7 @@ export default function PlatformHeader() {
                   </span>
                 )}
               </Link>
-              <Link prefetch={false} href="/platform/profile" className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+              <Link href="/platform/profile" className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
                 {user?.avatar_url && (
                   <img src={user.avatar_url} alt={user?.name || 'User'} className="w-8 h-8 rounded-full object-cover" />
                 )}
