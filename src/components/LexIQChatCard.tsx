@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, X, User } from 'lucide-react';
+import { Sparkles, X, User, RotateCcw } from 'lucide-react';
 import { generateLexIQResponse } from '@/app/actions/lexiq';
 import { PromptInput } from './ui/ai-chat-input';
 import LoadingState from './ui/loading-state';
@@ -22,11 +22,26 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Auto-replace any legacy stored "LexIQ" greeting in user's localStorage
+  useEffect(() => {
+    if (messages.some(m => typeof m.content === 'string' && /LexIQ/i.test(m.content))) {
+      const sanitized = messages.map(m => ({
+        ...m,
+        content: typeof m.content === 'string' ? m.content.replace(/LexIQ/gi, 'Sally 4.1 Pro') : m.content
+      }));
+      setMessages(sanitized);
+    }
+  }, [messages, setMessages]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
   if (!isOpen) return null;
+
+  const handleResetChat = () => {
+    setMessages([{ role: 'ai', content: 'Hello! I am Sally 4.1 Pro, your IP assistant. How can I help you today?' }]);
+  };
 
   const handleSend = async (val: string, meta: any) => {
     const text = val.trim();
@@ -55,7 +70,7 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
 
   return (
     <>
-      {/* Backdrop overlay for mobile, invisible on desktop but captures clicks maybe? No let's just make it float */}
+      {/* Backdrop overlay for mobile */}
       <div 
         className={`fixed inset-0 z-[100] pointer-events-none transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
         onClick={(e) => {
@@ -86,12 +101,24 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
                 <p className="text-xs font-bold text-white/80 drop-shadow-sm">Your AI Legal Assistant</p>
               </div>
             </div>
-            <button 
-              onClick={onClose}
-              className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-colors text-white"
-            >
-              <X size={18} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                type="button"
+                onClick={handleResetChat}
+                title="New Chat"
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-colors text-white cursor-pointer"
+              >
+                <RotateCcw size={14} />
+              </button>
+              <button 
+                type="button"
+                onClick={onClose}
+                title="Close"
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-colors text-white cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           {/* Messages Area */}

@@ -204,10 +204,16 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'wipa-storage',
-      version: 2,
+      version: 3,
       migrate: (persistedState: any) => ({
         ...persistedState,
         cachedFeedPosts: [],
+        lexiqMessages: (persistedState?.lexiqMessages || []).map((m: any) => ({
+          ...m,
+          content: typeof m?.content === 'string' 
+            ? m.content.replace(/LexIQ/g, 'Sally 4.1 Pro') 
+            : m.content
+        }))
       }),
       partialize: (state) => {
         const { cachedFeedPosts: _cachedFeedPosts, ...persistedState } = state;
