@@ -28,6 +28,23 @@ const CONTENT_TYPES = [
 
 const MOCK_WEBINAR_RESOURCES = [
   {
+    id: 101,
+    title: "WIPA × LexisNexis® IP Masterclass: Portfolio Valuation & 5G SEPs with PatentSight+™",
+    type: "Masterclass",
+    topic: "Patent Law",
+    subcategory: "patent-law",
+    expert: "LexisNexis® IP Analytics Team & WIPA Senior Counsel",
+    time: "Live Nov 14 • 11:00 AM EST",
+    featured: true,
+    views: "2.4k registered",
+    company: {
+      logo: "/companylogo.png",
+      name: "LexisNexis® IP Solutions",
+      description: "Official global analytics partner of WIPA."
+    },
+    image: "/resourceimg1.jpg"
+  },
+  {
     id: 1,
     title: "AI in Patent Law: Opportunities and Risks",
     type: "Upcoming Webinar",

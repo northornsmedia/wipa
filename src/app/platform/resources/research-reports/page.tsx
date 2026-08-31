@@ -27,6 +27,28 @@ const CONTENT_TYPES = [
 
 const MOCK_RESEARCH_RESOURCES = [
   {
+    id: 101,
+    title: "LexisNexis® Top 100 Global Innovators: The Patent Asset Index™ Benchmark",
+    type: "Partner Research",
+    topic: "Global IP",
+    subcategory: "partner",
+    author: "LexisNexis® PatentSight+™ & WIPA Intelligence",
+    time: "Published 2026 • Partner Edition",
+    featured: true,
+    image: "/resourceimg1.jpg"
+  },
+  {
+    id: 102,
+    title: "5G & 6G Standard Essential Patents (SEPs): IPlytics™ Industry Benchmark",
+    type: "White Paper",
+    topic: "AI in IP",
+    subcategory: "partner",
+    author: "IPlytics™ by LexisNexis®",
+    time: "Published 2026 • Exclusive Brief",
+    featured: true,
+    image: "/resourceimg2.jpg"
+  },
+  {
     id: 1,
     title: "Global Intellectual Property Market Outlook 2026-2030",
     type: "Market Report",
