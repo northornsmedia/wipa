@@ -435,8 +435,6 @@ export async function syncIPNewsToDatabase(): Promise<{
       }
       insertedCount = data?.length || toInsert.length;
 
-      // Maintain rolling top 100 news items (prune older entries)
-      await supabase.rpc('prune_old_ip_news').catch(() => {});
       // Fallback direct cleanup keeping max 140 records
       const { data: allIds } = await supabase
         .from('ip_news')
