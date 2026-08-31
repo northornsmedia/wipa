@@ -9,7 +9,8 @@ const MOCK_ARTICLE_SUBCATEGORIES = [
   { id: 'thought-leadership', name: 'Thought Leadership' },
   { id: 'case-studies', name: 'Case Studies' },
   { id: 'opinions', name: 'Opinions' },
-  { id: 'guides', name: 'Expert Guides' }
+  { id: 'guides', name: 'Expert Guides' },
+  { id: 'lexisnexis-exclusives', name: 'LexisNexis® Exclusives' }
 ];
 
 const CONTENT_TYPES = [
@@ -25,6 +26,39 @@ const CONTENT_TYPES = [
 ];
 
 const MOCK_ARTICLE_RESOURCES = [
+  {
+    id: 101,
+    title: "The Patent Asset Index™ 2026: Benchmark Analysis of Top Global Innovators",
+    type: "Thought Leadership",
+    topic: "Global IP",
+    subcategory: "lexisnexis-exclusives",
+    author: "LexisNexis® PatentSight+™ Research Institute",
+    time: "8 min read",
+    featured: true,
+    image: "/resourceimg1.jpg"
+  },
+  {
+    id: 102,
+    title: "USPTO Examiner Prosecution Analytics & Allowance Strategies: PatentAdvisor® Playbook",
+    type: "Expert Article",
+    topic: "Patent Law",
+    subcategory: "lexisnexis-exclusives",
+    author: "LexisNexis® IP Solutions",
+    time: "10 min read",
+    featured: true,
+    image: "/resourceimg2.jpg"
+  },
+  {
+    id: 103,
+    title: "Navigating 5G & 6G Standard Essential Patents with IPlytics™",
+    type: "Case Study",
+    topic: "AI in IP",
+    subcategory: "lexisnexis-exclusives",
+    author: "IPlytics™ by LexisNexis®",
+    time: "6 min read",
+    featured: false,
+    image: "/resource3.jpg"
+  },
   {
     id: 1,
     title: "Navigating AI Patents in 2026",
@@ -182,20 +216,27 @@ export default function ArticlesInsightsHubPage() {
         <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           
           <div className="flex gap-8 overflow-x-auto no-scrollbar w-full md:w-auto py-4">
-            {MOCK_ARTICLE_SUBCATEGORIES.map(sub => (
-              <button
-                key={sub.id}
-                onClick={() => setActiveSub(sub.id)}
-                className={`relative text-xs font-black uppercase tracking-widest transition-colors whitespace-nowrap ${
-                  activeSub === sub.id ? 'text-emerald-600' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                {sub.name}
-                {activeSub === sub.id && (
-                  <span className="absolute -bottom-4 left-0 right-0 h-0.5 bg-emerald-600 rounded-t-full" />
-                )}
-              </button>
-            ))}
+            {MOCK_ARTICLE_SUBCATEGORIES.map(sub => {
+              const isLexis = sub.id === 'lexisnexis-exclusives';
+              const isActive = activeSub === sub.id;
+              return (
+                <button
+                  key={sub.id}
+                  onClick={() => setActiveSub(sub.id)}
+                  className={`relative text-xs font-black uppercase tracking-widest transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                    isActive 
+                      ? (isLexis ? 'text-blue-600 dark:text-blue-400' : 'text-emerald-600') 
+                      : (isLexis ? 'text-blue-600/80 hover:text-blue-600 dark:text-blue-400/80' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white')
+                  }`}
+                >
+                  {isLexis && <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />}
+                  <span>{sub.name}</span>
+                  {isActive && (
+                    <span className={`absolute -bottom-4 left-0 right-0 h-0.5 rounded-t-full ${isLexis ? 'bg-blue-600' : 'bg-emerald-600'}`} />
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           <div className="w-full md:w-72 flex items-center bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-full px-4 py-2 mb-4 md:mb-0">
