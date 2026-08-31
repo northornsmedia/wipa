@@ -8,7 +8,7 @@ import {
   Search, UserPlus, MapPin, Briefcase, Mail, ArrowLeft, UsersRound,
   Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, LayoutGrid,
   ThumbsUp, MessageSquare, BookOpen, Calendar, FileText, GraduationCap,
-  Users, Navigation, ChevronDown, X, SlidersHorizontal, Sparkles, Check, Globe
+  Users, Navigation, ChevronDown, X, SlidersHorizontal, Sparkles, Check, Globe, Award
 } from 'lucide-react';
 import Link from 'next/link';
 import AdSlot from '@/components/AdSlot';
@@ -36,7 +36,26 @@ const NEED_OPTIONS = [
   { value: 'IP Service providers', label: 'IP Service providers', icon: Sparkles, badge: 'Service Provider' }
 ];
 
-const SPECIALTY_OPTIONS = [
+const ASSOCIATION_SUBCATEGORIES = [
+  { value: '', label: 'All', icon: Globe },
+  { value: '1st deputy reporter', label: '1st deputy reporter', icon: FileText },
+  { value: '1st Deputy Sec General', label: '1st Deputy Sec General', icon: Award },
+  { value: '2nd deputy reporter', label: '2nd deputy reporter', icon: FileText },
+  { value: '2nd Deputy Sec General', label: '2nd Deputy Sec General', icon: Award },
+  { value: 'Branding Strategy', label: 'Branding Strategy', icon: Sparkles },
+  { value: 'CEO', label: 'CEO', icon: Briefcase },
+  { value: 'Emerging Technologies', label: 'Emerging Technologies', icon: Sparkles },
+  { value: 'First vice president', label: 'First vice president', icon: GraduationCap },
+  { value: 'General reporter', label: 'General reporter', icon: FileText },
+  { value: 'General secretariat', label: 'General secretariat', icon: LayoutGrid },
+  { value: 'Internet Governance', label: 'Internet Governance', icon: Globe },
+  { value: 'President', label: 'President', icon: CheckCircle2 },
+  { value: 'Second vice president', label: 'Second vice president', icon: GraduationCap },
+  { value: 'Secretary-General', label: 'Secretary-General', icon: Award },
+  { value: 'Social Media Handles and Domain Conflicts', label: 'Social Media Handles and Domain Conflicts', icon: BookOpen }
+];
+
+const DEFAULT_SPECIALTY_OPTIONS = [
   { value: '', label: 'Select Sub-Category (All)', icon: Globe },
   { value: 'Patents', label: 'Patents & Inventions', icon: FileText },
   { value: 'Trademarks', label: 'Trademarks & Brand Protection', icon: CheckCircle2 },
@@ -106,7 +125,7 @@ export default function MembersDirectoryPage() {
     }
 
     if (specialty && specialty !== 'All') {
-      query = query.or(`practice_area.ilike.%${specialty}%,skills.ilike.%${specialty}%`);
+      query = query.or(`practice_area.ilike.%${specialty}%,skills.ilike.%${specialty}%,role.ilike.%${specialty}%,company.ilike.%${specialty}%,bio.ilike.%${specialty}%`);
     }
 
     if (locationQuery.trim() !== '') {
@@ -414,6 +433,7 @@ export default function MembersDirectoryPage() {
                                       type="button"
                                       onClick={() => {
                                         setNeedCategory(opt.value);
+                                        setSpecialty('');
                                         setNeedOpen(false);
                                         setNeedFilterText('');
                                       }}
@@ -457,7 +477,7 @@ export default function MembersDirectoryPage() {
                             }`}
                           >
                             <span className="truncate text-gray-800 dark:text-gray-100 font-semibold">
-                              {SPECIALTY_OPTIONS.find(o => o.value === specialty)?.label || 'Select Sub-Category'}
+                              {(needCategory === 'IP Associations members' ? ASSOCIATION_SUBCATEGORIES : DEFAULT_SPECIALTY_OPTIONS).find(o => o.value === specialty)?.label || (needCategory === 'IP Associations members' ? 'All' : 'Select Sub-Category')}
                             </span>
                             <div className="flex items-center gap-1">
                               {specialty && (
@@ -495,34 +515,36 @@ export default function MembersDirectoryPage() {
                               </div>
 
                               <div className="max-h-60 overflow-y-auto no-scrollbar space-y-0.5">
-                                {SPECIALTY_OPTIONS.filter(o => o.label.toLowerCase().includes(specFilterText.toLowerCase())).map((opt) => {
-                                  const IconComp = opt.icon;
-                                  const isSelected = specialty === opt.value;
-                                  return (
-                                    <button
-                                      key={opt.value || 'all'}
-                                      type="button"
-                                      onClick={() => {
-                                        setSpecialty(opt.value);
-                                        setSpecOpen(false);
-                                        setSpecFilterText('');
-                                      }}
-                                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                                        isSelected
-                                          ? 'bg-purple-100/80 dark:bg-purple-900/40 text-[#5a32fa] dark:text-purple-300 font-bold'
-                                          : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-white/5 hover:text-[#5a32fa] dark:hover:text-purple-300'
-                                      }`}
-                                    >
-                                      <div className="flex items-center gap-2.5 truncate">
-                                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-[#5a32fa] text-white' : 'bg-purple-50 dark:bg-purple-950/50 text-[#5a32fa]'}`}>
-                                          <IconComp size={13} />
+                                {(needCategory === 'IP Associations members' ? ASSOCIATION_SUBCATEGORIES : DEFAULT_SPECIALTY_OPTIONS)
+                                  .filter(o => o.label.toLowerCase().includes(specFilterText.toLowerCase()))
+                                  .map((opt) => {
+                                    const IconComp = opt.icon;
+                                    const isSelected = specialty === opt.value;
+                                    return (
+                                      <button
+                                        key={opt.value || 'all'}
+                                        type="button"
+                                        onClick={() => {
+                                          setSpecialty(opt.value);
+                                          setSpecOpen(false);
+                                          setSpecFilterText('');
+                                        }}
+                                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                                          isSelected
+                                            ? 'bg-purple-100/80 dark:bg-purple-900/40 text-[#5a32fa] dark:text-purple-300 font-bold'
+                                            : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-white/5 hover:text-[#5a32fa] dark:hover:text-purple-300'
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-2.5 truncate">
+                                          <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-[#5a32fa] text-white' : 'bg-purple-50 dark:bg-purple-950/50 text-[#5a32fa]'}`}>
+                                            <IconComp size={13} />
+                                          </div>
+                                          <span className="truncate">{opt.label}</span>
                                         </div>
-                                        <span className="truncate">{opt.label}</span>
-                                      </div>
-                                      {isSelected && <Check size={14} className="text-[#5a32fa] shrink-0 ml-2" />}
-                                    </button>
-                                  );
-                                })}
+                                        {isSelected && <Check size={14} className="text-[#5a32fa] shrink-0 ml-2" />}
+                                      </button>
+                                    );
+                                  })}
                               </div>
                             </div>
                           )}
