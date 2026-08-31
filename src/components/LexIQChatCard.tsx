@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, X, User, RotateCcw } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { generateLexIQResponse } from '@/app/actions/lexiq';
 import { PromptInput } from './ui/ai-chat-input';
 import LoadingState from './ui/loading-state';
@@ -136,7 +137,7 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
                 )}
                 <div className={`p-3.5 rounded-2xl text-[15px] leading-relaxed shadow-lg backdrop-blur-md border ${
                   msg.role === 'user' 
-                    ? 'bg-black/40 text-white border-white/10 rounded-tr-sm' 
+                    ? 'bg-black/40 text-white border-white/10 rounded-tr-sm whitespace-pre-wrap' 
                     : 'bg-white/30 text-gray-900 border-white/40 rounded-tl-sm shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] font-medium'
                 }`}>
                   {msg.role === 'ai' ? (
@@ -151,7 +152,9 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
                           </div>
                         </details>
                       )}
-                      <div dangerouslySetInnerHTML={{ __html: msg.content }} />
+                      <div className="prose prose-sm dark:prose-invert max-w-none text-gray-900 leading-relaxed [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:list-disc [&>ul]:pl-4 [&>ol]:list-decimal [&>ol]:pl-4 [&_strong]:font-black [&_strong]:text-gray-950">
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      </div>
                     </>
                   ) : (
                     msg.content
