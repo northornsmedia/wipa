@@ -364,66 +364,29 @@ export default function MembersDirectoryPage() {
         type: 'user'
       }));
     }
-      
-    // Also fetch business profiles matching search & filters
-    let bizQuery = supabase.from('business_profiles').select('*').limit(15);
-    if (searchQuery.trim() !== '') {
-      bizQuery = bizQuery.ilike('name', `%${searchQuery}%`);
-    }
-    if (locTokens.length > 0) {
-      const bizConds = locTokens.flatMap(tok => [
-        `headquarters.ilike.%${tok}%`,
-        `description.ilike.%${tok}%`
-      ]).join(',');
-      bizQuery = bizQuery.or(bizConds);
-    }
-    if (specialty && specialty !== 'All') {
-      bizQuery = bizQuery.ilike('practice_areas', `%${specialty}%`);
-    }
-    if (needCategory === 'IP Service providers') {
-      bizQuery = bizQuery.or(`type.eq.service_provider,type.eq.ip_firm`);
-    } else if (needCategory === 'IP Organisations') {
-      bizQuery = bizQuery.or(`type.eq.corporate,type.eq.ip_firm`);
-    }
-
-    const { data: businessData } = await bizQuery;
-    if (businessData) {
-      const mappedBiz = businessData.map(b => ({
-        id: b.id,
-        full_name: b.name,
-        avatar_url: b.logo_url,
-        cover_url: b.cover_image_url,
-        role: b.type?.replace('_', ' '),
-        location: b.headquarters,
-        is_wipa_recommended: b.is_verified,
-        type: 'business',
-        slug: b.slug
-      }));
-      combined = [...mappedBiz, ...combined];
-    }
 
     // Strict client-side location verification
     if (locTokens.length > 0) {
       combined = combined.filter(item => {
-        const hayStack = `${item.country || ''} ${item.location || ''} ${item.headquarters || ''} ${item.bio || ''} ${item.company || ''}`.toLowerCase();
+        const hayStack = `${item.country || ''} ${item.location || ''} ${item.bio || ''} ${item.company || ''}`.toLowerCase();
         return locTokens.some(tok => hayStack.includes(tok.toLowerCase()));
       });
     }
     
     setMembers(combined);
       
-      // Fetch connections & follows involving this user
-      if (user?.id && data && data.length > 0) {
-        const [connRes, followRes] = await Promise.all([
-          supabase
-            .from('connections')
-            .select('*')
-            .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`),
-          supabase
-            .from('follows')
-            .select('following_id')
-            .eq('follower_id', user.id)
-        ]);
+    // Fetch connections & follows involving this user
+    if (user?.id && data && data.length > 0) {
+      const [connRes, followRes] = await Promise.all([
+        supabase
+          .from('connections')
+          .select('*')
+          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`),
+        supabase
+          .from('follows')
+          .select('following_id')
+          .eq('follower_id', user.id)
+      ]);
           
         if (connRes.data) {
           const statuses: Record<string, 'pending' | 'accepted' | 'none'> = {};
@@ -980,11 +943,10 @@ export default function MembersDirectoryPage() {
                 </div>
                 
                 <div className="p-6 pt-12 flex-1 flex flex-col">
-                  <Link href={member.type === 'business' ? `/platform/business/${member.slug}` : `/platform/profile/${member.id}`}>
+                  <Link href={`/platform/profile/${member.id}`}>
                     <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-1 line-clamp-1 hover:text-[#5a32fa] transition-colors cursor-pointer flex items-center gap-2">
                       {member.full_name || 'Anonymous User'}
-                      {member.is_wipa_recommended && <span className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-0.5 rounded-full whitespace-nowrap">⭐ {member.type === 'business' ? 'Verified' : 'WIPA'}</span>}
-                      {member.type === 'business' && <span className="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full whitespace-nowrap uppercase tracking-wider">Business</span>}
+                      {member.is_wipa_recommended && <span className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>}
                     </h3>
                   </Link>
                   <p className="text-[#5a32fa] font-bold text-sm mb-4 flex items-center gap-1">
@@ -993,53 +955,51 @@ export default function MembersDirectoryPage() {
                   
                   <div className="flex flex-col gap-2 mb-6 text-sm font-medium text-gray-500 dark:text-gray-400">
                     <span className="flex items-center gap-2"><MapPin size={16} /> {member.location || 'Global'}</span>
-                    {member.type !== 'business' && <span className="flex items-center gap-2"><Mail size={16} /> Message via platform</span>}
+                    <span className="flex items-center gap-2"><Mail size={16} /> Message via platform</span>
                   </div>
                   
-                  {member.type !== 'business' && (
-                    <div className="mt-auto flex flex-col gap-2">
-                      <div className="flex gap-2">
-                        {/* 1. Connect / Connected Message Action */}
-                        {connectionStatuses[member.id] === 'accepted' ? (
-                          <Link 
-                            href={`/platform/messages?userId=${member.id}`}
-                            className="flex-1 bg-[#5a32fa] text-white font-bold py-2.5 px-4 rounded-xl hover:bg-[#4a26d2] transition-all flex items-center justify-center gap-1.5 text-xs shadow-sm"
-                          >
-                            <MessageSquare size={16} /> Message
-                          </Link>
-                        ) : connectionStatuses[member.id] === 'pending' ? (
-                          <button 
-                            disabled
-                            className="flex-1 bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 font-bold py-2.5 px-4 rounded-xl border border-gray-200 dark:border-white/10 flex items-center justify-center gap-1.5 text-xs cursor-not-allowed"
-                          >
-                            <CheckCircle2 size={16} /> Pending
-                          </button>
-                        ) : (
-                          <button 
-                            onClick={() => handleConnect(member.id)}
-                            disabled={isConnecting[member.id]}
-                            className="flex-1 bg-[#131313] dark:bg-white dark:text-black text-white font-bold py-2.5 px-4 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all flex items-center justify-center gap-1.5 text-xs disabled:opacity-50"
-                          >
-                            <UserPlus size={16} /> {isConnecting[member.id] ? 'Sending...' : 'Connect'}
-                          </button>
-                        )}
-
-                        {/* 2. Asymmetric 1-Way Follow / Following Action */}
-                        <button
-                          onClick={() => handleToggleFollow(member.id)}
-                          disabled={isFollowingMap[member.id]}
-                          className={`px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all border shrink-0 ${
-                            followStatuses[member.id]
-                              ? 'bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#a855f7] border-[#5a32fa]/30 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-300'
-                              : 'bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-white/10 hover:border-[#5a32fa] hover:text-[#5a32fa]'
-                          }`}
+                  <div className="mt-auto flex flex-col gap-2">
+                    <div className="flex gap-2">
+                      {/* 1. Connect / Connected Message Action */}
+                      {connectionStatuses[member.id] === 'accepted' ? (
+                        <Link 
+                          href={`/platform/messages?userId=${member.id}`}
+                          className="flex-1 bg-[#5a32fa] text-white font-bold py-2.5 px-4 rounded-xl hover:bg-[#4a26d2] transition-all flex items-center justify-center gap-1.5 text-xs shadow-sm"
                         >
-                          <Users size={15} />
-                          <span>{followStatuses[member.id] ? 'Following' : 'Follow'}</span>
+                          <MessageSquare size={16} /> Message
+                        </Link>
+                      ) : connectionStatuses[member.id] === 'pending' ? (
+                        <button 
+                          disabled
+                          className="flex-1 bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 font-bold py-2.5 px-4 rounded-xl border border-gray-200 dark:border-white/10 flex items-center justify-center gap-1.5 text-xs cursor-not-allowed"
+                        >
+                          <CheckCircle2 size={16} /> Pending
                         </button>
-                      </div>
+                      ) : (
+                        <button 
+                          onClick={() => handleConnect(member.id)}
+                          disabled={isConnecting[member.id]}
+                          className="flex-1 bg-[#131313] dark:bg-white dark:text-black text-white font-bold py-2.5 px-4 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all flex items-center justify-center gap-1.5 text-xs disabled:opacity-50"
+                        >
+                          <UserPlus size={16} /> {isConnecting[member.id] ? 'Sending...' : 'Connect'}
+                        </button>
+                      )}
+
+                      {/* 2. Asymmetric 1-Way Follow / Following Action */}
+                      <button
+                        onClick={() => handleToggleFollow(member.id)}
+                        disabled={isFollowingMap[member.id]}
+                        className={`px-4 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all border shrink-0 ${
+                          followStatuses[member.id]
+                            ? 'bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#a855f7] border-[#5a32fa]/30 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-300'
+                            : 'bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-white/10 hover:border-[#5a32fa] hover:text-[#5a32fa]'
+                        }`}
+                      >
+                        <Users size={15} />
+                        <span>{followStatuses[member.id] ? 'Following' : 'Follow'}</span>
+                      </button>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
               </Fragment>
