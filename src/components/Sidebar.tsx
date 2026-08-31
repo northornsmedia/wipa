@@ -38,7 +38,8 @@ import {
   Headphones,
   Settings,
   HelpCircle,
-  ExternalLink
+  ExternalLink,
+  Zap
 } from 'lucide-react';
 
 type SidebarProps = {
@@ -148,6 +149,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
     { label: 'Groups', path: '/platform/groups', Icon: Users },
     { label: 'Forums', path: '/platform/forums', Icon: MessageCircle },
     { label: 'Resource Library', path: '/platform/resources', Icon: BookOpen },
+    { label: 'IP Intelligence', path: '/platform/intelligence', Icon: Zap },
     { label: 'Events', path: '/platform/events', Icon: Calendar },
     { label: 'Calendar', path: '/platform/calendar', Icon: Calendar },
     { label: 'Jobs', path: '/platform/jobs', Icon: Briefcase },
@@ -331,6 +333,11 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
                 </div>
               </div>
 
+              {renderNavLink('/platform/intelligence', 'IP Intelligence Hub', Zap, (
+                <span className="rounded-full bg-blue-500/15 border border-blue-500/20 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+                  LexisNexis
+                </span>
+              ))}
               {renderNavLink('/platform/events', 'Events', Calendar)}
               {renderNavLink('/platform/calendar', 'My Calendar', Calendar)}
               {renderNavLink('/platform/jobs', 'Jobs Board', Briefcase)}

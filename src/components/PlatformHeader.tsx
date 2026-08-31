@@ -4,7 +4,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, Home, UsersRound, Globe, Briefcase, Calendar, Star, Bell, X, BookOpen, Sparkles, Building2
+  Search, Home, UsersRound, Globe, Briefcase, Calendar, Star, Bell, X, BookOpen, Sparkles, Building2,
+  Zap, ChevronDown, Activity, BarChart3, ArrowRight, ArrowUpRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -42,11 +43,24 @@ export default function PlatformHeader() {
   const [dbResults, setDbResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
+  const [isLexisNexisFlyoutOpen, setIsLexisNexisFlyoutOpen] = useState(false);
+  const lexisNexisRef = useRef<HTMLDivElement>(null);
   const isLexIQOpen = useAppStore((state) => state.isLexIQOpen);
   const setIsLexIQOpen = useAppStore((state) => state.setIsLexIQOpen);
   const [flyingBox, setFlyingBox] = useState<DOMRect | null>(null);
   const lexiqRef = useRef<HTMLDivElement>(null);
   const lastLogoClickRef = useRef<number>(0);
+
+  // Close LexisNexis flyout when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (lexisNexisRef.current && !lexisNexisRef.current.contains(e.target as Node)) {
+        setIsLexisNexisFlyoutOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -496,6 +510,116 @@ export default function PlatformHeader() {
                   </div>
                 </div>
               </label>
+
+              {/* LexisNexis Suite Quick-Access Flyout Launcher */}
+              <div className="relative" ref={lexisNexisRef}>
+                <button 
+                  onClick={() => setIsLexisNexisFlyoutOpen(!isLexisNexisFlyoutOpen)}
+                  className="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600/15 via-indigo-500/15 to-blue-500/15 hover:from-blue-600/25 hover:to-indigo-500/25 border border-blue-500/30 dark:border-blue-400/30 text-blue-700 dark:text-blue-300 font-bold text-xs shadow-xs transition-all duration-200 cursor-pointer"
+                  title="LexisNexis® IP Intelligence Suite"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                  </span>
+                  <Zap size={13} className="text-blue-600 dark:text-blue-400 fill-blue-500/30" />
+                  <span className="hidden lg:inline font-extrabold tracking-tight">LexisNexis® IP</span>
+                  <ChevronDown size={12} className={`text-blue-500 transition-transform duration-200 ${isLexisNexisFlyoutOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Dropdown Flyout */}
+                <AnimatePresence>
+                  {isLexisNexisFlyoutOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white/95 dark:bg-[#10162a]/95 border border-blue-200/80 dark:border-blue-500/20 shadow-2xl backdrop-blur-2xl p-4 z-[999]"
+                    >
+                      <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/10 mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-[10px]">
+                            LN
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-slate-900 dark:text-white">LexisNexis® IP Suite</div>
+                            <div className="text-[10px] text-slate-500 dark:text-slate-400">Official Global Intelligence Partner</div>
+                          </div>
+                        </div>
+                        <span className="text-[9px] font-black uppercase tracking-wider bg-blue-500/15 text-blue-600 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/20">
+                          Enterprise
+                        </span>
+                      </div>
+
+                      {/* Quick Launch Action Items */}
+                      <div className="space-y-1.5">
+                        <Link 
+                          href="/platform/intelligence"
+                          onClick={() => setIsLexisNexisFlyoutOpen(false)}
+                          className="group flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 dark:hover:bg-white/5 transition-all text-left"
+                        >
+                          <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
+                            <Globe size={16} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center justify-between">
+                              Patent Landscape Visualizer
+                              <ArrowRight size={12} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                            </div>
+                            <div className="text-[11px] text-slate-500 dark:text-slate-400">TotalPatent One® 142M+ global filing trends</div>
+                          </div>
+                        </Link>
+
+                        <Link 
+                          href="/platform/intelligence"
+                          onClick={() => setIsLexisNexisFlyoutOpen(false)}
+                          className="group flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 dark:hover:bg-white/5 transition-all text-left"
+                        >
+                          <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform">
+                            <Activity size={16} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center justify-between">
+                              PatentAdvisor® Predictor
+                              <ArrowRight size={12} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                            </div>
+                            <div className="text-[11px] text-slate-500 dark:text-slate-400">USPTO Art Unit examiner allowance rate heatmap</div>
+                          </div>
+                        </Link>
+
+                        <Link 
+                          href="/platform/intelligence"
+                          onClick={() => setIsLexisNexisFlyoutOpen(false)}
+                          className="group flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 dark:hover:bg-white/5 transition-all text-left"
+                        >
+                          <div className="p-2 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 group-hover:scale-105 transition-transform">
+                            <BarChart3 size={16} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center justify-between">
+                              Patent Asset Index™ Benchmark
+                              <ArrowRight size={12} className="text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                            </div>
+                            <div className="text-[11px] text-slate-500 dark:text-slate-400">Simulate portfolio competitive impact score</div>
+                          </div>
+                        </Link>
+                      </div>
+
+                      {/* Footer Full Launcher */}
+                      <div className="mt-3 pt-3 border-t border-slate-100 dark:border-white/10">
+                        <Link 
+                          href="/platform/intelligence"
+                          onClick={() => setIsLexisNexisFlyoutOpen(false)}
+                          className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md transition-all"
+                        >
+                          Launch Full Command Center <ArrowUpRight size={14} />
+                        </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
               <button onClick={() => setIsSearchOpen(true)} className="hidden sm:block">
                 <Search size={20} className="cursor-pointer hover:text-gray-900 dark:text-white transition-colors" />
