@@ -523,44 +523,35 @@ export default function MembersDirectoryPage() {
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 no-scrollbar">
         <div className="max-w-6xl mx-auto space-y-6 pb-20">
           {/* Hero Section */}
-          <div className="relative rounded-[2.5rem] bg-gradient-to-br from-[#f0ebff] via-[#f8f9fa] to-white dark:from-[#1e1b4b]/50 dark:via-[#0f172a] dark:to-[#0f172a] border border-purple-100/80 dark:border-white/10 shadow-[0_12px_40px_rgba(90,50,250,0.06)] mb-8 z-20">
+          <div className="relative rounded-[2.5rem] bg-gradient-to-b from-purple-50/70 via-white to-white dark:from-[#13182e]/80 dark:via-[#0f172a] dark:to-[#0f172a] border border-purple-100/60 dark:border-white/10 shadow-[0_8px_30px_rgb(90,50,250,0.04)] mb-8 z-20">
             
-            {/* Abstract Background Shapes (isolated in overflow-hidden container) */}
+            {/* Ambient Background Glows */}
             <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden pointer-events-none">
-              <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-gradient-to-br from-[#5a32fa]/15 to-[#ff90e8]/15 blur-3xl mix-blend-multiply dark:mix-blend-screen" />
-              <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-gradient-to-tr from-[#00d26a]/15 to-[#ffc900]/15 blur-3xl mix-blend-multiply dark:mix-blend-screen" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-purple-500/5 blur-3xl" />
+              <div className="absolute -top-10 right-1/4 w-96 h-96 rounded-full bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/10 blur-3xl" />
+              <div className="absolute -bottom-10 left-1/4 w-80 h-80 rounded-full bg-gradient-to-tr from-[#00d26a]/10 to-[#5a32fa]/10 blur-3xl" />
             </div>
             
-            <div className="relative p-6 sm:p-10 md:p-12 lg:p-16 flex flex-col items-center text-center">
-
-              {/* Top Floating Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 dark:bg-white/10 backdrop-blur-md border border-purple-200/80 dark:border-white/10 shadow-sm text-xs font-bold text-[#5a32fa] dark:text-purple-300 mb-4 animate-in fade-in slide-in-from-top-2 duration-500">
-                <Sparkles size={13} className="text-amber-500 animate-pulse" />
-                <span>Global IP Network & Directory</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00d26a] animate-pulse" />
-                <span className="text-gray-500 dark:text-gray-400 font-medium">Verified Professionals</span>
-              </div>
+            <div className="relative p-6 sm:p-10 md:p-14 flex flex-col items-center text-center">
               
               <h1 className="font-black text-4xl sm:text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-gray-950 via-[#5a32fa] to-[#ff79c6] dark:from-white dark:via-purple-300 dark:to-pink-400 tracking-tight mb-3">
                 Members Directory
               </h1>
-              <p className="text-gray-500 dark:text-gray-300 font-medium text-sm sm:text-base md:text-lg max-w-xl mb-8">
-                Discover, connect, and collaborate with leading intellectual property attorneys, associations, and specialists worldwide.
+              <p className="text-gray-500 dark:text-gray-400 font-medium text-sm sm:text-base md:text-lg max-w-xl mb-8">
+                Discover, connect, and collaborate with brilliant minds across the global platform.
               </p>
               
-              {/* ================= PREMIUM WIPA-THEMED DIRECTORY FILTER BAR ================= */}
+              {/* ================= SLEEK WIPA COMMAND FILTER BAR ================= */}
               <div className="w-full max-w-5xl text-left relative z-30">
                 <div className="relative group/filter">
-                  {/* Subtle Ambient Glow matching page theme */}
-                  <div className="absolute -inset-1.5 bg-gradient-to-r from-[#5a32fa]/30 via-[#ff90e8]/25 to-[#00d26a]/20 rounded-[2.25rem] blur-xl opacity-80 group-hover/filter:opacity-100 transition duration-700 pointer-events-none" />
+                  {/* Outer Ambient Glow */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-[#5a32fa]/20 via-[#ff90e8]/15 to-[#00d26a]/15 rounded-[2rem] blur-xl opacity-70 group-hover/filter:opacity-100 transition duration-700 pointer-events-none" />
                   
-                  <div className="relative bg-white/95 dark:bg-[#11162b]/95 backdrop-blur-2xl rounded-[1.75rem] border border-purple-200/80 dark:border-purple-500/25 p-4 sm:p-5 md:p-6 shadow-[0_20px_50px_rgba(90,50,250,0.1)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.8)] transition-all space-y-4">
+                  <div className="relative bg-white/95 dark:bg-[#12182e]/95 backdrop-blur-2xl rounded-2xl md:rounded-[1.75rem] border border-purple-200/80 dark:border-purple-500/20 p-4 sm:p-5 md:p-6 shadow-[0_20px_50px_rgba(90,50,250,0.08)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.7)] transition-all space-y-4">
                     
-                    {/* TOP ROW: 3 Selectors + Search Button */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 sm:gap-4 items-end">
+                    {/* Top Row: 3 Core Dropdowns/Inputs + Search Action Button */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 items-end">
                       
-                      {/* 1. What do you need: (Custom Animated Dropdown) */}
+                      {/* 1. What do you need: */}
                       <div className={`lg:col-span-3 space-y-1.5 relative ${needOpen ? 'z-50' : 'z-20'}`} ref={needRef}>
                         <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center gap-1.5">
                           <Briefcase size={13} className="text-[#5a32fa]" />
@@ -602,7 +593,6 @@ export default function MembersDirectoryPage() {
                           {/* Animated Dropdown Menu with Search */}
                           {needOpen && (
                             <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-[#161c33] backdrop-blur-2xl border border-purple-200/80 dark:border-purple-500/30 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 animate-in fade-in zoom-in-95 duration-150">
-                              {/* Mini Search Filter inside popup */}
                               <div className="relative mb-2 px-1">
                                 <input
                                   type="text"
@@ -651,7 +641,7 @@ export default function MembersDirectoryPage() {
                         </div>
                       </div>
 
-                      {/* 2. Specialising in: (Custom Animated Dropdown) */}
+                      {/* 2. Specialising in: */}
                       <div className={`lg:col-span-3 space-y-1.5 relative ${specOpen ? 'z-50' : 'z-20'}`} ref={specRef}>
                         <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center gap-1.5">
                           <Sparkles size={13} className="text-[#ff90e8]" />
@@ -693,7 +683,6 @@ export default function MembersDirectoryPage() {
                           {/* Animated Dropdown Menu with Search */}
                           {specOpen && (
                             <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-[#161c33] backdrop-blur-2xl border border-purple-200/80 dark:border-purple-500/30 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 animate-in fade-in zoom-in-95 duration-150">
-                              {/* Mini Search Filter inside popup */}
                               <div className="relative mb-2 px-1">
                                 <input
                                   type="text"
@@ -751,7 +740,6 @@ export default function MembersDirectoryPage() {
                         </label>
 
                         <div className="relative flex items-center bg-white dark:bg-[#182038] rounded-xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-[#5a32fa]/30 focus-within:border-[#5a32fa] transition-all">
-                          {/* Geolocation auto-detect button */}
                           <button
                             type="button"
                             onClick={handleDetectLocation}
@@ -848,7 +836,7 @@ export default function MembersDirectoryPage() {
                         )}
                       </div>
 
-                      {/* 4. Search Now Action Button (WIPA Vibrant Gradient) */}
+                      {/* 4. Search Now Action Button */}
                       <div className="lg:col-span-2">
                         <button
                           type="button"
@@ -862,77 +850,43 @@ export default function MembersDirectoryPage() {
 
                     </div>
 
-                    {/* BOTTOM ROW: Fast live keyword search + Popular Quick Filter Chips + Reset */}
-                    <div className="pt-3.5 border-t border-purple-100 dark:border-white/10 flex flex-wrap items-center justify-between gap-3">
-                      <div className="relative flex-1 min-w-[200px] max-w-sm">
-                        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                    {/* Bottom Row: Instant Search + Clean Reset */}
+                    <div className="pt-3 border-t border-purple-100 dark:border-white/10 flex items-center justify-between gap-3">
+                      <div className="relative flex-1">
+                        <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                         <input
                           type="text"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Quick filter by name, firm, or bio..."
-                          className="w-full bg-gray-50/80 dark:bg-[#182038]/80 text-gray-900 dark:text-white placeholder-gray-400 text-xs rounded-xl pl-8 pr-7 py-2.5 border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] focus:ring-1 focus:ring-[#5a32fa] transition-all"
+                          placeholder="Search by practitioner name, company, or practice area..."
+                          className="w-full bg-gray-50/80 dark:bg-[#182038]/80 text-gray-900 dark:text-white placeholder-gray-400 text-xs rounded-xl pl-9 pr-8 py-2.5 border border-gray-200 dark:border-white/10 focus:outline-none focus:border-[#5a32fa] focus:ring-1 focus:ring-[#5a32fa] transition-all"
                         />
                         {searchQuery && (
                           <button
                             type="button"
                             onClick={() => setSearchQuery('')}
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:hover:text-white"
-                          >
-                            <X size={12} />
-                          </button>
-                        )}
-                      </div>
-
-                      {/* Quick Trending Filter Chips */}
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[11px] font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mr-1 hidden sm:inline">
-                          Popular:
-                        </span>
-                        {[
-                          { label: 'Patents', icon: '⚡', action: () => { setNeedCategory('IP Attorneys'); setSpecialty('Patents'); } },
-                          { label: 'Trademarks', icon: '🛡️', action: () => { setNeedCategory('IP Attorneys'); setSpecialty('Trademarks'); } },
-                          { label: 'Litigation', icon: '⚖️', action: () => { setNeedCategory('IP Attorneys'); setSpecialty('Litigation'); } },
-                          { label: 'London', icon: '📍', action: () => setLocationQuery('London') },
-                          { label: 'Delhi', icon: '📍', action: () => setLocationQuery('Delhi') },
-                          { label: 'New York', icon: '📍', action: () => setLocationQuery('New York') },
-                        ].map((chip) => {
-                          const isActive = specialty === chip.label || (locationQuery && locationQuery.toLowerCase().includes(chip.label.toLowerCase()));
-                          return (
-                            <button
-                              key={chip.label}
-                              type="button"
-                              onClick={chip.action}
-                              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 cursor-pointer border ${
-                                isActive
-                                  ? 'bg-[#5a32fa] text-white border-[#5a32fa] shadow-sm shadow-purple-500/30'
-                                  : 'bg-purple-50/60 dark:bg-white/5 text-gray-600 dark:text-gray-300 border-purple-100 dark:border-white/5 hover:border-purple-300 dark:hover:border-purple-500/40 hover:bg-purple-100/50'
-                              }`}
-                            >
-                              <span className="text-[10px]">{chip.icon}</span>
-                              <span>{chip.label}</span>
-                            </button>
-                          );
-                        })}
-
-                        {/* Reset All Filters */}
-                        {(needCategory || specialty || locationQuery || searchQuery) && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setNeedCategory('');
-                              setSpecialty('');
-                              setLocationQuery('');
-                              setSearchQuery('');
-                            }}
-                            className="ml-auto sm:ml-2 px-2.5 py-1 rounded-lg text-xs font-bold text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 transition-all flex items-center gap-1 cursor-pointer"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:hover:text-white"
                           >
                             <X size={13} />
-                            <span>Reset</span>
                           </button>
                         )}
                       </div>
 
+                      {(needCategory || specialty || locationQuery || searchQuery) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNeedCategory('');
+                            setSpecialty('');
+                            setLocationQuery('');
+                            setSearchQuery('');
+                          }}
+                          className="px-3 py-2 rounded-xl text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 transition-all flex items-center gap-1 cursor-pointer shrink-0"
+                        >
+                          <X size={13} />
+                          <span>Reset Filters</span>
+                        </button>
+                      )}
                     </div>
 
                   </div>
