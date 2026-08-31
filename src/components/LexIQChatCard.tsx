@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, X, User, RotateCcw } from 'lucide-react';
+import { Sparkles, X, User, RotateCcw, Shield } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { generateLexIQResponse } from '@/app/actions/lexiq';
 import { PromptInput } from './ui/ai-chat-input';
@@ -89,17 +89,21 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
           }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-5 border-b border-white/10 bg-white/10 backdrop-blur-md shrink-0">
+          <div className="flex items-center justify-between p-4 sm:p-5 border-b border-white/10 bg-white/10 backdrop-blur-md shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg overflow-hidden">
                 <SiriWave variant="wave" size={32} />
               </div>
               <div>
-                <h3 className="font-black text-white text-lg tracking-tight flex items-center gap-2 drop-shadow-md">
-                  Sally 4.1 Pro
-                  <span className="text-[9px] uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full text-white shadow-sm backdrop-blur-sm">Pro</span>
-                </h3>
-                <p className="text-xs font-bold text-white/80 drop-shadow-sm">Your AI Legal Assistant</p>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-black text-white text-lg tracking-tight drop-shadow-md">
+                    Sally 4.1 Pro
+                  </h3>
+                  <span className="text-[9px] uppercase tracking-widest bg-blue-500/30 border border-blue-400/40 px-2 py-0.5 rounded-full text-blue-100 shadow-xs backdrop-blur-sm flex items-center gap-1 font-extrabold">
+                    <Shield size={10} /> LexisNexis® IP
+                  </span>
+                </div>
+                <p className="text-xs font-bold text-white/80 drop-shadow-sm">Deep Legal & Patent Intelligence</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -152,7 +156,7 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
                           </div>
                         </details>
                       )}
-                      <div className="prose prose-sm dark:prose-invert max-w-none text-gray-900 leading-relaxed [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:list-disc [&>ul]:pl-4 [&>ol]:list-decimal [&>ol]:pl-4 [&_strong]:font-black [&_strong]:text-gray-950">
+                      <div className="prose prose-sm dark:prose-invert max-w-none text-gray-900 leading-relaxed [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:list-disc [&>ul]:pl-4 [&>ol]:list-decimal [&>ol]:pl-4 [&_strong]:font-black [&_strong]:text-gray-950 [&_blockquote]:border-l-4 [&_blockquote]:border-blue-600 [&_blockquote]:bg-white/40 [&_blockquote]:p-2.5 [&_blockquote]:rounded-r-xl [&_blockquote]:my-2">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
                     </>
@@ -179,12 +183,18 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
           <div className="px-5 pb-6 pt-2 bg-transparent shrink-0">
             <PromptInput
               onSubmit={handleSend}
-              placeholder="Ask Sally 4.1 Pro..."
+              placeholder="Ask Sally 4.1 Pro (e.g. 101 case law, claim review)..."
               disabled={isTyping}
-              models={["Sally 4.1 Pro", "Sally Gemini", "Sally Fast", "Sally Advanced", "Sally Beta"]}
+              models={[
+                "Sally 4.1 Pro (LexisNexis® Deep Legal)",
+                "Sally 4.1 Pro",
+                "Sally Gemini",
+                "Sally Fast",
+                "Sally Advanced"
+              ]}
             />
             <p className="text-[10px] text-white/50 text-center mt-2 font-medium tracking-wide">
-              For legal news and information Sally 4.1 Pro can make mistakes*
+              Verified in collaboration with LexisNexis® IP • For legal news and info Sally can make mistakes*
             </p>
           </div>
 

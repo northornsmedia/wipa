@@ -74,7 +74,7 @@ export async function generateLexIQResponse(history: any[], selectedModel?: stri
     let openRouterModel = "nvidia/nemotron-3.5-lightning:free"; 
     let apiKey = process.env.OPENROUTER_NEMOTRON_KEY || process.env.OPENROUTER_API_KEY;
 
-    if (selectedModel === "Sally 4.1 Pro" || selectedModel === "Sally Super" || selectedModel === "LexIQ Super") {
+    if (selectedModel?.includes("LexisNexis") || selectedModel === "Sally 4.1 Pro" || selectedModel === "Sally Super" || selectedModel === "LexIQ Super") {
       openRouterModel = "openai/gpt-4o-mini";
       apiKey = "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"; // Old OpenRouter key
     } else if (selectedModel === "Sally Advanced" || selectedModel === "LexIQ Advanced") {
