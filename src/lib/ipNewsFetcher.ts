@@ -307,6 +307,40 @@ function parseRssFeed(xml: string): IPNewsItem[] {
   return items;
 }
 
+function getDistinctiveTokens(title: string): Set<string> {
+  const stopWords = new Set([
+    'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from',
+    'after', 'over', 'and', 'or', 'is', 'are', 'was', 'were', 'be', 'as', 'it',
+    'its', 'this', 'that', 'new', 'says', 'files', 'law', 'court', 'news', 'ip'
+  ]);
+
+  const clean = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !stopWords.has(w));
+
+  return new Set(clean);
+}
+
+function areDuplicateStories(titleA: string, titleB: string): boolean {
+  if (titleA.toLowerCase() === titleB.toLowerCase()) return true;
+  
+  const tokensA = getDistinctiveTokens(titleA);
+  const tokensB = getDistinctiveTokens(titleB);
+  if (tokensA.size === 0 || tokensB.size === 0) return false;
+
+  let commonCount = 0;
+  for (const token of tokensA) {
+    if (tokensB.has(token)) commonCount++;
+  }
+
+  const smallerSize = Math.min(tokensA.size, tokensB.size);
+  const overlapRatio = commonCount / smallerSize;
+
+  return overlapRatio >= 0.7;
+}
+
 export async function fetchLiveIPNews(): Promise<IPNewsItem[]> {
   const feedUrls = [
     'https://www.globalipmagazine.com/blog-feed.xml',
@@ -342,7 +376,8 @@ export async function fetchLiveIPNews(): Promise<IPNewsItem[]> {
       try {
         const parsed = parseRssFeed(result.value);
         for (const item of parsed) {
-          if (!gathered.some(g => g.title.toLowerCase() === item.title.toLowerCase() || g.slug === item.slug)) {
+          const isDuplicate = gathered.some(g => areDuplicateStories(g.title, item.title) || g.slug === item.slug);
+          if (!isDuplicate) {
             gathered.push(item);
           }
         }
@@ -380,15 +415,11 @@ export async function syncIPNewsToDatabase(): Promise<{
       .from('ip_news')
       .select('id, title, slug');
 
-    const existingTitles = new Set(
-      (existingRows || []).map(r => r.title.toLowerCase().trim())
-    );
-    const existingSlugs = new Set(
-      (existingRows || []).map(r => r.slug)
-    );
+    const existingTitles = (existingRows || []).map(r => r.title);
+    const existingSlugs = new Set((existingRows || []).map(r => r.slug));
 
     const toInsert = liveArticles.filter(
-      article => !existingTitles.has(article.title.toLowerCase().trim()) && !existingSlugs.has(article.slug)
+      article => !existingSlugs.has(article.slug) && !existingTitles.some(t => areDuplicateStories(t, article.title))
     );
 
     let insertedCount = 0;
