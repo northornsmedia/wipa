@@ -98,26 +98,31 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
                 campaign_id: ad.is_placement_table ? null : ad.id,
                 event_type: "impression",
                 session_id: sessionId,
-                page_route: window.location.pathname
-              })
+              }),
             }).catch(() => {});
+
+            // Direct DB increment fallback
+            if (ad.is_placement_table && slotId) {
+              supabase.rpc("increment_slot_impressions", { slot_id_arg: slotId }).then();
+            } else if (ad.id) {
+              supabase.rpc("increment_ad_impressions", { campaign_id_arg: ad.id }).then();
+            }
           }
-          observer.disconnect();
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.5 }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
   }, [ad, slotId]);
 
+  // Click Tracking
   const handleAdClick = () => {
     if (!ad) return;
 
     try {
-      let sessionId = typeof window !== "undefined" ? sessionStorage.getItem("wipa_telemetry_sid") || "" : "";
-      
+      let sessionId = sessionStorage.getItem("wipa_telemetry_sid") || `sess_${Date.now()}`;
       fetch("/api/ad-tracking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -126,7 +131,6 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
           campaign_id: ad.is_placement_table ? null : ad.id,
           event_type: "click",
           session_id: sessionId,
-          page_route: typeof window !== "undefined" ? window.location.pathname : "/platform"
         })
       }).catch(() => {});
 
@@ -251,7 +255,7 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
   return (
     <div 
       ref={containerRef}
-      className={`rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative group ${className}`}
+      className={`rounded-3xl overflow-hidden shadow-sm border border-amber-400/30 dark:border-amber-400/20 bg-gradient-to-br from-amber-500/5 via-purple-500/5 to-transparent relative group ${className}`}
     >
       {ad.banner_image_url && (
         <a
@@ -259,43 +263,39 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleAdClick}
-          className="block w-full overflow-hidden relative bg-slate-50 dark:bg-black/30"
+          className="block w-full aspect-square bg-black overflow-hidden relative"
         >
           <img 
             src={ad.banner_image_url} 
-            alt={ad.headline || "Featured Institution"} 
-            className="w-full h-auto min-h-[120px] max-h-[340px] object-contain transition-transform duration-500 group-hover:scale-[1.02] block" 
+            alt={ad.headline} 
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
           />
-          <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/75 backdrop-blur-md text-amber-300 border border-amber-400/40 shadow-sm">
-            {ad.badge_text || "Featured Institution"}
+          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-black/70 backdrop-blur-md text-amber-300 border border-amber-400/40">
+            {ad.badge_text || "Sponsored"}
           </div>
         </a>
       )}
 
-      {(ad.headline || ad.description) && (
-        <div className="p-4 space-y-2">
-          {ad.headline && (
-            <h4 className="text-xs font-black text-gray-900 dark:text-white leading-snug line-clamp-2">
-              {ad.headline}
-            </h4>
-          )}
-          {ad.description && (
-            <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
-              {ad.description}
-            </p>
-          )}
-          <a
-            href={ad.target_url || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleAdClick}
-            className="inline-flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-xl bg-gray-50 hover:bg-[#5a32fa] dark:bg-white/5 text-gray-900 dark:text-white hover:text-white text-xs font-bold transition-all border border-gray-200 dark:border-white/10"
-          >
-            <span>{ad.cta_label || "Learn More"}</span>
-            <ArrowUpRight size={14} />
-          </a>
-        </div>
-      )}
+      <div className="p-4 space-y-2">
+        <h4 className="text-xs font-black text-gray-900 dark:text-white leading-snug line-clamp-2">
+          {ad.headline}
+        </h4>
+        {ad.description && (
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+            {ad.description}
+          </p>
+        )}
+        <a
+          href={ad.target_url || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleAdClick}
+          className="inline-flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-xl bg-white/10 hover:bg-[#5a32fa] text-gray-900 dark:text-white hover:text-white text-xs font-bold transition-all border border-white/10"
+        >
+          <span>{ad.cta_label || "Learn More"}</span>
+          <ArrowUpRight size={14} />
+        </a>
+      </div>
     </div>
   );
 }
