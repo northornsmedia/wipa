@@ -584,6 +584,10 @@ export default function ProfilePage() {
                   </span>
                 )}
 
+                <span className="inline-flex items-center gap-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2.5 py-0.5 rounded-full text-xs font-bold border border-blue-500/20 shadow-xs">
+                  <ShieldCheck size={14} className="text-blue-500" /> LexisNexis® Certified IP Specialist
+                </span>
+
                 {profileData.isWipaRecommended && (
                   <span className="inline-flex items-center gap-1 bg-amber-400/10 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded-full text-xs font-bold border border-amber-400/30 shadow-sm">
                     <Star size={12} className="fill-amber-400 text-amber-400" /> Recommended by WIPA
@@ -1032,9 +1036,51 @@ export default function ProfilePage() {
                       </p>
                     </div>
                   </div>
+
+                  {/* LexisNexis Verified Accreditation */}
+                  <div className="flex gap-4 p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/25 border border-blue-200/80 dark:border-blue-500/20">
+                    <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xl shrink-0 shadow-md font-black text-sm">
+                      LN
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                          LexisNexis® Certified IP Analytics Specialist
+                        </h4>
+                        <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-700 dark:text-blue-300 text-[10px] font-extrabold uppercase">
+                          Verified Badge
+                        </span>
+                      </div>
+                      <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mt-0.5">
+                        PatentSight+™ Portfolio Valuation & TotalPatent One® Search Mastery
+                      </p>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                        Issued in partnership with WIPA • Institutional ID: LN-WIPA-2024-8842
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
+
+            {/* WIPA MEMBER ADVANTAGE: LEXISNEXIS PERK CARD */}
+            <div className="p-6 rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="space-y-1.5 text-center sm:text-left">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[11px] font-extrabold uppercase tracking-wider">
+                  <Sparkles size={12} /> WIPA Member Advantage
+                </div>
+                <h3 className="text-xl font-black">LexisNexis® IP Suite 30-Day Guided Access</h3>
+                <p className="text-xs text-white/90 max-w-xl leading-relaxed">
+                  As an active WIPA member, claim your complimentary 30-day enterprise access to PatentAdvisor® and PatentSight+™ analytics.
+                </p>
+              </div>
+              <Link
+                href="/platform/intelligence"
+                className="px-6 py-3 rounded-2xl bg-white hover:bg-slate-100 text-blue-700 font-black text-xs transition-all shadow-lg shrink-0 cursor-pointer hover:scale-105 active:scale-95"
+              >
+                Launch Intelligence Hub →
+              </Link>
+            </div>
 
             {/* TAB 5: SKILLS & ENDORSEMENTS */}
             {(activeTab === 'skills' || activeTab === 'activity') && (

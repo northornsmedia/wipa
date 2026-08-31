@@ -8,7 +8,7 @@ import {
   Search, UserPlus, MapPin, Briefcase, Mail, ArrowLeft, UsersRound,
   Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, LayoutGrid,
   ThumbsUp, MessageSquare, BookOpen, Calendar, FileText, GraduationCap,
-  Users, Navigation, ChevronDown, X, SlidersHorizontal, Sparkles, Check, Globe, Award, Loader2
+  Users, Navigation, ChevronDown, X, SlidersHorizontal, Sparkles, Check, Globe, Award, Loader2, ShieldCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import AdSlot from '@/components/AdSlot';
@@ -193,7 +193,7 @@ export default function MembersDirectoryPage() {
   const [followStatuses, setFollowStatuses] = useState<Record<string, boolean>>({});
   const [isConnecting, setIsConnecting] = useState<Record<string, boolean>>({});
   const [isFollowingMap, setIsFollowingMap] = useState<Record<string, boolean>>({});
-  const [filter, setFilter] = useState<'all' | 'recommended'>('all');
+  const [filter, setFilter] = useState<'all' | 'recommended' | 'lexis_certified'>('all');
 
   const [needOpen, setNeedOpen] = useState(false);
   const [specOpen, setSpecOpen] = useState(false);
@@ -924,6 +924,18 @@ export default function MembersDirectoryPage() {
                 <span>⭐</span>
                 <span>WIPA Recommended</span>
               </button>
+
+              <button 
+                onClick={() => setFilter(filter === 'lexis_certified' ? 'all' : 'lexis_certified')}
+                className={`px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer ${
+                  filter === 'lexis_certified' 
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/25' 
+                    : 'bg-white dark:bg-[#182038] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:border-blue-300'
+                }`}
+              >
+                <ShieldCheck size={14} className={filter === 'lexis_certified' ? 'text-white' : 'text-blue-500'} />
+                <span>🛡️ LexisNexis® Certified</span>
+              </button>
             </div>
 
             <div className="text-xs font-semibold text-gray-400 dark:text-gray-400 hidden sm:block">
@@ -970,6 +982,13 @@ export default function MembersDirectoryPage() {
                       {member.is_wipa_recommended && <span className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-0.5 rounded-full whitespace-nowrap">⭐ WIPA</span>}
                     </h3>
                   </Link>
+
+                  <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                    <span className="text-[10px] font-extrabold text-blue-600 dark:text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <ShieldCheck size={11} /> LexisNexis® Certified Specialist
+                    </span>
+                  </div>
+
                   <p className="text-[#5a32fa] font-bold text-sm mb-4 flex items-center gap-1">
                     <Briefcase size={14} /> {member.role || 'WIPA Member'}
                   </p>
