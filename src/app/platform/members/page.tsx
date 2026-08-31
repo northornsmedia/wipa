@@ -5,8 +5,11 @@ import { useState, useEffect, Fragment } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { 
-  Search, UserPlus, MapPin, Briefcase, Mail, ArrowLeft, UsersRound
-, Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, LayoutGrid, ThumbsUp, MessageSquare, BookOpen, Calendar, FileText, GraduationCap, Users} from 'lucide-react';
+  Search, UserPlus, MapPin, Briefcase, Mail, ArrowLeft, UsersRound,
+  Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, LayoutGrid,
+  ThumbsUp, MessageSquare, BookOpen, Calendar, FileText, GraduationCap,
+  Users, Navigation, ChevronDown, X, SlidersHorizontal, Sparkles
+} from 'lucide-react';
 import Link from 'next/link';
 import AdSlot from '@/components/AdSlot';
 
@@ -17,6 +20,9 @@ type Profile = {
   cover_url?: string;
   role?: string;
   location?: string;
+  country?: string;
+  practice_area?: string;
+  company?: string;
   is_wipa_recommended?: boolean;
   type?: 'user' | 'business';
   slug?: string;
@@ -26,6 +32,9 @@ export default function MembersDirectoryPage() {
   const { user } = useAppStore();
   const [members, setMembers] = useState<Profile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [needCategory, setNeedCategory] = useState('');
+  const [specialty, setSpecialty] = useState('');
+  const [locationQuery, setLocationQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [connectionStatuses, setConnectionStatuses] = useState<Record<string, 'pending' | 'accepted' | 'none'>>({});
   const [followStatuses, setFollowStatuses] = useState<Record<string, boolean>>({});
@@ -33,94 +42,122 @@ export default function MembersDirectoryPage() {
   const [isFollowingMap, setIsFollowingMap] = useState<Record<string, boolean>>({});
   const [filter, setFilter] = useState<'all' | 'recommended'>('all');
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      setLoading(true);
-      let query = supabase.from('profiles').select('*').limit(50);
+  const fetchMembers = async () => {
+    setLoading(true);
+    let query = supabase.from('profiles').select('*').limit(60);
+    
+    if (searchQuery.trim() !== '') {
+      query = query.or(`full_name.ilike.%${searchQuery}%,bio.ilike.%${searchQuery}%,role.ilike.%${searchQuery}%,practice_area.ilike.%${searchQuery}%,company.ilike.%${searchQuery}%`);
+    }
+
+    if (needCategory && needCategory !== 'All') {
+      query = query.or(`role.ilike.%${needCategory}%,company.ilike.%${needCategory}%,practice_area.ilike.%${needCategory}%`);
+    }
+
+    if (specialty && specialty !== 'All') {
+      query = query.or(`practice_area.ilike.%${specialty}%,skills.ilike.%${specialty}%`);
+    }
+
+    if (locationQuery.trim() !== '') {
+      query = query.or(`country.ilike.%${locationQuery}%,location.ilike.%${locationQuery}%`);
+    }
+
+    // Filter by full_name to safely exclude the current user.
+    if (user?.name) {
+      query = query.neq('full_name', user.name);
+    }
+
+    if (filter === 'recommended') {
+      query = query.eq('is_wipa_recommended', true);
+    } else {
+      // Sort recommended members first when showing all
+      query = query.order('is_wipa_recommended', { ascending: false, nullsFirst: false });
+    }
+
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error("Supabase Error fetching members:", error);
+    }
+    
+    if (!error && data) {
+      let combined = data.map(d => ({
+        ...d, 
+        location: d.country || d.location,
+        type: 'user'
+      })) as any[];
       
+      // Also fetch business profiles matching search & filters
+      let bizQuery = supabase.from('business_profiles').select('*').limit(15);
       if (searchQuery.trim() !== '') {
-        query = query.ilike('full_name', `%${searchQuery}%`);
+        bizQuery = bizQuery.ilike('name', `%${searchQuery}%`);
+      }
+      if (locationQuery.trim() !== '') {
+        bizQuery = bizQuery.ilike('headquarters', `%${locationQuery}%`);
+      }
+      if (specialty && specialty !== 'All') {
+        bizQuery = bizQuery.ilike('practice_areas', `%${specialty}%`);
+      }
+      if (needCategory === 'IP Service providers' || needCategory === 'Law Firm') {
+        bizQuery = bizQuery.eq('type', needCategory === 'Law Firm' ? 'ip_firm' : 'service_provider');
       }
 
-      // Filter by full_name to safely exclude the current user.
-      if (user?.name) {
-        query = query.neq('full_name', user.name);
+      const { data: businessData } = await bizQuery;
+      if (businessData) {
+        const mappedBiz = businessData.map(b => ({
+          id: b.id,
+          full_name: b.name,
+          avatar_url: b.logo_url,
+          cover_url: b.cover_image_url,
+          role: b.type?.replace('_', ' '),
+          location: b.headquarters,
+          is_wipa_recommended: b.is_verified,
+          type: 'business',
+          slug: b.slug
+        }));
+        combined = [...mappedBiz, ...combined];
       }
-
-      if (filter === 'recommended') {
-        query = query.eq('is_wipa_recommended', true);
-      } else {
-        // Sort recommended members first when showing all
-        query = query.order('is_wipa_recommended', { ascending: false, nullsFirst: false });
-      }
-
-      const { data, error } = await query;
       
-      if (error) {
-        console.error("Supabase Error fetching members:", error);
-      }
+      setMembers(combined);
       
-      if (!error && data) {
-        let combined = data.map(d => ({...d, type: 'user'})) as any[];
-        
-        // Also fetch business profiles matching search
-        if (searchQuery.trim() !== '') {
-          const { data: businessData } = await supabase.from('business_profiles').select('*').ilike('name', `%${searchQuery}%`).limit(10);
-          if (businessData) {
-            const mappedBiz = businessData.map(b => ({
-              id: b.id,
-              full_name: b.name,
-              avatar_url: b.logo_url,
-              cover_url: b.cover_image_url,
-              role: b.type?.replace('_', ' '),
-              location: b.headquarters,
-              is_wipa_recommended: b.is_verified,
-              type: 'business',
-              slug: b.slug
-            }));
-            combined = [...mappedBiz, ...combined];
-          }
+      // Fetch connections & follows involving this user
+      if (user?.id && data.length > 0) {
+        const [connRes, followRes] = await Promise.all([
+          supabase
+            .from('connections')
+            .select('*')
+            .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`),
+          supabase
+            .from('follows')
+            .select('following_id')
+            .eq('follower_id', user.id)
+        ]);
+          
+        if (connRes.data) {
+          const statuses: Record<string, 'pending' | 'accepted' | 'none'> = {};
+          connRes.data.forEach(conn => {
+            const otherId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
+            statuses[otherId] = conn.status;
+          });
+          setConnectionStatuses(statuses);
         }
-        
-        setMembers(combined);
-        
-        // Fetch connections & follows involving this user
-        if (user?.id && data.length > 0) {
-          const [connRes, followRes] = await Promise.all([
-            supabase
-              .from('connections')
-              .select('*')
-              .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`),
-            supabase
-              .from('follows')
-              .select('following_id')
-              .eq('follower_id', user.id)
-          ]);
-            
-          if (connRes.data) {
-            const statuses: Record<string, 'pending' | 'accepted' | 'none'> = {};
-            connRes.data.forEach(conn => {
-              const otherId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
-              statuses[otherId] = conn.status;
-            });
-            setConnectionStatuses(statuses);
-          }
 
-          if (followRes.data) {
-            const fStatuses: Record<string, boolean> = {};
-            followRes.data.forEach(f => {
-              fStatuses[f.following_id] = true;
-            });
-            setFollowStatuses(fStatuses);
-          }
+        if (followRes.data) {
+          const fStatuses: Record<string, boolean> = {};
+          followRes.data.forEach(f => {
+            fStatuses[f.following_id] = true;
+          });
+          setFollowStatuses(fStatuses);
         }
       }
-      setLoading(false);
-    };
+    }
+    setLoading(false);
+  };
 
+  useEffect(() => {
     const delay = setTimeout(fetchMembers, 300);
     return () => clearTimeout(delay);
-  }, [searchQuery, user?.id, filter]);
+  }, [searchQuery, needCategory, specialty, locationQuery, user?.id, filter]);
 
   // Listen for realtime updates to connection statuses globally
   useEffect(() => {
@@ -248,18 +285,161 @@ export default function MembersDirectoryPage() {
                 Discover, connect, and collaborate with brilliant minds across the global platform.
               </p>
               
-              {/* Floating Search Bar */}
-              <div className="w-full max-w-2xl relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#5a32fa] via-[#ff90e8] to-[#00d26a] rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-500"></div>
-                <div className="relative bg-white dark:bg-[#0f172a]/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl flex items-center overflow-hidden">
-                  <Search size={22} className="text-[#5a32fa] ml-6" />
-                  <input 
-                    type="text" 
-                    placeholder="Search for designers, engineers, founders..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-transparent pl-4 pr-6 py-5 focus:outline-none font-medium text-lg text-gray-900 dark:text-white placeholder-gray-400"
-                  />
+              {/* ================= EXACT SCREENSHOT DIRECTORY FILTER BAR ================= */}
+              <div className="w-full max-w-5xl text-left mt-2">
+                <div className="bg-[#1e2e46]/95 dark:bg-[#0c182b]/95 backdrop-blur-md rounded-2xl border border-sky-900/40 dark:border-white/10 p-4 sm:p-5 shadow-2xl">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 items-end">
+                    
+                    {/* 1. What do you need: */}
+                    <div className="lg:col-span-4 space-y-1.5">
+                      <label className="block text-xs font-bold text-slate-200 tracking-wide">
+                        What do you need:
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={needCategory}
+                          onChange={(e) => setNeedCategory(e.target.value)}
+                          className="w-full bg-white text-slate-800 text-xs sm:text-sm font-medium py-3 px-3.5 pr-9 rounded-xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00a8cc] appearance-none cursor-pointer"
+                        >
+                          <option value="">IP Service providers</option>
+                          <option value="All">All Categories</option>
+                          <option value="Patent">Patent Attorneys & Agents</option>
+                          <option value="Trademark">Trademark Specialists</option>
+                          <option value="Litigation">IP Litigators & Counsel</option>
+                          <option value="In-House">In-House IP Counsel</option>
+                          <option value="Law Firm">IP Law Firms & Practices</option>
+                          <option value="Consultant">IP Consultants & Strategists</option>
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400 pointer-events-none">
+                          {needCategory && (
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setNeedCategory(''); }}
+                              className="pointer-events-auto hover:text-slate-600 p-0.5"
+                            >
+                              <X size={13} />
+                            </button>
+                          )}
+                          <ChevronDown size={14} className="text-slate-500" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 2. Specialising in: */}
+                    <div className="lg:col-span-3 space-y-1.5">
+                      <label className="block text-xs font-bold text-slate-200 tracking-wide">
+                        Specialising in:
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={specialty}
+                          onChange={(e) => setSpecialty(e.target.value)}
+                          className="w-full bg-white text-slate-800 text-xs sm:text-sm font-medium py-3 px-3.5 pr-9 rounded-xl border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#00a8cc] appearance-none cursor-pointer"
+                        >
+                          <option value="">Select Sub-Category</option>
+                          <option value="Patents">Patents & Inventions</option>
+                          <option value="Trademarks">Trademarks & Brand Protection</option>
+                          <option value="Copyright">Copyright & Digital Content</option>
+                          <option value="Litigation">Litigation & Enforcement</option>
+                          <option value="Licensing">Licensing & Commercial Deals</option>
+                          <option value="Trade Secrets">Trade Secrets & Data Rights</option>
+                          <option value="AI">AI & DeepTech</option>
+                          <option value="Pharma">Life Sciences & Pharma</option>
+                          <option value="Design">Design Rights & Trade Dress</option>
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-slate-400 pointer-events-none">
+                          {specialty && (
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setSpecialty(''); }}
+                              className="pointer-events-auto hover:text-slate-600 p-0.5"
+                            >
+                              <X size={13} />
+                            </button>
+                          )}
+                          <ChevronDown size={14} className="text-slate-500" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3. Search by location: */}
+                    <div className="lg:col-span-3 space-y-1.5">
+                      <label className="block text-xs font-bold text-slate-200 tracking-wide">
+                        Search by location:
+                      </label>
+                      <div className="relative flex items-center bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-[#00a8cc]">
+                        <div className="bg-slate-100 px-3 py-3 text-slate-500 border-r border-slate-200 shrink-0 flex items-center justify-center">
+                          <Navigation size={14} className="rotate-45 text-[#00a8cc] fill-current" />
+                        </div>
+                        <input
+                          type="text"
+                          value={locationQuery}
+                          onChange={(e) => setLocationQuery(e.target.value)}
+                          placeholder="City or Post Code"
+                          className="w-full bg-transparent py-2.5 px-3 text-xs sm:text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none"
+                        />
+                        {locationQuery && (
+                          <button
+                            type="button"
+                            onClick={() => setLocationQuery('')}
+                            className="p-2 text-slate-400 hover:text-slate-700"
+                          >
+                            <X size={14} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 4. Search Now Action Button */}
+                    <div className="lg:col-span-2">
+                      <button
+                        type="button"
+                        onClick={fetchMembers}
+                        className="w-full bg-[#00a8cc] hover:bg-[#0092b3] active:scale-[0.98] text-white font-bold text-xs sm:text-sm py-3 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer h-[46px]"
+                      >
+                        <span>Search Now</span>
+                      </button>
+                    </div>
+
+                  </div>
+
+                  {/* Keyword search & active filter tags */}
+                  <div className="mt-3.5 pt-3 border-t border-slate-700/60 flex flex-wrap items-center gap-2 text-xs">
+                    <div className="relative flex-1 min-w-[200px] max-w-md">
+                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search by name, company, or keyword..."
+                        className="w-full bg-slate-900/60 text-white placeholder-slate-400 text-xs rounded-lg pl-8 pr-7 py-1.5 border border-slate-600/50 focus:outline-none focus:border-[#00a8cc]"
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                        >
+                          <X size={12} />
+                        </button>
+                      )}
+                    </div>
+
+                    {(needCategory || specialty || locationQuery || searchQuery) && (
+                      <button
+                        onClick={() => {
+                          setNeedCategory('');
+                          setSpecialty('');
+                          setLocationQuery('');
+                          setSearchQuery('');
+                        }}
+                        className="text-cyan-300 hover:text-cyan-200 underline ml-auto text-xs font-semibold cursor-pointer"
+                      >
+                        Reset All Filters
+                      </button>
+                    )}
+                  </div>
+
                 </div>
               </div>
             </div>
