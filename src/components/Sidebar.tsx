@@ -163,7 +163,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
       <Link 
         prefetch={false} 
         href={path} 
-        className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-[13px] font-semibold transition-all duration-200 ${
+        className={`group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 ${
           active 
             ? 'bg-gradient-to-r from-purple-500/12 via-purple-500/5 to-transparent text-[#5a32fa] dark:from-purple-500/25 dark:via-purple-900/10 dark:to-transparent dark:text-purple-300 font-bold' 
             : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white'
@@ -171,16 +171,16 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
       >
         {/* Luminous Active left indicator bar */}
         {active && (
-          <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-gradient-to-b from-[#5a32fa] to-[#ff79c6] shadow-[0_0_10px_rgba(90,50,250,0.5)]" />
+          <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-[#5a32fa] to-[#ff79c6] shadow-[0_0_10px_rgba(90,50,250,0.5)]" />
         )}
         
-        <div className="flex items-center gap-2.5 min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
           <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
             active 
               ? 'bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white shadow-md shadow-purple-500/30' 
               : 'text-slate-400 group-hover:text-[#5a32fa] group-hover:bg-purple-50 dark:text-slate-400 dark:group-hover:text-purple-300 dark:group-hover:bg-white/5'
           }`}>
-            <Icon size={16} strokeWidth={active ? 2.3 : 2} />
+            <Icon size={17} strokeWidth={active ? 2.3 : 2} />
           </span>
           <span className="truncate tracking-tight">{label}</span>
         </div>
@@ -208,7 +208,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
 
       {/* Collapsed view */}
       {!isOpen && (
-        <nav className="flex h-full w-16 flex-col items-center gap-1.5 overflow-y-auto overflow-x-hidden bg-white/50 px-2 pb-5 pt-14 no-scrollbar overscroll-contain dark:bg-transparent" aria-label="Collapsed main navigation">
+        <nav className="flex h-full w-16 flex-col items-center gap-2 overflow-y-auto overflow-x-hidden bg-white/50 px-2 pb-5 pt-14 no-scrollbar overscroll-contain dark:bg-transparent" aria-label="Collapsed main navigation">
           {collapsedNavItems.map(({ label, path, Icon }) => {
             const active = isActive(path);
             return (
@@ -242,14 +242,14 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
         <div className="flex min-h-full w-[268px] shrink-0 flex-col pb-6">
 
           {/* Section: Main Navigation */}
-          <div className="px-3.5 mb-5 pt-5">
-            <div className="flex items-center justify-between mb-2 px-3">
+          <div className="px-3.5 mb-6 pt-5">
+            <div className="flex items-center justify-between mb-3 px-3">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400">
                 Main Navigation
               </span>
             </div>
             
-            <nav className="space-y-0.5">
+            <nav className="space-y-1">
               {renderNavLink('/platform', 'Feed', LayoutGrid)}
               {renderNavLink('/platform/liked-threads', 'Liked Threads', Heart)}
               {renderNavLink('/platform/network', 'My Network', Globe)}
@@ -273,22 +273,22 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
                   <Link 
                     prefetch={false} 
                     href="/platform/resources" 
-                    className={`group/res relative flex flex-1 items-center justify-between px-3 py-2 rounded-xl text-[13px] font-semibold transition-all duration-200 pr-10 ${
+                    className={`group/res relative flex flex-1 items-center justify-between px-3.5 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 pr-10 ${
                       isActive('/platform/resources') || isPublicationRoute
                         ? 'bg-gradient-to-r from-purple-500/12 via-purple-500/5 to-transparent text-[#5a32fa] dark:from-purple-500/25 dark:via-purple-900/10 dark:to-transparent dark:text-purple-300 font-bold' 
                         : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white'
                     }`}
                   >
                     {(isActive('/platform/resources') || isPublicationRoute) && (
-                      <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-gradient-to-b from-[#5a32fa] to-[#ff79c6] shadow-[0_0_10px_rgba(90,50,250,0.5)]" />
+                      <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-[#5a32fa] to-[#ff79c6] shadow-[0_0_10px_rgba(90,50,250,0.5)]" />
                     )}
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-3">
                       <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
                         isActive('/platform/resources') || isPublicationRoute
                           ? 'bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white shadow-md shadow-purple-500/30' 
                           : 'text-slate-400 group-hover/res:text-[#5a32fa] group-hover/res:bg-purple-50 dark:text-slate-400 dark:group-hover/res:text-purple-300 dark:group-hover/res:bg-white/5'
                       }`}>
-                        <BookOpen size={16} strokeWidth={2.3} />
+                        <BookOpen size={17} strokeWidth={2.3} />
                       </span>
                       <span className="truncate tracking-tight">Resource Library</span>
                     </div>
@@ -303,8 +303,8 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
                 </div>
 
                 {/* Submenu with refined tree guides */}
-                <div className={`overflow-hidden transition-all duration-300 ease-out ${isResourcesExpanded ? 'max-h-[560px] opacity-100 mt-1 mb-1.5' : 'max-h-0 opacity-0'}`}>
-                  <div className="ml-5 pl-3 flex flex-col space-y-0.5 border-l border-purple-200/60 dark:border-white/10">
+                <div className={`overflow-hidden transition-all duration-300 ease-out ${isResourcesExpanded ? 'max-h-[560px] opacity-100 mt-1 mb-2' : 'max-h-0 opacity-0'}`}>
+                  <div className="ml-5 pl-3 flex flex-col space-y-1 border-l border-purple-200/60 dark:border-white/10">
                     {RESOURCE_SUBITEMS.map((item) => {
                       const isSubActive = item.isPublication 
                         ? isPublicationRoute 
@@ -314,7 +314,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
                           key={item.path}
                           prefetch={false} 
                           href={item.path} 
-                          className={`group/sub flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 ${
+                          className={`group/sub flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all duration-150 ${
                             isSubActive 
                               ? 'bg-purple-50 text-[#5a32fa] font-bold dark:bg-purple-950/40 dark:text-purple-300' 
                               : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200'
@@ -349,25 +349,25 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
           </div>
 
           {/* Section: Channels */}
-          <div className="px-3.5 mb-5">
-            <div className="flex items-center justify-between mb-2 px-3">
+          <div className="px-3.5 mb-6">
+            <div className="flex items-center justify-between mb-3 px-3">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400">
                 Channels
               </span>
             </div>
-            <nav className="space-y-0.5">
-              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-1.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-all group">
+            <nav className="space-y-1">
+              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3.5 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-all group">
                 <div className="flex items-center gap-2">
                   <Hash size={14} className="text-slate-400 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors" /> General
                 </div>
               </Link>
-              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-1.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-all group">
+              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3.5 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-all group">
                 <div className="flex items-center gap-2">
                   <Hash size={14} className="text-slate-400 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors" /> daily-highlights
                   <span className="h-1.5 w-1.5 rounded-full bg-[#ff2a5f] shadow-xs shadow-rose-500/50" />
                 </div>
               </Link>
-              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3 py-1.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-all group">
+              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3.5 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-all group">
                 <div className="flex items-center gap-2">
                   <Hash size={14} className="text-slate-400 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors" /> time-tracking
                 </div>
@@ -377,21 +377,21 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
           </div>
 
           {/* Section: Business Profile Action */}
-          <div className="px-3.5 mb-5">
-            <div className="flex items-center justify-between mb-2 px-3">
+          <div className="px-3.5 mb-6">
+            <div className="flex items-center justify-between mb-3 px-3">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400">
                 Business
               </span>
             </div>
             {user?.business_profile_id ? (
-              <Link prefetch={false} href="/platform/business" className="flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-semibold text-slate-700 hover:bg-purple-50 dark:text-slate-300 dark:hover:bg-white/5 transition-colors">
+              <Link prefetch={false} href="/platform/business" className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-semibold text-slate-700 hover:bg-purple-50 dark:text-slate-300 dark:hover:bg-white/5 transition-colors">
                 <div className="flex items-center gap-2">
                   <Building2 size={15} className="text-[#5a32fa]" /> My Business
                 </div>
                 <ArrowUpRight size={13} className="text-slate-400" />
               </Link>
             ) : (
-              <Link prefetch={false} href="/platform/business/create" className="group flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-bold text-[#5a32fa] bg-purple-50/80 hover:bg-gradient-to-r hover:from-[#5a32fa] hover:to-[#7c3aed] hover:text-white dark:bg-purple-950/40 dark:text-purple-300 dark:hover:text-white transition-all duration-200 shadow-xs border border-purple-200/50 dark:border-purple-500/20">
+              <Link prefetch={false} href="/platform/business/create" className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-bold text-[#5a32fa] bg-purple-50/80 hover:bg-gradient-to-r hover:from-[#5a32fa] hover:to-[#7c3aed] hover:text-white dark:bg-purple-950/40 dark:text-purple-300 dark:hover:text-white transition-all duration-200 shadow-xs border border-purple-200/50 dark:border-purple-500/20">
                 <div className="flex items-center gap-2">
                   <Plus size={14} className="transition-transform group-hover:rotate-90" /> Create Business Profile
                 </div>
@@ -401,8 +401,8 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
 
           {/* Section: Upcoming Events */}
           {upcomingEvents.length > 0 && (
-            <div className="px-3.5 mb-5">
-              <div className="flex items-center justify-between mb-2 px-3">
+            <div className="px-3.5 mb-6">
+              <div className="flex items-center justify-between mb-3 px-3">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400">
                   Upcoming
                 </span>
@@ -410,13 +410,13 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
                   View all
                 </Link>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {upcomingEvents.map((ev) => (
                   <Link 
                     key={ev.id} 
                     prefetch={false} 
                     href="/platform/calendar" 
-                    className="flex items-start gap-2 rounded-lg p-2 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5 transition-colors"
+                    className="flex items-start gap-2.5 rounded-lg p-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5 transition-colors"
                   >
                     <Circle size={8} className="mt-1 shrink-0 fill-[#5a32fa] text-[#5a32fa]" />
                     <span className="line-clamp-1 leading-snug">{ev.title}</span>
@@ -427,20 +427,20 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
           )}
 
           {/* Section: Help Card Widget */}
-          <div className="px-3.5 mb-4 mt-auto">
-            <div className="relative overflow-hidden rounded-2xl border border-purple-200/70 bg-gradient-to-br from-purple-50/70 via-white to-pink-50/40 p-3.5 shadow-xs dark:border-purple-500/20 dark:from-purple-950/40 dark:via-slate-900/60 dark:to-indigo-950/30">
+          <div className="px-3.5 mb-5 mt-auto">
+            <div className="relative overflow-hidden rounded-2xl border border-purple-200/70 bg-gradient-to-br from-purple-50/70 via-white to-pink-50/40 p-4 shadow-xs dark:border-purple-500/20 dark:from-purple-950/40 dark:via-slate-900/60 dark:to-indigo-950/30">
               <div className="flex items-center gap-2 mb-1.5">
                 <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white shadow-xs">
                   <HelpCircle size={13} />
                 </div>
                 <span className="text-xs font-bold text-slate-900 dark:text-white">Need Help?</span>
               </div>
-              <p className="text-[11px] font-medium leading-relaxed text-slate-500 dark:text-slate-400 mb-2.5">
+              <p className="text-[11px] font-medium leading-relaxed text-slate-500 dark:text-slate-400 mb-3">
                 Reach out to the WIPA team for assistance.
               </p>
               <Link 
                 href="/contact" 
-                className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 rounded-xl bg-white border border-slate-200/80 text-[11px] font-bold text-slate-800 shadow-2xs hover:border-[#5a32fa]/40 hover:text-[#5a32fa] transition-all dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-purple-500/30 dark:hover:text-purple-300 cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-white border border-slate-200/80 text-[11px] font-bold text-slate-800 shadow-2xs hover:border-[#5a32fa]/40 hover:text-[#5a32fa] transition-all dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-purple-500/30 dark:hover:text-purple-300 cursor-pointer"
               >
                 <Mail size={12} /> Contact WIPA
               </Link>
