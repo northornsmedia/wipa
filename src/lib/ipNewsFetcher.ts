@@ -377,9 +377,8 @@ export async function syncIPNewsToDatabase(): Promise<{
 
     // 1. Fetch existing titles from DB to prevent duplicate insertions
     const { data: existingRows } = await supabase
-      .from('resources')
-      .select('id, title, slug')
-      .eq('category', 'ip-news');
+      .from('ip_news')
+      .select('id, title, slug');
 
     const existingTitles = new Set(
       (existingRows || []).map(r => r.title.toLowerCase().trim())
@@ -395,7 +394,7 @@ export async function syncIPNewsToDatabase(): Promise<{
     let insertedCount = 0;
     if (toInsert.length > 0) {
       const { data, error } = await supabase
-        .from('resources')
+        .from('ip_news')
         .insert(toInsert)
         .select('id');
 
@@ -408,9 +407,8 @@ export async function syncIPNewsToDatabase(): Promise<{
 
     // 2. Count total available
     const { count } = await supabase
-      .from('resources')
-      .select('id', { count: 'exact', head: true })
-      .eq('category', 'ip-news');
+      .from('ip_news')
+      .select('id', { count: 'exact', head: true });
 
     return {
       success: true,

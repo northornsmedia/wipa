@@ -37,7 +37,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
         
         // 1. Fetch the main article by ID or slug
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-        let query = supabase.from('resources').select('*');
+        let query = supabase.from('ip_news').select('*');
         
         if (isUUID) {
           query = query.eq('id', id);
@@ -50,11 +50,10 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
         if (!error && data) {
           setArticle(data);
 
-          // 2. Fetch related articles from same category
+          // 2. Fetch related articles
           const { data: related } = await supabase
-            .from('resources')
+            .from('ip_news')
             .select('id, title, resource_type, subcategory, cover_image_url, created_at')
-            .eq('category', 'ip-news')
             .neq('id', data.id)
             .limit(3);
 

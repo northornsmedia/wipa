@@ -68,9 +68,8 @@ export default function IPNewsHubPage() {
   const loadNewsFromDatabase = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('resources')
+        .from('ip_news')
         .select('*')
-        .or('category.eq.ip-news,type.eq.ip_news')
         .order('created_at', { ascending: false })
         .limit(200);
 
