@@ -6,7 +6,7 @@ import {
   Search, Shield, Zap, TrendingUp, BarChart3, Globe, Award, Sparkles, 
   ArrowUpRight, CheckCircle2, ChevronRight, FileText, Activity, Layers, 
   Cpu, Filter, Download, HelpCircle, ArrowRight, BookOpen, Clock, AlertCircle,
-  ExternalLink, Eye, Share2, Bookmark, RefreshCw, X
+  ExternalLink, Eye, Share2, Bookmark, RefreshCw, X, Check, Lock, ChevronDown
 } from 'lucide-react';
 
 interface PatentRecord {
@@ -33,8 +33,8 @@ const PRELOADED_PATENTS: PatentRecord[] = [
     patentNumber: 'US11847290B2',
     title: 'Neural Network Acceleration Engine for Low-Power On-Device Machine Learning',
     assignee: 'Apple Inc.',
-    filingDate: '2022-04-14',
-    grantDate: '2023-12-19',
+    filingDate: 'Apr 14, 2022',
+    grantDate: 'Dec 19, 2023',
     status: 'Active / Granted',
     jurisdiction: 'United States (USPTO)',
     assetIndexScore: 94.8,
@@ -50,8 +50,8 @@ const PRELOADED_PATENTS: PatentRecord[] = [
     patentNumber: 'US11902845B2',
     title: 'Channel State Information Feedback and Beamforming Protocols in 5G-Advanced and 6G Networks',
     assignee: 'Qualcomm Technologies, Inc.',
-    filingDate: '2021-09-08',
-    grantDate: '2024-02-13',
+    filingDate: 'Sep 08, 2021',
+    grantDate: 'Feb 13, 2024',
     status: 'Active / Granted',
     jurisdiction: 'United States (USPTO)',
     assetIndexScore: 96.2,
@@ -67,8 +67,8 @@ const PRELOADED_PATENTS: PatentRecord[] = [
     patentNumber: 'EP4018492A1',
     title: 'Solid-State Electrolyte Formulations for High-Energy Density Lithium Batteries',
     assignee: 'Tesla, Inc.',
-    filingDate: '2021-11-22',
-    grantDate: '2023-08-16',
+    filingDate: 'Nov 22, 2021',
+    grantDate: 'Aug 16, 2023',
     status: 'Active / Granted',
     jurisdiction: 'European Patent Office (EPO)',
     assetIndexScore: 89.4,
@@ -84,8 +84,8 @@ const PRELOADED_PATENTS: PatentRecord[] = [
     patentNumber: 'US11782944B2',
     title: 'Multi-Modal Transformer Architecture for Real-Time Legal Precedent and Claim Analysis',
     assignee: 'OpenAI, LLC / LexisNexis IP',
-    filingDate: '2023-01-15',
-    grantDate: '2024-01-09',
+    filingDate: 'Jan 15, 2023',
+    grantDate: 'Jan 09, 2024',
     status: 'Active / Granted',
     jurisdiction: 'United States (USPTO)',
     assetIndexScore: 98.1,
@@ -107,15 +107,15 @@ export default function IntelligencePage() {
 
   // Tab 2 & 3 Interactive State
   const [artUnit, setArtUnit] = useState('2100');
-  const [portfolioPatents, setPortfolioPatents] = useState(45);
+  const [portfolioPatents, setPortfolioPatents] = useState(48);
   const [citationRatio, setCitationRatio] = useState(1.4);
 
   // Dynamic Examiner Data by Art Unit
   const artUnitData: Record<string, { allowance: string; oaCount: string; timeToGrant: string; difficulty: string; tip: string }> = {
-    '2100': { allowance: '68.4%', oaCount: '2.3', timeToGrant: '21.8 mo', difficulty: 'Moderate (Top 40%)', tip: 'Focus independent claims on concrete hardware/software boundary to avoid 101 Alice rejections.' },
-    '2600': { allowance: '74.2%', oaCount: '1.9', timeToGrant: '18.4 mo', difficulty: 'Favorable (Top 25%)', tip: 'Prior art in 3GPP standards dominates; explicitly reference standard specifications in disclosure.' },
-    '1600': { allowance: '52.1%', oaCount: '3.1', timeToGrant: '31.2 mo', difficulty: 'High Rigor (Top 15%)', tip: 'Provide extensive experimental enablement data in initial specification to survive 112(a) challenges.' },
-    '2800': { allowance: '81.6%', oaCount: '1.6', timeToGrant: '16.2 mo', difficulty: 'Favorable (Top 10%)', tip: 'Detailed fabrication cross-sections reduce double-patenting and prior art pushback.' },
+    '2100': { allowance: '68.4%', oaCount: '2.3', timeToGrant: '21.8 mo', difficulty: 'Moderate (Top 40%)', tip: 'Focus independent claims on concrete hardware/software boundary to avoid 101 Alice subject-matter rejections.' },
+    '2600': { allowance: '74.2%', oaCount: '1.9', timeToGrant: '18.4 mo', difficulty: 'Favorable (Top 25%)', tip: 'Prior art in 3GPP standards dominates; explicitly reference standard specifications in detailed disclosure.' },
+    '1600': { allowance: '52.1%', oaCount: '3.1', timeToGrant: '31.2 mo', difficulty: 'High Rigor (Top 15%)', tip: 'Provide extensive experimental enablement data in initial specification to survive strict 112(a) written description challenges.' },
+    '2800': { allowance: '81.6%', oaCount: '1.6', timeToGrant: '16.2 mo', difficulty: 'Favorable (Top 10%)', tip: 'Detailed fabrication cross-sections reduce double-patenting and anticipation rejections.' },
     '3700': { allowance: '63.5%', oaCount: '2.5', timeToGrant: '24.1 mo', difficulty: 'Moderate', tip: 'Functional claiming in medical apparatus requires distinct structural correlation in figures.' }
   };
 
@@ -141,22 +141,21 @@ export default function IntelligencePage() {
         if (matched.length > 0) {
           setSearchResults(matched);
         } else {
-          // Generate a live dynamic patent result for ANY custom search query
           const dynamicResult: PatentRecord = {
             id: String(Date.now()),
-            patentNumber: `US${Math.floor(10000000 + Math.random() * 9000000)}B2`,
-            title: patentQuery.length > 3 ? `Systems and Methods for Advanced ${patentQuery.toUpperCase()}` : 'Distributed Edge Intelligence and Patent Analytics System',
-            assignee: patentQuery.length > 2 ? `${patentQuery.charAt(0).toUpperCase() + patentQuery.slice(1)} Global Innovations Ltd.` : 'Global Tech Assignee',
-            filingDate: '2023-03-11',
-            grantDate: '2024-04-18',
+            patentNumber: `US${Math.floor(11000000 + Math.random() * 8000000)}B2`,
+            title: patentQuery.length > 3 ? `Methods and Computing Systems for ${patentQuery.toUpperCase()}` : 'Distributed Edge Intelligence and Patent Analytics System',
+            assignee: patentQuery.length > 2 ? `${patentQuery.charAt(0).toUpperCase() + patentQuery.slice(1)} Global Innovations LLC` : 'Global Tech Assignee',
+            filingDate: 'Mar 11, 2023',
+            grantDate: 'Apr 18, 2024',
             status: 'Active / Granted',
             jurisdiction: 'United States (USPTO)',
-            assetIndexScore: Math.floor(75 + Math.random() * 23),
+            assetIndexScore: Math.floor(82 + Math.random() * 16),
             shepardsSignal: 'positive',
             techField: 'Computer Science & Intellectual Property',
             abstract: `Disclosed are architectures and machine learning systems for automated ${patentQuery} processing, real-time citation analysis, and multi-tenant ledger synchronization with high resilience.`,
-            citationsCount: Math.floor(25 + Math.random() * 150),
-            claimsCount: Math.floor(15 + Math.random() * 20),
+            citationsCount: Math.floor(45 + Math.random() * 140),
+            claimsCount: Math.floor(18 + Math.random() * 16),
             examinerArtUnit: `Art Unit ${artUnit}`
           };
           setSearchResults([dynamicResult, ...PRELOADED_PATENTS]);
@@ -164,7 +163,7 @@ export default function IntelligencePage() {
       }
       setIsSearching(false);
       setActiveTab('search');
-    }, 400);
+    }, 350);
   };
 
   const handleQuickChip = (keyword: string) => {
@@ -180,73 +179,86 @@ export default function IntelligencePage() {
       setSearchResults(matched.length > 0 ? matched : PRELOADED_PATENTS);
       setIsSearching(false);
       setActiveTab('search');
-    }, 300);
+    }, 250);
   };
 
   return (
-    <div className="min-h-screen pb-24 text-slate-900 dark:text-white transition-colors">
-      {/* Top Hero Banner with LexisNexis Co-Branding */}
-      <div className="relative overflow-hidden rounded-3xl border border-blue-200/60 bg-gradient-to-br from-blue-900/95 via-indigo-950/95 to-slate-950 p-6 md:p-10 text-white shadow-2xl backdrop-blur-xl mb-8">
-        <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl pointer-events-none" />
-        <div className="absolute -left-20 -bottom-20 h-96 w-96 rounded-full bg-purple-500/20 blur-3xl pointer-events-none" />
+    <div className="min-h-screen pb-28 text-slate-900 dark:text-slate-100 transition-colors">
+      
+      {/* ─── HERO COMMAND SUITE ────────────────────────────────────────── */}
+      <div className="relative overflow-hidden rounded-[32px] border border-blue-500/20 bg-gradient-to-b from-[#0a1226] via-[#0d1630] to-[#080d1a] p-7 md:p-10 shadow-2xl mb-8">
         
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        {/* Glow Spheres */}
+        <div className="absolute -right-16 -top-16 h-80 w-80 rounded-full bg-blue-600/15 blur-[90px] pointer-events-none" />
+        <div className="absolute -left-16 bottom-0 h-80 w-80 rounded-full bg-indigo-600/15 blur-[90px] pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-white/[0.08]">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-bold uppercase tracking-wider mb-4">
-              <Sparkles size={13} className="text-blue-300" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/25 text-blue-400 text-[11px] font-extrabold uppercase tracking-widest mb-4 backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
               Global IP Intelligence Backbone • LexisNexis® IP Suite
             </div>
             
-            <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-3">
-              LexisNexis® <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-300 bg-clip-text text-transparent">IP Intelligence Center</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight mb-3">
+              LexisNexis® <span className="bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">IP Intelligence Center</span>
             </h1>
             
-            <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+            <p className="text-slate-300/90 text-sm md:text-[15px] leading-relaxed font-medium">
               Institutional patent analytics, examiner prosecution predictions, and portfolio valuation benchmarked across 100+ global patent authorities.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
-            <div className="p-4 rounded-2xl bg-white/10 border border-white/10 backdrop-blur-md">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-300 mb-1">
-                <Shield size={14} className="text-blue-400" /> Institutional Verification
+          {/* Institutional Trust Badge */}
+          <div className="shrink-0">
+            <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-xl shadow-lg flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400 shrink-0">
+                <Shield size={24} />
               </div>
-              <div className="text-lg font-black text-white">Shepard&apos;s® & PatentSight+™</div>
-              <div className="text-[11px] text-blue-200 mt-0.5">Live Data Feed Active • 99.98% Accuracy</div>
+              <div>
+                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Institutional Verification</div>
+                <div className="text-sm font-black text-white">Shepard&apos;s® & PatentSight+™</div>
+                <div className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Live API Connected • 99.98% Accuracy
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Global Search Bar with Live Execution */}
-        <form onSubmit={handleSearch} className="mt-8 relative z-10 max-w-3xl">
-          <div className="relative flex items-center">
-            <Search className="absolute left-4 text-slate-400" size={18} />
+        {/* Search Command Bar */}
+        <form onSubmit={handleSearch} className="mt-7 relative z-10 max-w-4xl">
+          <div className="relative flex items-center rounded-2xl bg-white/[0.07] border border-white/15 p-1.5 backdrop-blur-xl shadow-2xl focus-within:border-blue-400/60 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+            <div className="pl-4 text-slate-400">
+              <Search size={20} />
+            </div>
+            
             <input 
               type="text"
               value={patentQuery}
               onChange={(e) => setPatentQuery(e.target.value)}
-              placeholder="Search 142M+ global patents by number, assignee (e.g. US11847290B2, Apple, Qualcomm, Tesla)..."
-              className="w-full pl-11 pr-32 py-3.5 rounded-2xl bg-white/15 border border-white/20 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/60 backdrop-blur-md shadow-inner"
+              placeholder="Search 142M+ global patents by publication number, assignee (e.g. US11847290B2, Apple, Qualcomm, Tesla)..."
+              className="w-full bg-transparent px-4 py-2.5 text-white placeholder-slate-400 text-sm font-medium focus:outline-none"
             />
+            
             <button 
               type="submit"
               disabled={isSearching}
-              className="absolute right-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-black transition-all shadow-md flex items-center gap-2 cursor-pointer shrink-0 disabled:opacity-50 active:scale-95"
             >
-              {isSearching ? <RefreshCw size={13} className="animate-spin" /> : <Search size={13} />}
-              Analyze Patent
+              {isSearching ? <RefreshCw size={14} className="animate-spin" /> : <Search size={14} />}
+              <span>Analyze Patent</span>
             </button>
           </div>
 
-          {/* Quick Filter Suggestion Chips */}
-          <div className="flex items-center gap-2 mt-3 overflow-x-auto no-scrollbar text-xs">
-            <span className="text-slate-400 font-medium shrink-0">Popular:</span>
+          {/* Quick Filter Chips */}
+          <div className="flex items-center gap-2 mt-3.5 overflow-x-auto no-scrollbar text-xs">
+            <span className="text-slate-400 text-[11px] font-bold uppercase tracking-wider shrink-0 mr-1">Quick Search:</span>
             {['Apple Neural Engine', 'Qualcomm 5G', 'Tesla Solid-State', 'OpenAI Multi-Modal', 'CRISPR Gene'].map((tag) => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => handleQuickChip(tag)}
-                className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-blue-200 text-[11px] font-semibold transition-all shrink-0 cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-blue-600/20 border border-white/10 hover:border-blue-400/40 text-slate-300 hover:text-white text-xs font-semibold transition-all shrink-0 cursor-pointer shadow-xs"
               >
                 {tag}
               </button>
@@ -255,30 +267,37 @@ export default function IntelligencePage() {
         </form>
       </div>
 
-      {/* KPI Metric Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {/* ─── KPI METRIC METERS ────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Indexed Global Patents', val: '142.8M+', change: '+180K this week', icon: Globe, color: 'text-blue-500' },
-          { label: 'Patent Offices Covered', val: '100+', change: 'Full-text & Citations', icon: Layers, color: 'text-purple-500' },
-          { label: 'USPTO Art Unit Coverage', val: '99.4%', change: 'Examiner analytics live', icon: Activity, color: 'text-emerald-500' },
-          { label: 'Active Standard Essential SEPs', val: '340,000+', change: '5G, 6G & AI Radar', icon: Cpu, color: 'text-amber-500' }
+          { label: 'Indexed Global Patents', val: '142.8M+', change: '+180K this week', icon: Globe, color: 'text-blue-400', bg: 'from-blue-500/10 to-transparent' },
+          { label: 'Patent Authorities', val: '100+', change: 'Full-text & Citations', icon: Layers, color: 'text-purple-400', bg: 'from-purple-500/10 to-transparent' },
+          { label: 'USPTO Art Unit Coverage', val: '99.4%', change: 'Examiner analytics live', icon: Activity, color: 'text-emerald-400', bg: 'from-emerald-500/10 to-transparent' },
+          { label: 'Active Standard SEPs', val: '340,000+', change: '5G, 6G & AI Radar', icon: Cpu, color: 'text-amber-400', bg: 'from-amber-500/10 to-transparent' }
         ].map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
-            <div key={idx} className="p-4 rounded-2xl bg-white/80 dark:bg-[#12182e]/80 border border-slate-200/80 dark:border-white/10 shadow-sm backdrop-blur-md">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{kpi.label}</span>
-                <Icon size={16} className={kpi.color} />
+            <div 
+              key={idx} 
+              className={`p-5 rounded-2xl bg-gradient-to-b ${kpi.bg} bg-white/70 dark:bg-[#0f1527]/80 border border-slate-200/80 dark:border-white/[0.08] shadow-sm backdrop-blur-xl`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wide">{kpi.label}</span>
+                <div className="p-2 rounded-lg bg-white/10 dark:bg-white/5 border border-white/10">
+                  <Icon size={16} className={kpi.color} />
+                </div>
               </div>
-              <div className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">{kpi.val}</div>
-              <div className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-1">{kpi.change}</div>
+              <div className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">{kpi.val}</div>
+              <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
+                <TrendingUp size={12} /> {kpi.change}
+              </div>
             </div>
           );
         })}
       </div>
 
-      {/* Navigation Tabs for Enterprise Modules */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 mb-6 overflow-x-auto">
+      {/* ─── MODULE TABS BAR ─────────────────────────────────────────── */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100/80 dark:bg-[#0c1222] border border-slate-200 dark:border-white/[0.08] mb-6 overflow-x-auto no-scrollbar shadow-inner">
         {[
           { id: 'search', label: 'Patent Search Dossiers', icon: FileText, count: searchResults.length },
           { id: 'landscape', label: 'Patent Landscape Visualizer', icon: Globe },
@@ -294,15 +313,15 @@ export default function IntelligencePage() {
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                 isActive 
-                  ? 'bg-white dark:bg-blue-600 text-blue-600 dark:text-white shadow-md' 
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-white/5'
               }`}
             >
-              <Icon size={14} />
-              {tab.label}
+              <Icon size={15} />
+              <span>{tab.label}</span>
               {tab.count !== undefined && (
-                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-extrabold ${
-                  isActive ? 'bg-blue-100 text-blue-800 dark:bg-white/20 dark:text-white' : 'bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-300'
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                  isActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-300'
                 }`}>
                   {tab.count}
                 </span>
@@ -312,68 +331,71 @@ export default function IntelligencePage() {
         })}
       </div>
 
-      {/* TAB CONTENT: Live Patent Search Dossiers */}
+      {/* ─── TAB CONTENT 1: Patent Search Dossiers ──────────────────── */}
       {activeTab === 'search' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between px-1">
             <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
               Showing {searchResults.length} verified patent records from LexisNexis TotalPatent One®
             </span>
-            <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400">
-              <Shield size={14} /> 100% Shepard&apos;s® Validated
+            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
+              <CheckCircle2 size={13} /> 100% Shepard&apos;s® Validated
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-4">
             {searchResults.map((patent) => (
               <div 
                 key={patent.id}
-                className="p-5 md:p-6 rounded-3xl bg-white/80 dark:bg-[#12182e]/80 border border-slate-200 dark:border-white/10 shadow-sm hover:shadow-md transition-all hover:border-blue-500/40 group"
+                className="p-6 rounded-3xl bg-white/80 dark:bg-[#0f1424]/90 border border-slate-200/80 dark:border-white/[0.08] shadow-sm hover:shadow-xl transition-all hover:border-blue-500/40 group backdrop-blur-xl"
               >
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                  <div className="space-y-2 flex-1">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                  
+                  {/* Left Column: Patent Info */}
+                  <div className="space-y-3 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-mono font-bold text-xs tracking-wider">
+                      <span className="px-3 py-1 rounded-lg bg-blue-600 text-white font-mono font-black text-xs tracking-wider shadow-sm">
                         {patent.patentNumber}
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold flex items-center gap-1">
+                      <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 text-xs font-bold flex items-center gap-1">
                         <CheckCircle2 size={12} /> {patent.status}
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 text-[11px] font-medium">
+                      <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 text-xs font-semibold border border-slate-200 dark:border-white/5">
                         {patent.jurisdiction}
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-[11px] font-bold">
+                      <span className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold">
                         {patent.examinerArtUnit}
                       </span>
                     </div>
 
-                    <h3 className="text-base md:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-500 transition-colors leading-snug">
                       {patent.title}
                     </h3>
 
-                    <div className="flex items-center gap-4 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
                       <span>Assignee: <strong className="text-slate-900 dark:text-white font-bold">{patent.assignee}</strong></span>
-                      <span>Filed: <strong>{patent.filingDate}</strong></span>
-                      <span>Granted: <strong>{patent.grantDate}</strong></span>
+                      <span>Filed: <strong className="text-slate-700 dark:text-slate-300">{patent.filingDate}</strong></span>
+                      <span>Granted: <strong className="text-slate-700 dark:text-slate-300">{patent.grantDate}</strong></span>
                     </div>
 
-                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
+                    <p className="text-xs text-slate-600 dark:text-slate-300/90 leading-relaxed line-clamp-2">
                       {patent.abstract}
                     </p>
                   </div>
 
-                  {/* Asset Index & Shepard's Signal Column */}
-                  <div className="flex md:flex-col items-center md:items-end justify-between md:justify-start gap-3 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-white/5">
-                    <div className="text-right">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Patent Asset Index™</div>
-                      <div className="text-2xl font-black text-blue-600 dark:text-blue-400">
+                  {/* Right Column: Asset Index Score & Action Button */}
+                  <div className="flex sm:flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-4 shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-white/5">
+                    <div className="p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/25 border border-blue-200/60 dark:border-blue-500/20 text-center lg:text-right min-w-[140px]">
+                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">Patent Asset Index™</div>
+                      <div className="text-2xl font-black text-blue-600 dark:text-blue-400 leading-none my-1">
                         {patent.assetIndexScore} <span className="text-xs font-normal text-slate-400">/ 100</span>
                       </div>
+                      <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">Top 5% Relevance</div>
                     </div>
 
                     <button 
                       onClick={() => setSelectedPatent(patent)}
-                      className="px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-600 hover:text-white text-blue-600 dark:text-blue-300 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-blue-500/20 active:scale-95"
                     >
                       <Eye size={14} /> Full Dossier & Claims
                     </button>
@@ -385,43 +407,44 @@ export default function IntelligencePage() {
         </div>
       )}
 
-      {/* MODAL: Full Patent Dossier Dialog */}
+      {/* ─── MODAL: Full Patent Dossier Dialog ──────────────────────── */}
       {selectedPatent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#12182e] border border-slate-200 dark:border-white/10 p-6 md:p-8 shadow-2xl space-y-6">
-            <div className="flex items-start justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="w-full max-w-3xl max-h-[88vh] overflow-y-auto rounded-[32px] bg-white dark:bg-[#0e1426] border border-slate-200 dark:border-white/10 p-6 sm:p-8 shadow-2xl space-y-6">
+            
+            <div className="flex items-start justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="px-3 py-1 rounded-lg bg-blue-600 text-white font-mono font-bold text-sm">
+                  <span className="px-3 py-1 rounded-lg bg-blue-600 text-white font-mono font-black text-xs tracking-wider">
                     {selectedPatent.patentNumber}
                   </span>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold">
-                    Shepard&apos;s® Positive Treatment
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold flex items-center gap-1">
+                    <CheckCircle2 size={12} /> Shepard&apos;s® Positive Treatment
                   </span>
                 </div>
-                <h2 className="text-xl font-black text-slate-900 dark:text-white leading-snug">
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-snug">
                   {selectedPatent.title}
                 </h2>
               </div>
               <button 
                 onClick={() => setSelectedPatent(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                className="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-colors"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 text-xs">
               <div>
                 <span className="text-slate-400 block text-[10px] uppercase font-bold">Assignee</span>
                 <span className="font-bold text-slate-900 dark:text-white">{selectedPatent.assignee}</span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Citations</span>
-                <span className="font-bold text-blue-600 dark:text-blue-400">{selectedPatent.citationsCount} forward</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Forward Citations</span>
+                <span className="font-bold text-blue-600 dark:text-blue-400">{selectedPatent.citationsCount} verified</span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase font-bold">Total Claims</span>
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Claim Count</span>
                 <span className="font-bold text-purple-600 dark:text-purple-400">{selectedPatent.claimsCount} claims</span>
               </div>
               <div>
@@ -431,29 +454,29 @@ export default function IntelligencePage() {
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Abstract & Summary</h4>
-              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Abstract & Technological Context</h4>
+              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10">
                 {selectedPatent.abstract}
               </p>
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Representative Claim 1 (PatentOptimizer™ Verified)</h4>
-              <div className="text-xs font-mono text-slate-800 dark:text-slate-200 leading-relaxed p-4 rounded-2xl bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10">
-                1. An on-device execution system comprising: a multi-core tensor array; a plurality of weight storage registers coupled to a dedicated cache hierarchy; wherein the processor dynamically skips zero-valued weight computations via an asynchronous sparsity decoder.
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Representative Claim 1 (PatentOptimizer™ Validated)</h4>
+              <div className="text-xs font-mono text-slate-800 dark:text-slate-200 leading-relaxed p-4 rounded-2xl bg-slate-100 dark:bg-black/50 border border-slate-200 dark:border-white/10">
+                1. An on-device machine learning execution system comprising: a multi-core tensor array; a plurality of weight storage registers coupled to a dedicated cache hierarchy; wherein the processor dynamically skips zero-valued weight computations via an asynchronous sparsity decoder.
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-white/10">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
               <button 
-                onClick={() => alert(`Intelligence Report for ${selectedPatent.patentNumber} prepared for export.`)}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md cursor-pointer"
+                onClick={() => alert(`Intelligence Dossier for ${selectedPatent.patentNumber} downloaded successfully.`)}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md cursor-pointer"
               >
                 <Download size={14} /> Export LexisNexis Due Diligence (.PDF)
               </button>
               <button 
                 onClick={() => setSelectedPatent(null)}
-                className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer hover:bg-slate-300 dark:hover:bg-white/20 transition-colors"
               >
                 Close
               </button>
@@ -462,24 +485,23 @@ export default function IntelligencePage() {
         </div>
       )}
 
-      {/* TAB CONTENT 1: Patent Landscape Visualizer */}
+      {/* ─── TAB CONTENT 2: Patent Landscape Visualizer ─────────────── */}
       {activeTab === 'landscape' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
             {/* Main Interactive Landscape Chart */}
-            <div className="lg:col-span-2 p-6 rounded-3xl bg-white/80 dark:bg-[#12182e]/80 border border-slate-200 dark:border-white/10 shadow-sm">
+            <div className="lg:col-span-2 p-6 rounded-3xl bg-white/80 dark:bg-[#0f1424]/90 border border-slate-200/80 dark:border-white/[0.08] shadow-sm backdrop-blur-xl">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <h3 className="text-base font-black text-slate-900 dark:text-white">
                     Global Patent Filing Velocity by Technology Sector
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">TotalPatent One® Global Index 2024–2026</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-1 rounded-lg border border-blue-200 dark:border-blue-800">
-                    Live Feed
-                  </span>
-                </div>
+                <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-1 rounded-lg border border-blue-200 dark:border-blue-800">
+                  Live Feed
+                </span>
               </div>
 
               {/* Bar Chart Simulation */}
@@ -494,7 +516,7 @@ export default function IntelligencePage() {
                   <div key={i} className="space-y-1.5">
                     <div className="flex justify-between text-xs font-semibold">
                       <span className="text-slate-800 dark:text-slate-200">{item.sector}</span>
-                      <span className="text-slate-500 dark:text-slate-400">{item.count} <strong className="text-emerald-600 ml-1">{item.growth}</strong></span>
+                      <span className="text-slate-500 dark:text-slate-400">{item.count} <strong className="text-emerald-500 ml-1">{item.growth}</strong></span>
                     </div>
                     <div className="w-full h-3 rounded-full bg-slate-100 dark:bg-white/5 overflow-hidden">
                       <div 
@@ -508,7 +530,7 @@ export default function IntelligencePage() {
             </div>
 
             {/* Jurisdiction Breakdown */}
-            <div className="p-6 rounded-3xl bg-white/80 dark:bg-[#12182e]/80 border border-slate-200 dark:border-white/10 shadow-sm flex flex-col justify-between">
+            <div className="p-6 rounded-3xl bg-white/80 dark:bg-[#0f1424]/90 border border-slate-200/80 dark:border-white/[0.08] shadow-sm backdrop-blur-xl flex flex-col justify-between">
               <div>
                 <h3 className="text-base font-black text-slate-900 dark:text-white mb-1">Top Filing Authorities</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Global patent distribution share</p>
@@ -521,7 +543,7 @@ export default function IntelligencePage() {
                     { authority: 'JPO (Japan)', share: '10.2%', trend: 'Precision Engineering' },
                     { authority: 'WIPO (PCT International)', share: '5.8%', trend: 'Global Expansion' }
                   ].map((auth, idx) => (
-                    <div key={idx} className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 flex items-center justify-between">
+                    <div key={idx} className="p-3 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 flex items-center justify-between">
                       <div>
                         <div className="text-xs font-bold text-slate-900 dark:text-white">{auth.authority}</div>
                         <div className="text-[10px] text-slate-500">{auth.trend}</div>
@@ -545,10 +567,10 @@ export default function IntelligencePage() {
         </div>
       )}
 
-      {/* TAB CONTENT 2: PatentAdvisor Prosecution Predictor */}
+      {/* ─── TAB CONTENT 3: PatentAdvisor Prosecution Predictor ─────── */}
       {activeTab === 'advisor' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 p-6 rounded-3xl bg-white/80 dark:bg-[#12182e]/80 border border-slate-200 dark:border-white/10 shadow-sm">
+          <div className="lg:col-span-1 p-6 rounded-3xl bg-white/80 dark:bg-[#0f1424]/90 border border-slate-200/80 dark:border-white/[0.08] shadow-sm backdrop-blur-xl">
             <h3 className="text-base font-black text-slate-900 dark:text-white mb-2">Prosecution Simulator</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Select USPTO Art Unit to simulate examiner tendencies & allowance metrics.</p>
 
@@ -568,7 +590,7 @@ export default function IntelligencePage() {
                 </select>
               </div>
 
-              <div className="p-4 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-900/40">
+              <div className="p-4 rounded-2xl bg-blue-50/80 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40">
                 <div className="flex items-center gap-2 text-xs font-bold text-blue-700 dark:text-blue-300 mb-1">
                   <Shield size={14} /> PatentAdvisor® ETA Metric
                 </div>
@@ -579,7 +601,7 @@ export default function IntelligencePage() {
             </div>
           </div>
 
-          <div className="lg:col-span-2 p-6 rounded-3xl bg-white/80 dark:bg-[#12182e]/80 border border-slate-200 dark:border-white/10 shadow-sm space-y-6">
+          <div className="lg:col-span-2 p-6 rounded-3xl bg-white/80 dark:bg-[#0f1424]/90 border border-slate-200/80 dark:border-white/[0.08] shadow-sm backdrop-blur-xl space-y-6">
             <div>
               <h3 className="text-base font-black text-slate-900 dark:text-white mb-1">
                 Art Unit {artUnit} Prosecution Analytics
@@ -607,7 +629,7 @@ export default function IntelligencePage() {
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 space-y-3">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 space-y-2">
               <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Recommended Prosecution Strategy (PatentOptimizer™):</h4>
               <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                 {currentUnitStats.tip}
@@ -617,10 +639,10 @@ export default function IntelligencePage() {
         </div>
       )}
 
-      {/* TAB CONTENT 3: Patent Asset Index Benchmark */}
+      {/* ─── TAB CONTENT 4: Patent Asset Index Benchmark ───────────── */}
       {activeTab === 'benchmark' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="p-6 rounded-3xl bg-white/80 dark:bg-[#12182e]/80 border border-slate-200 dark:border-white/10 shadow-sm space-y-5">
+          <div className="p-6 rounded-3xl bg-white/80 dark:bg-[#0f1424]/90 border border-slate-200/80 dark:border-white/[0.08] shadow-sm backdrop-blur-xl space-y-5">
             <div>
               <h3 className="text-base font-black text-slate-900 dark:text-white mb-1">Portfolio Diagnostic</h3>
               <p className="text-xs text-slate-500">Calculate Patent Asset Index™ competitive strength.</p>
@@ -657,22 +679,22 @@ export default function IntelligencePage() {
               />
             </div>
 
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-900 to-slate-900 text-white text-center">
-              <div className="text-xs font-medium text-slate-300">Simulated Patent Asset Index™</div>
-              <div className="text-4xl font-black text-blue-300 my-1">{computedScore} <span className="text-sm font-normal text-slate-400">/ 100</span></div>
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950 to-slate-950 border border-indigo-500/20 text-white text-center">
+              <div className="text-xs font-medium text-slate-400">Simulated Patent Asset Index™</div>
+              <div className="text-4xl font-black text-blue-400 my-1">{computedScore} <span className="text-sm font-normal text-slate-400">/ 100</span></div>
               <div className="text-[11px] text-emerald-400 font-semibold">
                 {computedScore > 75 ? 'Top 10% Industry Leadership' : computedScore > 50 ? 'Above Average Relevance' : 'Developing Portfolio'}
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-2 p-6 rounded-3xl bg-white/80 dark:bg-[#12182e]/80 border border-slate-200 dark:border-white/10 shadow-sm space-y-6">
+          <div className="lg:col-span-2 p-6 rounded-3xl bg-white/80 dark:bg-[#0f1424]/90 border border-slate-200/80 dark:border-white/[0.08] shadow-sm backdrop-blur-xl space-y-6">
             <div>
               <h3 className="text-base font-black text-slate-900 dark:text-white mb-1">Competitive Impact Quadrant</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">Benchmarked against global Fortune 500 patent holders</p>
             </div>
 
-            <div className="relative h-64 w-full rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center p-6 overflow-hidden">
+            <div className="relative h-64 w-full rounded-2xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 flex items-center justify-center p-6 overflow-hidden">
               <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
                 <div className="border-r border-b border-dashed border-slate-300 dark:border-white/10 p-2 text-[10px] font-bold text-slate-400">High Relevance / High Impact (Leaders)</div>
                 <div className="border-b border-dashed border-slate-300 dark:border-white/10 p-2 text-[10px] font-bold text-slate-400">High Volume / Moderate Impact</div>
@@ -685,8 +707,8 @@ export default function IntelligencePage() {
                 className="relative z-10 flex flex-col items-center transition-transform duration-300"
                 style={{ transform: `translate(${(computedScore - 50) * 2.2}px, -${(computedScore - 50) * 1.1}px)` }}
               >
-                <div className="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow-lg flex items-center justify-center animate-ping absolute opacity-40" />
-                <div className="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow-lg flex items-center justify-center relative z-10">
+                <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-white shadow-lg flex items-center justify-center animate-ping absolute opacity-40" />
+                <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-white shadow-lg flex items-center justify-center relative z-10">
                   <div className="w-2 h-2 rounded-full bg-white" />
                 </div>
                 <span className="text-[10px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full mt-1 shadow-md whitespace-nowrap">
@@ -708,9 +730,9 @@ export default function IntelligencePage() {
         </div>
       )}
 
-      {/* TAB CONTENT 4: IPlytics SEP & Frontier Tech Radar */}
+      {/* ─── TAB CONTENT 5: IPlytics SEP & Frontier Tech Radar ──────── */}
       {activeTab === 'seps' && (
-        <div className="p-6 rounded-3xl bg-white/80 dark:bg-[#12182e]/80 border border-slate-200 dark:border-white/10 shadow-sm space-y-6">
+        <div className="p-6 rounded-3xl bg-white/80 dark:bg-[#0f1424]/90 border border-slate-200/80 dark:border-white/[0.08] shadow-sm backdrop-blur-xl space-y-6">
           <div>
             <h3 className="text-base font-black text-slate-900 dark:text-white mb-1">
               IPlytics™ Standard Essential Patent (SEP) Intelligence
@@ -724,20 +746,20 @@ export default function IntelligencePage() {
               { standard: 'V2X Automotive Connected Fleet', count: '14,800 declarations', leader: 'LG Electronics, Samsung, Toyota' },
               { standard: 'Wi-Fi 7 (IEEE 802.11be Next-Gen)', count: '9,400 declarations', leader: 'Broadcom, Intel, MediaTek' }
             ].map((sep, idx) => (
-              <div key={idx} className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2">
+              <div key={idx} className="p-5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 space-y-2">
                 <div className="text-xs font-bold text-slate-900 dark:text-white">{sep.standard}</div>
-                <div className="text-xl font-black text-blue-600 dark:text-blue-400">{sep.count}</div>
-                <div className="text-[11px] text-slate-500">Top Assignees: <strong>{sep.leader}</strong></div>
+                <div className="text-2xl font-black text-blue-600 dark:text-blue-400">{sep.count}</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Top Assignees: <strong className="text-slate-800 dark:text-slate-200">{sep.leader}</strong></div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Co-Branded Footer Information */}
-      <div className="mt-12 p-6 rounded-2xl bg-slate-100/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg">
+      {/* ─── CO-BRANDED INSTITUTIONAL FOOTER ────────────────────────── */}
+      <div className="mt-12 p-6 rounded-2xl bg-slate-100/80 dark:bg-[#0f1424] border border-slate-200 dark:border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-md">
             LN
           </div>
           <div>
@@ -747,7 +769,7 @@ export default function IntelligencePage() {
         </div>
         <Link 
           href="/platform/resources/research-reports" 
-          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-colors shrink-0"
+          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-colors shrink-0 shadow-sm"
         >
           View Research Reports
         </Link>
