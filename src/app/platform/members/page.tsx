@@ -322,11 +322,13 @@ export default function MembersDirectoryPage() {
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 no-scrollbar">
         <div className="max-w-6xl mx-auto space-y-6 pb-20">
           {/* Hero Section */}
-          <div className="relative rounded-[2.5rem] bg-gradient-to-br from-[#f0ebff] via-[#f8f9fa] to-white dark:from-[#1e1b4b]/40 dark:via-[#0f172a] dark:to-[#0f172a] border border-gray-100 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden mb-8">
+          <div className="relative rounded-[2.5rem] bg-gradient-to-br from-[#f0ebff] via-[#f8f9fa] to-white dark:from-[#1e1b4b]/40 dark:via-[#0f172a] dark:to-[#0f172a] border border-gray-100 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8 z-20">
             
-            {/* Abstract Background Shapes */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-72 h-72 rounded-full bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/10 blur-3xl mix-blend-multiply dark:mix-blend-screen" />
-            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 rounded-full bg-gradient-to-tr from-[#00d26a]/10 to-[#ffc900]/10 blur-3xl mix-blend-multiply dark:mix-blend-screen" />
+            {/* Abstract Background Shapes (isolated in overflow-hidden container) */}
+            <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden pointer-events-none">
+              <div className="absolute top-0 right-0 -mr-20 -mt-20 w-72 h-72 rounded-full bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/10 blur-3xl mix-blend-multiply dark:mix-blend-screen" />
+              <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 rounded-full bg-gradient-to-tr from-[#00d26a]/10 to-[#ffc900]/10 blur-3xl mix-blend-multiply dark:mix-blend-screen" />
+            </div>
             
             <div className="relative p-8 md:p-12 lg:p-16 flex flex-col items-center text-center">
 
@@ -348,7 +350,7 @@ export default function MembersDirectoryPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 sm:gap-4 items-end">
                       
                       {/* 1. What do you need: (Custom Animated Dropdown) */}
-                      <div className="lg:col-span-4 space-y-1.5 relative" ref={needRef}>
+                      <div className={`lg:col-span-4 space-y-1.5 relative ${needOpen ? 'z-50' : 'z-20'}`} ref={needRef}>
                         <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center gap-1.5">
                           <Briefcase size={13} className="text-[#5a32fa]" />
                           <span>What do you need:</span>
@@ -438,7 +440,7 @@ export default function MembersDirectoryPage() {
                       </div>
 
                       {/* 2. Specialising in: (Custom Animated Dropdown) */}
-                      <div className="lg:col-span-3 space-y-1.5 relative" ref={specRef}>
+                      <div className={`lg:col-span-3 space-y-1.5 relative ${specOpen ? 'z-50' : 'z-20'}`} ref={specRef}>
                         <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center gap-1.5">
                           <Sparkles size={13} className="text-[#ff90e8]" />
                           <span>Specialising in:</span>
