@@ -183,7 +183,7 @@ export default function IntelligencePage() {
   };
 
   return (
-    <div className="min-h-screen pb-28 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-28 text-slate-900 dark:text-slate-100 transition-colors">
       
       {/* ─── HERO COMMAND SUITE ────────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-[32px] border border-blue-500/20 bg-gradient-to-b from-[#0a1226] via-[#0d1630] to-[#080d1a] p-7 md:p-10 shadow-2xl mb-8">

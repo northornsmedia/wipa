@@ -21,7 +21,7 @@ export default function PlatformLayout({
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const shellStyle = {
-    '--desktop-sidebar-width': isMessagesPage ? '0px' : (isSidebarOpen ? '260px' : '64px'),
+    '--desktop-sidebar-width': isMessagesPage ? '0px' : (isSidebarOpen ? '268px' : '64px'),
     '--platform-header-height': '72px',
   } as CSSProperties;
 
