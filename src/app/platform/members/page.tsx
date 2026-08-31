@@ -143,6 +143,24 @@ const ATTORNEY_SUBCATEGORIES = [
   { value: 'Watch service', label: 'Watch service', icon: Search }
 ];
 
+const ORGANISATION_SUBCATEGORIES = [
+  { value: '', label: 'All', icon: Globe },
+  { value: '1st deputy reporter', label: '1st deputy reporter', icon: FileText },
+  { value: '1st Deputy Sec General', label: '1st Deputy Sec General', icon: Award },
+  { value: '2nd deputy reporter', label: '2nd deputy reporter', icon: FileText },
+  { value: '2nd Deputy Sec General', label: '2nd Deputy Sec General', icon: Award },
+  { value: 'CEO', label: 'CEO', icon: Briefcase },
+  { value: 'Country Code Top-Level Domains', label: 'Country Code Top-Level Domains', icon: Globe },
+  { value: 'First vice president', label: 'First vice president', icon: GraduationCap },
+  { value: 'General reporter', label: 'General reporter', icon: FileText },
+  { value: 'General secretariat', label: 'General secretariat', icon: LayoutGrid },
+  { value: 'Governance and Dispute Resolution Frameworks', label: 'Governance and Dispute Resolution Frameworks', icon: ArrowUpRight },
+  { value: 'Internationalised Domain Names', label: 'Internationalised Domain Names', icon: Globe },
+  { value: 'President', label: 'President', icon: CheckCircle2 },
+  { value: 'Second vice president', label: 'Second vice president', icon: GraduationCap },
+  { value: 'Secretary-General', label: 'Secretary-General', icon: Award }
+];
+
 const DEFAULT_SPECIALTY_OPTIONS = [
   { value: '', label: 'Select Sub-Category (All)', icon: Globe },
   { value: 'Patents', label: 'Patents & Inventions', icon: FileText },
@@ -159,6 +177,7 @@ const DEFAULT_SPECIALTY_OPTIONS = [
 function getSpecialtyOptions(needCategory: string) {
   if (needCategory === 'IP Associations members') return ASSOCIATION_SUBCATEGORIES;
   if (needCategory === 'IP Attorneys') return ATTORNEY_SUBCATEGORIES;
+  if (needCategory === 'IP Organisations') return ORGANISATION_SUBCATEGORIES;
   return DEFAULT_SPECIALTY_OPTIONS;
 }
 
@@ -571,7 +590,7 @@ export default function MembersDirectoryPage() {
                             }`}
                           >
                             <span className="truncate text-gray-800 dark:text-gray-100 font-semibold">
-                              {getSpecialtyOptions(needCategory).find(o => o.value === specialty)?.label || (needCategory === 'IP Associations members' || needCategory === 'IP Attorneys' ? 'All' : 'Select Sub-Category')}
+                              {getSpecialtyOptions(needCategory).find(o => o.value === specialty)?.label || (needCategory ? 'All' : 'Select Sub-Category')}
                             </span>
                             <div className="flex items-center gap-1">
                               {specialty && (
