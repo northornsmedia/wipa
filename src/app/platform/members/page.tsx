@@ -185,7 +185,7 @@ export default function MembersDirectoryPage() {
   const { user } = useAppStore();
   const [members, setMembers] = useState<Profile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [needCategory, setNeedCategory] = useState('IP Service providers');
+  const [needCategory, setNeedCategory] = useState('');
   const [specialty, setSpecialty] = useState('');
   const [locationQuery, setLocationQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -224,7 +224,7 @@ export default function MembersDirectoryPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // OpenStreetMap Nominatim Free Location Autosuggestion Debounce
+  // Location Autosuggestion Debounce
   useEffect(() => {
     if (!locationQuery || locationQuery.trim().length < 2) {
       setLocationSuggestions([]);
@@ -250,7 +250,7 @@ export default function MembersDirectoryPage() {
           }
         }
       } catch (err) {
-        console.error('Error fetching OpenStreetMap suggestions:', err);
+        console.error('Error fetching location suggestions:', err);
       } finally {
         setIsSearchingLoc(false);
       }
@@ -324,8 +324,18 @@ export default function MembersDirectoryPage() {
       query = query.or(`practice_area.ilike.%${specialty}%,skills.ilike.%${specialty}%,role.ilike.%${specialty}%,company.ilike.%${specialty}%,bio.ilike.%${specialty}%`);
     }
 
-    if (locationQuery.trim() !== '') {
-      query = query.or(`country.ilike.%${locationQuery}%,location.ilike.%${locationQuery}%`);
+    const locTokens = locationQuery
+      .split(/[\s,]+/)
+      .map(t => t.trim().replace(/[%_]/g, ''))
+      .filter(t => t.length >= 2);
+
+    if (locTokens.length > 0) {
+      const orConds = locTokens.flatMap(tok => [
+        `country.ilike.%${tok}%`,
+        `bio.ilike.%${tok}%`,
+        `company.ilike.%${tok}%`
+      ]).join(',');
+      query = query.or(orConds);
     }
 
     // Filter by full_name to safely exclude the current user.
@@ -346,50 +356,64 @@ export default function MembersDirectoryPage() {
       console.error("Supabase Error fetching members:", error);
     }
     
+    let combined: any[] = [];
     if (!error && data) {
-      let combined = data.map(d => ({
+      combined = data.map(d => ({
         ...d, 
-        location: d.country || d.location,
+        location: d.country || '',
         type: 'user'
-      })) as any[];
+      }));
+    }
       
-      // Also fetch business profiles matching search & filters
-      let bizQuery = supabase.from('business_profiles').select('*').limit(15);
-      if (searchQuery.trim() !== '') {
-        bizQuery = bizQuery.ilike('name', `%${searchQuery}%`);
-      }
-      if (locationQuery.trim() !== '') {
-        bizQuery = bizQuery.ilike('headquarters', `%${locationQuery}%`);
-      }
-      if (specialty && specialty !== 'All') {
-        bizQuery = bizQuery.ilike('practice_areas', `%${specialty}%`);
-      }
-      if (needCategory === 'IP Service providers') {
-        bizQuery = bizQuery.or(`type.eq.service_provider,type.eq.ip_firm`);
-      } else if (needCategory === 'IP Organisations') {
-        bizQuery = bizQuery.or(`type.eq.corporate,type.eq.ip_firm`);
-      }
+    // Also fetch business profiles matching search & filters
+    let bizQuery = supabase.from('business_profiles').select('*').limit(15);
+    if (searchQuery.trim() !== '') {
+      bizQuery = bizQuery.ilike('name', `%${searchQuery}%`);
+    }
+    if (locTokens.length > 0) {
+      const bizConds = locTokens.flatMap(tok => [
+        `headquarters.ilike.%${tok}%`,
+        `description.ilike.%${tok}%`
+      ]).join(',');
+      bizQuery = bizQuery.or(bizConds);
+    }
+    if (specialty && specialty !== 'All') {
+      bizQuery = bizQuery.ilike('practice_areas', `%${specialty}%`);
+    }
+    if (needCategory === 'IP Service providers') {
+      bizQuery = bizQuery.or(`type.eq.service_provider,type.eq.ip_firm`);
+    } else if (needCategory === 'IP Organisations') {
+      bizQuery = bizQuery.or(`type.eq.corporate,type.eq.ip_firm`);
+    }
 
-      const { data: businessData } = await bizQuery;
-      if (businessData) {
-        const mappedBiz = businessData.map(b => ({
-          id: b.id,
-          full_name: b.name,
-          avatar_url: b.logo_url,
-          cover_url: b.cover_image_url,
-          role: b.type?.replace('_', ' '),
-          location: b.headquarters,
-          is_wipa_recommended: b.is_verified,
-          type: 'business',
-          slug: b.slug
-        }));
-        combined = [...mappedBiz, ...combined];
-      }
-      
-      setMembers(combined);
+    const { data: businessData } = await bizQuery;
+    if (businessData) {
+      const mappedBiz = businessData.map(b => ({
+        id: b.id,
+        full_name: b.name,
+        avatar_url: b.logo_url,
+        cover_url: b.cover_image_url,
+        role: b.type?.replace('_', ' '),
+        location: b.headquarters,
+        is_wipa_recommended: b.is_verified,
+        type: 'business',
+        slug: b.slug
+      }));
+      combined = [...mappedBiz, ...combined];
+    }
+
+    // Strict client-side location verification
+    if (locTokens.length > 0) {
+      combined = combined.filter(item => {
+        const hayStack = `${item.country || ''} ${item.location || ''} ${item.headquarters || ''} ${item.bio || ''} ${item.company || ''}`.toLowerCase();
+        return locTokens.some(tok => hayStack.includes(tok.toLowerCase()));
+      });
+    }
+    
+    setMembers(combined);
       
       // Fetch connections & follows involving this user
-      if (user?.id && data.length > 0) {
+      if (user?.id && data && data.length > 0) {
         const [connRes, followRes] = await Promise.all([
           supabase
             .from('connections')
@@ -418,7 +442,6 @@ export default function MembersDirectoryPage() {
           setFollowStatuses(fStatuses);
         }
       }
-    }
     setLoading(false);
   };
 
