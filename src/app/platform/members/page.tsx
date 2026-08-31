@@ -747,14 +747,11 @@ export default function MembersDirectoryPage() {
                         </div>
                       </div>
 
-                      {/* 3. Search by location: (OpenStreetMap Powered Autocomplete) */}
+                      {/* 3. Search by location: */}
                       <div className={`lg:col-span-3 space-y-1.5 relative ${locationOpen ? 'z-50' : 'z-20'}`} ref={locRef}>
-                        <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center justify-between">
-                          <span className="flex items-center gap-1.5">
-                            <MapPin size={13} className="text-[#00d26a]" />
-                            <span>Search by location:</span>
-                          </span>
-                          <span className="text-[10px] font-semibold text-purple-600 dark:text-purple-400">OpenStreetMap</span>
+                        <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center gap-1.5">
+                          <MapPin size={13} className="text-[#00d26a]" />
+                          <span>Search by location:</span>
                         </label>
 
                         <div className="relative flex items-center bg-white dark:bg-[#182038] rounded-xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-[#5a32fa]/30 focus-within:border-[#5a32fa] transition-all">
@@ -803,7 +800,7 @@ export default function MembersDirectoryPage() {
                           </div>
                         </div>
 
-                        {/* OpenStreetMap Floating Suggestions Popover */}
+                        {/* Floating Suggestions Popover */}
                         {locationOpen && (locationSuggestions.length > 0 || isSearchingLoc) && (
                           <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-[#161c33] backdrop-blur-2xl border border-purple-200/80 dark:border-purple-500/30 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 animate-in fade-in zoom-in-95 duration-150 max-h-64 overflow-y-auto no-scrollbar">
                             <div className="flex items-center justify-between px-2.5 py-1 text-[11px] font-bold text-gray-400 dark:text-gray-400 border-b border-purple-50 dark:border-white/5 mb-1">
@@ -811,13 +808,12 @@ export default function MembersDirectoryPage() {
                                 <Globe size={11} className="text-[#5a32fa]" />
                                 Location Suggestions
                               </span>
-                              <span className="text-[10px] text-gray-400">OSM Global Data</span>
                             </div>
 
                             {isSearchingLoc && locationSuggestions.length === 0 && (
                               <div className="py-4 text-center text-xs text-gray-400 flex items-center justify-center gap-2">
                                 <Loader2 size={13} className="animate-spin text-[#5a32fa]" />
-                                <span>Searching OpenStreetMap...</span>
+                                <span>Searching locations...</span>
                               </div>
                             )}
 
