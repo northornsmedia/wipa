@@ -249,7 +249,18 @@ function parseRssFeed(xml: string): IPNewsItem[] {
     const summaryText = formatCleanSummary(cleanedDescText, cleanedTitleText);
     const formattedContent = formatCleanContent('', cleanedTitleText, summaryText, subcategory);
 
-    let organization = 'The Global IP Magazine';
+    // Extract authentic source from <source> tag or title suffix
+    const sourceTagMatch = /<source(?:\s+url="([^"]*)")?>([\s\S]*?)<\/source>/i.exec(itemXml);
+    let detectedSource = sourceTagMatch ? sourceTagMatch[2].replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim() : '';
+
+    if (!detectedSource) {
+      const titleSuffixMatch = /\s*[-–—|]\s*([^-–—|]+)$/.exec(rawTitle);
+      if (titleSuffixMatch && titleSuffixMatch[1].trim().length < 35) {
+        detectedSource = titleSuffixMatch[1].trim();
+      }
+    }
+
+    let organization = detectedSource || 'Global IP Wire';
     if (linkUrl.includes('globalipmagazine.com')) {
       organization = 'The Global IP Magazine';
     } else if (/reuters\.com/i.test(linkUrl) || /reuters/i.test(rawTitle)) {
@@ -266,6 +277,10 @@ function parseRssFeed(xml: string): IPNewsItem[] {
       organization = 'European Patent Office';
     } else if (/gov\.uk/i.test(linkUrl) || /ukipo/i.test(rawTitle)) {
       organization = 'UKIPO';
+    } else if (/billboard\.com/i.test(linkUrl) || /billboard/i.test(rawTitle)) {
+      organization = 'Billboard';
+    } else if (/prnewswire\.com/i.test(linkUrl) || /pr newswire/i.test(rawTitle)) {
+      organization = 'PR Newswire';
     }
 
     items.push({

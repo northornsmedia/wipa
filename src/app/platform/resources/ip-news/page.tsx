@@ -81,7 +81,7 @@ export default function IPNewsHubPage() {
           const createdDate = d.created_at ? new Date(d.created_at) : new Date();
           const timeStr = createdDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           const dateStr = d.created_at ? createdDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
-          const sourceOrg = d.organization || (d.tags?.includes('GlobalIPMagazineNews') ? 'The Global IP Magazine' : 'The Global IP Magazine');
+          const sourceOrg = d.organization || (d.tags?.includes('GlobalIPMagazineNews') ? 'The Global IP Magazine' : 'Global IP Wire');
           const sourceLink = d.external_url || d.url || (d.slug && d.slug.includes('breaking-ip-wire') ? 'https://www.globalipmagazine.com/news/breaking-ip-wire' : `https://www.globalipmagazine.com/post/${d.slug || ''}`);
 
           return {

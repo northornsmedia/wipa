@@ -102,7 +102,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
     ? createdDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     : '';
   const displayReadTime = article?.read_time || "4 min read";
-  const displaySource = article?.organization || 'The Global IP Magazine';
+  const displaySource = article?.organization || 'Global IP Wire';
   const displayExternalUrl = article?.external_url || article?.url || (article?.slug && article.slug.includes('breaking-ip-wire') ? 'https://www.globalipmagazine.com/news/breaking-ip-wire' : `https://www.globalipmagazine.com/post/${article?.slug || ''}`);
   const displaySummary = formatCleanSummary(article?.summary || article?.description, displayTitle);
   const displayContent = formatCleanContent(article?.content, displayTitle, displaySummary, article?.subcategory);
