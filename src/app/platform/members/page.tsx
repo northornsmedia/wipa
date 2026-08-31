@@ -30,14 +30,10 @@ type Profile = {
 
 const NEED_OPTIONS = [
   { value: '', label: 'All Categories & Roles', icon: Users, badge: 'All' },
-  { value: 'IP Service providers', label: 'IP Service Providers & Firms', icon: Briefcase, badge: 'Provider' },
-  { value: 'Patent Attorney', label: 'Patent Attorneys & Agents', icon: FileText, badge: 'Patent' },
-  { value: 'Trademark', label: 'Trademark Specialists', icon: CheckCircle2, badge: 'Brand' },
-  { value: 'Litigation', label: 'IP Litigators & Counsel', icon: ArrowUpRight, badge: 'Litigation' },
-  { value: 'In-House', label: 'In-House IP Counsel', icon: GraduationCap, badge: 'Corporate' },
-  { value: 'Law Firm', label: 'IP Law Firms & Practices', icon: LayoutGrid, badge: 'Firm' },
-  { value: 'Consultant', label: 'IP Consultants & Strategists', icon: Sparkles, badge: 'Advisory' },
-  { value: 'Search', label: 'Search & Translation Specialists', icon: Search, badge: 'Research' }
+  { value: 'IP Associations members', label: 'IP Associations members', icon: UsersRound, badge: 'Association' },
+  { value: 'IP Attorneys', label: 'IP Attorneys', icon: Briefcase, badge: 'Attorney' },
+  { value: 'IP Organisations', label: 'IP Organisations', icon: LayoutGrid, badge: 'Organisation' },
+  { value: 'IP Service providers', label: 'IP Service providers', icon: Sparkles, badge: 'Service Provider' }
 ];
 
 const SPECIALTY_OPTIONS = [
@@ -57,7 +53,7 @@ export default function MembersDirectoryPage() {
   const { user } = useAppStore();
   const [members, setMembers] = useState<Profile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [needCategory, setNeedCategory] = useState('');
+  const [needCategory, setNeedCategory] = useState('IP Service providers');
   const [specialty, setSpecialty] = useState('');
   const [locationQuery, setLocationQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -69,6 +65,8 @@ export default function MembersDirectoryPage() {
 
   const [needOpen, setNeedOpen] = useState(false);
   const [specOpen, setSpecOpen] = useState(false);
+  const [needFilterText, setNeedFilterText] = useState('');
+  const [specFilterText, setSpecFilterText] = useState('');
   const needRef = useRef<HTMLDivElement>(null);
   const specRef = useRef<HTMLDivElement>(null);
 
@@ -94,7 +92,17 @@ export default function MembersDirectoryPage() {
     }
 
     if (needCategory && needCategory !== 'All') {
-      query = query.or(`role.ilike.%${needCategory}%,company.ilike.%${needCategory}%,practice_area.ilike.%${needCategory}%`);
+      if (needCategory === 'IP Attorneys') {
+        query = query.or(`role.ilike.%attorney%,role.ilike.%lawyer%,role.ilike.%counsel%,role.ilike.%patent%,role.ilike.%trademark%,practice_area.ilike.%attorney%`);
+      } else if (needCategory === 'IP Associations members') {
+        query = query.or(`role.ilike.%association%,role.ilike.%member%,practice_area.ilike.%association%,company.ilike.%association%`);
+      } else if (needCategory === 'IP Organisations') {
+        query = query.or(`company.ilike.%org%,company.ilike.%institute%,company.ilike.%firm%,role.ilike.%organisation%,role.ilike.%organization%`);
+      } else if (needCategory === 'IP Service providers') {
+        query = query.or(`role.ilike.%service%,role.ilike.%provider%,company.ilike.%service%,practice_area.ilike.%service%`);
+      } else {
+        query = query.or(`role.ilike.%${needCategory}%,company.ilike.%${needCategory}%,practice_area.ilike.%${needCategory}%`);
+      }
     }
 
     if (specialty && specialty !== 'All') {
@@ -141,8 +149,10 @@ export default function MembersDirectoryPage() {
       if (specialty && specialty !== 'All') {
         bizQuery = bizQuery.ilike('practice_areas', `%${specialty}%`);
       }
-      if (needCategory === 'IP Service providers' || needCategory === 'Law Firm') {
-        bizQuery = bizQuery.eq('type', needCategory === 'Law Firm' ? 'ip_firm' : 'service_provider');
+      if (needCategory === 'IP Service providers') {
+        bizQuery = bizQuery.or(`type.eq.service_provider,type.eq.ip_firm`);
+      } else if (needCategory === 'IP Organisations') {
+        bizQuery = bizQuery.or(`type.eq.corporate,type.eq.ip_firm`);
       }
 
       const { data: businessData } = await bizQuery;
@@ -376,36 +386,52 @@ export default function MembersDirectoryPage() {
                             </div>
                           </button>
 
-                          {/* Animated Dropdown Menu */}
+                          {/* Animated Dropdown Menu with Search */}
                           {needOpen && (
-                            <div className="absolute left-0 right-0 top-full mt-2 bg-white/95 dark:bg-[#161c33]/95 backdrop-blur-2xl border border-purple-200/80 dark:border-purple-500/30 rounded-2xl p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 animate-in fade-in zoom-in-95 duration-150 max-h-64 overflow-y-auto no-scrollbar">
-                              {NEED_OPTIONS.map((opt) => {
-                                const IconComp = opt.icon;
-                                const isSelected = needCategory === opt.value;
-                                return (
-                                  <button
-                                    key={opt.value || 'all'}
-                                    type="button"
-                                    onClick={() => {
-                                      setNeedCategory(opt.value);
-                                      setNeedOpen(false);
-                                    }}
-                                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                                      isSelected
-                                        ? 'bg-purple-100/80 dark:bg-purple-900/40 text-[#5a32fa] dark:text-purple-300 font-bold'
-                                        : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-white/5 hover:text-[#5a32fa] dark:hover:text-purple-300'
-                                    }`}
-                                  >
-                                    <div className="flex items-center gap-2.5 truncate">
-                                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-[#5a32fa] text-white' : 'bg-purple-50 dark:bg-purple-950/50 text-[#5a32fa]'}`}>
-                                        <IconComp size={13} />
+                            <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-[#161c33] backdrop-blur-2xl border border-purple-200/80 dark:border-purple-500/30 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 animate-in fade-in zoom-in-95 duration-150">
+                              {/* Mini Search Filter inside popup */}
+                              <div className="relative mb-2 px-1">
+                                <input
+                                  type="text"
+                                  value={needFilterText}
+                                  onChange={(e) => setNeedFilterText(e.target.value)}
+                                  placeholder="Search categories..."
+                                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 pr-8 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:border-[#5a32fa] focus:ring-1 focus:ring-[#5a32fa]"
+                                  autoFocus
+                                />
+                                <Search size={13} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                              </div>
+
+                              <div className="max-h-60 overflow-y-auto no-scrollbar space-y-0.5">
+                                {NEED_OPTIONS.filter(o => o.label.toLowerCase().includes(needFilterText.toLowerCase())).map((opt) => {
+                                  const IconComp = opt.icon;
+                                  const isSelected = needCategory === opt.value;
+                                  return (
+                                    <button
+                                      key={opt.value || 'all'}
+                                      type="button"
+                                      onClick={() => {
+                                        setNeedCategory(opt.value);
+                                        setNeedOpen(false);
+                                        setNeedFilterText('');
+                                      }}
+                                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                                        isSelected
+                                          ? 'bg-purple-100/80 dark:bg-purple-900/40 text-[#5a32fa] dark:text-purple-300 font-bold'
+                                          : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-white/5 hover:text-[#5a32fa] dark:hover:text-purple-300'
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-2.5 truncate">
+                                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-[#5a32fa] text-white' : 'bg-purple-50 dark:bg-purple-950/50 text-[#5a32fa]'}`}>
+                                          <IconComp size={13} />
+                                        </div>
+                                        <span className="truncate">{opt.label}</span>
                                       </div>
-                                      <span className="truncate">{opt.label}</span>
-                                    </div>
-                                    {isSelected && <Check size={14} className="text-[#5a32fa] shrink-0 ml-2" />}
-                                  </button>
-                                );
-                              })}
+                                      {isSelected && <Check size={14} className="text-[#5a32fa] shrink-0 ml-2" />}
+                                    </button>
+                                  );
+                                })}
+                              </div>
                             </div>
                           )}
                         </div>
@@ -450,36 +476,52 @@ export default function MembersDirectoryPage() {
                             </div>
                           </button>
 
-                          {/* Animated Dropdown Menu */}
+                          {/* Animated Dropdown Menu with Search */}
                           {specOpen && (
-                            <div className="absolute left-0 right-0 top-full mt-2 bg-white/95 dark:bg-[#161c33]/95 backdrop-blur-2xl border border-purple-200/80 dark:border-purple-500/30 rounded-2xl p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 animate-in fade-in zoom-in-95 duration-150 max-h-64 overflow-y-auto no-scrollbar">
-                              {SPECIALTY_OPTIONS.map((opt) => {
-                                const IconComp = opt.icon;
-                                const isSelected = specialty === opt.value;
-                                return (
-                                  <button
-                                    key={opt.value || 'all'}
-                                    type="button"
-                                    onClick={() => {
-                                      setSpecialty(opt.value);
-                                      setSpecOpen(false);
-                                    }}
-                                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                                      isSelected
-                                        ? 'bg-purple-100/80 dark:bg-purple-900/40 text-[#5a32fa] dark:text-purple-300 font-bold'
-                                        : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-white/5 hover:text-[#5a32fa] dark:hover:text-purple-300'
-                                    }`}
-                                  >
-                                    <div className="flex items-center gap-2.5 truncate">
-                                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-[#5a32fa] text-white' : 'bg-purple-50 dark:bg-purple-950/50 text-[#5a32fa]'}`}>
-                                        <IconComp size={13} />
+                            <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-[#161c33] backdrop-blur-2xl border border-purple-200/80 dark:border-purple-500/30 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 animate-in fade-in zoom-in-95 duration-150">
+                              {/* Mini Search Filter inside popup */}
+                              <div className="relative mb-2 px-1">
+                                <input
+                                  type="text"
+                                  value={specFilterText}
+                                  onChange={(e) => setSpecFilterText(e.target.value)}
+                                  placeholder="Search specialities..."
+                                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-3 py-2 pr-8 text-xs text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:border-[#5a32fa] focus:ring-1 focus:ring-[#5a32fa]"
+                                  autoFocus
+                                />
+                                <Search size={13} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                              </div>
+
+                              <div className="max-h-60 overflow-y-auto no-scrollbar space-y-0.5">
+                                {SPECIALTY_OPTIONS.filter(o => o.label.toLowerCase().includes(specFilterText.toLowerCase())).map((opt) => {
+                                  const IconComp = opt.icon;
+                                  const isSelected = specialty === opt.value;
+                                  return (
+                                    <button
+                                      key={opt.value || 'all'}
+                                      type="button"
+                                      onClick={() => {
+                                        setSpecialty(opt.value);
+                                        setSpecOpen(false);
+                                        setSpecFilterText('');
+                                      }}
+                                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                                        isSelected
+                                          ? 'bg-purple-100/80 dark:bg-purple-900/40 text-[#5a32fa] dark:text-purple-300 font-bold'
+                                          : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-white/5 hover:text-[#5a32fa] dark:hover:text-purple-300'
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-2.5 truncate">
+                                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-[#5a32fa] text-white' : 'bg-purple-50 dark:bg-purple-950/50 text-[#5a32fa]'}`}>
+                                          <IconComp size={13} />
+                                        </div>
+                                        <span className="truncate">{opt.label}</span>
                                       </div>
-                                      <span className="truncate">{opt.label}</span>
-                                    </div>
-                                    {isSelected && <Check size={14} className="text-[#5a32fa] shrink-0 ml-2" />}
-                                  </button>
-                                );
-                              })}
+                                      {isSelected && <Check size={14} className="text-[#5a32fa] shrink-0 ml-2" />}
+                                    </button>
+                                  );
+                                })}
+                              </div>
                             </div>
                           )}
                         </div>
