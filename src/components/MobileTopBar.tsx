@@ -198,7 +198,7 @@ export default function MobileTopBar() {
                     { label: 'Jobs Board', path: '/platform/jobs' },
                     { label: 'Mentorship', path: '/platform/mentorship' },
                     { label: 'Discussion Forums', path: '/platform/forums' },
-                    { label: 'LexIQ AI Assistant', path: '/platform/ai' }
+                    { label: 'Sally 4.1 Pro AI Assistant', path: '/platform/ai' }
                   ].map((link, idx) => (
                     <button
                       key={idx}

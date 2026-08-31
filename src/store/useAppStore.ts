@@ -174,7 +174,7 @@ export const useAppStore = create<AppState>()(
       setIsLexIQOpen: (open) => set({ isLexIQOpen: open }),
       isCreatePostOpen: false,
       setIsCreatePostOpen: (open) => set({ isCreatePostOpen: open }),
-      lexiqMessages: [{ role: 'ai', content: 'Hello! I am LexIQ, your IP assistant. How can I help you today?' }],
+      lexiqMessages: [{ role: 'ai', content: 'Hello! I am Sally 4.1 Pro, your IP assistant. How can I help you today?' }],
       setLexiqMessages: (lexiqMessages) => set({ lexiqMessages }),
       user: null,
       setUser: (user) => set({ user }),

@@ -80,8 +80,8 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
               </div>
               <div>
                 <h3 className="font-black text-white text-lg tracking-tight flex items-center gap-2 drop-shadow-md">
-                  LexIQ 
-                  <span className="text-[9px] uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full text-white shadow-sm backdrop-blur-sm">Beta</span>
+                  Sally 4.1 Pro
+                  <span className="text-[9px] uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full text-white shadow-sm backdrop-blur-sm">Pro</span>
                 </h3>
                 <p className="text-xs font-bold text-white/80 drop-shadow-sm">Your AI Legal Assistant</p>
               </div>
@@ -138,7 +138,7 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
                   <SiriWave variant="wave" size={26} />
                 </div>
                 <div className="p-3.5 rounded-2xl bg-white/30 backdrop-blur-md border border-white/40 rounded-tl-sm shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] flex items-center">
-                  <LoadingState label="LexIQ is thinking..." variant="Dots" />
+                  <LoadingState label="Sally 4.1 Pro is thinking..." variant="Dots" />
                 </div>
               </div>
             )}
@@ -149,12 +149,12 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
           <div className="px-5 pb-6 pt-2 bg-transparent shrink-0">
             <PromptInput
               onSubmit={handleSend}
-              placeholder="Ask LexIQ..."
+              placeholder="Ask Sally 4.1 Pro..."
               disabled={isTyping}
-              models={["LexIQ Super", "LexIQ Gemini", "LexIQ Fast", "LexIQ Advanced", "LexIQ Beta"]}
+              models={["Sally 4.1 Pro", "Sally Gemini", "Sally Fast", "Sally Advanced", "Sally Beta"]}
             />
             <p className="text-[10px] text-white/50 text-center mt-2 font-medium tracking-wide">
-              For legal news and information LexIQ can make mistakes*
+              For legal news and information Sally 4.1 Pro can make mistakes*
             </p>
           </div>
 

@@ -162,7 +162,7 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1">
-                      LexIQ AI Co-Pilot
+                      Sally 4.1 Pro
                       <span className="px-1.5 py-0.2 rounded text-[9px] bg-[#ff90e8] text-black font-black uppercase">AI</span>
                     </h4>
                     <p className="text-[11px] text-gray-500 dark:text-gray-400">Ask any patent, trademark, or IP question</p>

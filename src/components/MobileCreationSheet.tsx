@@ -47,7 +47,7 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
   const actionItems = [
     {
       id: 'lexiq',
-      title: 'Ask LexIQ AI Assistant',
+      title: 'Ask Sally 4.1 Pro',
       desc: 'Research IP case law, patent drafting & legal analysis',
       image: '/lexiq.png',
       color: 'from-[#5a32fa] via-purple-600 to-[#ff90e8]',

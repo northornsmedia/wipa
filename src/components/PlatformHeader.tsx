@@ -24,7 +24,7 @@ const navItems = [
   { name: 'Home', icon: Home, path: '/platform' },
   { name: 'My Network', icon: Globe, path: '/platform/network' },
   { name: 'Groups', icon: UsersRound, path: '/platform/groups' },
-  { name: 'Ask LexIQ', icon: SiriWaveIcon, path: '#lexiq', special: true },
+  { name: 'Sally 4.1 Pro', icon: SiriWaveIcon, path: '#lexiq', special: true },
   { name: 'Events', icon: Calendar, path: '/platform/events' },
   { name: 'Resources', icon: BookOpen, path: '/platform/resources' },
   { name: 'Jobs', icon: Briefcase, path: '/platform/jobs' },

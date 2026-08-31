@@ -68,7 +68,7 @@ export default function AIPage() {
           </div>
 
           <div className="mt-8 text-gray-400 font-bold tracking-[0.2em] uppercase text-sm flex items-center gap-2">
-            Initializing LexIQ
+            Initializing Sally 4.1 Pro
             <span className="flex gap-1 ml-1">
               <span className="w-1 h-1 bg-[#5a32fa] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
               <span className="w-1 h-1 bg-[#ff90e8] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -95,7 +95,7 @@ export default function AIPage() {
       <iframe 
         src="/api/proxy-ai"
         className="w-full h-full border-none"
-        title="LexIQ"
+        title="Sally 4.1 Pro"
         allow="microphone; camera; display-capture"
       />
     </div>

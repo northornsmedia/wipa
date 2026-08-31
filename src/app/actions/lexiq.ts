@@ -17,9 +17,9 @@ export async function generateLexIQResponse(history: any[], selectedModel?: stri
     const fullSystemInstruction = LEXIQ_SYSTEM_PROMPT + pageMapContext;
 
     // ----------------------------------------------------
-    // Gemini Integration (LexIQ Gemini)
+    // Gemini Integration (Sally Gemini)
     // ----------------------------------------------------
-    if (selectedModel === "LexIQ Gemini") {
+    if (selectedModel === "Sally Gemini" || selectedModel === "LexIQ Gemini") {
       const model = genAI.getGenerativeModel({ 
         model: "gemini-3.6-flash",
         systemInstruction: fullSystemInstruction
@@ -74,13 +74,13 @@ export async function generateLexIQResponse(history: any[], selectedModel?: stri
     let openRouterModel = "nvidia/nemotron-3.5-lightning:free"; 
     let apiKey = process.env.OPENROUTER_NEMOTRON_KEY || process.env.OPENROUTER_API_KEY;
 
-    if (selectedModel === "LexIQ Super") {
+    if (selectedModel === "Sally 4.1 Pro" || selectedModel === "Sally Super" || selectedModel === "LexIQ Super") {
       openRouterModel = "openai/gpt-4o-mini";
       apiKey = "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"; // Old OpenRouter key
-    } else if (selectedModel === "LexIQ Advanced") {
+    } else if (selectedModel === "Sally Advanced" || selectedModel === "LexIQ Advanced") {
       openRouterModel = "google/gemma-4-31b-it:free";
       apiKey = process.env.OPENROUTER_GEMMA_KEY || process.env.OPENROUTER_API_KEY;
-    } else if (selectedModel === "LexIQ Beta") {
+    } else if (selectedModel === "Sally Beta" || selectedModel === "LexIQ Beta") {
       openRouterModel = "dots-studio/dots-3-note-preview:free";
       apiKey = process.env.OPENROUTER_DOTS_KEY || process.env.OPENROUTER_API_KEY;
     }
