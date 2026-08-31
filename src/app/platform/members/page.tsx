@@ -8,7 +8,7 @@ import {
   Search, UserPlus, MapPin, Briefcase, Mail, ArrowLeft, UsersRound,
   Hash, BellOff, ArrowUpRight, Circle, CheckCircle2, LayoutGrid,
   ThumbsUp, MessageSquare, BookOpen, Calendar, FileText, GraduationCap,
-  Users, Navigation, ChevronDown, X, SlidersHorizontal, Sparkles, Check, Globe, Award
+  Users, Navigation, ChevronDown, X, SlidersHorizontal, Sparkles, Check, Globe, Award, Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import AdSlot from '@/components/AdSlot';
@@ -199,8 +199,14 @@ export default function MembersDirectoryPage() {
   const [specOpen, setSpecOpen] = useState(false);
   const [needFilterText, setNeedFilterText] = useState('');
   const [specFilterText, setSpecFilterText] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
+  const [isSearchingLoc, setIsSearchingLoc] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationOpen, setLocationOpen] = useState(false);
+
   const needRef = useRef<HTMLDivElement>(null);
   const specRef = useRef<HTMLDivElement>(null);
+  const locRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -210,10 +216,87 @@ export default function MembersDirectoryPage() {
       if (specRef.current && !specRef.current.contains(event.target as Node)) {
         setSpecOpen(false);
       }
+      if (locRef.current && !locRef.current.contains(event.target as Node)) {
+        setLocationOpen(false);
+      }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // OpenStreetMap Nominatim Free Location Autosuggestion Debounce
+  useEffect(() => {
+    if (!locationQuery || locationQuery.trim().length < 2) {
+      setLocationSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        setIsSearchingLoc(true);
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationQuery.trim())}&addressdetails=1&limit=6`,
+          {
+            headers: {
+              'Accept-Language': 'en'
+            }
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setLocationSuggestions(data || []);
+          if (data && data.length > 0) {
+            setLocationOpen(true);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching OpenStreetMap suggestions:', err);
+      } finally {
+        setIsSearchingLoc(false);
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [locationQuery]);
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&addressdetails=1`,
+            { headers: { 'Accept-Language': 'en' } }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const city = data.address?.city || data.address?.town || data.address?.state || data.address?.county || '';
+            const country = data.address?.country || '';
+            const formatted = [city, country].filter(Boolean).join(', ');
+            if (formatted) {
+              setLocationQuery(formatted);
+            } else if (data.display_name) {
+              setLocationQuery(data.display_name.split(',').slice(0, 2).join(','));
+            }
+            setLocationOpen(false);
+          }
+        } catch (err) {
+          console.error('Reverse geocoding error:', err);
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (err) => {
+        console.warn('Geolocation error:', err);
+        setIsLocating(false);
+      },
+      { timeout: 8000 }
+    );
+  };
 
   const fetchMembers = async () => {
     setLoading(true);
@@ -664,33 +747,111 @@ export default function MembersDirectoryPage() {
                         </div>
                       </div>
 
-                      {/* 3. Search by location: */}
-                      <div className="lg:col-span-3 space-y-1.5">
-                        <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center gap-1.5">
-                          <MapPin size={13} className="text-[#00d26a]" />
-                          <span>Search by location:</span>
+                      {/* 3. Search by location: (OpenStreetMap Powered Autocomplete) */}
+                      <div className={`lg:col-span-3 space-y-1.5 relative ${locationOpen ? 'z-50' : 'z-20'}`} ref={locRef}>
+                        <label className="block text-xs font-bold text-gray-700 dark:text-gray-200 tracking-wide flex items-center justify-between">
+                          <span className="flex items-center gap-1.5">
+                            <MapPin size={13} className="text-[#00d26a]" />
+                            <span>Search by location:</span>
+                          </span>
+                          <span className="text-[10px] font-semibold text-purple-600 dark:text-purple-400">OpenStreetMap</span>
                         </label>
+
                         <div className="relative flex items-center bg-white dark:bg-[#182038] rounded-xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-[#5a32fa]/30 focus-within:border-[#5a32fa] transition-all">
-                          <div className="bg-purple-50 dark:bg-purple-950/40 px-3 py-3 text-slate-500 border-r border-gray-100 dark:border-white/10 shrink-0 flex items-center justify-center">
-                            <Navigation size={14} className="rotate-45 text-[#5a32fa] fill-current" />
-                          </div>
+                          {/* Geolocation auto-detect button */}
+                          <button
+                            type="button"
+                            onClick={handleDetectLocation}
+                            title="Auto-detect my current city & country"
+                            className="bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/40 dark:hover:bg-purple-900/60 px-3 py-3 text-slate-500 border-r border-gray-100 dark:border-white/10 shrink-0 flex items-center justify-center transition-colors cursor-pointer"
+                          >
+                            {isLocating ? (
+                              <Loader2 size={14} className="text-[#5a32fa] animate-spin" />
+                            ) : (
+                              <Navigation size={14} className="rotate-45 text-[#5a32fa] fill-current" />
+                            )}
+                          </button>
+
                           <input
                             type="text"
                             value={locationQuery}
                             onChange={(e) => setLocationQuery(e.target.value)}
-                            placeholder="City or Post Code"
-                            className="w-full bg-transparent py-2.5 px-3 text-xs sm:text-sm font-semibold text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none"
+                            onFocus={() => {
+                              if (locationSuggestions.length > 0) setLocationOpen(true);
+                            }}
+                            placeholder="City, state, or country..."
+                            className="w-full bg-transparent py-2.5 px-3 pr-8 text-xs sm:text-sm font-semibold text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none"
                           />
-                          {locationQuery && (
-                            <button
-                              type="button"
-                              onClick={() => setLocationQuery('')}
-                              className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors"
-                            >
-                              <X size={14} />
-                            </button>
-                          )}
+
+                          <div className="absolute right-2.5 flex items-center gap-1">
+                            {isSearchingLoc && (
+                              <Loader2 size={13} className="text-gray-400 animate-spin" />
+                            )}
+                            {locationQuery && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setLocationQuery('');
+                                  setLocationSuggestions([]);
+                                  setLocationOpen(false);
+                                }}
+                                className="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors"
+                              >
+                                <X size={14} />
+                              </button>
+                            )}
+                          </div>
                         </div>
+
+                        {/* OpenStreetMap Floating Suggestions Popover */}
+                        {locationOpen && (locationSuggestions.length > 0 || isSearchingLoc) && (
+                          <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-[#161c33] backdrop-blur-2xl border border-purple-200/80 dark:border-purple-500/30 rounded-2xl p-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 animate-in fade-in zoom-in-95 duration-150 max-h-64 overflow-y-auto no-scrollbar">
+                            <div className="flex items-center justify-between px-2.5 py-1 text-[11px] font-bold text-gray-400 dark:text-gray-400 border-b border-purple-50 dark:border-white/5 mb-1">
+                              <span className="flex items-center gap-1">
+                                <Globe size={11} className="text-[#5a32fa]" />
+                                Location Suggestions
+                              </span>
+                              <span className="text-[10px] text-gray-400">OSM Global Data</span>
+                            </div>
+
+                            {isSearchingLoc && locationSuggestions.length === 0 && (
+                              <div className="py-4 text-center text-xs text-gray-400 flex items-center justify-center gap-2">
+                                <Loader2 size={13} className="animate-spin text-[#5a32fa]" />
+                                <span>Searching OpenStreetMap...</span>
+                              </div>
+                            )}
+
+                            {locationSuggestions.map((place, idx) => {
+                              const city = place.address?.city || place.address?.town || place.address?.municipality || place.address?.state || place.name;
+                              const country = place.address?.country || '';
+                              const formattedShort = [city, country].filter(Boolean).join(', ') || place.display_name.split(',').slice(0, 2).join(',');
+
+                              return (
+                                <button
+                                  key={place.place_id || idx}
+                                  type="button"
+                                  onClick={() => {
+                                    setLocationQuery(formattedShort);
+                                    setLocationOpen(false);
+                                  }}
+                                  className="w-full text-left px-3 py-2 rounded-xl text-xs transition-all hover:bg-purple-50 dark:hover:bg-white/5 cursor-pointer flex items-start gap-2.5 group"
+                                >
+                                  <div className="w-5 h-5 rounded-lg bg-green-50 dark:bg-green-950/40 text-[#00d26a] flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-[#00d26a] group-hover:text-white transition-colors">
+                                    <MapPin size={11} />
+                                  </div>
+                                  <div className="truncate flex-1">
+                                    <div className="font-bold text-gray-800 dark:text-gray-100 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 truncate">
+                                      {formattedShort}
+                                    </div>
+                                    <div className="text-[11px] text-gray-400 truncate">
+                                      {place.display_name}
+                                    </div>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
 
                       {/* 4. Search Now Action Button (WIPA Vibrant Gradient) */}
