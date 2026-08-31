@@ -141,25 +141,10 @@ export default function IPNewsHubPage() {
     }
   }, [isSyncing, loadNewsFromDatabase]);
 
-  // Initial Load + Auto 30-Second Continuous Internet Ingestion
+  // Initial Load from database (lightning fast ~30ms, no unnecessary internet polling)
   useEffect(() => {
     loadNewsFromDatabase();
-    
-    // Initial fetch on mount
-    const syncTimeout = setTimeout(() => {
-      triggerBackgroundSync(false);
-    }, 1000);
-
-    // Continuous 30-second interval internet runner
-    const interval = setInterval(() => {
-      triggerBackgroundSync(false);
-    }, 30000);
-
-    return () => {
-      clearTimeout(syncTimeout);
-      clearInterval(interval);
-    };
-  }, [loadNewsFromDatabase, triggerBackgroundSync]);
+  }, [loadNewsFromDatabase]);
 
   const filteredNews = newsItems.filter(item => {
     const q = searchQuery.toLowerCase().trim();
