@@ -645,131 +645,48 @@ export default function ProfilePage() {
             {/* TAB 1: POSTS & ACTIVITY */}
             {activeTab === 'activity' && (
               <>
-                {/* LinkedIn-style "Create a Post" Box */}
-                <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-4 sm:p-5 border border-gray-200 dark:border-gray-800 shadow-sm">
-                  <div className="flex items-center gap-3 mb-3">
+                {/* LinkedIn-style "Create a Post" Box (Navigates directly to /platform/create-post) */}
+                <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-4 sm:p-5 border border-gray-200 dark:border-gray-800 shadow-sm transition-all hover:border-gray-300 dark:hover:border-gray-700">
+                  <div 
+                    onClick={() => router.push('/platform/create-post')}
+                    className="flex items-center gap-3 mb-3 cursor-pointer group"
+                  >
                     <div 
-                      className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm overflow-hidden shrink-0"
+                      className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm overflow-hidden shrink-0 group-hover:scale-105 transition-transform"
                       style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover' }}
                     >
                       {!profileData.avatarUrl && profileData.name.charAt(0)}
                     </div>
                     
-                    <input 
-                      type="text"
-                      placeholder={`What's on your mind, ${profileData.name.split(' ')[0]}?`}
-                      value={newPostText}
-                      onChange={(e) => setNewPostText(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') handleCreatePost(); }}
-                      className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 text-gray-800 dark:text-gray-200 rounded-full px-4 py-2.5 text-sm outline-none transition-colors border border-transparent focus:border-[#5a32fa]"
-                    />
-                  </div>
-
-                  {/* Attachment Preview Box */}
-                  {attachedMedia && (
-                    <div className="mb-3">
-                      {attachedMedia.type === 'image' && (
-                        <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 max-h-56 shadow-sm">
-                          <img src={attachedMedia.previewUrl} alt="Preview" className="w-full h-full object-cover max-h-56" />
-                          <button 
-                            type="button"
-                            onClick={() => setAttachedMedia(null)} 
-                            className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-black/75 hover:bg-black text-white transition-all shadow-md"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-                      )}
-
-                      {attachedMedia.type === 'video' && (
-                        <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-black max-h-56 shadow-sm">
-                          <video src={attachedMedia.previewUrl} controls className="w-full max-h-52 object-contain" />
-                          <button 
-                            type="button"
-                            onClick={() => setAttachedMedia(null)} 
-                            className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-black/75 hover:bg-black text-white transition-all shadow-md z-10"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-                      )}
-
-                      {attachedMedia.type === 'doc' && (
-                        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 shadow-sm">
-                          <div className="flex items-center gap-3 overflow-hidden">
-                            <div className="w-10 h-10 rounded-xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-xs shrink-0">
-                              <FileText size={20} />
-                            </div>
-                            <div className="overflow-hidden">
-                              <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{attachedMedia.name}</p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">{attachedMedia.size || 'Document / PDF'}</p>
-                            </div>
-                          </div>
-                          <button 
-                            type="button"
-                            onClick={() => setAttachedMedia(null)} 
-                            className="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-lg transition-colors"
-                          >
-                            <X size={18} />
-                          </button>
-                        </div>
-                      )}
+                    <div 
+                      className="flex-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200/70 dark:hover:bg-gray-700/70 text-gray-500 dark:text-gray-400 rounded-full px-4 py-2.5 text-sm transition-all border border-transparent group-hover:border-[#5a32fa]/40 flex items-center select-none"
+                    >
+                      <span>What&apos;s on your mind, {profileData.name.split(' ')[0]}?</span>
                     </div>
-                  )}
-
-                  <input 
-                    type="file" 
-                    ref={postImageInputRef} 
-                    accept="image/*" 
-                    className="hidden" 
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) setAttachedMedia({ file: f, previewUrl: URL.createObjectURL(f), type: 'image', name: f.name });
-                    }} 
-                  />
-                  <input 
-                    type="file" 
-                    ref={postVideoInputRef} 
-                    accept="video/*" 
-                    className="hidden" 
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) setAttachedMedia({ file: f, previewUrl: URL.createObjectURL(f), type: 'video', name: f.name });
-                    }} 
-                  />
-                  <input 
-                    type="file" 
-                    ref={postDocInputRef} 
-                    accept=".pdf,.doc,.docx,.txt" 
-                    className="hidden" 
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) setAttachedMedia({ file: f, previewUrl: '', type: 'doc', name: f.name, size: (f.size/1024).toFixed(1) + ' KB' });
-                    }} 
-                  />
+                  </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800/80">
                     <div className="flex items-center gap-1 sm:gap-2">
                       <button 
                         type="button"
-                        onClick={() => postImageInputRef.current?.click()}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors"
+                        onClick={() => router.push('/platform/create-post?type=photo')}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors cursor-pointer"
                       >
                         <ImageIcon size={18} className="text-blue-500" />
                         <span className="hidden sm:inline">Photo</span>
                       </button>
                       <button 
                         type="button"
-                        onClick={() => postVideoInputRef.current?.click()}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors"
+                        onClick={() => router.push('/platform/create-post?type=video')}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors cursor-pointer"
                       >
                         <Video size={18} className="text-emerald-500" />
                         <span className="hidden sm:inline">Video</span>
                       </button>
                       <button 
                         type="button"
-                        onClick={() => postDocInputRef.current?.click()}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors"
+                        onClick={() => router.push('/platform/create-post?type=doc')}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs sm:text-sm font-medium transition-colors cursor-pointer"
                       >
                         <FileText size={18} className="text-[#5a32fa] dark:text-[#ff90e8]" />
                         <span className="hidden sm:inline">Document / PDF</span>
@@ -777,12 +694,12 @@ export default function ProfilePage() {
                     </div>
 
                     <button 
-                      onClick={handleCreatePost}
-                      disabled={(!newPostText.trim() && !attachedMedia) || isPublishing}
-                      className="px-5 py-1.5 bg-[#5a32fa] hover:bg-[#4a24db] disabled:opacity-40 text-white text-xs sm:text-sm font-bold rounded-full transition-all flex items-center gap-1.5 shadow-sm"
+                      type="button"
+                      onClick={() => router.push('/platform/create-post')}
+                      className="px-5 py-1.5 bg-[#5a32fa] hover:bg-[#4a24db] text-white text-xs sm:text-sm font-bold rounded-full transition-all flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95"
                     >
-                      {isPublishing ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-                      <span>{isPublishing ? 'Posting...' : 'Post'}</span>
+                      <Send size={14} />
+                      <span>Post</span>
                     </button>
                   </div>
                 </div>
