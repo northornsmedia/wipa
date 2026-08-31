@@ -317,6 +317,8 @@ img, video {
   html {
     font-size: 102%;
   }
+}
+
 /* Instant Zero-Delay Page Transitions */
 ::view-transition-old(root),
 ::view-transition-new(root) {
