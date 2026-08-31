@@ -403,6 +403,19 @@ export async function syncIPNewsToDatabase(): Promise<{
         throw error;
       }
       insertedCount = data?.length || toInsert.length;
+
+      // Maintain rolling top 100 news items (prune older entries)
+      await supabase.rpc('prune_old_ip_news').catch(() => {});
+      // Fallback direct cleanup if function not created
+      const { data: allIds } = await supabase
+        .from('ip_news')
+        .select('id')
+        .order('created_at', { ascending: false });
+
+      if (allIds && allIds.length > 100) {
+        const excessIds = allIds.slice(100).map(row => row.id);
+        await supabase.from('ip_news').delete().in('id', excessIds);
+      }
     }
 
     // 2. Count total available
@@ -413,7 +426,7 @@ export async function syncIPNewsToDatabase(): Promise<{
     return {
       success: true,
       insertedCount,
-      totalLiveCount: count || (existingRows?.length || 0) + insertedCount
+      totalLiveCount: Math.min(count || 100, 100)
     };
   } catch (error: any) {
     console.error('Failed to sync IP news to database:', error);
