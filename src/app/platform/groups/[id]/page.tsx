@@ -387,14 +387,13 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
     const updates = {
       name: editName.trim(),
       description: editDescription.trim(),
-      type: editType,
-      updated_at: new Date().toISOString()
+      type: editType
     };
     const { data, error } = await supabase
       .from('groups')
       .update(updates)
       .eq('id', group.id)
-      .select('name, description, type, updated_at')
+      .select('name, description, type')
       .single();
 
     setIsSavingGroup(false);
