@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { CheckCheck, Eye, Calendar as CalendarIcon, MessageCircle, UserPlus, Trash2, Star } from 'lucide-react';
+import { CheckCheck, CheckCircle2, Eye, Calendar as CalendarIcon, Heart, MessageCircle, UserPlus, Trash2, Star, XCircle } from 'lucide-react';
 
 export default function NotificationsPage() {
   const { user } = useAppStore();
@@ -32,6 +32,24 @@ export default function NotificationsPage() {
         }
       };
       fetchNotifications();
+
+      const notificationChannel = supabase
+        .channel(`notifications-page-${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`
+          },
+          fetchNotifications
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(notificationChannel);
+      };
     }
   }, [user?.id]);
   
@@ -122,6 +140,22 @@ export default function NotificationsPage() {
                 Icon = Star;
                 iconBg = 'bg-yellow-500';
                 message = notif.content || 'awarded you the WIPA Recommended badge.';
+              } else if (notif.type === 'post_like') {
+                Icon = Heart;
+                iconBg = 'bg-rose-500';
+                message = notif.content || 'has liked your post.';
+              } else if (notif.type === 'post_comment') {
+                Icon = MessageCircle;
+                iconBg = 'bg-blue-500';
+                message = notif.content || 'has commented on your post.';
+              } else if (notif.type === 'group_post_approved') {
+                Icon = CheckCircle2;
+                iconBg = 'bg-emerald-500';
+                message = notif.content || 'approved your group post.';
+              } else if (notif.type === 'group_post_rejected') {
+                Icon = XCircle;
+                iconBg = 'bg-red-500';
+                message = notif.content || 'did not approve your group post.';
               }
 
               return (

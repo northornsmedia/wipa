@@ -160,6 +160,11 @@ export default function PlatformHeader() {
               let message = `${name} interacted with your profile.`;
               if (newNotif.type === 'connection_request') message = `${name} sent you a connection request.`;
               if (newNotif.type === 'connection_accepted') message = `${name} accepted your connection request.`;
+              if (newNotif.type === 'post_like') message = `${name} ${newNotif.content || 'has liked your post.'}`;
+              if (newNotif.type === 'post_comment') message = `${name} ${newNotif.content || 'has commented on your post.'}`;
+              if (newNotif.type === 'group_post_approved' || newNotif.type === 'group_post_rejected') {
+                message = `${name} ${newNotif.content || 'reviewed your group post.'}`;
+              }
               
               setToastNotification({ message, visible: true });
               setTimeout(() => {

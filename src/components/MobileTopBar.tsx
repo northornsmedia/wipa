@@ -39,6 +39,24 @@ export default function MobileTopBar() {
       }
     }
     fetchCounts();
+
+    const notificationChannel = supabase
+      .channel(`mobile-notifications-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
+        },
+        fetchCounts
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(notificationChannel);
+    };
   }, [user?.id, pathname]);
 
   // Live search handler

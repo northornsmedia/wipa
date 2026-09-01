@@ -40,6 +40,9 @@ interface GroupItem {
   color: string;
   members_count: number;
   isJoined?: boolean;
+  created_by?: string;
+  membershipRole?: string;
+  isAdmin?: boolean;
 }
 
 export default function GroupsPage() {
@@ -88,7 +91,7 @@ export default function GroupsPage() {
     try {
       const { data: dbGroups, error } = await supabase
         .from('groups')
-        .select('id, name, slug, description, type, icon, color, avatar_url, cover_url, members_count')
+        .select('id, name, slug, description, type, icon, color, avatar_url, cover_url, members_count, created_by')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -102,15 +105,19 @@ export default function GroupsPage() {
         effectiveUserId = authData?.user?.id;
       }
 
-      let userJoinedGroupIds = new Set<string>();
+      const userJoinedGroupIds = new Set<string>();
+      const membershipRoles = new Map<string, string>();
       if (effectiveUserId) {
         const { data: memberRows } = await supabase
           .from('group_members')
-          .select('group_id')
+          .select('group_id, role')
           .eq('user_id', effectiveUserId);
 
         if (memberRows) {
-          memberRows.forEach(row => userJoinedGroupIds.add(row.group_id));
+          memberRows.forEach(row => {
+            userJoinedGroupIds.add(row.group_id);
+            membershipRoles.set(row.group_id, row.role || 'member');
+          });
         }
       }
 
@@ -137,7 +144,15 @@ export default function GroupsPage() {
         avatar_url: g.avatar_url || '',
         cover_url: g.cover_url || '',
         members_count: Math.max(g.members_count || 1, memberCountsMap[g.id] || 1),
-        isJoined: userJoinedGroupIds.has(g.id)
+        isJoined: userJoinedGroupIds.has(g.id) || g.created_by === effectiveUserId,
+        created_by: g.created_by || undefined,
+        membershipRole: membershipRoles.get(g.id),
+        isAdmin: Boolean(
+          effectiveUserId && (
+            g.created_by === effectiveUserId
+            || ['admin', 'owner'].includes(membershipRoles.get(g.id) || '')
+          )
+        )
       }));
 
       setGroups(mapped);
@@ -156,6 +171,8 @@ export default function GroupsPage() {
   const toggleJoin = async (e: React.MouseEvent, group: GroupItem) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (group.isAdmin) return;
 
     let effectiveUserId = user?.id;
     if (!effectiveUserId) {
@@ -492,26 +509,32 @@ export default function GroupsPage() {
                     {group.members_count.toLocaleString()} members
                   </div>
                   
-                  <button 
-                    onClick={(e) => toggleJoin(e, group)}
-                    disabled={joiningGroupId === group.id}
-                    className={`px-5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer ${
-                      group.isJoined 
-                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 hover:bg-red-50 hover:text-red-600 hover:border-red-300 dark:hover:bg-red-950/40' 
-                        : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-[#5a32fa] dark:hover:bg-[#5a32fa] dark:hover:text-white'
-                    }`}
-                  >
-                    {joiningGroupId === group.id ? (
-                      <Loader2 size={14} className="animate-spin" />
-                    ) : group.isJoined ? (
-                      <>
-                        <Check size={14} strokeWidth={2.5} />
-                        <span>Joined</span>
-                      </>
-                    ) : (
-                      <span>Join Group</span>
-                    )}
-                  </button>
+                  {group.isAdmin ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-[#5a32fa] dark:border-indigo-800 dark:bg-indigo-950/50 dark:text-indigo-300">
+                      <ShieldCheck size={14} /> My Group · Admin
+                    </span>
+                  ) : (
+                    <button
+                      onClick={(e) => toggleJoin(e, group)}
+                      disabled={joiningGroupId === group.id}
+                      className={`px-5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer ${
+                        group.isJoined
+                          ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 hover:bg-red-50 hover:text-red-600 hover:border-red-300 dark:hover:bg-red-950/40'
+                          : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-[#5a32fa] dark:hover:bg-[#5a32fa] dark:hover:text-white'
+                      }`}
+                    >
+                      {joiningGroupId === group.id ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : group.isJoined ? (
+                        <>
+                          <Check size={14} strokeWidth={2.5} />
+                          <span>Joined</span>
+                        </>
+                      ) : (
+                        <span>Join Group</span>
+                      )}
+                    </button>
+                  )}
                 </div>
               </Link>
             ))}

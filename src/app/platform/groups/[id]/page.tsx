@@ -28,7 +28,10 @@ import {
   ChevronRight, 
   SlidersHorizontal,
   ThumbsUp,
-  Bookmark
+  Bookmark,
+  Settings,
+  Trash2,
+  Clock3
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -49,6 +52,7 @@ interface GroupData {
   cover_url: string;
   members_count: number;
   created_at: string;
+  created_by?: string;
 }
 
 interface GroupPost {
@@ -64,6 +68,9 @@ interface GroupPost {
   created_at: string;
   post_to_feed?: boolean;
   group_id?: string;
+  moderation_status?: 'pending' | 'approved' | 'rejected';
+  moderated_at?: string;
+  moderated_by?: string;
   author?: {
     full_name: string;
     avatar_url: string;
@@ -90,9 +97,20 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
   const [group, setGroup] = useState<GroupData | null>(null);
   const [isJoined, setIsJoined] = useState(false);
+  const [membershipRole, setMembershipRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isTogglingJoin, setIsTogglingJoin] = useState(false);
-  const [activeTab, setActiveTab] = useState<'discussion' | 'about' | 'members' | 'media'>('discussion');
+  const [activeTab, setActiveTab] = useState<'discussion' | 'about' | 'members' | 'media' | 'moderation'>('discussion');
+
+  // Owner/admin management state
+  const [isManageOpen, setIsManageOpen] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editType, setEditType] = useState<'Public' | 'Private'>('Public');
+  const [isSavingGroup, setIsSavingGroup] = useState(false);
+  const [isDeletingGroup, setIsDeletingGroup] = useState(false);
+  const [managementError, setManagementError] = useState('');
+  const [moderatingPostId, setModeratingPostId] = useState<string | null>(null);
 
   // Posts State
   const [posts, setPosts] = useState<GroupPost[]>([]);
@@ -105,10 +123,39 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
   const [isPublishing, setIsPublishing] = useState(false);
   const [selectedMediaUrl, setSelectedMediaUrl] = useState('');
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
+  const [postFeedback, setPostFeedback] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Group Members List
   const [members, setMembers] = useState<any[]>([]);
+
+  const isGroupAdmin = Boolean(
+    user?.id && (
+      group?.created_by === user.id
+      || membershipRole === 'admin'
+      || membershipRole === 'owner'
+    )
+  );
+  const pendingPosts = useMemo(
+    () => posts.filter((post) => post.moderation_status === 'pending'),
+    [posts]
+  );
+  const discussionPosts = useMemo(
+    () => posts.filter((post) => (
+      !post.moderation_status
+      || post.moderation_status === 'approved'
+      || (!isGroupAdmin && post.author_id === user?.id && post.moderation_status === 'pending')
+    )),
+    [isGroupAdmin, posts, user?.id]
+  );
+  const adminMemberIds = useMemo(
+    () => new Set(
+      members
+        .filter((member) => member.roleInGroup === 'admin' || member.roleInGroup === 'owner')
+        .map((member) => member.id)
+    ),
+    [members]
+  );
 
   // 1. Fetch Group Details
   useEffect(() => {
@@ -118,7 +165,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         // Query by ID or Slug
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawId);
         
-        let query = supabase.from('groups').select('id, name, slug, description, type, icon, color, avatar_url, cover_url, members_count, created_at');
+        let query = supabase.from('groups').select('id, name, slug, description, type, icon, color, avatar_url, cover_url, members_count, created_at, created_by');
         if (isUuid) {
           query = query.or(`id.eq.${rawId},slug.eq.${rawId}`);
         } else {
@@ -149,7 +196,8 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             color: data.color || '#5a32fa',
             cover_url: cover,
             members_count: finalInitialCount,
-            created_at: data.created_at
+            created_at: data.created_at,
+            created_by: data.created_by || undefined
           });
 
           // Check if current user is member
@@ -167,9 +215,12 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
               .eq('user_id', effectiveUserId)
               .maybeSingle();
 
-            setIsJoined(!!memberRow);
+            const isCreator = data.created_by === effectiveUserId;
+            setIsJoined(Boolean(memberRow || isCreator));
+            setMembershipRole(memberRow?.role || (isCreator ? 'owner' : null));
           } else {
             setIsJoined(false);
+            setMembershipRole(null);
           }
 
           // Fetch group posts
@@ -199,6 +250,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         .select(`
           id, author_id, content, media_urls, media_type, document_name, privacy,
           likes_count, comments_count, created_at, group_id, post_to_feed,
+          moderation_status, moderated_at, moderated_by,
           author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, practice_area, role, is_wipa_recommended)
         `)
         .eq('group_id', groupId)
@@ -269,6 +321,8 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
   // Toggle Join/Leave Group
   const handleToggleJoin = async () => {
+    if (isGroupAdmin) return;
+
     let effectiveUserId = user?.id;
     if (!effectiveUserId) {
       const { data: authData } = await supabase.auth.getUser();
@@ -315,6 +369,92 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
     }
   };
 
+  const openGroupManagement = () => {
+    if (!group || !isGroupAdmin) return;
+    setEditName(group.name);
+    setEditDescription(group.description);
+    setEditType(group.type);
+    setManagementError('');
+    setIsManageOpen(true);
+  };
+
+  const handleSaveGroup = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!group || !isGroupAdmin || !editName.trim()) return;
+
+    setIsSavingGroup(true);
+    setManagementError('');
+    const updates = {
+      name: editName.trim(),
+      description: editDescription.trim(),
+      type: editType,
+      updated_at: new Date().toISOString()
+    };
+    const { data, error } = await supabase
+      .from('groups')
+      .update(updates)
+      .eq('id', group.id)
+      .select('name, description, type, updated_at')
+      .single();
+
+    setIsSavingGroup(false);
+    if (error) {
+      setManagementError(error.message || 'Could not update this group.');
+      return;
+    }
+
+    setGroup((current) => current ? {
+      ...current,
+      name: data.name,
+      description: data.description || '',
+      type: data.type === 'Private' ? 'Private' : 'Public'
+    } : current);
+    setIsManageOpen(false);
+  };
+
+  const handleDeleteGroup = async () => {
+    if (!group || !isGroupAdmin || isDeletingGroup) return;
+    const confirmed = window.confirm(
+      `Delete "${group.name}"? This permanently removes the group, its posts, and its memberships.`
+    );
+    if (!confirmed) return;
+
+    setIsDeletingGroup(true);
+    setManagementError('');
+    const { error } = await supabase.from('groups').delete().eq('id', group.id);
+    if (error) {
+      setManagementError(error.message || 'Could not delete this group.');
+      setIsDeletingGroup(false);
+      return;
+    }
+
+    router.replace('/platform/groups');
+  };
+
+  const handleModeratePost = async (postId: string, status: 'approved' | 'rejected') => {
+    if (!isGroupAdmin || !user?.id || moderatingPostId) return;
+    setModeratingPostId(postId);
+
+    const { error } = await supabase
+      .from('feed_posts')
+      .update({ moderation_status: status })
+      .eq('id', postId)
+      .eq('group_id', group?.id || '');
+
+    setModeratingPostId(null);
+    if (error) {
+      alert(error.message || 'Could not moderate this post.');
+      return;
+    }
+
+    setPosts((current) => current.map((post) => post.id === postId ? {
+      ...post,
+      moderation_status: status,
+      moderated_at: new Date().toISOString(),
+      moderated_by: user.id
+    } : post));
+  };
+
   // Create Post inside Group
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -341,6 +481,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         .select(`
           id, author_id, content, media_urls, media_type, document_name, privacy,
           likes_count, comments_count, created_at, group_id, post_to_feed,
+          moderation_status, moderated_at, moderated_by,
           author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, practice_area, role, is_wipa_recommended)
         `)
         .single();
@@ -353,6 +494,11 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         setSelectedMediaUrl('');
         setPostToFeed(false);
         setIsComposerOpen(false);
+        setPostFeedback(
+          createdPost.moderation_status === 'pending'
+            ? 'Your post was submitted to the group admins for approval.'
+            : 'Your post is now live in the group.'
+        );
       }
     } catch (err) {
       console.error('Error publishing group post:', err);
@@ -522,32 +668,48 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
               </div>
 
               {/* Right Actions: Join/Joined Button + Invite */}
-              <div className="flex items-center gap-2.5 shrink-0 self-start md:self-auto">
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start md:self-auto">
                 
-                {/* Join / Joined Button */}
-                <button
-                  onClick={handleToggleJoin}
-                  disabled={isTogglingJoin}
-                  className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm flex items-center gap-2 cursor-pointer ${
-                    isJoined
-                      ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700/50 hover:bg-red-50 hover:text-red-600 hover:border-red-300'
-                      : 'bg-[#5a32fa] hover:bg-[#4927cb] text-white shadow-md shadow-indigo-500/25 active:scale-95'
-                  }`}
-                >
-                  {isTogglingJoin ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : isJoined ? (
-                    <>
-                      <Check size={16} strokeWidth={3} />
-                      <span>Joined</span>
-                    </>
-                  ) : (
-                    <>
-                      <Users size={16} />
-                      <span>Join Group</span>
-                    </>
-                  )}
-                </button>
+                {isGroupAdmin ? (
+                  <div className="px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950/50 text-[#5a32fa] dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700/50">
+                    <ShieldCheck size={17} />
+                    <span>Admin · My Group</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleToggleJoin}
+                    disabled={isTogglingJoin}
+                    className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm flex items-center gap-2 cursor-pointer ${
+                      isJoined
+                        ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-700/50 hover:bg-red-50 hover:text-red-600 hover:border-red-300'
+                        : 'bg-[#5a32fa] hover:bg-[#4927cb] text-white shadow-md shadow-indigo-500/25 active:scale-95'
+                    }`}
+                  >
+                    {isTogglingJoin ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : isJoined ? (
+                      <>
+                        <Check size={16} strokeWidth={3} />
+                        <span>Joined</span>
+                      </>
+                    ) : (
+                      <>
+                        <Users size={16} />
+                        <span>Join Group</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {isGroupAdmin && (
+                  <button
+                    onClick={openGroupManagement}
+                    className="bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-200 text-white dark:text-gray-900 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <Settings size={16} />
+                    <span>Manage</span>
+                  </button>
+                )}
 
                 {/* Invite Button */}
                 <button
@@ -572,7 +734,11 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                 { key: 'discussion', label: 'Discussion' },
                 { key: 'about', label: 'About' },
                 { key: 'members', label: `Members · ${group.members_count}` },
-                { key: 'media', label: 'Media & Files' }
+                { key: 'media', label: 'Media & Files' },
+                ...(isGroupAdmin ? [{
+                  key: 'moderation',
+                  label: `Moderation${pendingPosts.length ? ` · ${pendingPosts.length}` : ''}`
+                }] : [])
               ].map(tab => (
                 <button
                   key={tab.key}
@@ -593,6 +759,88 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
+      {/* Owner/admin group management */}
+      {isManageOpen && isGroupAdmin && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-[2rem] border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#11141f]">
+            <div className="mb-5 flex items-center justify-between border-b border-gray-200 pb-4 dark:border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-[#5a32fa] dark:bg-indigo-950/60 dark:text-indigo-300">
+                  <Settings size={19} />
+                </div>
+                <div>
+                  <h2 className="font-black text-gray-900 dark:text-white">Manage group</h2>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Owner and admin controls</p>
+                </div>
+              </div>
+              <button onClick={() => setIsManageOpen(false)} className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Close group settings">
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveGroup} className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-black uppercase tracking-wide text-gray-500 dark:text-gray-400">Group name</label>
+                <input
+                  required
+                  value={editName}
+                  onChange={(event) => setEditName(event.target.value)}
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm font-semibold outline-none focus:border-[#5a32fa] dark:border-white/10 dark:bg-black/20 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-black uppercase tracking-wide text-gray-500 dark:text-gray-400">Description</label>
+                <textarea
+                  rows={4}
+                  value={editDescription}
+                  onChange={(event) => setEditDescription(event.target.value)}
+                  className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm outline-none focus:border-[#5a32fa] dark:border-white/10 dark:bg-black/20 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-black uppercase tracking-wide text-gray-500 dark:text-gray-400">Privacy</label>
+                <select
+                  value={editType}
+                  onChange={(event) => setEditType(event.target.value as 'Public' | 'Private')}
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm font-semibold outline-none focus:border-[#5a32fa] dark:border-white/10 dark:bg-black/20 dark:text-white"
+                >
+                  <option value="Public">Public</option>
+                  <option value="Private">Private</option>
+                </select>
+              </div>
+
+              {managementError && (
+                <p className="rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 dark:bg-red-950/30 dark:text-red-300">{managementError}</p>
+              )}
+
+              <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-between dark:border-white/5">
+                <button
+                  type="button"
+                  onClick={handleDeleteGroup}
+                  disabled={isDeletingGroup}
+                  className="flex items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 disabled:opacity-60 dark:border-red-900/60 dark:hover:bg-red-950/30"
+                >
+                  {isDeletingGroup ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+                  Delete group
+                </button>
+
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => setIsManageOpen(false)} className="flex-1 rounded-xl bg-gray-100 px-5 py-2.5 text-xs font-bold text-gray-700 hover:bg-gray-200 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={isSavingGroup} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#5a32fa] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#4927cb] disabled:opacity-60">
+                    {isSavingGroup && <Loader2 size={15} className="animate-spin" />}
+                    Save changes
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* ========================================================================= */}
       {/* 2. MAIN 2-COLUMN LAYOUT (FEED + SIDEBAR) */}
       {/* ========================================================================= */}
@@ -607,6 +855,15 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
             {/* TAB 1: DISCUSSION */}
             {activeTab === 'discussion' && (
               <>
+                {postFeedback && (
+                  <div className="flex items-center justify-between gap-3 rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-800 dark:border-indigo-800/60 dark:bg-indigo-950/40 dark:text-indigo-200">
+                    <span>{postFeedback}</span>
+                    <button onClick={() => setPostFeedback('')} className="shrink-0 rounded-full p-1 hover:bg-indigo-100 dark:hover:bg-indigo-900" aria-label="Dismiss message">
+                      <X size={15} />
+                    </button>
+                  </div>
+                )}
+
                 {/* 1. IN-GROUP POST COMPOSER */}
                 {!isJoined ? (
                   /* User NOT in group prompt */
@@ -693,9 +950,9 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                       </div>
                     ))}
                   </div>
-                ) : posts.length > 0 ? (
+                ) : discussionPosts.length > 0 ? (
                   <div className="space-y-4">
-                    {posts.map(post => (
+                    {discussionPosts.map(post => (
                       <div 
                         key={post.id} 
                         className="bg-white dark:bg-[#11141f] rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden"
@@ -716,6 +973,11 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                                 <h4 className="font-bold text-sm text-gray-900 dark:text-white">
                                   {post.author?.full_name || 'Group Member'}
                                 </h4>
+                                {adminMemberIds.has(post.author_id) && (
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-[#5a32fa] dark:bg-indigo-950/60 dark:text-indigo-300">
+                                    <ShieldCheck size={10} /> Admin
+                                  </span>
+                                )}
                                 {post.author?.is_wipa_recommended && (
                                   <ShieldCheck size={14} className="text-[#00d26a]" />
                                 )}
@@ -728,6 +990,11 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
                           {/* Post Privacy / Feed Indicator */}
                           <div className="flex items-center gap-1.5">
+                            {post.moderation_status === 'pending' && (
+                              <span className="flex items-center gap-1 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800">
+                                <Clock3 size={11} /> Awaiting approval
+                              </span>
+                            )}
                             {post.post_to_feed ? (
                               <span className="bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
                                 In Group & Feed
@@ -894,7 +1161,14 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-sm text-gray-900 dark:text-white truncate">{m.full_name || 'Member'}</h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-sm text-gray-900 dark:text-white truncate">{m.full_name || 'Member'}</h4>
+                          {(m.roleInGroup === 'admin' || m.roleInGroup === 'owner') && (
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#5a32fa] dark:bg-indigo-950/60 dark:text-indigo-300">
+                              <ShieldCheck size={11} /> Admin
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{m.company || m.practice_area || 'IP Counsel'}</p>
                       </div>
                     </div>
@@ -918,6 +1192,75 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
                 {posts.filter(p => p.media_urls && p.media_urls.length > 0).length === 0 && (
                   <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-12">No media files uploaded in this group yet.</p>
+                )}
+              </div>
+            )}
+
+            {/* TAB 5: ADMIN POST MODERATION */}
+            {activeTab === 'moderation' && isGroupAdmin && (
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#11141f]">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-100 text-[#5a32fa] dark:bg-indigo-950/60 dark:text-indigo-300">
+                      <ShieldCheck size={22} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-gray-900 dark:text-white">Post approvals</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Review member posts before they become visible in the group or main feed.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {pendingPosts.length ? pendingPosts.map((post) => (
+                  <article key={post.id} className="overflow-hidden rounded-2xl border border-amber-200 bg-white shadow-sm dark:border-amber-900/60 dark:bg-[#11141f]">
+                    <div className="p-5">
+                      <div className="mb-4 flex items-center justify-between gap-3">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-indigo-600 text-sm font-bold text-white">
+                            {post.author?.avatar_url ? (
+                              <img src={post.author.avatar_url} alt="" className="h-full w-full object-cover" />
+                            ) : post.author?.full_name?.charAt(0) || 'M'}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-bold text-gray-900 dark:text-white">{post.author?.full_name || 'Group Member'}</p>
+                            <p className="text-xs text-gray-500">Submitted {new Date(post.created_at).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+                          <Clock3 size={12} /> Pending
+                        </span>
+                      </div>
+
+                      <p className="whitespace-pre-line text-sm leading-relaxed text-gray-800 dark:text-gray-200">{post.content}</p>
+                      {post.media_urls?.[0] && (
+                        <img src={post.media_urls[0]} alt="Post attachment" className="mt-4 max-h-72 w-full rounded-xl object-contain bg-gray-50 dark:bg-black/30" />
+                      )}
+                    </div>
+
+                    <div className="flex gap-3 border-t border-gray-100 bg-gray-50/70 p-4 dark:border-white/5 dark:bg-black/20">
+                      <button
+                        onClick={() => handleModeratePost(post.id, 'approved')}
+                        disabled={moderatingPostId === post.id}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
+                      >
+                        {moderatingPostId === post.id ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} strokeWidth={3} />}
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleModeratePost(post.id, 'rejected')}
+                        disabled={moderatingPostId === post.id}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-2.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-50 disabled:opacity-60 dark:border-red-900/60 dark:bg-white/5 dark:hover:bg-red-950/30"
+                      >
+                        <X size={15} strokeWidth={3} /> Reject
+                      </button>
+                    </div>
+                  </article>
+                )) : (
+                  <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm dark:border-white/10 dark:bg-[#11141f]">
+                    <CheckCircle2 size={42} className="mx-auto mb-3 text-emerald-500" />
+                    <h3 className="font-bold text-gray-900 dark:text-white">All caught up</h3>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">There are no posts waiting for approval.</p>
+                  </div>
                 )}
               </div>
             )}
