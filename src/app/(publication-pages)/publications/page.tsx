@@ -8,24 +8,30 @@ export const metadata: Metadata = {
   description: "Exclusive publication and visibility opportunities for Women’s IP Alliance members.",
 };
 
-const cardStyles: Record<PublicationTheme, { glow: string; icon: string; link: string; number: string }> = {
+const cardStyles: Record<PublicationTheme, { glow: string; coverGlow: string; icon: string; link: string; number: string }> = {
   rose: {
-    glow: "from-rose-500/25 via-fuchsia-500/5 to-transparent",
-    icon: "bg-rose-500 text-white shadow-rose-500/25",
-    link: "text-rose-600 dark:text-rose-300",
-    number: "text-rose-100 dark:text-rose-400/10",
+    // Women's IP World: Purple
+    glow: "from-purple-600/30 via-violet-500/10 to-transparent",
+    coverGlow: "from-purple-600/35 via-violet-500/25 to-transparent",
+    icon: "bg-gradient-to-br from-[#5a32fa] via-purple-600 to-indigo-700 text-white shadow-purple-500/35",
+    link: "text-purple-600 dark:text-purple-300",
+    number: "text-purple-100 dark:text-purple-400/15",
   },
   violet: {
-    glow: "from-violet-500/25 via-indigo-500/5 to-transparent",
-    icon: "bg-violet-600 text-white shadow-violet-600/25",
-    link: "text-violet-600 dark:text-violet-300",
-    number: "text-violet-100 dark:text-violet-400/10",
+    // Global IP Magazine: Ice Blue
+    glow: "from-sky-400/35 via-cyan-400/15 to-transparent",
+    coverGlow: "from-sky-400/35 via-cyan-300/30 to-transparent",
+    icon: "bg-gradient-to-br from-sky-400 via-cyan-400 to-sky-500 text-white shadow-sky-400/35",
+    link: "text-sky-600 dark:text-sky-300",
+    number: "text-sky-100 dark:text-sky-400/15",
   },
   cyan: {
-    glow: "from-cyan-500/25 via-sky-500/5 to-transparent",
-    icon: "bg-cyan-700 text-white shadow-cyan-700/25",
-    link: "text-cyan-700 dark:text-cyan-300",
-    number: "text-cyan-100 dark:text-cyan-400/10",
+    // IP Tech & Innovation: Dark Blue
+    glow: "from-blue-900/40 via-indigo-950/20 to-transparent",
+    coverGlow: "from-blue-800/35 via-indigo-950/30 to-transparent",
+    icon: "bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-950 text-white shadow-blue-950/45",
+    link: "text-blue-800 dark:text-blue-300",
+    number: "text-blue-100 dark:text-blue-500/15",
   },
 };
 
@@ -120,11 +126,11 @@ export default function PublicationsPage() {
                   <div className="relative z-10 mt-6 md:mt-0 flex items-center justify-center md:justify-end shrink-0 md:min-w-[260px] lg:min-w-[320px]">
                     {coverImage ? (
                       <div className="relative flex items-center justify-center">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-[#5a32fa]/20 via-[#ff90e8]/20 to-transparent blur-3xl rounded-full scale-110 pointer-events-none" />
+                        <div className={`absolute inset-0 bg-gradient-to-tr ${style.coverGlow} blur-3xl rounded-full scale-125 pointer-events-none`} />
                         <img
                           src={coverImage}
                           alt={`${publication.shortTitle} Cover`}
-                          className="relative z-10 w-48 sm:w-56 md:w-64 lg:w-72 max-h-[290px] md:max-h-[330px] h-auto object-contain drop-shadow-2xl -rotate-2 group-hover:rotate-0 group-hover:scale-105 transition-all duration-500 select-none"
+                          className="relative z-10 w-48 sm:w-56 md:w-64 lg:w-72 max-h-[290px] md:max-h-[330px] h-auto object-contain drop-shadow-2xl rotate-[22deg] group-hover:rotate-[16deg] group-hover:scale-105 transition-all duration-500 select-none"
                         />
                       </div>
                     ) : (

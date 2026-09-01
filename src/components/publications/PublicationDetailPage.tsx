@@ -19,28 +19,31 @@ const themeStyles: Record<PublicationTheme, {
   panel: string;
 }> = {
   rose: {
-    accent: "text-rose-600 dark:text-rose-300",
-    badge: "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-300",
-    button: "bg-rose-600 hover:bg-rose-700 shadow-rose-600/25",
-    glow: "from-rose-500/25 via-fuchsia-400/10 to-transparent",
-    icon: "bg-rose-100 text-rose-600 dark:bg-rose-400/10 dark:text-rose-300",
-    panel: "border-rose-200/80 bg-rose-50/80 dark:border-rose-400/15 dark:bg-rose-400/5",
+    // Women's IP World: Purple
+    accent: "text-purple-600 dark:text-purple-300",
+    badge: "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-400/20 dark:bg-purple-400/10 dark:text-purple-300",
+    button: "bg-gradient-to-r from-[#5a32fa] to-purple-600 hover:from-[#4925d4] hover:to-purple-700 shadow-purple-600/25",
+    glow: "from-purple-600/30 via-violet-400/15 to-transparent",
+    icon: "bg-purple-100 text-purple-600 dark:bg-purple-400/10 dark:text-purple-300",
+    panel: "border-purple-200/80 bg-purple-50/80 dark:border-purple-400/15 dark:bg-purple-400/5",
   },
   violet: {
-    accent: "text-violet-600 dark:text-violet-300",
-    badge: "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-400/20 dark:bg-violet-400/10 dark:text-violet-300",
-    button: "bg-violet-600 hover:bg-violet-700 shadow-violet-600/25",
-    glow: "from-violet-500/25 via-indigo-400/10 to-transparent",
-    icon: "bg-violet-100 text-violet-600 dark:bg-violet-400/10 dark:text-violet-300",
-    panel: "border-violet-200/80 bg-violet-50/80 dark:border-violet-400/15 dark:bg-violet-400/5",
+    // Global IP Magazine: Ice Blue
+    accent: "text-sky-600 dark:text-sky-300",
+    badge: "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-300",
+    button: "bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 shadow-sky-500/25",
+    glow: "from-sky-400/30 via-cyan-400/15 to-transparent",
+    icon: "bg-sky-100 text-sky-600 dark:bg-sky-400/10 dark:text-sky-300",
+    panel: "border-sky-200/80 bg-sky-50/80 dark:border-sky-400/15 dark:bg-sky-400/5",
   },
   cyan: {
-    accent: "text-cyan-700 dark:text-cyan-300",
-    badge: "border-cyan-200 bg-cyan-50 text-cyan-800 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-300",
-    button: "bg-cyan-700 hover:bg-cyan-800 shadow-cyan-700/25",
-    glow: "from-cyan-500/25 via-sky-400/10 to-transparent",
-    icon: "bg-cyan-100 text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300",
-    panel: "border-cyan-200/80 bg-cyan-50/80 dark:border-cyan-400/15 dark:bg-cyan-400/5",
+    // IP Tech & Innovation: Dark Blue
+    accent: "text-blue-800 dark:text-blue-300",
+    badge: "border-blue-300 bg-blue-50 text-blue-900 dark:border-blue-500/30 dark:bg-blue-950/40 dark:text-blue-200",
+    button: "bg-gradient-to-r from-blue-900 to-indigo-950 hover:from-blue-950 hover:to-slate-950 shadow-blue-900/30",
+    glow: "from-blue-900/40 via-indigo-950/20 to-transparent",
+    icon: "bg-blue-100 text-blue-900 dark:bg-blue-950/50 dark:text-blue-200",
+    panel: "border-blue-200/80 bg-blue-50/80 dark:border-blue-500/20 dark:bg-blue-950/20",
   },
 };
 
