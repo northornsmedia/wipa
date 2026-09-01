@@ -53,7 +53,10 @@ async function registerNativePushToken(userId: string): Promise<string> {
     },
     { onConflict: 'user_id,endpoint' }
   );
-  if (error) throw error;
+  if (error) {
+    console.error('Failed to save native push subscription to Supabase:', error.message || error.details || JSON.stringify(error));
+    throw new Error(error.message || 'Failed to save native push token to Supabase');
+  }
   return token;
 }
 
@@ -233,13 +236,13 @@ export async function subscribeToPushNotifications(userId: string): Promise<{
       );
 
     if (dbError) {
-      console.error('Failed to save push subscription to Supabase:', dbError);
-      throw dbError;
+      console.error('Failed to save push subscription to Supabase:', dbError.message || dbError.details || JSON.stringify(dbError));
+      throw new Error(dbError.message || 'Failed to save push subscription to Supabase');
     }
 
     return { success: true };
   } catch (err: any) {
-    console.error('Error subscribing to push notifications:', err);
+    console.error('Error subscribing to push notifications:', err?.message || err);
     return { success: false, error: err?.message || 'Unknown error' };
   }
 }
