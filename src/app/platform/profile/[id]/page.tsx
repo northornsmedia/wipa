@@ -122,6 +122,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                 author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, role, is_wipa_recommended)
               `)
               .eq('author_id', resolvedId)
+              .is('group_id', null)
               .order('created_at', { ascending: false }),
             supabase
               .from('connections')

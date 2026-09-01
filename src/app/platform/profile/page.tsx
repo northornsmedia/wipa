@@ -61,6 +61,11 @@ export default function ProfilePage() {
   const [newPostText, setNewPostText] = useState('');
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [likedPostIds, setLikedPostIds] = useState<Set<string>>(new Set());
+  const [activePostMenuId, setActivePostMenuId] = useState<string | null>(null);
+  const [editingPostId, setEditingPostId] = useState<string | null>(null);
+  const [editingPostContent, setEditingPostContent] = useState('');
+  const [isSavingPost, setIsSavingPost] = useState(false);
+  const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
 
   const toggleExpandPost = (postId: string) => {
     setExpandedPosts(prev => {
@@ -103,6 +108,7 @@ export default function ProfilePage() {
           author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, role, is_wipa_recommended)
         `)
         .eq('author_id', userId)
+        .is('group_id', null)
         .order('created_at', { ascending: false });
 
       if (!error && data) {
@@ -445,6 +451,62 @@ export default function ProfilePage() {
     setLikedPostIds(nextLiked);
   };
 
+  const beginEditingPost = (post: any) => {
+    setEditingPostId(post.id);
+    setEditingPostContent(post.content || '');
+    setActivePostMenuId(null);
+  };
+
+  const handleSavePost = async (postId: string) => {
+    if (!user?.id || !editingPostContent.trim() || isSavingPost) return;
+    setIsSavingPost(true);
+    const content = editingPostContent.trim();
+    const { error } = await supabase
+      .from('feed_posts')
+      .update({ content })
+      .eq('id', postId)
+      .eq('author_id', user.id)
+      .is('group_id', null);
+    setIsSavingPost(false);
+
+    if (error) {
+      alert(error.message || 'Could not update this post.');
+      return;
+    }
+
+    setUserPosts((current) => current.map((post) => post.id === postId ? { ...post, content } : post));
+    setEditingPostId(null);
+    setEditingPostContent('');
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!user?.id || deletingPostId) return;
+    setActivePostMenuId(null);
+    if (!window.confirm('Delete this post? This cannot be undone.')) return;
+
+    setDeletingPostId(postId);
+    const { error } = await supabase
+      .from('feed_posts')
+      .delete()
+      .eq('id', postId)
+      .eq('author_id', user.id)
+      .is('group_id', null);
+    setDeletingPostId(null);
+
+    if (error) {
+      alert(error.message || 'Could not delete this post.');
+      return;
+    }
+
+    setUserPosts((current) => current.filter((post) => post.id !== postId));
+    setStats((current) => ({ ...current, posts: Math.max(0, current.posts - 1) }));
+  };
+
+  const handleCopyPostLink = async (postId: string) => {
+    setActivePostMenuId(null);
+    await navigator.clipboard.writeText(`${window.location.origin}/platform/post/${postId}`);
+  };
+
   return (
     <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#0b0f19] text-gray-900 dark:text-gray-100 font-sans pb-20">
       
@@ -784,13 +846,82 @@ export default function ProfilePage() {
                               </div>
                             </div>
 
-                            <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                              <MoreHorizontal size={18} />
-                            </button>
+                            <div className="relative">
+                              {activePostMenuId === post.id && (
+                                <button
+                                  type="button"
+                                  className="fixed inset-0 z-10 cursor-default"
+                                  onClick={() => setActivePostMenuId(null)}
+                                  aria-label="Close post actions"
+                                />
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => setActivePostMenuId((current) => current === post.id ? null : post.id)}
+                                disabled={deletingPostId === post.id}
+                                className="relative z-20 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
+                                aria-label="Open post actions"
+                              >
+                                {deletingPostId === post.id ? <Loader2 size={18} className="animate-spin" /> : <MoreHorizontal size={18} />}
+                              </button>
+
+                              {activePostMenuId === post.id && (
+                                <div className="absolute right-0 top-10 z-30 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-xl dark:border-gray-700 dark:bg-[#1d2638]">
+                                  <button
+                                    type="button"
+                                    onClick={() => beginEditingPost(post)}
+                                    className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-xs font-bold text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-white/10"
+                                  >
+                                    <Edit3 size={15} /> Edit post
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCopyPostLink(post.id)}
+                                    className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-xs font-bold text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-white/10"
+                                  >
+                                    <Copy size={15} /> Copy post link
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeletePost(post.id)}
+                                    className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-xs font-bold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                                  >
+                                    <Trash2 size={15} /> Delete post
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           </div>
 
                           {/* LinkedIn-Style Content */}
-                          {post.content && (() => {
+                          {editingPostId === post.id ? (
+                            <div className="mb-4 space-y-3 rounded-xl border border-indigo-200 bg-indigo-50/50 p-3 dark:border-indigo-800/60 dark:bg-indigo-950/20">
+                              <textarea
+                                rows={4}
+                                value={editingPostContent}
+                                onChange={(event) => setEditingPostContent(event.target.value)}
+                                className="w-full resize-none rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-900 outline-none focus:border-[#5a32fa] dark:border-white/10 dark:bg-[#111827] dark:text-white"
+                              />
+                              <div className="flex justify-end gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => { setEditingPostId(null); setEditingPostContent(''); }}
+                                  className="rounded-lg bg-gray-100 px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-200 dark:bg-white/10 dark:text-gray-300"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleSavePost(post.id)}
+                                  disabled={isSavingPost || !editingPostContent.trim()}
+                                  className="flex items-center gap-2 rounded-lg bg-[#5a32fa] px-4 py-2 text-xs font-bold text-white hover:bg-[#4a24db] disabled:opacity-50"
+                                >
+                                  {isSavingPost && <Loader2 size={14} className="animate-spin" />}
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          ) : post.content && (() => {
                             const isExpanded = expandedPosts.has(post.id);
                             const { preview, hasMore } = getPostPreview(post.content || '');
                             const displayContent = isExpanded ? (post.content || '') : preview;
