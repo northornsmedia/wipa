@@ -115,6 +115,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
   // Posts State
   const [posts, setPosts] = useState<GroupPost[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
+  const [supportsPostModeration, setSupportsPostModeration] = useState(false);
 
   // In-Group Post Composer State
   const [isComposerOpen, setIsComposerOpen] = useState(false);
@@ -245,7 +246,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
   const loadGroupPosts = async (groupId: string) => {
     setLoadingPosts(true);
     try {
-      const { data, error } = await supabase
+      let postsResult: any = await supabase
         .from('feed_posts')
         .select(`
           id, author_id, content, media_urls, media_type, document_name, privacy,
@@ -255,6 +256,23 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         `)
         .eq('group_id', groupId)
         .order('created_at', { ascending: false });
+
+      if (postsResult.error && /moderation_status|moderated_at|moderated_by/i.test(postsResult.error.message || '')) {
+        setSupportsPostModeration(false);
+        postsResult = await supabase
+          .from('feed_posts')
+          .select(`
+            id, author_id, content, media_urls, media_type, document_name, privacy,
+            likes_count, comments_count, created_at, group_id, post_to_feed,
+            author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, practice_area, role, is_wipa_recommended)
+          `)
+          .eq('group_id', groupId)
+          .order('created_at', { ascending: false });
+      } else if (!postsResult.error) {
+        setSupportsPostModeration(true);
+      }
+
+      const { data, error } = postsResult;
 
       if (!error && data) {
         // Check liked status
@@ -480,7 +498,6 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         .select(`
           id, author_id, content, media_urls, media_type, document_name, privacy,
           likes_count, comments_count, created_at, group_id, post_to_feed,
-          moderation_status, moderated_at, moderated_by,
           author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, practice_area, role, is_wipa_recommended)
         `)
         .single();
@@ -488,13 +505,19 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
       if (error) throw error;
 
       if (createdPost) {
-        setPosts(prev => [createdPost, ...prev]);
+        const createdPostWithStatus = {
+          ...createdPost,
+          moderation_status: supportsPostModeration
+            ? (isGroupAdmin ? 'approved' : 'pending')
+            : 'approved'
+        } as GroupPost;
+        setPosts(prev => [createdPostWithStatus, ...prev]);
         setPostContent('');
         setSelectedMediaUrl('');
         setPostToFeed(false);
         setIsComposerOpen(false);
         setPostFeedback(
-          createdPost.moderation_status === 'pending'
+          createdPostWithStatus.moderation_status === 'pending'
             ? 'Your post was submitted to the group admins for approval.'
             : 'Your post is now live in the group.'
         );

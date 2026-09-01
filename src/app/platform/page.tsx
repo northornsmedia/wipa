@@ -197,7 +197,6 @@ export default function PlatformPage() {
           author:profiles!feed_posts_author_id_fkey(full_name, avatar_url, practice_area, created_at, is_wipa_recommended)
         `)
         .or('group_id.is.null,post_to_feed.eq.true')
-        .eq('moderation_status', 'approved')
         .order('created_at', { ascending: false })
         .limit(FEED_PAGE_SIZE);
 
