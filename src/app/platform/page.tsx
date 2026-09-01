@@ -12,7 +12,7 @@ import {
   Share2, Repeat2
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import AdSlot from '@/components/AdSlot';
 import FeedStoriesCarousel from '@/components/FeedStoriesCarousel';
@@ -28,6 +28,8 @@ const FEED_PAGE_SIZE = 8;
 export default function PlatformPage() {
   const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode, isCreatePostOpen, setIsCreatePostOpen } = useAppStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedTag = searchParams?.get('tag') || searchParams?.get('hashtag') || null;
   const [activeTab, setActiveTab] = useState('Latest');
   const [feedSearchQuery, setFeedSearchQuery] = useState('');
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
@@ -620,15 +622,30 @@ export default function PlatformPage() {
     router.push('/login');
   };
 
+  const normalizedTag = selectedTag ? selectedTag.toLowerCase() : null;
   const normalizedFeedSearch = feedSearchQuery.trim().toLowerCase();
-  const visibleFeedPosts = normalizedFeedSearch
-    ? feedPosts.filter((post) => {
-        const author = post.author || {};
-        return [post.content, author.full_name, author.practice_area]
-          .filter(Boolean)
-          .some((value) => String(value).toLowerCase().includes(normalizedFeedSearch));
-      })
-    : feedPosts;
+  
+  const visibleFeedPosts = feedPosts.filter((post) => {
+    const author = post.author || {};
+    
+    // Tag filter
+    if (normalizedTag) {
+      const content = String(post.content || '').toLowerCase();
+      if (!content.includes(`#${normalizedTag}`) && !content.includes(normalizedTag)) {
+        return false;
+      }
+    }
+
+    // Text search query
+    if (normalizedFeedSearch) {
+      const matchesSearch = [post.content, author.full_name, author.practice_area]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(normalizedFeedSearch));
+      if (!matchesSearch) return false;
+    }
+
+    return true;
+  });
 
   return (
     <div
@@ -769,6 +786,27 @@ export default function PlatformPage() {
 
               {/* FEED */}
               <div className="space-y-0 sm:space-y-4">
+                {/* Active Hashtag Filter Banner */}
+                {selectedTag && (
+                  <div className="flex items-center justify-between p-3.5 sm:p-4 mb-3 sm:mb-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-[#5a32fa] dark:text-purple-300 shadow-xs">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-xl bg-[#5a32fa] text-white shadow-xs">
+                        <Hash size={16} />
+                      </div>
+                      <div>
+                        <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 block">Filtered by Hashtag</span>
+                        <span className="text-sm font-black text-gray-900 dark:text-white">#{selectedTag}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => router.push('/platform')}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 transition-all shadow-xs cursor-pointer"
+                    >
+                      <X size={14} /> Clear filter
+                    </button>
+                  </div>
+                )}
+
                 {isLoadingFeed ? (
                   <div className="flex items-center justify-center py-20 text-gray-400">
                     <Loader2 size={32} className="animate-spin text-[#5a32fa]" />
@@ -780,7 +818,11 @@ export default function PlatformPage() {
                 ) : visibleFeedPosts.length === 0 ? (
                   <div className="bg-white dark:bg-[#0f172a] rounded-2xl p-10 text-center border border-gray-100 dark:border-white/10">
                     <Search size={28} className="mx-auto mb-3 text-gray-300" />
-                    <p className="text-sm font-bold text-gray-500">No feed posts match “{feedSearchQuery}”</p>
+                    <p className="text-sm font-bold text-gray-500">
+                      {selectedTag 
+                        ? `No posts found tagged with #${selectedTag}` 
+                        : `No feed posts match “${feedSearchQuery}”`}
+                    </p>
                   </div>
                 ) : visibleFeedPosts.map((post, index) => {
                   const isLiked = dbLikedPostIds.has(post.id);
@@ -1101,11 +1143,11 @@ export default function PlatformPage() {
               </div>
             </div>
 
-            {/* RIGHT SIDEBAR - Sticky & Independent Scroll */}
-            <aside className="hidden xl:flex flex-col w-[320px] shrink-0 space-y-6 sticky top-6 self-start max-h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar overscroll-contain pb-10 pr-1">
+            {/* RIGHT SIDEBAR - Sticky & Sticks to bottom content */}
+            <aside className="hidden xl:flex flex-col w-[320px] shrink-0 space-y-6 sticky top-[min(1.5rem,calc(100vh-100%-1.5rem))] self-start pb-6 pr-1">
                 
                 {/* Dynamic Advertisement Space */}
-                <AdSlot placement="sidebar_banner" />
+                <AdSlot placement="sidebar_banner" className="w-full shrink-0" />
 
                 {/* Profile Completion / Welcome */}
                 <div className="bg-white dark:bg-[#0f172a] rounded-2xl shadow-sm border border-gray-100 dark:border-white/10 p-5">

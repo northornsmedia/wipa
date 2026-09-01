@@ -235,13 +235,13 @@ export default function PlatformHeader() {
                 <img 
                   src="/WIPA-Logo.png" 
                   alt="WIPA Logo" 
-                  className="h-9 max-h-9 w-auto max-w-[145px] shrink-0 object-contain" 
-                  style={{ height: '36px', width: 'auto' }}
+                  className="h-10 max-h-10 w-auto max-w-[155px] shrink-0 object-contain" 
+                  style={{ height: '38.5px', width: 'auto' }}
                 />
               </Link>
             </div>
             
-            <nav className="hidden items-center gap-0.5 rounded-2xl border border-gray-200/60 bg-white/60 p-1.5 shadow-sm backdrop-blur-xl md:flex dark:border-white/10 dark:bg-[#020617]/50">
+            <nav className="hidden items-center gap-1 rounded-full border border-slate-200/70 bg-white/75 p-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.04)] backdrop-blur-2xl md:flex dark:border-white/[0.08] dark:bg-[#070b14]/75 dark:shadow-[0_10px_35px_rgba(0,0,0,0.4)]">
               {navItems.map((item) => {
                 const isActive = item.path === '/platform' ? pathname === '/platform' : (item.path.startsWith('/') && pathname.startsWith(item.path));
                 const Icon = item.icon;
@@ -251,19 +251,19 @@ export default function PlatformHeader() {
                     <button 
                       key={item.name} 
                       onClick={handleLexIQClick}
-                      className={`group relative flex h-[42px] flex-col items-center justify-center overflow-hidden rounded-xl text-gray-500 transition-all duration-300 ease-out hover:text-[#ff90e8] dark:text-gray-400 ${
-                        flyingBox || isLexIQOpen ? "opacity-0 pointer-events-none w-0 mx-0" : "opacity-100 w-[52px] mx-0.5"
+                      className={`group relative flex h-[46px] w-[56px] flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
+                        flyingBox || isLexIQOpen ? "opacity-0 pointer-events-none w-0 mx-0" : "opacity-100 mx-0.5"
                       }`}
+                      title="Sally 4.1 Pro AI Legal Intelligence"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/10 dark:from-[#5a32fa]/20 dark:to-[#ff90e8]/20 rounded-lg opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out border border-[#ff90e8]/20" />
+                      {/* Ambient iridescent glow */}
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-[#5a32fa]/15 via-[#ff90e8]/20 to-amber-400/15 dark:from-[#5a32fa]/30 dark:via-[#ff90e8]/30 dark:to-amber-400/20 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out border border-[#ff90e8]/30 shadow-[0_0_18px_rgba(255,144,232,0.25)]" />
                       
-                      <Icon 
-                        size={18} 
-                        strokeWidth={2} 
-                        className="relative z-10 transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:scale-110 text-[#5a32fa] dark:text-[#ff90e8]" 
-                      />
+                      <div className="relative z-10 transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:scale-115">
+                        <Icon size={20} className="drop-shadow-sm" />
+                      </div>
                       
-                      <span className="text-[8px] font-bold tracking-wider absolute bottom-0.5 transition-all duration-300 ease-out whitespace-nowrap opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 text-[#5a32fa] dark:text-[#ff90e8]">
+                      <span className="text-[8px] font-black uppercase tracking-wider absolute bottom-1 transition-all duration-300 ease-out whitespace-nowrap opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] bg-clip-text text-transparent">
                         {item.name}
                       </span>
                     </button>
@@ -274,39 +274,43 @@ export default function PlatformHeader() {
                   <Link 
                     key={item.name} 
                     href={item.path} 
-                    className={`group relative flex h-[42px] w-[54px] flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ease-out ${
+                    className={`group relative flex h-[46px] w-[58px] flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ease-out active:scale-95 ${
                       isActive 
-                        ? 'text-[#5a32fa] dark:text-[#818cf8]' 
-                        : 'text-gray-500 dark:text-gray-400 hover:text-[#5a32fa] dark:hover:text-[#818cf8]'
+                        ? 'text-[#5a32fa] dark:text-[#a5b4fc]' 
+                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                     }`}
                   >
-                    {/* Active state background */}
+                    {/* Animated Sliding Active Pill Background via Framer Motion */}
                     {isActive && (
-                      <div className="absolute inset-0 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 rounded-lg border border-[#5a32fa]/15 dark:border-[#5a32fa]/30" />
+                      <motion.div 
+                        layoutId="header-active-pill"
+                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                        className="absolute inset-0 rounded-xl bg-gradient-to-tr from-[#5a32fa]/12 via-[#6600FF]/18 to-[#ff90e8]/15 dark:from-[#5a32fa]/25 dark:via-[#6600FF]/35 dark:to-[#ff90e8]/20 border border-[#5a32fa]/25 dark:border-[#818cf8]/35 shadow-[0_2px_12px_rgba(90,50,250,0.12)] dark:shadow-[0_0_20px_rgba(102,0,255,0.25)]"
+                      />
                     )}
                     
-                    {/* Hover animated background */}
+                    {/* Inactive Hover Background */}
                     {!isActive && (
-                      <div className="absolute inset-0 bg-[#5a32fa]/5 dark:bg-[#5a32fa]/10 rounded-lg opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out" />
+                      <div className="absolute inset-0 rounded-xl bg-slate-100/80 dark:bg-white/[0.06] opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 ease-out" />
                     )}
                     
                     {/* Icon */}
                     <Icon 
-                      size={18} 
-                      strokeWidth={isActive ? 2.5 : 2} 
+                      size={19} 
+                      strokeWidth={isActive ? 2.4 : 1.8} 
                       className={`relative z-10 transition-all duration-300 ease-out ${
                         isActive 
-                          ? '-translate-y-1.5 scale-105' 
+                          ? '-translate-y-1.5 scale-105 drop-shadow-xs' 
                           : 'group-hover:-translate-y-1.5 group-hover:scale-110'
                       }`} 
                     />
                     
-                    {/* Text slides up on active/hover */}
+                    {/* Text Label */}
                     <span 
-                      className={`text-[8px] font-bold tracking-wider absolute bottom-0.5 transition-all duration-300 ease-out whitespace-nowrap ${
+                      className={`text-[8.5px] font-bold tracking-tight absolute bottom-1 transition-all duration-300 ease-out whitespace-nowrap ${
                         isActive 
-                          ? 'opacity-100 translate-y-0' 
-                          : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0'
+                          ? 'opacity-100 translate-y-0 text-[#5a32fa] dark:text-[#c7d2fe]' 
+                          : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 text-slate-700 dark:text-slate-200'
                       }`}
                     >
                       {item.name}

@@ -561,13 +561,13 @@ export default function ProfilePage() {
                   <Share2 size={16} /> Share
                 </button>
 
-                <button 
-                  onClick={() => setIsSettingsModalOpen(true)}
-                  className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-                  title="Settings"
+                <Link 
+                  href="/platform/settings"
+                  className="p-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors inline-flex items-center justify-center"
+                  title="Settings & Preferences"
                 >
                   <Settings size={18} />
-                </button>
+                </Link>
               </div>
             </div>
 

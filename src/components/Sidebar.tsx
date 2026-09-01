@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import { 
@@ -17,6 +17,7 @@ import {
   Briefcase, 
   GraduationCap,
   Hash,
+  Bell,
   BellOff,
   ArrowUpRight,
   Circle,
@@ -79,8 +80,17 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
     return pathname.startsWith(path);
   };
 
+  const searchParams = useSearchParams();
   const [unreadChatsCount, setUnreadChatsCount] = useState(0);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [trendingHashtags, setTrendingHashtags] = useState<{ tag: string; count: number }[]>([
+    { tag: 'PatentLaw', count: 18 },
+    { tag: 'WomenInIP', count: 15 },
+    { tag: 'IPStrategy', count: 12 },
+    { tag: 'AILaw', count: 9 },
+    { tag: 'Litigation', count: 7 },
+  ]);
   const [isResourcesExpanded, setIsResourcesExpanded] = useState(
     () => pathname.startsWith('/platform/resources') || isPublicationRoute
   );
@@ -101,7 +111,58 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
       }
     };
 
+    const fetchNotificationsCount = async () => {
+      const { count } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('is_read', false);
+      if (typeof count === 'number') {
+        setUnreadNotificationsCount(count);
+      }
+    };
+
+    const fetchTrendingHashtags = async () => {
+      try {
+        const { data } = await supabase
+          .from('feed_posts')
+          .select('content')
+          .not('content', 'is', null)
+          .limit(100);
+
+        if (data && data.length > 0) {
+          const counts: Record<string, number> = {};
+          const regex = /#([a-zA-Z0-9_]+)/g;
+
+          data.forEach((p: any) => {
+            if (!p.content) return;
+            const matches = p.content.match(regex);
+            if (matches) {
+              const uniqueTagsInPost = new Set(matches.map((t: string) => t.slice(1)));
+              uniqueTagsInPost.forEach((tag: any) => {
+                const normalized = tag.charAt(0).toUpperCase() + tag.slice(1);
+                counts[normalized] = (counts[normalized] || 0) + 1;
+              });
+            }
+          });
+
+          const sorted = Object.entries(counts)
+            .map(([tag, count]) => ({ tag, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+
+          if (sorted.length > 0) {
+            setTrendingHashtags(sorted);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch trending hashtags:', err);
+      }
+    };
+
     fetchUnreadCount();
+    fetchNotificationsCount();
+    fetchTrendingHashtags();
 
     const fetchUpcomingEvents = async () => {
       const { data } = await supabase
@@ -129,6 +190,9 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
           fetchUnreadCount();
         }
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => {
+        fetchNotificationsCount();
+      })
       .subscribe();
 
     return () => { 
@@ -142,7 +206,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
 
   const collapsedNavItems = [
     { label: 'Feed', path: '/platform', Icon: LayoutGrid },
-    { label: 'Liked Threads', path: '/platform/liked-threads', Icon: Heart },
+    { label: 'Notifications', path: '/platform/notifications', Icon: Bell },
     { label: 'My Network', path: '/platform/network', Icon: Globe },
     { label: 'Members', path: '/platform/members', Icon: Users },
     { label: 'Messages', path: '/platform/messages', Icon: Mail },
@@ -230,6 +294,9 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
                 {path === '/platform/messages' && unreadChatsCount > 0 && (
                   <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-[#ff2a5f] ring-2 ring-white dark:ring-[#0b1120]" />
                 )}
+                {path === '/platform/notifications' && unreadNotificationsCount > 0 && (
+                  <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-[#ff2a5f] ring-2 ring-white dark:ring-[#0b1120]" />
+                )}
                 {active && (
                   <span className="absolute left-0 top-2 bottom-2 w-0.5 rounded-r-full bg-[#5a32fa] dark:bg-violet-400" />
                 )}
@@ -253,7 +320,16 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
             
             <nav className="space-y-1">
               {renderNavLink('/platform', 'Feed', LayoutGrid)}
-              {renderNavLink('/platform/liked-threads', 'Liked Threads', Heart)}
+              {renderNavLink(
+                '/platform/notifications', 
+                'Notifications', 
+                Bell, 
+                unreadNotificationsCount > 0 ? (
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#ff2a5f] px-1.5 text-[10px] font-extrabold text-white shadow-xs">
+                    {unreadNotificationsCount}
+                  </span>
+                ) : null
+              )}
               {renderNavLink('/platform/network', 'My Network', Globe)}
               {renderNavLink('/platform/members', 'Members', Users)}
               {renderNavLink(
@@ -355,31 +431,42 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
             </nav>
           </div>
 
-          {/* Section: Channels */}
+          {/* Section: Trending Hashtags */}
           <div className="px-3.5 mb-6">
             <div className="flex items-center justify-between mb-3 px-3">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400">
-                Channels
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-400 flex items-center gap-1.5">
+                <Sparkles size={12} className="text-[#5a32fa] dark:text-purple-400" />
+                Trending Hashtags
               </span>
             </div>
             <nav className="space-y-1">
-              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3.5 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-all group">
-                <div className="flex items-center gap-2">
-                  <Hash size={14} className="text-slate-400 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors" /> General
-                </div>
-              </Link>
-              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3.5 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-all group">
-                <div className="flex items-center gap-2">
-                  <Hash size={14} className="text-slate-400 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors" /> daily-highlights
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#ff2a5f] shadow-xs shadow-rose-500/50" />
-                </div>
-              </Link>
-              <Link prefetch={false} href="#" onClick={(e) => e.preventDefault()} className="flex items-center justify-between px-3.5 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white rounded-xl font-medium text-[12px] transition-all group">
-                <div className="flex items-center gap-2">
-                  <Hash size={14} className="text-slate-400 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors" /> time-tracking
-                </div>
-                <BellOff size={13} className="text-slate-400" />
-              </Link>
+              {trendingHashtags.map(({ tag, count }, idx) => {
+                const tagPath = `/platform?tag=${encodeURIComponent(tag)}`;
+                const isSelected = pathname === '/platform' && searchParams?.get('tag')?.toLowerCase() === tag.toLowerCase();
+
+                return (
+                  <Link 
+                    key={tag} 
+                    href={tagPath} 
+                    className={`flex items-center justify-between px-3.5 py-2 text-[12px] font-semibold transition-all rounded-xl group ${
+                      isSelected
+                        ? 'bg-purple-50 text-[#5a32fa] dark:bg-purple-950/40 dark:text-purple-300 font-bold shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Hash size={14} className="text-slate-400 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors shrink-0" />
+                      <span className="truncate">#{tag}</span>
+                      {idx === 0 && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#ff2a5f] shadow-xs shadow-rose-500/50 shrink-0" title="Top Trending" />
+                      )}
+                    </div>
+                    <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 shrink-0">
+                      {count} {count === 1 ? 'post' : 'posts'}
+                    </span>
+                  </Link>
+                );
+              })}
             </nav>
           </div>
 
@@ -454,29 +541,34 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
           </div>
 
           {/* User Profile Footer */}
-          <div className="px-3.5 pt-3 border-t border-slate-100 dark:border-white/10">
-            <Link href="/platform/profile" className="group flex items-center justify-between p-2 rounded-xl hover:bg-purple-50/60 dark:hover:bg-white/5 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="relative shrink-0">
-                  {user?.avatar_url ? (
-                    <img src={user.avatar_url} alt={user?.name || 'User'} className="h-8 w-8 rounded-full object-cover ring-2 ring-purple-200 dark:ring-purple-900/50" />
-                  ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 text-xs font-black text-[#5a32fa] dark:bg-purple-900/40 dark:text-purple-300">
-                      {user?.name?.charAt(0) || 'U'}
-                    </div>
-                  )}
-                  <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[#00d26a] ring-2 ring-white dark:ring-[#0c1020]" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors">
-                    {user?.name || 'My Profile'}
-                  </p>
-                  <p className="text-[10px] font-medium text-slate-400 dark:text-slate-400 truncate">
-                    View profile
-                  </p>
-                </div>
+          <div className="px-3.5 pt-3 border-t border-slate-100 dark:border-white/10 flex items-center justify-between gap-1">
+            <Link href="/platform/profile" className="group flex-1 flex items-center gap-2.5 p-2 rounded-xl hover:bg-purple-50/60 dark:hover:bg-white/5 transition-colors min-w-0">
+              <div className="relative shrink-0">
+                {user?.avatar_url ? (
+                  <img src={user.avatar_url} alt={user?.name || 'User'} className="h-8 w-8 rounded-full object-cover ring-2 ring-purple-200 dark:ring-purple-900/50" />
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 text-xs font-black text-[#5a32fa] dark:bg-purple-900/40 dark:text-purple-300">
+                    {user?.name?.charAt(0) || 'U'}
+                  </div>
+                )}
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[#00d26a] ring-2 ring-white dark:ring-[#0c1020]" />
               </div>
-              <ArrowUpRight size={14} className="text-slate-400 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors">
+                  {user?.name || 'My Profile'}
+                </p>
+                <p className="text-[10px] font-medium text-slate-400 dark:text-slate-400 truncate">
+                  View profile
+                </p>
+              </div>
+            </Link>
+
+            <Link
+              href="/platform/settings"
+              className="p-2 rounded-xl text-slate-400 hover:text-[#5a32fa] hover:bg-purple-50 dark:hover:bg-white/5 dark:hover:text-purple-300 transition-all shrink-0"
+              title="Settings & Preferences"
+            >
+              <Settings size={16} />
             </Link>
           </div>
 

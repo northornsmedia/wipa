@@ -14,12 +14,6 @@ export default function MobileBottomNav() {
   const user = useAppStore((state) => state.user);
   const [isCreationOpen, setIsCreationOpen] = useState(false);
 
-  // Proactively warm up and prefetch all primary platform routes on mount
-  useEffect(() => {
-    const routes = ['/platform', '/platform/messages', '/platform/resources', '/platform/profile', '/platform/network'];
-    routes.forEach(r => router.prefetch(r));
-  }, [router]);
-
   const isActive = (path: string) => {
     if (path === '/platform') return pathname === '/platform';
     return pathname.startsWith(path);
@@ -37,8 +31,6 @@ export default function MobileBottomNav() {
           {/* 1. Feed / Home */}
           <Link
             href="/platform"
-            prefetch={true}
-            onTouchStart={() => router.prefetch('/platform')}
             className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
               isActive('/platform')
                 ? 'bg-white/10 text-white font-bold'
@@ -52,8 +44,6 @@ export default function MobileBottomNav() {
           {/* 2. Chat */}
           <Link
             href="/platform/messages"
-            prefetch={true}
-            onTouchStart={() => router.prefetch('/platform/messages')}
             className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
               isActive('/platform/messages')
                 ? 'bg-white/10 text-white font-bold'
@@ -77,8 +67,6 @@ export default function MobileBottomNav() {
           {/* 4. Resources */}
           <Link
             href="/platform/resources"
-            prefetch={true}
-            onTouchStart={() => router.prefetch('/platform/resources')}
             className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
               isActive('/platform/resources')
                 ? 'bg-white/10 text-white font-bold'
@@ -92,8 +80,6 @@ export default function MobileBottomNav() {
           {/* 5. Profile */}
           <Link
             href="/platform/profile"
-            prefetch={true}
-            onTouchStart={() => router.prefetch('/platform/profile')}
             className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
               isActive('/platform/profile')
                 ? 'bg-white/10 text-white font-bold'

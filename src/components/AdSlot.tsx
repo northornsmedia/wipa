@@ -159,21 +159,21 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
     return null;
   }
 
-  // 1. IN-FEED NATIVE POST AD (Seamlessly Blended with Feed Posts)
+  // 1. IN-FEED NATIVE POST AD (Seamlessly Blended with Feed Posts & Compact)
   if (placement === "feed_native") {
     return (
       <div 
         ref={containerRef}
-        className={`w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-6 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all overflow-hidden select-none ${className}`}
+        className={`w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-5 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all overflow-hidden select-none ${className}`}
       >
         {/* Sponsor Post Header */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-2.5">
             <div className="p-0.5 rounded-full bg-gradient-to-tr from-amber-400 to-[#ff2a5f]">
               {ad.company_logo_url ? (
-                <img src={ad.company_logo_url} alt={ad.company_name} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover ring-2 ring-white dark:ring-[#0b0f19]" />
+                <img src={ad.company_logo_url} alt={ad.company_name} className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover ring-2 ring-white dark:ring-[#0b0f19]" />
               ) : (
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-amber-500 to-rose-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-[#0b0f19]">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-amber-500 to-rose-500 text-white flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-[#0b0f19]">
                   {ad.company_name?.charAt(0) || "S"}
                 </div>
               )}
@@ -203,20 +203,20 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
         </div>
 
         {/* Headline & Body */}
-        <div className="mb-2.5">
+        <div className="mb-2">
           <h3 className="text-[13px] sm:text-[14px] font-bold text-gray-900 dark:text-white leading-snug mb-1">
             {ad.headline}
           </h3>
           {ad.description && (
-            <p className="text-[13px] sm:text-[14px] text-gray-800 dark:text-gray-200 leading-relaxed font-normal whitespace-pre-wrap">
+            <p className="text-[12px] sm:text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed font-normal whitespace-pre-wrap">
               {ad.description}
             </p>
           )}
         </div>
 
-        {/* Banner Asset */}
+        {/* Banner Asset (Compact size, no oversized blowout) */}
         {ad.banner_image_url && (
-          <div className="w-full max-w-full min-w-0 my-2.5 box-border">
+          <div className="w-full max-w-full min-w-0 my-2 box-border">
             <a
               href={ad.target_url || "#"}
               target="_blank"
@@ -227,21 +227,21 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
               <img 
                 src={ad.banner_image_url} 
                 alt={ad.headline} 
-                className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-cover rounded-xl transition-opacity hover:opacity-98 block mx-auto" 
+                className="w-full max-w-full h-44 sm:h-60 max-h-[260px] object-cover rounded-xl transition-opacity hover:opacity-98 block mx-auto" 
               />
             </a>
           </div>
         )}
 
         {/* Action Bar + Learn More Button */}
-        <div className="flex items-center justify-between pt-2.5 mt-1 box-border text-xs font-semibold">
+        <div className="flex items-center justify-between pt-2 mt-1 box-border text-xs font-semibold">
           <span className="text-[11px] font-semibold text-gray-400">Promoted Content</span>
           <a
             href={ad.target_url || "#"}
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleAdClick}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-[#ff2a5f] to-[#ff90e8] text-white text-xs font-bold shadow-md active:scale-95 transition-all"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#ff2a5f] to-[#ff90e8] text-white text-xs font-bold shadow-md active:scale-95 transition-all"
           >
             <span>{ad.cta_label || "Learn More"}</span>
             <ExternalLink size={12} />
@@ -251,11 +251,49 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
     );
   }
 
-  // 2. SIDEBAR BANNER CARD
+  // 2. HORIZONTAL WIDE BANNERS (Events, Jobs, Mentorship, Forums, Liked-Threads)
+  const isHorizontalBanner = 
+    slotId === "events_sidebar" || 
+    slotId === "jobs_sidebar" || 
+    slotId === "mentorship_sidebar" || 
+    slotId === "forums_banner" || 
+    slotId === "liked_threads_banner" || 
+    slotId === "feed_sidebar";
+
+  if (isHorizontalBanner) {
+    return (
+      <div 
+        ref={containerRef}
+        className={`w-full rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative group ${className}`}
+      >
+        {ad.banner_image_url && (
+          <a
+            href={ad.target_url || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleAdClick}
+            className="block w-full h-32 sm:h-36 md:h-44 overflow-hidden relative cursor-pointer bg-slate-950"
+          >
+            <img 
+              src={ad.banner_image_url} 
+              alt={ad.headline || "Sponsored Banner"} 
+              className="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-500 block" 
+            />
+            <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/75 backdrop-blur-md text-amber-300 border border-amber-400/40 shadow-sm z-10">
+              {ad.badge_text || "Sponsored"}
+            </div>
+          </a>
+        )}
+      </div>
+    );
+  }
+
+  // 3. VERTICAL RIGHT SIDEBAR ADS (Members Sidebar, Network Sidebar, Feed Sidebar - Square Image-Only)
   return (
     <div 
       ref={containerRef}
-      className={`rounded-3xl overflow-hidden shadow-sm border border-amber-400/30 dark:border-amber-400/20 bg-gradient-to-br from-amber-500/5 via-purple-500/5 to-transparent relative group ${className}`}
+      className={`w-full shrink-0 aspect-square rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-white/10 bg-white dark:bg-[#0f172a] relative group ${className}`}
+      style={{ aspectRatio: "1 / 1" }}
     >
       {ad.banner_image_url && (
         <a
@@ -263,39 +301,20 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleAdClick}
-          className="block w-full overflow-hidden relative"
+          className="block w-full h-full aspect-square overflow-hidden relative cursor-pointer bg-slate-950"
+          style={{ aspectRatio: "1 / 1" }}
         >
           <img 
             src={ad.banner_image_url} 
             alt={ad.headline || "Sponsored Banner"} 
-            className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500 block" 
+            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 block" 
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
-          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-black/70 backdrop-blur-md text-amber-300 border border-amber-400/40">
+          <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/75 backdrop-blur-md text-amber-300 border border-amber-400/40 shadow-sm z-10">
             {ad.badge_text || "Sponsored"}
           </div>
         </a>
       )}
-
-      <div className="p-4 space-y-2">
-        <h4 className="text-xs font-black text-gray-900 dark:text-white leading-snug line-clamp-2">
-          {ad.headline}
-        </h4>
-        {ad.description && (
-          <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
-            {ad.description}
-          </p>
-        )}
-        <a
-          href={ad.target_url || "#"}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleAdClick}
-          className="inline-flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-xl bg-white/10 hover:bg-[#5a32fa] text-gray-900 dark:text-white hover:text-white text-xs font-bold transition-all border border-white/10"
-        >
-          <span>{ad.cta_label || "Learn More"}</span>
-          <ArrowUpRight size={14} />
-        </a>
-      </div>
     </div>
   );
 }

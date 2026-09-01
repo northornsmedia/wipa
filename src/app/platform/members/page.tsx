@@ -1056,8 +1056,8 @@ export default function MembersDirectoryPage() {
       </main>
 
 {/* FIXED RIGHT SIDEBAR */}
-      <aside className="w-[300px] hidden xl:flex flex-col shrink-0 space-y-6 pt-6 overflow-y-auto no-scrollbar pb-10 pr-4 md:pr-8 lg:pr-12">
-        <div className="h-full flex flex-col gap-6">
+      <aside className="w-[300px] hidden xl:flex flex-col shrink-0 space-y-6 pt-6 sticky top-[min(1.5rem,calc(100vh-100%-1.5rem))] self-start pb-10 pr-4 md:pr-8 lg:pr-12">
+        <div className="flex flex-col gap-6">
           
           {/* DYNAMIC AD SPACE */}
           <AdSlot slotId="members_sidebar" />

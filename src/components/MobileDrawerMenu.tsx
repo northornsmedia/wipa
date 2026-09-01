@@ -258,7 +258,7 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
                   </button>
 
                   <button
-                    onClick={() => handleNavigate('/platform/profile')}
+                    onClick={() => handleNavigate('/platform/settings')}
                     className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors text-left"
                   >
                     <div className="w-8 h-8 rounded-lg bg-gray-500/10 text-gray-400 flex items-center justify-center">

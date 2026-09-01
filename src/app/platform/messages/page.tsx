@@ -14,6 +14,7 @@ import { MessageStatusTick, MessageStatus } from '@/components/chat/MessageStatu
 import { MessageBubble, ChatMessage, MediaType } from '@/components/chat/MessageBubble';
 import { ChatHeader } from '@/components/chat/ChatHeader';
 import { ChatSidebar, SidebarChat } from '@/components/chat/ChatSidebar';
+import { encryptMessage, decryptMessage, isEncrypted } from '@/lib/e2ee';
 
 export type Chat = SidebarChat & {
   messages: ChatMessage[];
@@ -67,6 +68,15 @@ function MessagesContent() {
   const [conversations, setConversations] = useState<Chat[]>(() => cachedConversations || []);
   const [activeChatId, setActiveChatId] = useState<string | null>(() => targetConversationId || (cachedConversations && cachedConversations.length > 0 ? String(cachedConversations[0].id) : null));
   const [showMobileChat, setShowMobileChat] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobileView(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [inChatSearchQuery, setInChatSearchQuery] = useState("");
@@ -182,9 +192,9 @@ function MessagesContent() {
     };
   }, []);
 
-  // iOS Safari Visual Viewport Synchronizer (Keeps Chat Header permanently locked & Caret perfectly aligned)
+  // iOS Safari Visual Viewport Synchronizer (Keeps Chat Header permanently locked & Caret perfectly aligned on mobile only)
   useEffect(() => {
-    if (!showMobileChat) return;
+    if (!showMobileChat || !isMobileView) return;
 
     const updateViewport = () => {
       if (typeof window !== 'undefined' && window.visualViewport) {
@@ -216,7 +226,7 @@ function MessagesContent() {
       document.body.style.overflow = prevOverflow;
       document.body.style.position = prevPosition;
     };
-  }, [showMobileChat]);
+  }, [showMobileChat, isMobileView]);
 
   // Load real conversations directly from Supabase DB with real avatar URLs and latest messages
   const fetchConversations = useCallback(async () => {
@@ -265,12 +275,20 @@ function MessagesContent() {
           .order('created_at', { ascending: false });
 
         const latestMsgMap: Record<string, any> = {};
+        const decryptedPreviewMap: Record<string, string> = {};
         if (latestMsgs) {
-          latestMsgs.forEach((m: any) => {
+          for (const m of latestMsgs) {
             if (!latestMsgMap[m.conversation_id]) {
               latestMsgMap[m.conversation_id] = m;
+              if (m.content) {
+                try {
+                  decryptedPreviewMap[m.conversation_id] = await decryptMessage(m.content, String(m.conversation_id));
+                } catch {
+                  decryptedPreviewMap[m.conversation_id] = m.content;
+                }
+              }
             }
-          });
+          }
         }
 
         const parsed: Chat[] = myConvs
@@ -288,7 +306,7 @@ function MessagesContent() {
               else if (latest.media_type === 'document') previewText = '📄 Document';
               else if (latest.media_type === 'audio') previewText = '🎤 Voice message';
               else if (latest.media_type === 'location') previewText = '📍 Location';
-              else previewText = latest.content || 'Start a conversation';
+              else previewText = decryptedPreviewMap[conv.id] || latest.content || 'Start a conversation';
             }
 
             const timeStr = latest?.created_at 
@@ -489,7 +507,7 @@ function MessagesContent() {
         if (error) throw error;
 
         if (data && isSubscribed) {
-          const serverMessages: ChatMessage[] = data.map(m => {
+          const decryptedPromises = data.map(async (m: any) => {
             const isMe = m.sender_id === user.id;
             let calculatedStatus: MessageStatus = 'sent';
             if (isMe) {
@@ -502,10 +520,12 @@ function MessagesContent() {
               }
             }
 
+            const decryptedContent = await decryptMessage(m.content, currentChatId);
+
             return {
               id: String(m.id),
               conversation_id: String(m.conversation_id),
-              text: m.content,
+              text: decryptedContent,
               sender: isMe ? 'me' : 'them',
               sender_id: m.sender_id,
               time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -516,8 +536,10 @@ function MessagesContent() {
               delivered_at: m.delivered_at,
               read_at: m.read_at,
               status: calculatedStatus
-            };
+            } as ChatMessage;
           });
+
+          const serverMessages = await Promise.all(decryptedPromises);
           
           const durableOutbox = readMessageOutbox()
             .filter(entry => entry.userId === user.id && String(entry.message.conversation_id) === currentChatId)
@@ -534,18 +556,9 @@ function MessagesContent() {
           setConversations(prev => prev.map(chat => String(chat.id) === currentChatId ? { ...chat, messages: msgs, unread: 0 } : chat));
           
           // Guarantee instant snap to bottom after messages load
-          requestAnimationFrame(() => {
-            if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-            messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
-          });
-          setTimeout(() => {
-            if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-            messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
-          }, 60);
-          setTimeout(() => {
-            if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-            messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
-          }, 200);
+          requestAnimationFrame(() => scrollToBottom('auto'));
+          setTimeout(() => scrollToBottom('auto'), 40);
+          setTimeout(() => scrollToBottom('auto'), 150);
 
           // Mark all incoming messages as read in Supabase DB
           await supabase.from('messages')
@@ -580,7 +593,7 @@ function MessagesContent() {
         schema: 'public', 
         table: 'messages', 
         filter: `conversation_id=eq.${currentChatId}` 
-      }, payload => {
+      }, async payload => {
           const m = payload.new;
           if (m.sender_id === user.id) {
             // Confirmed sent on server
@@ -598,10 +611,12 @@ function MessagesContent() {
             return;
           }
 
+          const decryptedText = await decryptMessage(m.content, currentChatId);
+
           const msg: ChatMessage = {
              id: String(m.id),
              conversation_id: String(m.conversation_id),
-             text: m.content,
+             text: decryptedText,
              sender: 'them',
              sender_id: m.sender_id,
              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -618,7 +633,7 @@ function MessagesContent() {
             const updatedChat = { 
               ...targetChat, 
               messages: [...targetChat.messages, msg],
-              lastMessage: m.content || 'Media message',
+              lastMessage: decryptedText || 'Media message',
               lastTime: msg.time,
               unread: 0,
               rawTimestamp: Date.now()
@@ -728,10 +743,14 @@ function MessagesContent() {
 
   const scrollToBottom = useCallback((behavior: 'auto' | 'smooth' = 'auto') => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-    }
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior });
+      if (behavior === 'smooth') {
+        scrollContainerRef.current.scrollTo({
+          top: scrollContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      } else {
+        scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      }
     }
   }, []);
 
@@ -809,11 +828,14 @@ function MessagesContent() {
       try {
         const remaining = deadline - Date.now();
         const timeoutMs = Math.max(500, Math.min(3500, remaining));
+        const rawContent = message.text || (message.mediaUrl ? `[Media: ${message.type}]` : '');
+        const encryptedContent = await encryptMessage(rawContent, conversationId);
+
         const request = supabase.from('messages').insert({
           id: message.id,
           conversation_id: conversationId,
           sender_id: message.sender_id,
-          content: message.text || (message.mediaUrl ? `[Media: ${message.type}]` : ''),
+          content: encryptedContent,
           media_type: message.type || 'text',
           media_url: message.mediaUrl || null,
           delivered_at: recipientOnline ? new Date().toISOString() : null
@@ -1313,7 +1335,7 @@ function MessagesContent() {
   };
 
   return (
-    <div className="h-[calc(100vh-72px)] overflow-hidden bg-white dark:bg-[#0f172a] flex flex-col font-sans w-full max-w-full">
+    <div className="h-[calc(100vh-77px)] overflow-hidden bg-white dark:bg-[#0f172a] flex flex-col font-sans w-full max-w-full">
 
       {/* Offline / Queued Connection Alert Banner */}
       {!isOnline && (
@@ -1341,7 +1363,7 @@ function MessagesContent() {
 
         {/* Right Pane: Active Chat Window */}
         <div 
-          style={showMobileChat ? {
+          style={isMobileView && showMobileChat ? {
             height: 'var(--chat-viewport-height, 100dvh)',
             top: 'var(--chat-viewport-top, 0px)',
             maxHeight: 'var(--chat-viewport-height, 100dvh)',

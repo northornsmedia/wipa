@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getSupabaseServerClient } from '@/lib/supabase-server';
 
 // Helper to calculate level based on XP (100 XP = 1 Level)
 const calculateLevel = (totalXp: number) => {
@@ -8,6 +8,7 @@ const calculateLevel = (totalXp: number) => {
 
 export async function POST(request: Request) {
   try {
+    const supabase = getSupabaseServerClient();
     const body = await request.json();
     const { userId, xpAmount, reason, referenceId } = body;
 
