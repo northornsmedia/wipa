@@ -165,6 +165,9 @@ export default function PlatformHeader() {
               if (newNotif.type === 'group_post_approved' || newNotif.type === 'group_post_rejected') {
                 message = `${name} ${newNotif.content || 'reviewed your group post.'}`;
               }
+              if (newNotif.type === 'group_post_pending') {
+                message = `${name} ${newNotif.content || 'submitted a post for your approval.'}`;
+              }
               
               setToastNotification({ message, visible: true });
               setTimeout(() => {

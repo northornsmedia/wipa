@@ -156,6 +156,10 @@ export default function NotificationsPage() {
                 Icon = XCircle;
                 iconBg = 'bg-red-500';
                 message = notif.content || 'did not approve your group post.';
+              } else if (notif.type === 'group_post_pending') {
+                Icon = MessageCircle;
+                iconBg = 'bg-amber-500';
+                message = notif.content || 'submitted a group post for your approval.';
               }
 
               return (

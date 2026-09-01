@@ -111,6 +111,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
   const [isDeletingGroup, setIsDeletingGroup] = useState(false);
   const [managementError, setManagementError] = useState('');
   const [moderatingPostId, setModeratingPostId] = useState<string | null>(null);
+  const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
 
   // Posts State
   const [posts, setPosts] = useState<GroupPost[]>([]);
@@ -472,6 +473,27 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
     } : post));
   };
 
+  const handleDeleteGroupPost = async (postId: string) => {
+    if (!group || !isGroupAdmin || deletingPostId) return;
+    const confirmed = window.confirm('Delete this post from the group? This cannot be undone.');
+    if (!confirmed) return;
+
+    setDeletingPostId(postId);
+    const { error } = await supabase
+      .from('feed_posts')
+      .delete()
+      .eq('id', postId)
+      .eq('group_id', group.id);
+    setDeletingPostId(null);
+
+    if (error) {
+      alert(error.message || 'Could not delete this post.');
+      return;
+    }
+
+    setPosts((current) => current.filter((post) => post.id !== postId));
+  };
+
   // Create Post inside Group
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -486,7 +508,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         media_urls: selectedMediaUrl ? [selectedMediaUrl] : [],
         media_type: selectedMediaUrl ? 'image' : null,
         group_id: group.id,
-        post_to_feed: postToFeed, // User toggle setting
+        post_to_feed: group.type === 'Public' && postToFeed,
         privacy: group.type === 'Private' ? 'private' : 'public',
         likes_count: 0,
         comments_count: 0
@@ -508,7 +530,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
         const createdPostWithStatus = {
           ...createdPost,
           moderation_status: supportsPostModeration
-            ? (isGroupAdmin ? 'approved' : 'pending')
+            ? (group.type === 'Private' ? 'pending' : 'approved')
             : 'approved'
         } as GroupPost;
         setPosts(prev => [createdPostWithStatus, ...prev]);
@@ -1026,6 +1048,17 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                                 Group Only
                               </span>
                             )}
+                            {isGroupAdmin && (
+                              <button
+                                onClick={() => handleDeleteGroupPost(post.id)}
+                                disabled={deletingPostId === post.id}
+                                className="ml-1 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-950/30"
+                                title="Delete this group post"
+                                aria-label="Delete this group post"
+                              >
+                                {deletingPostId === post.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                              </button>
+                            )}
                           </div>
                         </div>
 
@@ -1275,6 +1308,14 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                       >
                         <X size={15} strokeWidth={3} /> Reject
                       </button>
+                      <button
+                        onClick={() => handleDeleteGroupPost(post.id)}
+                        disabled={deletingPostId === post.id}
+                        className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs font-bold text-gray-600 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:border-red-900/60 dark:hover:bg-red-950/30 dark:hover:text-red-300"
+                      >
+                        {deletingPostId === post.id ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+                        Delete
+                      </button>
                     </div>
                   </article>
                 )) : (
@@ -1450,39 +1491,45 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
               </div>
 
-              {/* ============================================================= */}
-              {/* THE TOGGLE: "ALSO POST IN FEED" (REQUESTED BY USER) */}
-              {/* ============================================================= */}
-              <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/50 flex items-center justify-between">
-                <div className="pr-4">
-                  <div className="flex items-center gap-1.5">
-                    <Globe size={15} className="text-[#5a32fa] dark:text-indigo-400" />
-                    <span className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white">
-                      Also broadcast to main community feed
-                    </span>
+              {group.type === 'Public' ? (
+                <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/50 flex items-center justify-between">
+                  <div className="pr-4">
+                    <div className="flex items-center gap-1.5">
+                      <Globe size={15} className="text-[#5a32fa] dark:text-indigo-400" />
+                      <span className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white">
+                        Also broadcast to main community feed
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5 leading-snug">
+                      {postToFeed
+                        ? "This post will be visible in this group AND appear on the public WIPA feed."
+                        : "This post will remain strictly inside this group only."}
+                    </p>
                   </div>
-                  <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5 leading-snug">
-                    {postToFeed 
-                      ? "This post will be visible in this group AND appear on the public WIPA feed." 
-                      : "This post will remain strictly inside this group only."}
-                  </p>
-                </div>
 
-                {/* Custom Toggle Switch */}
-                <button
-                  type="button"
-                  onClick={() => setPostToFeed(!postToFeed)}
-                  className={`w-12 h-6.5 flex items-center rounded-full p-1 transition-colors cursor-pointer shrink-0 ${
-                    postToFeed ? 'bg-[#5a32fa]' : 'bg-gray-300 dark:bg-gray-700'
-                  }`}
-                >
-                  <div
-                    className={`bg-white w-4.5 h-4.5 rounded-full shadow-md transform transition-transform ${
-                      postToFeed ? 'translate-x-5.5' : 'translate-x-0'
+                  <button
+                    type="button"
+                    onClick={() => setPostToFeed(!postToFeed)}
+                    className={`w-12 h-6.5 flex items-center rounded-full p-1 transition-colors cursor-pointer shrink-0 ${
+                      postToFeed ? 'bg-[#5a32fa]' : 'bg-gray-300 dark:bg-gray-700'
                     }`}
-                  />
-                </button>
-              </div>
+                  >
+                    <div
+                      className={`bg-white w-4.5 h-4.5 rounded-full shadow-md transform transition-transform ${
+                        postToFeed ? 'translate-x-5.5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">
+                  <ShieldCheck size={18} className="mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs font-black">Admin approval required</p>
+                    <p className="mt-0.5 text-[11px] leading-snug opacity-80">Every post in this private group is sent to the moderation queue before members can see it.</p>
+                  </div>
+                </div>
+              )}
 
               {/* Submit Button */}
               <button
@@ -1495,7 +1542,7 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
                 ) : (
                   <>
                     <Send size={16} />
-                    <span>Publish Post</span>
+                    <span>{group.type === 'Private' ? 'Submit for Approval' : 'Publish Post'}</span>
                   </>
                 )}
               </button>
