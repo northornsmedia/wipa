@@ -213,15 +213,6 @@ END:VCARD`;
                         {fullName.charAt(0).toUpperCase()}
                       </span>
                     )}
-
-                    {/* Story Play Icon Overlay */}
-                    {profile.intro_video_url && (
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-90 group-hover:opacity-100 transition-opacity">
-                        <div className="w-10 h-10 rounded-full bg-white/90 text-[#5a32fa] flex items-center justify-center shadow-lg">
-                          <Play size={18} className="fill-[#5a32fa] translate-x-0.5" />
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
 
