@@ -145,8 +145,8 @@ const MOCK_COMPANIES = [
     location: "London, UK & Worldwide (150+ Jurisdictions)",
     website: "www.genieai.co",
     landingPage: "https://www.genieai.co/partners/wipa",
-    promoCode: "WIPA / WIPA25",
-    offer: "50% off for 3 Months (Code: WIPA) or 25% off for 12 Months (Code: WIPA25)",
+    promoCode: "WIPA25",
+    offer: "25% off Genie Pro for your first 12 months",
     sponsored: true,
     logo: "/genie-ai-logo.svg",
     icon: "/genie-icon.svg",
@@ -596,7 +596,7 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                                 {company.offer.promoCode}
                               </span>
                               <button 
-                                onClick={() => handleCopyPromoCode(company.offer?.promoCode || 'WIPA')}
+                                onClick={() => handleCopyPromoCode(company.offer?.promoCode || 'WIPA25')}
                                 className="p-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-colors flex items-center gap-1.5 text-xs font-bold cursor-pointer"
                                 title="Copy Promo Code"
                               >
@@ -914,7 +914,7 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                           <>
                             <li>Visit the partner landing page: <a href={company.offer?.ctaUrl || "https://www.genieai.co/partners/wipa"} target="_blank" className="underline font-bold text-white">{company.offer?.ctaUrl || "genieai.co/partners/wipa"}</a></li>
                             <li>Sign up for an account with your business email.</li>
-                            <li>Enter promo code <strong>{company.offer?.promoCode || "WIPA"}</strong> at checkout.</li>
+                            <li>Enter promo code <strong>{company.offer?.promoCode || "WIPA25"}</strong> at checkout.</li>
                             <li>Enjoy your exclusive member rate!</li>
                           </>
                         )}
