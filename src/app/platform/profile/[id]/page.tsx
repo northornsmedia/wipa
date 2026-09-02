@@ -809,9 +809,25 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
 
             {/* TAB 3: EXPERIENCE TIMELINE */}
             {activeTab === 'experience' && (
-              <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Experience</h3>
-                <div className="space-y-6">
+              <div className="bg-white dark:bg-[#151c2c] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-gray-800 shadow-sm transition-all">
+                {/* Header */}
+                <div className="flex items-center gap-3.5 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800/80">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-500/15 via-indigo-500/15 to-pink-500/15 border border-purple-500/20 text-[#5a32fa] dark:text-[#ff90e8] flex items-center justify-center shadow-inner shrink-0">
+                    <Briefcase size={22} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xl font-black text-gray-900 dark:text-white">Experience</h3>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                        {((profileData.positions && profileData.positions.length > 0) ? profileData.positions.length : 1)} {((profileData.positions && profileData.positions.length > 0) ? (profileData.positions.length === 1 ? 'Role' : 'Roles') : 'Role')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Professional practice, leadership roles & career timeline</p>
+                  </div>
+                </div>
+
+                {/* Timeline Container */}
+                <div className="relative pl-2 sm:pl-4 space-y-8 before:absolute before:left-8 sm:before:left-10 before:top-4 before:bottom-4 before:w-0.5 before:bg-gradient-to-b before:from-[#5a32fa] before:via-indigo-400 before:to-gray-200 dark:before:to-gray-800">
                   {((profileData.positions && profileData.positions.length > 0) ? profileData.positions : [
                     {
                       id: 'pos-1',
@@ -821,34 +837,85 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                       years: profileData.experienceYears,
                       current: true
                     }
-                  ]).map((pos: any, pIdx: number) => (
-                    <div key={pos.id || pIdx} className="flex gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/50 flex items-center justify-center text-xl shrink-0">
-                        ⚖️
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-base font-bold text-gray-900 dark:text-white">{pos.title}</h4>
+                  ]).map((pos: any, pIdx: number) => {
+                    const companyInitial = (pos.company || 'C').charAt(0).toUpperCase();
+                    const colorGradients = [
+                      'from-[#5a32fa] to-[#8b5cf6]',
+                      'from-[#ff2a5f] to-[#ff90e8]',
+                      'from-[#00b4d8] to-[#0077b6]',
+                      'from-[#10b981] to-[#059669]',
+                      'from-[#f59e0b] to-[#d97706]'
+                    ];
+                    const selectedGrad = colorGradients[pIdx % colorGradients.length];
+
+                    return (
+                      <div key={pos.id || pIdx} className="relative flex items-start gap-4 sm:gap-6 group">
+                        
+                        {/* Interactive Timeline Monogram Node */}
+                        <div className="relative z-10 shrink-0">
+                          <div className={`w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-br ${selectedGrad} text-white flex items-center justify-center font-black text-lg shadow-lg ring-4 ring-white dark:ring-[#151c2c] group-hover:scale-110 group-hover:shadow-purple-500/25 transition-all duration-300`}>
+                            {companyInitial}
+                          </div>
                           {pos.current && (
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold uppercase">
-                              Current
+                            <span className="absolute -bottom-1 -right-1 flex h-4 w-4">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white dark:border-[#151c2c]"></span>
                             </span>
                           )}
                         </div>
-                        <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">{pos.company}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                          {pos.years ? `${pos.years} yrs Experience` : ''}
-                          {pos.years && pos.location ? ' · ' : ''}
-                          {pos.location || ''}
-                        </p>
-                        {pos.description && (
-                          <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 leading-relaxed whitespace-pre-line bg-gray-50/60 dark:bg-white/[0.02] p-3 rounded-xl border border-gray-100 dark:border-gray-800">
-                            {pos.description}
-                          </p>
-                        )}
+
+                        {/* Experience Content Box */}
+                        <div className="flex-1 bg-gray-50/60 dark:bg-gray-800/40 hover:bg-gray-50 dark:hover:bg-gray-800/80 border border-gray-100 dark:border-gray-800 p-5 rounded-2xl transition-all duration-200 group-hover:border-purple-200 dark:group-hover:border-purple-800/60 group-hover:shadow-md">
+                          
+                          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                            <h4 className="text-base sm:text-lg font-black text-gray-900 dark:text-white group-hover:text-[#5a32fa] dark:group-hover:text-[#ff90e8] transition-colors">
+                              {pos.title}
+                            </h4>
+                            {pos.current && (
+                              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-wider border border-emerald-500/30 inline-flex items-center gap-1 shadow-sm">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Current Role
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1.5 text-sm font-bold text-[#5a32fa] dark:text-[#ff90e8] mb-3">
+                            <Building2 size={15} />
+                            <span>{pos.company}</span>
+                          </div>
+
+                          {/* Meta Tags Row */}
+                          <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                            {pos.years && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-gray-900/60 border border-gray-200/60 dark:border-gray-700/60">
+                                <Clock size={13} className="text-purple-500" />
+                                {pos.years} {pos.years === 1 ? 'yr' : 'yrs'} Experience
+                              </span>
+                            )}
+                            {pos.location && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-gray-900/60 border border-gray-200/60 dark:border-gray-700/60">
+                                <MapPin size={13} className="text-pink-500" />
+                                {pos.location}
+                              </span>
+                            )}
+                            {pos.startDate && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-gray-900/60 border border-gray-200/60 dark:border-gray-700/60">
+                                <Calendar size={13} className="text-indigo-500" />
+                                {pos.startDate} {pos.endDate ? `– ${pos.endDate}` : (pos.current ? '– Present' : '')}
+                              </span>
+                            )}
+                          </div>
+
+                          {pos.description && (
+                            <div className="mt-4 pt-3.5 border-t border-gray-200/60 dark:border-gray-700/60 text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line font-medium">
+                              {pos.description}
+                            </div>
+                          )}
+                        </div>
+
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
