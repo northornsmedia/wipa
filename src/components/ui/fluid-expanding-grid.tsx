@@ -178,15 +178,15 @@ const REGIONAL_CHAIRS: GalleryItem[] = [
     flag: "https://flagcdn.com/w40/cn.png",
     bio: (
       <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed max-w-3xl">
-        <p className="font-semibold text-lg text-[#5a32fa] dark:text-[#ff90e8]">Inaugural WIPA Chair – East Asia | China</p>
+        <p className="font-semibold text-lg text-[#5a32fa] dark:text-[#ff90e8]">Managing Partner, Cohorizon IP Attorneys</p>
         <p>
-          Tina Nan is an internationally recognised intellectual property and technology strategist serving as the Inaugural WIPA Chair for East Asia. With deep expertise in cross-border IP prosecution, patent portfolio management, technology transfer, and commercialisation, Tina has advised global multinational corporations, fast-growing technology enterprises, and research institutions across China, East Asia, and international markets.
+          Tina NAN is the Managing Partner of Cohorizon IP Attorneys and an accomplished intellectual property professional with more than 25 years of experience. Dedicated to IP since 1999, she previously served as Manager of the Patent Department and Partner at two leading Chinese IP firms before co-founding Cohorizon. Her practice focuses on patent prosecution and international patent portfolio strategies for leading domestic and international corporations.
         </p>
         <p>
-          Throughout her career, Tina has been instrumental in facilitating international collaboration between Asian innovators and global intellectual property ecosystems. Her leadership bridges complex technological innovation with strategic IP asset protection, fostering cross-regional business development and commercial growth.
+          Tina’s achievements include securing the China Patent Gold Award and delivering IP training programmes to advance professional education. She is also actively involved in mentorship, initiatives supporting underprivileged students and leadership within prominent IP organisations.
         </p>
         <p>
-          As Inaugural WIPA Chair for East Asia, Tina champions the empowerment and advancement of women leaders in intellectual property, driving initiatives that expand professional networks, educational opportunities, and global recognition for female practitioners throughout the region.
+          Under her leadership, Cohorizon has grown into a comprehensive IP services firm with more than 150 professionals, including over 50 patent attorneys, and a strong presence across mainland China, Taiwan and Hong Kong. Through her expertise, leadership and commitment to innovation and diversity, Tina continues to contribute significantly to the development of the IP profession in China and internationally.
         </p>
       </div>
     ),
