@@ -805,7 +805,7 @@ export default function EducationDetailPage({ params }: { params: Promise<{ id: 
               <p className="text-xs font-bold text-gray-900 dark:text-white">Need help with registration?</p>
               <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 mb-3">Our academic coordinator is available to assist you.</p>
               <a 
-                href="mailto:contact@wipa.org?subject=Inquiry regarding WIPA Academy Course"
+                href="mailto:contact@womensipalliance.com?subject=Inquiry regarding WIPA Academy Course"
                 className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1"
               >
                 <Mail size={12} /> Contact Admissions Team

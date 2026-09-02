@@ -1941,10 +1941,16 @@ export default function ProfilePage() {
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Your custom WIPA profile handle:</p>
               
               <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-2 rounded-xl text-xs font-mono font-semibold text-gray-700 dark:text-gray-300">
-                <span className="truncate">wipa.org/u/{profileData.memberId?.toLowerCase() || 'janedoe'}</span>
+                <span className="truncate">platform.womensipalliance.com/u/{profileData.memberId?.toLowerCase() || 'member'}</span>
                 <button 
-                  onClick={() => alert('Profile URL copied to clipboard!')}
-                  className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors text-[#5a32fa] dark:text-[#ff90e8]"
+                  onClick={() => {
+                    const handle = profileData.memberId?.toLowerCase() || 'member';
+                    const origin = typeof window !== 'undefined' && !window.location.hostname.includes('localhost') ? window.location.origin : 'https://platform.womensipalliance.com';
+                    const url = `${origin}/u/${handle}`;
+                    navigator.clipboard.writeText(url);
+                    alert(`Profile URL copied: ${url}`);
+                  }}
+                  className="p-1.5 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors text-[#5a32fa] dark:text-[#ff90e8] cursor-pointer"
                   title="Copy Link"
                 >
                   <Copy size={14} />
@@ -2702,15 +2708,17 @@ export default function ProfilePage() {
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-6">{profileData.role}</p>
 
             <div className="p-4 bg-white rounded-2xl shadow-inner inline-block border mb-6">
-              <QRCodeCanvas value={`https://wipa.org/u/${profileData.memberId || 'janedoe'}`} size={160} />
+              <QRCodeCanvas value={`https://platform.womensipalliance.com/u/${profileData.memberId || profileData.id || 'member'}`} size={160} />
             </div>
 
             <button 
               onClick={() => {
-                navigator.clipboard.writeText(`https://wipa.org/u/${profileData.memberId || 'janedoe'}`);
-                alert('Profile link copied!');
+                const origin = typeof window !== 'undefined' && !window.location.hostname.includes('localhost') ? window.location.origin : 'https://platform.womensipalliance.com';
+                const url = `${origin}/u/${profileData.memberId || profileData.id || 'member'}`;
+                navigator.clipboard.writeText(url);
+                alert(`Profile link copied: ${url}`);
               }}
-              className="w-full py-3 bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all shadow-md"
+              className="w-full py-3 bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
             >
               <Copy size={16} /> Copy Profile Link
             </button>
