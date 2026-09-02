@@ -89,6 +89,13 @@ export default function ProfilePage() {
   const [educationList, setEducationList] = useState<EducationItem[]>([]);
   const [isSavingEducation, setIsSavingEducation] = useState(false);
   const [educationSaveError, setEducationSaveError] = useState<string | null>(null);
+
+  const [isEditSkillsModalOpen, setIsEditSkillsModalOpen] = useState(false);
+  const [skillsList, setSkillsList] = useState<string[]>([]);
+  const [newSkillInput, setNewSkillInput] = useState('');
+  const [isSavingSkills, setIsSavingSkills] = useState(false);
+  const [skillsSaveError, setSkillsSaveError] = useState<string | null>(null);
+
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -738,6 +745,70 @@ export default function ProfilePage() {
       setEducationSaveError(err?.message || "Failed to save education. Please try again.");
     } finally {
       setIsSavingEducation(false);
+    }
+  };
+
+  const handleOpenSkillsModal = () => {
+    setSkillsSaveError(null);
+    setNewSkillInput('');
+    const rawSkills = profileData.skills || 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets';
+    const parsed = rawSkills.split(',').map(s => s.trim()).filter(Boolean);
+    setSkillsList(parsed);
+    setIsEditSkillsModalOpen(true);
+  };
+
+  const handleAddSkill = (skillToAdd?: string) => {
+    const val = (skillToAdd || newSkillInput).trim();
+    if (!val) return;
+    if (skillsList.some(s => s.toLowerCase() === val.toLowerCase())) {
+      setNewSkillInput('');
+      return;
+    }
+    setSkillsList(prev => [...prev, val]);
+    setNewSkillInput('');
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setSkillsList(prev => prev.filter(s => s !== skillToRemove));
+  };
+
+  const handleSaveSkills = async () => {
+    let currentUserId = user?.id;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id;
+    }
+    if (!currentUserId) {
+      setSkillsSaveError("User session not found. Please log in again.");
+      return;
+    }
+
+    const cleanSkills = skillsList.map(s => s.trim()).filter(Boolean);
+    const skillsString = cleanSkills.join(', ');
+
+    setIsSavingSkills(true);
+    setSkillsSaveError(null);
+    try {
+      const { data: savedProfile, error } = await supabase.from('profiles').update({
+        skills: skillsString
+      }).eq('id', currentUserId).select('skills').single();
+
+      if (error) throw error;
+
+      setProfileData(prev => ({
+        ...prev,
+        skills: savedProfile?.skills ?? skillsString
+      }));
+      setEditForm(prev => ({
+        ...prev,
+        skills: savedProfile?.skills ?? skillsString
+      }));
+      setIsEditSkillsModalOpen(false);
+    } catch (err: any) {
+      console.error('Error saving skills:', err);
+      setSkillsSaveError(err?.message || 'Failed to update skills. Please try again.');
+    } finally {
+      setIsSavingSkills(false);
     }
   };
 
@@ -1814,7 +1885,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <button 
-                    onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
+                    onClick={handleOpenSkillsModal}
                     className="px-4 py-2 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200/80 dark:border-purple-800/60 rounded-full flex items-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-sm cursor-pointer self-start sm:self-auto"
                   >
                     <Plus size={14} className="stroke-[3]" />
@@ -2683,6 +2754,174 @@ export default function ProfilePage() {
               >
                 {isSavingEducation ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
                 <span>{isSavingEducation ? 'Saving...' : 'Save Credentials'}</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ================= EDIT SKILLS & ENDORSEMENTS MODAL ================= */}
+      {isEditSkillsModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#151c2c] w-full max-w-lg max-h-[90vh] rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl flex flex-col text-gray-900 dark:text-white space-y-5">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500/15 to-[#5a32fa]/15 border border-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] flex items-center justify-center font-bold">
+                  <Star size={20} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Manage Skills</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Add, edit, or remove your professional competencies</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsEditSkillsModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-5 pr-1 text-xs sm:text-sm">
+              {/* Add New Skill Input */}
+              <div className="space-y-1.5">
+                <label className="block font-bold text-gray-700 dark:text-gray-300">
+                  Add a New Skill
+                </label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text"
+                    value={newSkillInput}
+                    placeholder="e.g. Patent Drafting, IP Litigation, Trade Secrets..."
+                    onChange={(e) => setNewSkillInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddSkill();
+                      }
+                    }}
+                    className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 focus:border-[#5a32fa] focus:bg-white dark:focus:bg-[#151c2c] outline-none text-xs sm:text-sm font-medium transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleAddSkill()}
+                    disabled={!newSkillInput.trim()}
+                    className="px-4 py-2.5 rounded-xl bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs flex items-center gap-1.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+                  >
+                    <Plus size={16} className="stroke-[3]" />
+                    <span>Add</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Active Skills Tag Cloud */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-gray-700 dark:text-gray-300">
+                    Your Active Skills ({skillsList.length})
+                  </label>
+                  {skillsList.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setSkillsList([])}
+                      className="text-[11px] font-bold text-red-500 hover:underline cursor-pointer"
+                    >
+                      Clear All
+                    </button>
+                  )}
+                </div>
+
+                {skillsList.length === 0 ? (
+                  <div className="p-6 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800 text-center text-gray-400 text-xs">
+                    No skills added yet. Add a skill above or choose from popular suggestions below.
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2 p-3.5 rounded-2xl bg-gray-50/60 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800">
+                    {skillsList.map((skill, sIdx) => (
+                      <span 
+                        key={sIdx}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white dark:bg-gray-900 border border-purple-200/80 dark:border-purple-800/60 text-gray-900 dark:text-white font-bold text-xs shadow-sm group"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8]" />
+                        <span>{skill}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSkill(skill)}
+                          className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-full p-0.5 transition-colors cursor-pointer"
+                          title="Remove skill"
+                        >
+                          <X size={13} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Popular IP Suggestions */}
+              <div className="space-y-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles size={14} className="text-[#5a32fa] dark:text-[#ff90e8]" />
+                  <label className="block font-bold text-[11px] uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    Suggested IP Competencies
+                  </label>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    'Patent Drafting',
+                    'Trademark Portfolio',
+                    'IP Litigation',
+                    'Trade Secrets',
+                    'Copyright Law',
+                    'Licensing & Tech Transfer',
+                    'Freedom to Operate (FTO)',
+                    'IP Valuation',
+                    'AI & Legal Tech',
+                    'Brand Protection'
+                  ]
+                    .filter(s => !skillsList.some(item => item.toLowerCase() === s.toLowerCase()))
+                    .map((sug, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleAddSkill(sug)}
+                        className="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-purple-100 dark:bg-gray-800 dark:hover:bg-purple-950/50 text-gray-700 hover:text-[#5a32fa] dark:text-gray-300 dark:hover:text-[#ff90e8] text-[11px] font-semibold border border-transparent hover:border-purple-200 dark:hover:border-purple-800 transition-all cursor-pointer flex items-center gap-1"
+                      >
+                        <Plus size={11} /> {sug}
+                      </button>
+                    ))}
+                </div>
+              </div>
+
+            </div>
+
+            {/* Error Banner */}
+            {skillsSaveError && (
+              <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300 shrink-0">
+                Could not save: {skillsSaveError}
+              </p>
+            )}
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3 shrink-0">
+              <button 
+                type="button"
+                onClick={() => setIsEditSkillsModalOpen(false)}
+                className="px-5 py-2.5 text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button"
+                onClick={handleSaveSkills}
+                disabled={isSavingSkills}
+                className="px-6 py-2.5 text-xs sm:text-sm font-bold bg-[#5a32fa] hover:bg-[#4a24db] text-white rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {isSavingSkills ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                <span>{isSavingSkills ? 'Saving...' : 'Save Skills'}</span>
               </button>
             </div>
 
