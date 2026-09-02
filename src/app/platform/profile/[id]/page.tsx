@@ -426,14 +426,6 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
               {/* Action Buttons for Viewing Member */}
               <div className="flex flex-wrap items-center gap-2.5 pt-2 md:pt-0">
                 
-                {/* Watch Story Button */}
-                <button 
-                  onClick={() => setIsVideoModalOpen(true)}
-                  className="px-4 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-[#5a32fa] hover:from-pink-600 hover:to-[#4a24db] text-white font-semibold text-sm flex items-center gap-2 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
-                >
-                  <Play size={16} className="fill-white" /> Watch Story
-                </button>
-
                 {/* Connect Action Button */}
                 {user?.id !== profileData.id && (
                   <button 
