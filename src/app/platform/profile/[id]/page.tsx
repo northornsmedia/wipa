@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 const DEFAULT_MOCK_VIDEO = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
 
 import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
+import { recordProfileView } from '@/lib/analytics';
 import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
 
 export default function PublicProfilePage({ params }: { params: Promise<{ id: string }> }) {
@@ -112,6 +113,11 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             isWipaRecommended: data.is_wipa_recommended ?? false,
             businessProfile: null
           });
+
+          // Record Profile View (deduplicated & filtered for self-views)
+          if (resolvedId) {
+            void recordProfileView(resolvedId, user?.id);
+          }
 
           // Fetch real counts: connections, followers, posts
           const [postsRes, connCountRes, followCountRes] = await Promise.all([

@@ -3,777 +3,892 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
-  Search, Shield, Zap, TrendingUp, BarChart3, Globe, Award, Sparkles, 
+  Shield, Zap, TrendingUp, BarChart3, Globe, Award, Sparkles, 
   ArrowUpRight, CheckCircle2, ChevronRight, FileText, Activity, Layers, 
-  Cpu, Filter, Download, HelpCircle, ArrowRight, BookOpen, Clock, AlertCircle,
-  ExternalLink, Eye, Share2, Bookmark, RefreshCw, X, Check, Lock, ChevronDown
+  Cpu, Download, HelpCircle, ArrowRight, BookOpen, Clock, AlertCircle,
+  ExternalLink, Eye, Share2, Bookmark, RefreshCw, X, Check, Lock,
+  Building2, Mail, Phone, User, CheckCircle, Search, Laptop, FileCheck,
+  ShieldCheck, Star, BadgeCheck, Sliders, ChevronDown, CheckCheck,
+  Sparkle, Compass, Play, FileCode2, Scale
 } from 'lucide-react';
+import { useAppStore } from '@/store/useAppStore';
 
-interface PatentRecord {
+interface ProductSolution {
   id: string;
-  patentNumber: string;
-  title: string;
-  assignee: string;
-  filingDate: string;
-  grantDate: string;
-  status: 'Active / Granted' | 'Pending' | 'Expired';
-  jurisdiction: string;
-  assetIndexScore: number;
-  shepardsSignal: 'positive' | 'cautionary' | 'warning';
-  techField: string;
-  abstract: string;
-  citationsCount: number;
-  claimsCount: number;
-  examinerArtUnit: string;
+  name: string;
+  shortName: string;
+  category: string;
+  tagline: string;
+  description: string;
+  icon: any;
+  accentColor: string;
+  accentBg: string;
+  badge: string;
+  metrics: { label: string; value: string }[];
+  keyFeatures: string[];
+  useCase: string;
 }
 
-const PRELOADED_PATENTS: PatentRecord[] = [
+const PRODUCTS: ProductSolution[] = [
   {
-    id: '1',
-    patentNumber: 'US11847290B2',
-    title: 'Neural Network Acceleration Engine for Low-Power On-Device Machine Learning',
-    assignee: 'Apple Inc.',
-    filingDate: 'Apr 14, 2022',
-    grantDate: 'Dec 19, 2023',
-    status: 'Active / Granted',
-    jurisdiction: 'United States (USPTO)',
-    assetIndexScore: 94.8,
-    shepardsSignal: 'positive',
-    techField: 'Artificial Intelligence & Semiconductor Architecture',
-    abstract: 'A specialized neural network co-processor configured to execute quantized tensor operations with dedicated SRAM cache hierarchies, dynamic weight compression, and sparse matrix multiplication pipelines for edge devices.',
-    citationsCount: 142,
-    claimsCount: 24,
-    examinerArtUnit: 'Art Unit 2124'
+    id: 'patentsight',
+    name: 'PatentSight+™',
+    shortName: 'Portfolio Valuation',
+    category: 'Strategic Valuation',
+    tagline: 'Scientific Patent Portfolio Valuation & Patent Asset Index™',
+    description: 'Transform subjective patent counts into objective commercial value. PatentSight+™ evaluates patent families using the globally validated Patent Asset Index™ to measure competitive impact and technology relevance.',
+    icon: BarChart3,
+    accentColor: 'text-[#5a32fa] dark:text-[#ff90e8]',
+    accentBg: 'bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20',
+    badge: 'Flagship Valuation',
+    metrics: [
+      { label: 'Fortune 500 Index Coverage', value: '100%' },
+      { label: 'Citation Weighting Ratio', value: 'Verified 4.2x' },
+      { label: 'Global Ownership Trees', value: '450K+ Entities' }
+    ],
+    keyFeatures: [
+      'Patent Asset Index™ scoring (Competitive Impact × Portfolio Size)',
+      'Instant competitor portfolio benchmarking and technological gap analysis',
+      'M&A due diligence intelligence and IP licensing valuation radar',
+      'Harmonized global patent ownership tracking across corporate subsidiaries'
+    ],
+    useCase: 'Corporate IP Leaders & M&A Partners evaluating licensing value or benchmarking against top Fortune 500 innovators.'
   },
   {
-    id: '2',
-    patentNumber: 'US11902845B2',
-    title: 'Channel State Information Feedback and Beamforming Protocols in 5G-Advanced and 6G Networks',
-    assignee: 'Qualcomm Technologies, Inc.',
-    filingDate: 'Sep 08, 2021',
-    grantDate: 'Feb 13, 2024',
-    status: 'Active / Granted',
-    jurisdiction: 'United States (USPTO)',
-    assetIndexScore: 96.2,
-    shepardsSignal: 'positive',
-    techField: 'Telecommunications & Standard Essential Patents',
-    abstract: 'Methods and apparatus for compressed CSI codebook reporting across sub-terahertz frequency bands with ultra-massive MIMO antenna arrays, reducing uplink signalling overhead while preserving multiplexing gain.',
-    citationsCount: 218,
-    claimsCount: 30,
-    examinerArtUnit: 'Art Unit 2618'
+    id: 'patentadvisor',
+    name: 'PatentAdvisor®',
+    shortName: 'Examiner Analytics',
+    category: 'Prosecution Strategy',
+    tagline: 'USPTO Examiner Analytics & Office Action Predictability',
+    description: 'Eliminate prosecution guesswork. PatentAdvisor® leverages statistical modeling on 8,000+ USPTO examiners to forecast allowance rates, time-to-grant, and optimal response strategies.',
+    icon: Activity,
+    accentColor: 'text-purple-600 dark:text-purple-400',
+    accentBg: 'bg-purple-500/10 dark:bg-purple-500/20',
+    badge: 'Examiner Intelligence',
+    metrics: [
+      { label: 'USPTO Examiners Indexed', value: '8,000+' },
+      { label: 'ETA™ Predictive Accuracy', value: '98.6%' },
+      { label: 'Avg. RCE Cycle Reduction', value: '32%' }
+    ],
+    keyFeatures: [
+      'Examiner Time Allocation (ETA™) score predicting allowance difficulty',
+      'Art Unit allowance trajectories, office action counts, and grant timelines',
+      'Actionable decision tree: File RCE vs. Appeal Brief vs. Examiner Interview',
+      'Pre-filing classification radar to steer applications away from difficult tech centers'
+    ],
+    useCase: 'Patent Attorneys & Law Firms looking to minimize costly prosecution cycles and secure faster notices of allowance.'
   },
   {
-    id: '3',
-    patentNumber: 'EP4018492A1',
-    title: 'Solid-State Electrolyte Formulations for High-Energy Density Lithium Batteries',
-    assignee: 'Tesla, Inc.',
-    filingDate: 'Nov 22, 2021',
-    grantDate: 'Aug 16, 2023',
-    status: 'Active / Granted',
-    jurisdiction: 'European Patent Office (EPO)',
-    assetIndexScore: 89.4,
-    shepardsSignal: 'positive',
-    techField: 'Clean Energy & Electrochemistry',
-    abstract: 'A solid ceramic-polymer composite electrolyte exhibiting high ionic conductivity (>10^-3 S/cm at room temperature) and superior electrochemical stability against lithium metal dendrite penetration at rapid C-rates.',
-    citationsCount: 88,
-    claimsCount: 18,
-    examinerArtUnit: 'TC 1700'
+    id: 'totalpatent',
+    name: 'TotalPatent One®',
+    shortName: 'Global Search',
+    category: 'Patent Search Engine',
+    tagline: 'High-Speed Comprehensive Global Patent Search & Dossiers',
+    description: 'Lightning-fast full-text patent search engine indexing over 140+ million patent documents across 100+ global patent authorities with real-time Shepard’s® citation signals.',
+    icon: Globe,
+    accentColor: 'text-blue-600 dark:text-blue-400',
+    accentBg: 'bg-blue-500/10 dark:bg-blue-500/20',
+    badge: '140M+ Patents',
+    metrics: [
+      { label: 'Patent Authorities', value: '100+' },
+      { label: 'Full-Text Documents', value: '140M+' },
+      { label: 'Shepard’s® Validated', value: '100% Real-time' }
+    ],
+    keyFeatures: [
+      'Comprehensive coverage: USPTO, EPO, WIPO, JPO, CNIPA, KIPO and regional offices',
+      'High-speed Boolean, command-line syntax, and semantic natural language search',
+      'Integrated Shepard’s® Citations for instant validity and legal treatment indicators',
+      'Side-by-side claim comparison, high-resolution drawing exports, and legal dossiers'
+    ],
+    useCase: 'Patent Search Specialists, Litigators & Information Professionals requiring exhaustive prior art and validity searches.'
   },
   {
-    id: '4',
-    patentNumber: 'US11782944B2',
-    title: 'Multi-Modal Transformer Architecture for Real-Time Legal Precedent and Claim Analysis',
-    assignee: 'OpenAI, LLC / LexisNexis IP',
-    filingDate: 'Jan 15, 2023',
-    grantDate: 'Jan 09, 2024',
-    status: 'Active / Granted',
-    jurisdiction: 'United States (USPTO)',
-    assetIndexScore: 98.1,
-    shepardsSignal: 'positive',
-    techField: 'Legal Technology & Cognitive AI',
-    abstract: 'A foundational attention model trained on multi-jurisdictional patent claims and judicial decisions, providing verified citation graph traversal, claim defect identification, and automated antecedent basis checking.',
-    citationsCount: 310,
-    claimsCount: 22,
-    examinerArtUnit: 'Art Unit 2121'
+    id: 'iplytics',
+    name: 'IPlytics™',
+    shortName: '5G & SEPs Radar',
+    category: 'Standards Intelligence',
+    tagline: 'Standard Essential Patents (SEPs) & 5G/6G Standards Radar',
+    description: 'The market-leading database for Standard Essential Patent declarations and standards contribution tracking across 3GPP, ETSI, IEEE, and emerging wireless architectures.',
+    icon: Cpu,
+    accentColor: 'text-emerald-600 dark:text-emerald-400',
+    accentBg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
+    badge: '5G / 6G Essential',
+    metrics: [
+      { label: 'Active Standard SEPs', value: '340,000+' },
+      { label: '3GPP Working Groups', value: '100% Tracked' },
+      { label: 'FRAND Licensing Database', value: 'Global Lead' }
+    ],
+    keyFeatures: [
+      'Verified SEP declaration mapping for 5G, 6G, Wi-Fi 7, V2X, and video codecs',
+      'Track real technical engineering contributions to standards development bodies',
+      'Empower fair, reasonable, and non-discriminatory (FRAND) licensing negotiations',
+      'Early radar for AI telecommunications, autonomous mobility, and IoT standards'
+    ],
+    useCase: 'Licensing Executives, In-House Telecom Counsel & Litigators handling standard essential patent negotiations.'
+  },
+  {
+    id: 'patentoptimizer',
+    name: 'PatentOptimizer®',
+    shortName: 'Claim Drafting QA',
+    category: 'Drafting Quality',
+    tagline: 'Patent Claim Drafting & Quality Assurance in MS Word',
+    description: 'Seamlessly integrated drafting tool that eliminates antecedent basis defects, verifies claim consistency, and streamlines response drafting directly inside Microsoft Word.',
+    icon: FileCheck,
+    accentColor: 'text-rose-600 dark:text-rose-400',
+    accentBg: 'bg-rose-500/10 dark:bg-rose-500/20',
+    badge: 'Word Plugin',
+    metrics: [
+      { label: 'Section 112 Errors Caught', value: '99.4%' },
+      { label: 'Drafting Time Reduction', value: '4.5 hrs/app' },
+      { label: 'Integrated Environment', value: 'MS Word / PDF' }
+    ],
+    keyFeatures: [
+      'Direct Microsoft Word plugin for seamless drafting workflow integration',
+      'Instant antecedent basis checking and automated term consistency validation',
+      'Visual interactive claim tree diagrams with automatic claim renumbering',
+      'Section 112 rejection prevention tools and patent specification analysis'
+    ],
+    useCase: 'Patent Prosecutors, Associates & Patent Agents drafting original patent specifications and office action responses.'
   }
 ];
 
 export default function IntelligencePage() {
-  const [activeTab, setActiveTab] = useState<'search' | 'landscape' | 'advisor' | 'benchmark' | 'seps'>('search');
-  const [patentQuery, setPatentQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<PatentRecord[]>(PRELOADED_PATENTS);
-  const [selectedPatent, setSelectedPatent] = useState<PatentRecord | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
+  const { user } = useAppStore();
+  const [selectedProductId, setSelectedProductId] = useState('patentsight');
 
-  // Tab 2 & 3 Interactive State
-  const [artUnit, setArtUnit] = useState('2100');
-  const [portfolioPatents, setPortfolioPatents] = useState(48);
-  const [citationRatio, setCitationRatio] = useState(1.4);
+  // Interactive ROI Calculator State
+  const [annualFilings, setAnnualFilings] = useState(35);
+  const [hourlyRate, setHourlyRate] = useState(450);
 
-  // Dynamic Examiner Data by Art Unit
-  const artUnitData: Record<string, { allowance: string; oaCount: string; timeToGrant: string; difficulty: string; tip: string }> = {
-    '2100': { allowance: '68.4%', oaCount: '2.3', timeToGrant: '21.8 mo', difficulty: 'Moderate (Top 40%)', tip: 'Focus independent claims on concrete hardware/software boundary to avoid 101 Alice subject-matter rejections.' },
-    '2600': { allowance: '74.2%', oaCount: '1.9', timeToGrant: '18.4 mo', difficulty: 'Favorable (Top 25%)', tip: 'Prior art in 3GPP standards dominates; explicitly reference standard specifications in detailed disclosure.' },
-    '1600': { allowance: '52.1%', oaCount: '3.1', timeToGrant: '31.2 mo', difficulty: 'High Rigor (Top 15%)', tip: 'Provide extensive experimental enablement data in initial specification to survive strict 112(a) written description challenges.' },
-    '2800': { allowance: '81.6%', oaCount: '1.6', timeToGrant: '16.2 mo', difficulty: 'Favorable (Top 10%)', tip: 'Detailed fabrication cross-sections reduce double-patenting and anticipation rejections.' },
-    '3700': { allowance: '63.5%', oaCount: '2.5', timeToGrant: '24.1 mo', difficulty: 'Moderate', tip: 'Functional claiming in medical apparatus requires distinct structural correlation in figures.' }
+  // Live Simulation Calculations
+  const activeProduct = PRODUCTS.find(p => p.id === selectedProductId) || PRODUCTS[0];
+  const estimatedHoursSaved = Math.round(annualFilings * 12.5);
+  const estimatedCostSavings = Math.round(estimatedHoursSaved * hourlyRate * 0.45);
+  const estimatedProsecutionSpeedup = Math.min(48, Math.round(20 + (annualFilings * 0.3)));
+
+  // Lead-Gen & Trial Modal State
+  const [isTrialModalOpen, setIsTrialModalOpen] = useState(false);
+  const [selectedProductForTrial, setSelectedProductForTrial] = useState('LexisNexis® Complete IP Suite');
+  const [trialFormSubmitted, setTrialFormSubmitted] = useState(false);
+  const [trialFormData, setTrialFormData] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    company: (user as any)?.company || '',
+    role: (user as any)?.role || '',
+    notes: '',
+    selectedProducts: ['PatentSight+™', 'PatentAdvisor®', 'TotalPatent One®']
+  });
+
+  const openTrialModal = (productName = 'LexisNexis® Complete IP Suite') => {
+    setSelectedProductForTrial(productName);
+    setTrialFormSubmitted(false);
+    setIsTrialModalOpen(true);
   };
 
-  const currentUnitStats = artUnitData[artUnit] || artUnitData['2100'];
-  const computedScore = Math.min(100, Math.round((portfolioPatents * 0.85) * (citationRatio * 1.2)));
-
-  const handleSearch = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    setIsSearching(true);
-    
-    setTimeout(() => {
-      if (!patentQuery.trim()) {
-        setSearchResults(PRELOADED_PATENTS);
-      } else {
-        const q = patentQuery.toLowerCase();
-        const matched = PRELOADED_PATENTS.filter(p => 
-          p.title.toLowerCase().includes(q) || 
-          p.patentNumber.toLowerCase().includes(q) || 
-          p.assignee.toLowerCase().includes(q) ||
-          p.techField.toLowerCase().includes(q)
-        );
-
-        if (matched.length > 0) {
-          setSearchResults(matched);
-        } else {
-          const dynamicResult: PatentRecord = {
-            id: String(Date.now()),
-            patentNumber: `US${Math.floor(11000000 + Math.random() * 8000000)}B2`,
-            title: patentQuery.length > 3 ? `Methods and Computing Systems for ${patentQuery.toUpperCase()}` : 'Distributed Edge Intelligence and Patent Analytics System',
-            assignee: patentQuery.length > 2 ? `${patentQuery.charAt(0).toUpperCase() + patentQuery.slice(1)} Global Innovations LLC` : 'Global Tech Assignee',
-            filingDate: 'Mar 11, 2023',
-            grantDate: 'Apr 18, 2024',
-            status: 'Active / Granted',
-            jurisdiction: 'United States (USPTO)',
-            assetIndexScore: Math.floor(82 + Math.random() * 16),
-            shepardsSignal: 'positive',
-            techField: 'Computer Science & Intellectual Property',
-            abstract: `Disclosed are architectures and machine learning systems for automated ${patentQuery} processing, real-time citation analysis, and multi-tenant ledger synchronization with high resilience.`,
-            citationsCount: Math.floor(45 + Math.random() * 140),
-            claimsCount: Math.floor(18 + Math.random() * 16),
-            examinerArtUnit: `Art Unit ${artUnit}`
-          };
-          setSearchResults([dynamicResult, ...PRELOADED_PATENTS]);
-        }
-      }
-      setIsSearching(false);
-      setActiveTab('search');
-    }, 350);
+  const handleTrialSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setTrialFormSubmitted(true);
   };
 
-  const handleQuickChip = (keyword: string) => {
-    setPatentQuery(keyword);
-    setIsSearching(true);
-    setTimeout(() => {
-      const q = keyword.toLowerCase();
-      const matched = PRELOADED_PATENTS.filter(p => 
-        p.title.toLowerCase().includes(q) || 
-        p.patentNumber.toLowerCase().includes(q) || 
-        p.assignee.toLowerCase().includes(q)
-      );
-      setSearchResults(matched.length > 0 ? matched : PRELOADED_PATENTS);
-      setIsSearching(false);
-      setActiveTab('search');
-    }, 250);
+  const toggleProductSelection = (prod: string) => {
+    setTrialFormData(prev => ({
+      ...prev,
+      selectedProducts: prev.selectedProducts.includes(prod)
+        ? prev.selectedProducts.filter(p => p !== prod)
+        : [...prev.selectedProducts, prod]
+    }));
   };
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-28 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen bg-[#f3f4f6] dark:bg-[#0b0f19] text-gray-900 dark:text-gray-100 font-sans pb-24 transition-colors">
       
-      {/* ─── HERO COMMAND SUITE (LIGHT & DARK THEMED) ──────────────────── */}
-      <div className="relative overflow-hidden rounded-[32px] border border-blue-200/80 dark:border-blue-500/20 bg-gradient-to-br from-blue-50/90 via-indigo-50/60 to-purple-50/50 dark:from-[#0a1226] dark:via-[#0d1630] dark:to-[#080d1a] p-7 md:p-10 shadow-xl dark:shadow-2xl mb-8 backdrop-blur-xl">
+      {/* ─── MAIN WRAPPER ─────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
         
-        {/* Glow Spheres */}
-        <div className="absolute -right-16 -top-16 h-80 w-80 rounded-full bg-blue-500/15 dark:bg-blue-600/15 blur-[90px] pointer-events-none" />
-        <div className="absolute -left-16 bottom-0 h-80 w-80 rounded-full bg-indigo-500/15 dark:bg-indigo-600/15 blur-[90px] pointer-events-none" />
-        
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-blue-200/60 dark:border-white/[0.08]">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-600/10 dark:bg-blue-500/10 border border-blue-600/20 dark:border-blue-400/25 text-blue-700 dark:text-blue-400 text-[11px] font-extrabold uppercase tracking-widest mb-4 backdrop-blur-md shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse" />
-              Global IP Intelligence Backbone • LexisNexis® IP Suite
+        {/* ─── HERO CO-BRANDED PARTNER BANNER ───────────────────────── */}
+        <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-md overflow-hidden mb-8 relative">
+          
+          {/* Top Brand Rainbow Accent Strip */}
+          <div className="h-2.5 w-full bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8]" />
+
+          {/* Ambient Background Glows */}
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#5a32fa]/5 dark:bg-[#5a32fa]/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#ff90e8]/5 dark:bg-[#ff90e8]/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="p-6 sm:p-10 lg:p-12 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              
+              {/* Left 7 Columns: Co-Branded Header & Value Props */}
+              <div className="lg:col-span-7 space-y-6">
+                
+                {/* Partnership Badges & Trust Lockup */}
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] text-xs font-extrabold border border-[#5a32fa]/20 shadow-xs">
+                    <Sparkles size={14} className="text-[#5a32fa] dark:text-[#ff90e8]" />
+                    <span>Official Global IP Intelligence Partner</span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Active Member Benefit</span>
+                  </div>
+                </div>
+
+                {/* Main Headline */}
+                <div className="space-y-2">
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-[1.15]">
+                    LexisNexis® <span className="bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] bg-clip-text text-transparent">IP Intelligence Hub</span>
+                  </h1>
+                  <p className="text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-200">
+                    Institutional Patent Analytics, Prosecution Predictability & Portfolio Valuation for WIPA Members.
+                  </p>
+                </div>
+
+                {/* Description */}
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-normal">
+                  Through our strategic institutional partnership with <strong>LexisNexis® IP Solutions</strong>, verified WIPA practitioners and member firms receive direct VIP access to the world&apos;s leading patent search, examiner analytics, and portfolio valuation tools with exclusive preferred benefits.
+                </p>
+
+                {/* Quick Value Pillars */}
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-gray-700 dark:text-gray-300 pt-1">
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 size={16} className="text-[#00d26a]" /> 30-Day Full Guided Trial
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 size={16} className="text-[#00d26a]" /> Exclusive 20% Firm Discount
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 size={16} className="text-[#00d26a]" /> Shepard&apos;s® Verified Signals
+                  </span>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap items-center gap-3 pt-3">
+                  <button
+                    onClick={() => openTrialModal('LexisNexis® Complete IP Suite 30-Day Access')}
+                    className="px-7 py-3.5 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#5a32fa]/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  >
+                    <Sparkles size={16} /> Claim 30-Day WIPA VIP Pass
+                  </button>
+
+                  <button
+                    onClick={() => openTrialModal('Enterprise Law Firm Demo & Pricing Consultation')}
+                    className="px-6 py-3.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    <Building2 size={16} className="text-[#5a32fa] dark:text-[#ff90e8]" /> Book Enterprise Demo
+                  </button>
+                </div>
+
+              </div>
+
+              {/* Right 5 Columns: Digital VIP Member Access Pass Card */}
+              <div className="lg:col-span-5 w-full">
+                <div className="relative rounded-3xl bg-gradient-to-br from-gray-900 via-slate-900 to-[#151c2c] text-white p-6 sm:p-7 shadow-xl border border-gray-700/80 overflow-hidden">
+                  
+                  {/* Card Glowing Accents */}
+                  <div className="absolute -top-12 -right-12 w-44 h-44 bg-[#5a32fa]/30 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-[#ff90e8]/20 rounded-full blur-2xl pointer-events-none" />
+
+                  <div className="relative z-10 space-y-5">
+                    
+                    {/* Pass Header Lockup */}
+                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-black text-lg shadow-md">
+                          LN
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#ff90e8]">
+                            WIPA VIP Access Pass
+                          </div>
+                          <div className="text-base font-black text-white">
+                            LexisNexis® IP Suite
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-2 rounded-xl bg-white/10 border border-white/15">
+                        <ShieldCheck size={22} className="text-[#00d26a]" />
+                      </div>
+                    </div>
+
+                    {/* Member Pass Metadata */}
+                    <div className="space-y-2.5 text-xs">
+                      <div className="flex items-center justify-between text-gray-300">
+                        <span>Pass Reference:</span>
+                        <span className="font-mono font-bold text-white bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/10">
+                          LN-WIPA-2026-VIP
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-gray-300">
+                        <span>Member Privilege:</span>
+                        <span className="font-bold text-emerald-400">Exclusive 20% Firm Discount</span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-gray-300">
+                        <span>Trial Duration:</span>
+                        <span className="font-bold text-[#ff90e8]">30 Days Guided Access</span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-gray-300">
+                        <span>Status:</span>
+                        <span className="inline-flex items-center gap-1 font-bold text-[#00d26a]">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#00d26a] animate-pulse" /> Verified Eligible
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Included Solutions Chips */}
+                    <div className="pt-2 border-t border-white/10 space-y-2">
+                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">
+                        Included Suite Products:
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 text-[11px]">
+                        {['PatentSight+™', 'PatentAdvisor®', 'TotalPatent One®', 'IPlytics™', 'PatentOptimizer®'].map((p) => (
+                          <span key={p} className="px-2.5 py-1 rounded-lg bg-white/10 text-white font-semibold border border-white/10">
+                            {p}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Action Button inside Pass */}
+                    <button
+                      onClick={() => openTrialModal('LexisNexis® Complete IP Suite 30-Day VIP Pass')}
+                      className="w-full py-3 rounded-full bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] hover:opacity-95 text-white font-extrabold text-xs shadow-lg shadow-[#5a32fa]/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                    >
+                      <Sparkles size={14} /> Activate My 30-Day VIP Pass
+                    </button>
+
+                  </div>
+
+                </div>
+              </div>
+
             </div>
-            
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight mb-3">
-              LexisNexis® <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-sky-300 dark:to-indigo-300 bg-clip-text text-transparent">IP Intelligence Center</span>
-            </h1>
-            
-            <p className="text-slate-600 dark:text-slate-300/90 text-sm md:text-[15px] leading-relaxed font-medium">
-              Institutional patent analytics, examiner prosecution predictions, and portfolio valuation benchmarked across 100+ global patent authorities.
+          </div>
+        </div>
+
+        {/* ─── WIPA MEMBER BENEFITS (3-CARD GRID) ───────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:border-[#5a32fa]/40 transition-all group">
+            <div className="w-11 h-11 rounded-2xl bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] flex items-center justify-center mb-3.5 group-hover:scale-105 transition-transform">
+              <Sparkles size={22} />
+            </div>
+            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5">30-Day Guided Enterprise Trial</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed font-normal">
+              Full enterprise access to PatentSight+™, PatentAdvisor®, and TotalPatent One® with a dedicated LexisNexis onboarding manager to tailor data to your practice.
             </p>
           </div>
 
-          {/* Institutional Trust Badge */}
-          <div className="shrink-0">
-            <div className="p-4 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-blue-200/80 dark:border-white/10 backdrop-blur-xl shadow-md dark:shadow-lg flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/15 to-indigo-500/15 dark:from-blue-500/20 dark:to-indigo-500/20 border border-blue-400/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
-                <Shield size={24} />
-              </div>
-              <div>
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">Institutional Verification</div>
-                <div className="text-sm font-black text-slate-900 dark:text-white">Shepard&apos;s® & PatentSight+™</div>
-                <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Live API Connected • 99.98% Accuracy
-                </div>
-              </div>
+          <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:border-emerald-500/40 transition-all group">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3.5 group-hover:scale-105 transition-transform">
+              <Award size={22} />
             </div>
+            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5">Exclusive 20% Law Firm Discount</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed font-normal">
+              Verified WIPA members and member firms receive institutional preferred rates on all LexisNexis IP software contracts, seat expansions, and API bundles.
+            </p>
+          </div>
+
+          <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:border-purple-500/40 transition-all group">
+            <div className="w-11 h-11 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3.5 group-hover:scale-105 transition-transform">
+              <ShieldCheck size={22} />
+            </div>
+            <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5">Certified Specialist Credential</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed font-normal">
+              Complete co-branded WIPA × LexisNexis CLE masterclasses to display the verified <em>LexisNexis® Certified IP Specialist</em> badge directly on your profile.
+            </p>
           </div>
         </div>
 
-        {/* Search Command Bar */}
-        <form onSubmit={handleSearch} className="mt-7 relative z-10 max-w-4xl">
-          <div className="relative flex items-center rounded-2xl bg-white dark:bg-white/[0.07] border border-slate-300/90 dark:border-white/15 p-1.5 backdrop-blur-xl shadow-lg dark:shadow-2xl focus-within:border-blue-500 focus-within:ring-3 focus-within:ring-blue-500/20 transition-all">
-            <div className="pl-4 text-slate-400 dark:text-slate-400">
-              <Search size={20} />
-            </div>
-            
-            <input 
-              type="text"
-              value={patentQuery}
-              onChange={(e) => setPatentQuery(e.target.value)}
-              placeholder="Search 142M+ global patents by publication number, assignee (e.g. US11847290B2, Apple, Qualcomm, Tesla)..."
-              className="w-full bg-transparent px-4 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 text-sm font-medium focus:outline-none"
-            />
-            
-            <button 
-              type="submit"
-              disabled={isSearching}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-black transition-all shadow-md shadow-blue-500/20 flex items-center gap-2 cursor-pointer shrink-0 disabled:opacity-50 active:scale-95"
-            >
-              {isSearching ? <RefreshCw size={14} className="animate-spin" /> : <Search size={14} />}
-              <span>Analyze Patent</span>
-            </button>
-          </div>
-
-          {/* Quick Filter Chips */}
-          <div className="flex items-center gap-2 mt-3.5 overflow-x-auto no-scrollbar text-xs">
-            <span className="text-slate-500 dark:text-slate-400 text-[11px] font-bold uppercase tracking-wider shrink-0 mr-1">Quick Search:</span>
-            {['Apple Neural Engine', 'Qualcomm 5G', 'Tesla Solid-State', 'OpenAI Multi-Modal', 'CRISPR Gene'].map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => handleQuickChip(tag)}
-                className="px-3 py-1.5 rounded-lg bg-white/80 dark:bg-white/[0.05] hover:bg-blue-50 dark:hover:bg-blue-600/20 border border-slate-200 dark:border-white/10 hover:border-blue-400/40 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-white text-xs font-semibold transition-all shrink-0 cursor-pointer shadow-xs"
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        </form>
-      </div>
-
-      {/* ─── KPI METRIC METERS (LIGHT & DARK THEMED) ──────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {[
-          { label: 'Indexed Global Patents', val: '142.8M+', change: '+180K this week', icon: Globe, color: 'text-blue-600 dark:text-blue-400', bg: 'from-blue-500/5 dark:from-blue-500/10 to-transparent' },
-          { label: 'Patent Authorities', val: '100+', change: 'Full-text & Citations', icon: Layers, color: 'text-purple-600 dark:text-purple-400', bg: 'from-purple-500/5 dark:from-purple-500/10 to-transparent' },
-          { label: 'USPTO Art Unit Coverage', val: '99.4%', change: 'Examiner analytics live', icon: Activity, color: 'text-emerald-600 dark:text-emerald-400', bg: 'from-emerald-500/5 dark:from-emerald-500/10 to-transparent' },
-          { label: 'Active Standard SEPs', val: '340,000+', change: '5G, 6G & AI Radar', icon: Cpu, color: 'text-amber-600 dark:text-amber-400', bg: 'from-amber-500/5 dark:from-amber-500/10 to-transparent' }
-        ].map((kpi, idx) => {
-          const Icon = kpi.icon;
-          return (
-            <div 
-              key={idx} 
-              className={`p-5 rounded-2xl bg-gradient-to-b ${kpi.bg} bg-white dark:bg-[#0f1527]/80 border border-slate-200/90 dark:border-white/[0.08] shadow-sm dark:shadow-none backdrop-blur-xl`}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wide">{kpi.label}</span>
-                <div className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200/60 dark:border-white/10">
-                  <Icon size={16} className={kpi.color} />
-                </div>
+        {/* ─── INTERACTIVE PRODUCT COCKPIT & SHOWCASE ───────────────── */}
+        <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 sm:p-8 mb-10">
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-gray-100 dark:border-gray-800">
+            <div>
+              <div className="inline-flex items-center gap-1 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] mb-1">
+                <Compass size={14} /> Interactive Solutions Explorer
               </div>
-              <div className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">{kpi.val}</div>
-              <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
-                <TrendingUp size={12} /> {kpi.change}
-              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                Explore the LexisNexis® IP Suite
+              </h2>
             </div>
-          );
-        })}
-      </div>
-
-      {/* ─── MODULE TABS BAR (LIGHT & DARK THEMED) ───────────────────── */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-200/70 dark:bg-[#0c1222] border border-slate-300/70 dark:border-white/[0.08] mb-6 overflow-x-auto no-scrollbar shadow-inner">
-        {[
-          { id: 'search', label: 'Patent Search Dossiers', icon: FileText, count: searchResults.length },
-          { id: 'landscape', label: 'Patent Landscape Visualizer', icon: Globe },
-          { id: 'advisor', label: 'PatentAdvisor® Prosecution Predictor', icon: Activity },
-          { id: 'benchmark', label: 'Patent Asset Index™ Benchmark', icon: BarChart3 },
-          { id: 'seps', label: 'IPlytics™ SEP & Frontier Tech Radar', icon: Cpu }
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                isActive 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20' 
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/5'
-              }`}
-            >
-              <Icon size={15} />
-              <span>{tab.label}</span>
-              {tab.count !== undefined && (
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                  isActive ? 'bg-white/20 text-white' : 'bg-slate-300/80 dark:bg-white/10 text-slate-800 dark:text-slate-300'
-                }`}>
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* ─── TAB CONTENT 1: Patent Search Dossiers ──────────────────── */}
-      {activeTab === 'search' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
-              Showing {searchResults.length} verified patent records from LexisNexis TotalPatent One®
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+              Click any solution below to preview capabilities
             </span>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-3 py-1 rounded-full shadow-xs">
-              <CheckCircle2 size={13} /> 100% Shepard&apos;s® Validated
-            </div>
           </div>
 
-          <div className="space-y-4">
-            {searchResults.map((patent) => (
-              <div 
-                key={patent.id}
-                className="p-6 rounded-3xl bg-white dark:bg-[#0f1424]/90 border border-slate-200/90 dark:border-white/[0.08] shadow-sm dark:shadow-none hover:shadow-xl transition-all hover:border-blue-500/50 group backdrop-blur-xl"
-              >
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                  
-                  {/* Left Column: Patent Info */}
-                  <div className="space-y-3 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-3 py-1 rounded-lg bg-blue-600 text-white font-mono font-black text-xs tracking-wider shadow-sm">
-                        {patent.patentNumber}
-                      </span>
-                      <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 text-xs font-bold flex items-center gap-1">
-                        <CheckCircle2 size={12} /> {patent.status}
-                      </span>
-                      <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 text-xs font-semibold border border-slate-200 dark:border-white/5">
-                        {patent.jurisdiction}
-                      </span>
-                      <span className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold">
-                        {patent.examinerArtUnit}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
-                      {patent.title}
-                    </h3>
-
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                      <span>Assignee: <strong className="text-slate-900 dark:text-white font-bold">{patent.assignee}</strong></span>
-                      <span>Filed: <strong className="text-slate-800 dark:text-slate-300">{patent.filingDate}</strong></span>
-                      <span>Granted: <strong className="text-slate-800 dark:text-slate-300">{patent.grantDate}</strong></span>
-                    </div>
-
-                    <p className="text-xs text-slate-600 dark:text-slate-300/90 leading-relaxed line-clamp-2">
-                      {patent.abstract}
-                    </p>
-                  </div>
-
-                  {/* Right Column: Asset Index Score & Action Button */}
-                  <div className="flex sm:flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-4 shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-white/5">
-                    <div className="p-3.5 rounded-2xl bg-blue-50/90 dark:bg-blue-950/25 border border-blue-200/80 dark:border-blue-500/20 text-center lg:text-right min-w-[140px] shadow-xs">
-                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">Patent Asset Index™</div>
-                      <div className="text-2xl font-black text-blue-600 dark:text-blue-400 leading-none my-1">
-                        {patent.assetIndexScore} <span className="text-xs font-normal text-slate-400">/ 100</span>
-                      </div>
-                      <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">Top 5% Relevance</div>
-                    </div>
-
-                    <button 
-                      onClick={() => setSelectedPatent(patent)}
-                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-blue-500/20 active:scale-95"
-                    >
-                      <Eye size={14} /> Full Dossier & Claims
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* Interactive Product Selector Tabs */}
+          <div className="flex items-center gap-2 pt-6 pb-6 overflow-x-auto no-scrollbar">
+            {PRODUCTS.map((p) => {
+              const Icon = p.icon;
+              const isSelected = p.id === selectedProductId;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setSelectedProductId(p.id)}
+                  className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#5a32fa] text-white shadow-md shadow-[#5a32fa]/20 scale-102'
+                      : 'bg-gray-100 dark:bg-gray-800/80 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  <Icon size={16} className={isSelected ? 'text-white' : p.accentColor} />
+                  <span>{p.name}</span>
+                </button>
+              );
+            })}
           </div>
-        </div>
-      )}
 
-      {/* ─── MODAL: Full Patent Dossier Dialog ──────────────────────── */}
-      {selectedPatent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="w-full max-w-3xl max-h-[88vh] overflow-y-auto rounded-[32px] bg-white dark:bg-[#0e1426] border border-slate-200 dark:border-white/10 p-6 sm:p-8 shadow-2xl space-y-6 text-slate-900 dark:text-white">
+          {/* Selected Product Interactive Deep-Dive Card */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-4">
             
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-3 py-1 rounded-lg bg-blue-600 text-white font-mono font-black text-xs tracking-wider">
-                    {selectedPatent.patentNumber}
+            {/* Left 7 Columns: Product Details & Features */}
+            <div className="lg:col-span-7 space-y-5">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] text-xs font-extrabold border border-[#5a32fa]/20">
+                    {activeProduct.category}
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold flex items-center gap-1">
-                    <CheckCircle2 size={12} /> Shepard&apos;s® Positive Treatment
+                  <span className="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold">
+                    {activeProduct.badge}
                   </span>
                 </div>
-                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white leading-snug">
-                  {selectedPatent.title}
-                </h2>
+                <h3 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white leading-snug">
+                  {activeProduct.tagline}
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {activeProduct.description}
+                </p>
               </div>
-              <button 
-                onClick={() => setSelectedPatent(null)}
-                className="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-colors"
-              >
-                <X size={18} />
-              </button>
-            </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 text-xs">
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold">Assignee</span>
-                <span className="font-bold text-slate-900 dark:text-white">{selectedPatent.assignee}</span>
-              </div>
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold">Forward Citations</span>
-                <span className="font-bold text-blue-600 dark:text-blue-400">{selectedPatent.citationsCount} verified</span>
-              </div>
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold">Claim Count</span>
-                <span className="font-bold text-purple-600 dark:text-purple-400">{selectedPatent.claimsCount} claims</span>
-              </div>
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold">Asset Index</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">{selectedPatent.assetIndexScore}/100</span>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Abstract & Technological Context</h4>
-              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10">
-                {selectedPatent.abstract}
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Representative Claim 1 (PatentOptimizer™ Validated)</h4>
-              <div className="text-xs font-mono text-slate-800 dark:text-slate-200 leading-relaxed p-4 rounded-2xl bg-slate-100 dark:bg-black/50 border border-slate-200 dark:border-white/10">
-                1. An on-device machine learning execution system comprising: a multi-core tensor array; a plurality of weight storage registers coupled to a dedicated cache hierarchy; wherein the processor dynamically skips zero-valued weight computations via an asynchronous sparsity decoder.
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
-              <button 
-                onClick={() => alert(`Intelligence Dossier for ${selectedPatent.patentNumber} downloaded successfully.`)}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md cursor-pointer"
-              >
-                <Download size={14} /> Export LexisNexis Due Diligence (.PDF)
-              </button>
-              <button 
-                onClick={() => setSelectedPatent(null)}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── TAB CONTENT 2: Patent Landscape Visualizer ─────────────── */}
-      {activeTab === 'landscape' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            {/* Main Interactive Landscape Chart */}
-            <div className="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-[#0f1424]/90 border border-slate-200/90 dark:border-white/[0.08] shadow-sm dark:shadow-none backdrop-blur-xl">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-base font-black text-slate-900 dark:text-white">
-                    Global Patent Filing Velocity by Technology Sector
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">TotalPatent One® Global Index 2024–2026</p>
+              {/* Key Features Checklist */}
+              <div className="space-y-2.5 pt-2">
+                <div className="text-xs font-extrabold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  Core Capabilities & Workflow Impact:
                 </div>
-                <span className="text-[11px] font-bold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-1 rounded-lg border border-blue-200 dark:border-blue-800">
-                  Live Feed
-                </span>
-              </div>
-
-              {/* Bar Chart Simulation */}
-              <div className="space-y-4">
-                {[
-                  { sector: 'Generative AI & LLM Architecture', count: '142,500 filings', pct: 92, growth: '+44.2%' },
-                  { sector: 'Semiconductor Fabrication (EUV / 2nm)', count: '98,400 filings', pct: 76, growth: '+28.6%' },
-                  { sector: 'Autonomous EV & Solid-State Batteries', count: '84,100 filings', pct: 65, growth: '+19.8%' },
-                  { sector: 'Biotech & CRISPR-Cas Therapeutics', count: '62,800 filings', pct: 52, growth: '+15.4%' },
-                  { sector: 'Quantum Computing & Cryptography', count: '31,200 filings', pct: 34, growth: '+51.3%' }
-                ].map((item, i) => (
-                  <div key={i} className="space-y-1.5">
-                    <div className="flex justify-between text-xs font-semibold">
-                      <span className="text-slate-800 dark:text-slate-200">{item.sector}</span>
-                      <span className="text-slate-500 dark:text-slate-400">{item.count} <strong className="text-emerald-600 dark:text-emerald-500 ml-1">{item.growth}</strong></span>
-                    </div>
-                    <div className="w-full h-3 rounded-full bg-slate-100 dark:bg-white/5 overflow-hidden border border-slate-200/50 dark:border-transparent">
-                      <div 
-                        className="h-full rounded-full bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500" 
-                        style={{ width: `${item.pct}%` }} 
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Jurisdiction Breakdown */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-[#0f1424]/90 border border-slate-200/90 dark:border-white/[0.08] shadow-sm dark:shadow-none backdrop-blur-xl flex flex-col justify-between">
-              <div>
-                <h3 className="text-base font-black text-slate-900 dark:text-white mb-1">Top Filing Authorities</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Global patent distribution share</p>
-
-                <div className="space-y-3">
-                  {[
-                    { authority: 'USPTO (United States)', share: '38.4%', trend: 'Strong Grant Rate' },
-                    { authority: 'EPO (Europe)', share: '24.1%', trend: 'Unitary Patent Surge' },
-                    { authority: 'CNIPA (China)', share: '21.5%', trend: 'Domestic Volume High' },
-                    { authority: 'JPO (Japan)', share: '10.2%', trend: 'Precision Engineering' },
-                    { authority: 'WIPO (PCT International)', share: '5.8%', trend: 'Global Expansion' }
-                  ].map((auth, idx) => (
-                    <div key={idx} className="p-3 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 flex items-center justify-between">
-                      <div>
-                        <div className="text-xs font-bold text-slate-900 dark:text-white">{auth.authority}</div>
-                        <div className="text-[10px] text-slate-500">{auth.trend}</div>
-                      </div>
-                      <div className="text-xs font-black text-blue-600 dark:text-blue-400">{auth.share}</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {activeProduct.keyFeatures.map((feat, idx) => (
+                    <div key={idx} className="flex items-start gap-2.5 p-3 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-xs text-gray-800 dark:text-gray-200">
+                      <CheckCircle2 size={16} className="text-[#00d26a] shrink-0 mt-0.5" />
+                      <span className="font-medium leading-snug">{feat}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10">
-                <button 
-                  onClick={() => alert('Exporting Global Landscape Report PDF...')}
-                  className="w-full py-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200/60 dark:border-transparent"
+              {/* Law Firm Use Case Box */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-[#5a32fa]/5 via-[#ff90e8]/5 to-transparent border border-[#5a32fa]/20 text-xs space-y-1">
+                <span className="font-bold text-[#5a32fa] dark:text-[#ff90e8] flex items-center gap-1">
+                  <Star size={13} /> Recommended Practice Workflow:
+                </span>
+                <p className="text-gray-700 dark:text-gray-300 font-medium leading-relaxed">
+                  {activeProduct.useCase}
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  onClick={() => openTrialModal(`${activeProduct.name} 30-Day VIP Trial`)}
+                  className="px-6 py-3 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#5a32fa]/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                 >
-                  <Download size={13} /> Export Global Landscape Report (.PDF)
+                  <Sparkles size={15} /> Request {activeProduct.name} Trial
+                </button>
+
+                <button
+                  onClick={() => openTrialModal(`${activeProduct.name} Live Enterprise Demo`)}
+                  className="px-5 py-3 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <Laptop size={15} /> Schedule Walkthrough
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* ─── TAB CONTENT 3: PatentAdvisor Prosecution Predictor ─────── */}
-      {activeTab === 'advisor' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 p-6 rounded-3xl bg-white dark:bg-[#0f1424]/90 border border-slate-200/90 dark:border-white/[0.08] shadow-sm dark:shadow-none backdrop-blur-xl">
-            <h3 className="text-base font-black text-slate-900 dark:text-white mb-2">Prosecution Simulator</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Select USPTO Art Unit to simulate examiner tendencies & allowance metrics.</p>
+            {/* Right 5 Columns: Live Metric Ticker & Interactive Diagnostic Preview */}
+            <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
+              
+              {/* Product KPI Stats Box */}
+              <div className="p-6 rounded-3xl bg-gray-50 dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700/80 space-y-4">
+                <div className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  Institutional Intelligence Metrics
+                </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">USPTO Tech Center / Art Unit</label>
-                <select 
-                  value={artUnit} 
-                  onChange={(e) => setArtUnit(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-semibold focus:outline-none text-slate-900 dark:text-white"
-                >
-                  <option value="2100">TC 2100: Computer Architecture & Software</option>
-                  <option value="2600">TC 2600: Communications & Networking</option>
-                  <option value="1600">TC 1600: Biotechnology & Organic Chemistry</option>
-                  <option value="2800">TC 2800: Semiconductors & Optics</option>
-                  <option value="3700">TC 3700: Mechanical & Medical Devices</option>
-                </select>
+                <div className="space-y-3">
+                  {activeProduct.metrics.map((m, mIdx) => (
+                    <div key={mIdx} className="flex items-center justify-between p-3 rounded-2xl bg-white dark:bg-[#151c2c] border border-gray-200/80 dark:border-gray-700 shadow-xs">
+                      <span className="text-xs text-gray-600 dark:text-gray-300 font-semibold">{m.label}</span>
+                      <span className="text-sm font-black text-[#5a32fa] dark:text-[#ff90e8]">{m.value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/40">
-                <div className="flex items-center gap-2 text-xs font-bold text-blue-700 dark:text-blue-300 mb-1">
-                  <Shield size={14} /> PatentAdvisor® ETA Metric
+              {/* Interactive Law Firm ROI Diagnostic Teaser */}
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-[#5a32fa] to-[#4a24db] text-white shadow-lg space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-extrabold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full">
+                    Practice ROI Impact
+                  </span>
+                  <Zap size={16} className="text-yellow-300" />
                 </div>
-                <p className="text-[11px] text-blue-900/80 dark:text-blue-200/80 leading-relaxed">
-                  Examiner Time Allocation (ETA) predicts likelihood of grant based on examiner difficulty quartile ({currentUnitStats.difficulty}).
+                <h4 className="text-base font-extrabold">Accelerate Patent Grant Times</h4>
+                <p className="text-xs text-white/90 leading-relaxed font-normal">
+                  Law firms leveraging LexisNexis® IP solutions experience up to <strong>35% faster prosecution</strong> and reduce unnecessary RCE filing costs.
                 </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-[#0f1424]/90 border border-slate-200/90 dark:border-white/[0.08] shadow-sm dark:shadow-none backdrop-blur-xl space-y-6">
-            <div>
-              <h3 className="text-base font-black text-slate-900 dark:text-white mb-1">
-                Art Unit {artUnit} Prosecution Analytics
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Benchmarked against 45,000+ historical applications</p>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/40 text-center">
-                <div className="text-xs font-bold text-emerald-800 dark:text-emerald-300">Average Allowance Rate</div>
-                <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400 my-1">{currentUnitStats.allowance}</div>
-                <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">{currentUnitStats.difficulty}</div>
+                <button
+                  onClick={() => openTrialModal('Custom Law Firm ROI & Pricing Assessment')}
+                  className="w-full py-2.5 rounded-full bg-white text-[#5a32fa] font-extrabold text-xs hover:bg-gray-50 transition-colors shadow-sm cursor-pointer"
+                >
+                  Request Firm ROI Assessment →
+                </button>
               </div>
 
-              <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-800/40 text-center">
-                <div className="text-xs font-bold text-blue-800 dark:text-blue-300">Avg. Office Actions</div>
-                <div className="text-3xl font-black text-blue-600 dark:text-blue-400 my-1">{currentUnitStats.oaCount}</div>
-                <div className="text-[10px] text-blue-700 dark:text-blue-400 font-semibold">Before Notice of Allowance</div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/40 text-center">
-                <div className="text-xs font-bold text-purple-800 dark:text-purple-300">Time to Grant</div>
-                <div className="text-3xl font-black text-purple-600 dark:text-purple-400 my-1">{currentUnitStats.timeToGrant}</div>
-                <div className="text-[10px] text-purple-700 dark:text-purple-400 font-semibold">From Initial Filing</div>
-              </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 space-y-2">
-              <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Recommended Prosecution Strategy (PatentOptimizer™):</h4>
-              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                {currentUnitStats.tip}
-              </p>
-            </div>
           </div>
         </div>
-      )}
 
-      {/* ─── TAB CONTENT 4: Patent Asset Index Benchmark ───────────── */}
-      {activeTab === 'benchmark' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0f1424]/90 border border-slate-200/90 dark:border-white/[0.08] shadow-sm dark:shadow-none backdrop-blur-xl space-y-5">
+        {/* ─── INTERACTIVE LAW FIRM SAVINGS CALCULATOR ──────────────── */}
+        <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 sm:p-8 mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h3 className="text-base font-black text-slate-900 dark:text-white mb-1">Portfolio Diagnostic</h3>
-              <p className="text-xs text-slate-500">Calculate Patent Asset Index™ competitive strength.</p>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-bold mb-1">
-                <span className="text-slate-700 dark:text-slate-300">Active Patent Families:</span>
-                <span className="text-blue-600 dark:text-blue-400">{portfolioPatents} families</span>
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] mb-1">
+                <Sliders size={14} /> Interactive Law Firm Value Calculator
               </div>
-              <input 
-                type="range" 
-                min="5" 
-                max="250" 
-                value={portfolioPatents} 
-                onChange={(e) => setPortfolioPatents(Number(e.target.value))}
-                className="w-full cursor-pointer accent-blue-600"
-              />
+              <h3 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
+                Estimate Your Firm&apos;s Annual Efficiency Gain
+              </h3>
             </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-bold mb-1">
-                <span className="text-slate-700 dark:text-slate-300">Forward Citation Multiplier:</span>
-                <span className="text-purple-600 dark:text-purple-400">{citationRatio}x Industry Avg</span>
-              </div>
-              <input 
-                type="range" 
-                min="0.5" 
-                max="3.0" 
-                step="0.1" 
-                value={citationRatio} 
-                onChange={(e) => setCitationRatio(Number(e.target.value))}
-                className="w-full cursor-pointer accent-purple-600"
-              />
-            </div>
-
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-950 border border-indigo-500/20 text-white text-center shadow-md">
-              <div className="text-xs font-medium text-slate-300">Simulated Patent Asset Index™</div>
-              <div className="text-4xl font-black text-blue-300 my-1">{computedScore} <span className="text-sm font-normal text-slate-400">/ 100</span></div>
-              <div className="text-[11px] text-emerald-400 font-semibold">
-                {computedScore > 75 ? 'Top 10% Industry Leadership' : computedScore > 50 ? 'Above Average Relevance' : 'Developing Portfolio'}
-              </div>
-            </div>
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+              Adjust sliders below based on your filing volume
+            </span>
           </div>
 
-          <div className="lg:col-span-2 p-6 rounded-3xl bg-white dark:bg-[#0f1424]/90 border border-slate-200/90 dark:border-white/[0.08] shadow-sm dark:shadow-none backdrop-blur-xl space-y-6">
-            <div>
-              <h3 className="text-base font-black text-slate-900 dark:text-white mb-1">Competitive Impact Quadrant</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Benchmarked against global Fortune 500 patent holders</p>
-            </div>
-
-            <div className="relative h-64 w-full rounded-2xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 flex items-center justify-center p-6 overflow-hidden">
-              <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
-                <div className="border-r border-b border-dashed border-slate-300 dark:border-white/10 p-2 text-[10px] font-bold text-slate-400">High Relevance / High Impact (Leaders)</div>
-                <div className="border-b border-dashed border-slate-300 dark:border-white/10 p-2 text-[10px] font-bold text-slate-400">High Volume / Moderate Impact</div>
-                <div className="border-r border-dashed border-slate-300 dark:border-white/10 p-2 text-[10px] font-bold text-slate-400">Emerging Innovators</div>
-                <div className="p-2 text-[10px] font-bold text-slate-400">Legacy Portfolios</div>
-              </div>
-
-              {/* Plotted Dot */}
-              <div 
-                className="relative z-10 flex flex-col items-center transition-transform duration-300"
-                style={{ transform: `translate(${(computedScore - 50) * 2.2}px, -${(computedScore - 50) * 1.1}px)` }}
-              >
-                <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-white shadow-lg flex items-center justify-center animate-ping absolute opacity-40" />
-                <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-white shadow-lg flex items-center justify-center relative z-10">
-                  <div className="w-2 h-2 rounded-full bg-white" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left 7 Columns: Sliders */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-bold">
+                  <span className="text-gray-700 dark:text-gray-300">Annual Patent Filings / Active Applications:</span>
+                  <span className="text-[#5a32fa] dark:text-[#ff90e8] text-sm font-black">{annualFilings} applications/yr</span>
                 </div>
-                <span className="text-[10px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full mt-1 shadow-md whitespace-nowrap">
-                  Your Portfolio ({computedScore})
-                </span>
+                <input 
+                  type="range"
+                  min="5"
+                  max="150"
+                  value={annualFilings}
+                  onChange={(e) => setAnnualFilings(Number(e.target.value))}
+                  className="w-full cursor-pointer accent-[#5a32fa]"
+                />
+                <div className="flex justify-between text-[11px] text-gray-400 font-medium">
+                  <span>5 applications</span>
+                  <span>75 applications</span>
+                  <span>150+ applications</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-bold">
+                  <span className="text-gray-700 dark:text-gray-300">Average Associate / Counsel Hourly Rate ($):</span>
+                  <span className="text-purple-600 dark:text-purple-400 text-sm font-black">${hourlyRate} / hr</span>
+                </div>
+                <input 
+                  type="range"
+                  min="250"
+                  max="850"
+                  step="25"
+                  value={hourlyRate}
+                  onChange={(e) => setHourlyRate(Number(e.target.value))}
+                  className="w-full cursor-pointer accent-purple-600"
+                />
+                <div className="flex justify-between text-[11px] text-gray-400 font-medium">
+                  <span>$250/hr</span>
+                  <span>$550/hr</span>
+                  <span>$850/hr</span>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 pt-2">
-              <span>Methodology: <em>Patent Asset Index™ by LexisNexis PatentSight®</em></span>
-              <button 
-                onClick={() => alert('Requesting Corporate Due Diligence Report from LexisNexis IP consulting team...')}
-                className="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer"
+            {/* Right 5 Columns: Calculated Savings Outputs */}
+            <div className="lg:col-span-5 p-6 rounded-3xl bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 space-y-4">
+              <div className="grid grid-cols-2 gap-3 text-center">
+                <div className="p-3.5 rounded-2xl bg-white dark:bg-[#151c2c] border border-gray-200/80 dark:border-gray-700">
+                  <div className="text-[10px] font-bold uppercase text-gray-500 dark:text-gray-400">Prosecution Hours Saved</div>
+                  <div className="text-2xl font-black text-[#5a32fa] dark:text-[#ff90e8] my-0.5">
+                    {estimatedHoursSaved} hrs
+                  </div>
+                  <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Per Year</div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white dark:bg-[#151c2c] border border-gray-200/80 dark:border-gray-700">
+                  <div className="text-[10px] font-bold uppercase text-gray-500 dark:text-gray-400">Estimated Value Gain</div>
+                  <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 my-0.5">
+                    ${(estimatedCostSavings).toLocaleString()}
+                  </div>
+                  <div className="text-[10px] text-gray-500 font-semibold">In Cost Recovery</div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => openTrialModal('Custom Law Firm Efficiency & ROI Consultation')}
+                className="w-full py-3 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
               >
-                Request Full Corporate Due Diligence Report →
+                Apply 20% WIPA Discount to Solution →
               </button>
             </div>
+
           </div>
         </div>
-      )}
 
-      {/* ─── TAB CONTENT 5: IPlytics SEP & Frontier Tech Radar ──────── */}
-      {activeTab === 'seps' && (
-        <div className="p-6 rounded-3xl bg-white dark:bg-[#0f1424]/90 border border-slate-200/90 dark:border-white/[0.08] shadow-sm dark:shadow-none backdrop-blur-xl space-y-6">
-          <div>
-            <h3 className="text-base font-black text-slate-900 dark:text-white mb-1">
-              IPlytics™ Standard Essential Patent (SEP) Intelligence
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Live declarations in 3GPP 5G, 6G, V2X, and IEEE 802.11 standards</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { standard: '5G Standard Essential (3GPP Rel 17/18)', count: '48,200 declarations', leader: 'Qualcomm, Huawei, Ericsson' },
-              { standard: 'V2X Automotive Connected Fleet', count: '14,800 declarations', leader: 'LG Electronics, Samsung, Toyota' },
-              { standard: 'Wi-Fi 7 (IEEE 802.11be Next-Gen)', count: '9,400 declarations', leader: 'Broadcom, Intel, MediaTek' }
-            ].map((sep, idx) => (
-              <div key={idx} className="p-5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 space-y-2">
-                <div className="text-xs font-bold text-slate-900 dark:text-white">{sep.standard}</div>
-                <div className="text-2xl font-black text-blue-600 dark:text-blue-400">{sep.count}</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">Top Assignees: <strong className="text-slate-800 dark:text-slate-200">{sep.leader}</strong></div>
+        {/* ─── CO-BRANDED RESEARCH REPORTS & WHITEPAPERS ─────────────── */}
+        <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 sm:p-8 shadow-sm mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+            <div>
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] mb-1">
+                <BookOpen size={14} /> Knowledge & Thought Leadership
               </div>
-            ))}
+              <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white">
+                LexisNexis® IP Intelligence Research Series
+              </h3>
+            </div>
+            <Link
+              href="/platform/resources/research-reports"
+              className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:underline flex items-center gap-1 shrink-0"
+            >
+              Browse All Research Reports <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-700/80 space-y-2.5 flex flex-col justify-between hover:border-[#5a32fa]/40 transition-all">
+              <div className="space-y-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#5a32fa] dark:text-[#ff90e8]">Global Benchmark</div>
+                <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-snug">
+                  Top 100 Global Innovators: Patent Asset Index™ Benchmark
+                </h4>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-normal">
+                  Evaluating global innovation leaders through science-backed quality and market coverage metrics.
+                </p>
+              </div>
+              <Link
+                href="/platform/resources/research-reports"
+                className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] flex items-center gap-1 hover:underline pt-2"
+              >
+                <Download size={13} /> Download Report (PDF)
+              </Link>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-700/80 space-y-2.5 flex flex-col justify-between hover:border-purple-500/40 transition-all">
+              <div className="space-y-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">Standard Essential Patents</div>
+                <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-snug">
+                  5G & Frontier Tech: SEP Ownership and Licensing Playbook
+                </h4>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-normal">
+                  Comprehensive analysis of standard essential patent declarations across 3GPP and ETSI standards.
+                </p>
+              </div>
+              <Link
+                href="/platform/resources/research-reports"
+                className="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1 hover:underline pt-2"
+              >
+                <Download size={13} /> Download Report (PDF)
+              </Link>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-700/80 space-y-2.5 flex flex-col justify-between hover:border-emerald-500/40 transition-all">
+              <div className="space-y-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Prosecution Analytics</div>
+                <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-snug">
+                  USPTO Examiner Tendencies: Data-Driven Prosecution Strategy
+                </h4>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-normal">
+                  Strategies for navigating difficult examiner art units and streamlining notice of allowances.
+                </p>
+              </div>
+              <Link
+                href="/platform/resources/research-reports"
+                className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 hover:underline pt-2"
+              >
+                <Download size={13} /> Download Report (PDF)
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── CO-BRANDED FOOTER BAR ─────────────────────────────────── */}
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#151c2c] border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+              LN
+            </div>
+            <div>
+              <div className="text-xs font-bold text-gray-900 dark:text-white">LexisNexis® Global IP Intelligence Partner</div>
+              <div className="text-[11px] text-gray-500 dark:text-gray-400">Official Strategic Partner of Women in Intellectual Property Alliance (WIPA)</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link 
+              href="/platform/resources/research-reports" 
+              className="px-5 py-2.5 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-bold transition-colors shrink-0"
+            >
+              Research Library
+            </Link>
+            <button 
+              onClick={() => openTrialModal('LexisNexis® Complete IP Suite 30-Day VIP Pass')}
+              className="px-6 py-2.5 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white text-xs font-bold transition-all shadow-sm shrink-0 cursor-pointer active:scale-95"
+            >
+              Claim 30-Day Pass
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      {/* ─── MODAL: Lead-Gen Trial & Enterprise Access Form ──────────── */}
+      {isTrialModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#151c2c] border border-gray-200 dark:border-gray-800 p-6 sm:p-8 shadow-2xl space-y-6 text-gray-900 dark:text-white">
+            
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#ff90e8] text-xs font-bold uppercase mb-2">
+                  <Sparkles size={13} /> WIPA Member Advantage
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
+                  {trialFormSubmitted ? 'Access Request Confirmed' : 'Claim LexisNexis® VIP Access'}
+                </h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {selectedProductForTrial}
+                </p>
+              </div>
+              <button 
+                onClick={() => setIsTrialModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {trialFormSubmitted ? (
+              <div className="py-6 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto border-2 border-emerald-500/20">
+                  <Check size={32} />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Thank You, {trialFormData.name || 'Counsel'}!</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 max-w-sm mx-auto leading-relaxed font-normal">
+                    Your WIPA partnership access pass has been registered. A LexisNexis IP Solutions Specialist will contact you at <strong>{trialFormData.email}</strong> within 1 business day with your credentials and 20% member discount.
+                  </p>
+                </div>
+                <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 text-left text-xs text-gray-700 dark:text-gray-300 space-y-1 border border-gray-200 dark:border-gray-700">
+                  <div className="font-bold text-[#5a32fa] dark:text-[#ff90e8]">Your Priority Reference:</div>
+                  <div>VIP Pass ID: <span className="font-mono font-bold">WIPA-LN-2026-VIP</span></div>
+                  <div>Selected Solutions: <span className="font-semibold">{trialFormData.selectedProducts.join(', ')}</span></div>
+                </div>
+                <button
+                  onClick={() => setIsTrialModalOpen(false)}
+                  className="w-full py-3 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs transition-colors cursor-pointer"
+                >
+                  Return to Solutions Hub
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleTrialSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Select Solutions of Interest:</label>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    {['PatentSight+™', 'PatentAdvisor®', 'TotalPatent One®', 'IPlytics™ (SEPs)', 'PatentOptimizer®'].map((p) => {
+                      const checked = trialFormData.selectedProducts.includes(p);
+                      return (
+                        <div 
+                          key={p}
+                          onClick={() => toggleProductSelection(p)}
+                          className={`p-2.5 rounded-xl border cursor-pointer font-semibold flex items-center gap-2 transition-all ${
+                            checked 
+                              ? 'bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 border-[#5a32fa] text-[#5a32fa] dark:text-[#ff90e8]' 
+                              : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
+                          }`}
+                        >
+                          <div className={`w-4 h-4 rounded flex items-center justify-center border ${checked ? 'bg-[#5a32fa] border-[#5a32fa] text-white' : 'border-gray-300 dark:border-gray-600'}`}>
+                            {checked && <Check size={12} />}
+                          </div>
+                          <span className="truncate">{p}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Your Full Name</label>
+                    <input 
+                      type="text"
+                      required
+                      value={trialFormData.name}
+                      onChange={(e) => setTrialFormData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Jane Doe, Esq."
+                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Work / Firm Email</label>
+                    <input 
+                      type="email"
+                      required
+                      value={trialFormData.email}
+                      onChange={(e) => setTrialFormData(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="jane@lawfirm.com"
+                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Law Firm / Company</label>
+                    <input 
+                      type="text"
+                      value={trialFormData.company}
+                      onChange={(e) => setTrialFormData(prev => ({ ...prev, company: e.target.value }))}
+                      placeholder="International IP Law LLP"
+                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Practice Role</label>
+                    <input 
+                      type="text"
+                      value={trialFormData.role}
+                      onChange={(e) => setTrialFormData(prev => ({ ...prev, role: e.target.value }))}
+                      placeholder="Partner / Senior IP Counsel"
+                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                    />
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-tight">
+                  By submitting, you authorize LexisNexis® IP Solutions to provision your 30-day guided trial and apply WIPA member preferred pricing.
+                </p>
+
+                <button
+                  type="submit"
+                  className="w-full py-3.5 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs shadow-md transition-all cursor-pointer active:scale-95"
+                >
+                  Activate My 30-Day VIP Pass →
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}
 
-      {/* ─── CO-BRANDED INSTITUTIONAL FOOTER ────────────────────────── */}
-      <div className="mt-12 p-6 rounded-2xl bg-slate-100/90 dark:bg-[#0f1424] border border-slate-200 dark:border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
-        <div className="flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-md">
-            LN
-          </div>
-          <div>
-            <div className="text-xs font-bold text-slate-900 dark:text-white">Official Global Knowledge & Analytics Partner</div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400">Powered by LexisNexis® IP Solutions (PatentSight+, TotalPatent One, PatentAdvisor, IPlytics)</div>
-          </div>
-        </div>
-        <Link 
-          href="/platform/resources/research-reports" 
-          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-colors shrink-0 shadow-sm"
-        >
-          View Research Reports
-        </Link>
-      </div>
     </div>
   );
 }

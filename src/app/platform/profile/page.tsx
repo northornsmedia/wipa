@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { optimizeFeedUpload } from '@/lib/feedPerformance';
 import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
+import { fetchUserAnalytics, UserAnalytics } from '@/lib/analytics';
 import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
 import ImageCropperModal from '@/components/ImageCropperModal';
 
@@ -55,7 +56,17 @@ export default function ProfilePage() {
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [editForm, setEditForm] = useState(profileData);
-  const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0, profileViews: '—', postImpressions: '—' });
+  const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
+  const [analytics, setAnalytics] = useState<UserAnalytics>({
+    profileViews: 0,
+    profileViewsThisWeek: 0,
+    profileViewsGrowth: '0% this week',
+    profileViewsDirection: 'neutral',
+    postImpressions: 0,
+    postImpressionsThisWeek: 0,
+    postImpressionsGrowth: '0% this week',
+    postImpressionsDirection: 'neutral',
+  });
 
   // Post composer state
   const [newPostText, setNewPostText] = useState('');
@@ -140,10 +151,11 @@ export default function ProfilePage() {
       }
       if (!currentUserId) return;
 
-      const [profileResult, connectionsResult, followersResult] = await Promise.all([
+      const [profileResult, connectionsResult, followersResult, analyticsResult] = await Promise.all([
         supabase.from('profiles').select('*, business_profiles(id, name, slug, type, logo_url)').eq('id', currentUserId).maybeSingle(),
         supabase.from('connections').select('id', { count: 'exact', head: true }).or(`requester_id.eq.${currentUserId},recipient_id.eq.${currentUserId}`).eq('status', 'accepted'),
-        supabase.from('follows').select('id', { count: 'exact', head: true }).eq('following_id', currentUserId)
+        supabase.from('follows').select('id', { count: 'exact', head: true }).eq('following_id', currentUserId),
+        fetchUserAnalytics(currentUserId)
       ]);
       
       let data = profileResult.data;
@@ -182,6 +194,9 @@ export default function ProfilePage() {
           connections: connectionsResult?.count ?? 0,
           followers: followersResult?.count ?? 0
         }));
+        if (analyticsResult) {
+          setAnalytics(analyticsResult);
+        }
       }
       fetchUserPosts(currentUserId);
     };
@@ -1306,19 +1321,39 @@ export default function ProfilePage() {
 
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                  <p className="text-xl font-black text-gray-900 dark:text-white">{stats.profileViews}</p>
+                  <p className="text-xl font-black text-gray-900 dark:text-white">
+                    {analytics.profileViews.toLocaleString()}
+                  </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-1">
                     <Eye size={12} /> Profile views
                   </p>
-                  <span className="text-[10px] font-bold text-emerald-600">+18% this week</span>
+                  <span className={`text-[10px] font-bold ${
+                    analytics.profileViewsDirection === 'up' 
+                      ? 'text-emerald-600 dark:text-emerald-400' 
+                      : analytics.profileViewsDirection === 'down'
+                      ? 'text-rose-500'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}>
+                    {analytics.profileViewsGrowth}
+                  </span>
                 </div>
 
                 <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-                  <p className="text-xl font-black text-gray-900 dark:text-white">{stats.postImpressions}</p>
+                  <p className="text-xl font-black text-gray-900 dark:text-white">
+                    {analytics.postImpressions.toLocaleString()}
+                  </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-1">
                     <Sparkles size={12} /> Impressions
                   </p>
-                  <span className="text-[10px] font-bold text-emerald-600">+34% this week</span>
+                  <span className={`text-[10px] font-bold ${
+                    analytics.postImpressionsDirection === 'up' 
+                      ? 'text-emerald-600 dark:text-emerald-400' 
+                      : analytics.postImpressionsDirection === 'down'
+                      ? 'text-rose-500'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}>
+                    {analytics.postImpressionsGrowth}
+                  </span>
                 </div>
               </div>
             </div>

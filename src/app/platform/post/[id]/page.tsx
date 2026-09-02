@@ -8,6 +8,7 @@ import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import ProgressiveFeedImage from '@/components/ProgressiveFeedImage';
 import FormattedPostText from '@/components/FormattedPostText';
 import { supabase } from '@/lib/supabase';
+import { recordPostImpressions } from '@/lib/analytics';
 
 export default function SharedPostPage() {
   const params = useParams<{ id: string }>();
@@ -30,6 +31,9 @@ export default function SharedPostPage() {
       if (active) {
         setPost(data);
         setLoading(false);
+        if (data?.id && data?.author_id) {
+          void recordPostImpressions([{ postId: data.id, authorId: data.author_id }]);
+        }
       }
     };
     if (params.id) void loadPost();

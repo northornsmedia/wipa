@@ -56,6 +56,17 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
     );
   }
 
+  // Record public profile view
+  try {
+    await supabase.rpc('record_profile_view', {
+      p_profile_id: profile.id,
+      p_viewer_id: null,
+      p_session_id: null,
+    });
+  } catch {
+    // Non-blocking
+  }
+
   return (
     <div className="min-h-screen bg-[#f8f9fa] font-sans flex flex-col">
       {/* Top Banner CTA */}

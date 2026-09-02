@@ -22,6 +22,7 @@ import FeedShareSheet from '@/components/FeedShareSheet';
 import FeedQuickComposer from '@/components/FeedQuickComposer';
 import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
 import { optimizeFeedUpload, readCachedFeed, writeCachedFeed } from '@/lib/feedPerformance';
+import { recordPostImpressions } from '@/lib/analytics';
 
 const FEED_PAGE_SIZE = 8;
 
@@ -217,6 +218,13 @@ export default function PlatformPage() {
           });
           return merged;
         });
+
+        if (nextPage.length) {
+          const impressions = nextPage
+            .filter((p: any) => p.id && p.author_id)
+            .map((p: any) => ({ postId: p.id, authorId: p.author_id }));
+          void recordPostImpressions(impressions, user?.id);
+        }
 
         if (user?.id && nextPage.length) {
           const { data: likesData } = await supabase
