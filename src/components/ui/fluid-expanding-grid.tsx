@@ -223,23 +223,20 @@ export function FluidExpandingGrid({
       <div className="w-full flex flex-col items-center">
         <motion.div
           key={PRESIDENT_ITEM.id}
-          layoutId={`card-${PRESIDENT_ITEM.id}`}
           onClick={() => setActiveItem(PRESIDENT_ITEM)}
           className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-2xl w-full max-w-sm sm:max-w-md h-[490px] min-h-[490px] border-2 border-amber-400/40 hover:border-amber-400/80 transition-all hover:shadow-amber-500/10"
-          whileHover={{ scale: 0.985 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          whileHover={{ scale: 0.985, y: -4 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 350, damping: 25 }}
         >
-          <motion.div
-            layoutId={`image-container-${PRESIDENT_ITEM.id}`}
-            className="absolute inset-0 bg-gray-200 dark:bg-gray-800"
-          >
+          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800">
             <img
               src={PRESIDENT_ITEM.image}
               alt={PRESIDENT_ITEM.title}
               className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
-          </motion.div>
+          </div>
 
           {/* Top Badge on Card */}
           <div className="absolute top-4 left-4 z-10">
@@ -249,24 +246,15 @@ export function FluidExpandingGrid({
             </span>
           </div>
 
-          <motion.div 
-            layoutId={`content-${PRESIDENT_ITEM.id}`}
-            className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-end text-white z-10"
-          >
-            <motion.h3 
-              layoutId={`title-${PRESIDENT_ITEM.id}`}
-              className="text-2xl sm:text-3xl font-black mb-1.5 tracking-tight flex items-center gap-2.5"
-            >
+          <div className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-end text-white z-10">
+            <h3 className="text-2xl sm:text-3xl font-black mb-1.5 tracking-tight flex items-center gap-2.5">
               {PRESIDENT_ITEM.flag && <img src={PRESIDENT_ITEM.flag} alt="flag" className="w-7 h-5 object-cover rounded shadow-sm shrink-0" />}
               <span>{PRESIDENT_ITEM.title}</span>
-            </motion.h3>
-            <motion.p 
-              layoutId={`subtitle-${PRESIDENT_ITEM.id}`}
-              className="text-amber-200/95 font-bold text-sm sm:text-base line-clamp-1"
-            >
+            </h3>
+            <p className="text-amber-200/95 font-bold text-sm sm:text-base line-clamp-1">
               {PRESIDENT_ITEM.subtitle}
-            </motion.p>
-          </motion.div>
+            </p>
+          </div>
         </motion.div>
       </div>
 
@@ -289,42 +277,30 @@ export function FluidExpandingGrid({
           {REGIONAL_CHAIRS.map((item) => (
             <motion.div
               key={item.id}
-              layoutId={`card-${item.id}`}
               onClick={() => setActiveItem(item)}
               className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-xl w-full h-[470px] min-h-[470px] border border-gray-200/80 dark:border-white/10 hover:border-pink-500/50 transition-all hover:shadow-pink-500/5"
-              whileHover={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              whileHover={{ scale: 0.98, y: -4 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
             >
-              <motion.div
-                layoutId={`image-container-${item.id}`}
-                className="absolute inset-0 bg-gray-200 dark:bg-gray-800"
-              >
+              <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800">
                 <img
                   src={item.image}
                   alt={item.title}
                   className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-              </motion.div>
+              </div>
 
-              <motion.div 
-                layoutId={`content-${item.id}`}
-                className="absolute inset-0 p-6 flex flex-col justify-end text-white z-10"
-              >
-                <motion.h3 
-                  layoutId={`title-${item.id}`}
-                  className="text-xl md:text-2xl font-bold mb-1.5 tracking-tight flex items-center gap-2.5"
-                >
+              <div className="absolute inset-0 p-6 flex flex-col justify-end text-white z-10">
+                <h3 className="text-xl md:text-2xl font-bold mb-1.5 tracking-tight flex items-center gap-2.5">
                   {item.flag && <img src={item.flag} alt="flag" className="w-6 h-4.5 object-cover rounded-sm shadow-sm shrink-0" />}
                   <span className="truncate">{item.title}</span>
-                </motion.h3>
-                <motion.p 
-                  layoutId={`subtitle-${item.id}`}
-                  className="text-white/80 font-medium text-xs md:text-sm line-clamp-1"
-                >
+                </h3>
+                <p className="text-white/80 font-medium text-xs md:text-sm line-clamp-1">
                   {item.subtitle}
-                </motion.p>
-              </motion.div>
+                </p>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -333,91 +309,79 @@ export function FluidExpandingGrid({
       {/* Expanded Modal Overlay */}
       <AnimatePresence>
         {activeItem && (
-          <>
+          <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4 md:p-10">
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setActiveItem(null)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]"
+              className="fixed inset-0 bg-black/70 backdrop-blur-md"
             />
             
-            <div className="fixed inset-0 flex items-center justify-center z-[9999] p-4 md:p-10 pointer-events-none mt-10 md:mt-0">
-              <motion.div
-                layoutId={`card-${activeItem.id}`}
-                className="w-full max-w-4xl h-[70vh] min-h-[450px] max-h-[600px] bg-white dark:bg-[#0f172a] rounded-[32px] overflow-hidden flex flex-col shadow-2xl pointer-events-auto relative"
+            {/* Modal Dialog */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ type: "spring", damping: 26, stiffness: 340 }}
+              className="w-full max-w-4xl h-[75vh] min-h-[450px] max-h-[620px] bg-white dark:bg-[#0f172a] rounded-[32px] overflow-hidden flex flex-col shadow-2xl z-[9999] relative border border-gray-100 dark:border-white/10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setActiveItem(null)}
+                className="absolute top-4 right-4 z-50 p-2.5 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer shadow-sm"
               >
-                <button
-                  onClick={() => setActiveItem(null)}
-                  className="absolute top-4 right-4 z-50 p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <X size={20} />
-                </button>
+                <X size={20} />
+              </button>
 
-                <div className="w-full h-full p-6 md:p-10 overflow-y-auto bg-white dark:bg-[#0f172a] text-gray-800 dark:text-gray-200 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="w-full h-full p-6 md:p-10 overflow-y-auto bg-white dark:bg-[#0f172a] text-gray-800 dark:text-gray-200 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                
+                {/* Top Header: Small Image + Title */}
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8 pt-4 md:pt-0">
+                  <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden shrink-0 shadow-md border border-gray-100 dark:border-gray-800">
+                    <img
+                      src={activeItem.image}
+                      alt={activeItem.title}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
                   
-                  {/* Top Header: Small Image + Title */}
-                  <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8 pt-4 md:pt-0">
-                    <motion.div
-                      layoutId={`image-container-${activeItem.id}`}
-                      className="relative w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden shrink-0 shadow-md border border-gray-100 dark:border-gray-800"
-                    >
-                      <img
-                        src={activeItem.image}
-                        alt={activeItem.title}
-                        className="w-full h-full object-cover object-top"
-                      />
-                    </motion.div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl md:text-4xl font-extrabold mb-2 text-gray-900 dark:text-white tracking-tight flex items-center gap-3">
+                      {activeItem.flag && <img src={activeItem.flag} alt="flag" className="w-8 h-6 object-cover rounded shadow-sm shrink-0" />}
+                      <span>{activeItem.title}</span>
+                    </h3>
+                    <p className="text-lg md:text-xl font-medium text-[#5a32fa] dark:text-[#ff90e8]">
+                      {activeItem.subtitle}
+                    </p>
                     
-                    <div className="flex-1">
-                      <motion.h3 
-                        layoutId={`title-${activeItem.id}`}
-                        className="text-2xl md:text-4xl font-extrabold mb-2 text-gray-900 dark:text-white tracking-tight flex items-center gap-3"
-                      >
-                        {activeItem.flag && <img src={activeItem.flag} alt="flag" className="w-8 h-6 object-cover rounded shadow-sm shrink-0" />}
-                        {activeItem.title}
-                      </motion.h3>
-                      <motion.p 
-                        layoutId={`subtitle-${activeItem.id}`}
-                        className="text-lg md:text-xl font-medium text-[#5a32fa] dark:text-[#ff90e8]"
-                      >
-                        {activeItem.subtitle}
-                      </motion.p>
-                      
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="flex items-center gap-4 mt-4"
-                      >
-                        <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center text-gray-500 hover:bg-[#0077b5] hover:text-white dark:hover:bg-[#0077b5] dark:text-gray-400 dark:hover:text-white transition-all duration-300">
-                          <LinkedinIcon size={18} />
-                        </a>
-                        <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center text-gray-500 hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-600 hover:text-white dark:hover:text-white transition-all duration-300">
-                          <InstagramIcon size={18} />
-                        </a>
-                        <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center text-gray-500 hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:text-gray-400 dark:hover:text-white transition-all duration-300">
-                          <Mail size={18} />
-                        </a>
-                        <a href="#" className="h-10 px-4 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 hover:bg-[#5a32fa] hover:text-white dark:hover:bg-[#ff90e8] dark:hover:text-gray-900 transition-all duration-300 font-medium text-sm group">
-                          <WLogo size={16} className="group-hover:text-white dark:group-hover:text-gray-900 transition-colors" />
-                          <span>WIPA Profile</span>
-                        </a>
-                      </motion.div>
+                    <div className="flex items-center gap-4 mt-4">
+                      <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center text-gray-500 hover:bg-[#0077b5] hover:text-white dark:hover:bg-[#0077b5] dark:text-gray-400 dark:hover:text-white transition-all duration-300">
+                        <LinkedinIcon size={18} />
+                      </a>
+                      <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center text-gray-500 hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-600 hover:text-white dark:hover:text-white transition-all duration-300">
+                        <InstagramIcon size={18} />
+                      </a>
+                      <a href="#" className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center text-gray-500 hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:text-gray-400 dark:hover:text-white transition-all duration-300">
+                        <Mail size={18} />
+                      </a>
+                      <a href="#" className="h-10 px-4 rounded-full bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 hover:bg-[#5a32fa] hover:text-white dark:hover:bg-[#ff90e8] dark:hover:text-gray-900 transition-all duration-300 font-medium text-sm group">
+                        <WLogo size={16} className="group-hover:text-white dark:group-hover:text-gray-900 transition-colors" />
+                        <span>WIPA Profile</span>
+                      </a>
                     </div>
                   </div>
-
-                  {/* Bio Content */}
-                  <motion.div 
-                    layoutId={`content-${activeItem.id}`}
-                    className="w-full"
-                  >
-                    {activeItem.bio}
-                  </motion.div>
                 </div>
-              </motion.div>
-            </div>
-          </>
+
+                {/* Bio Content */}
+                <div className="w-full">
+                  {activeItem.bio}
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
