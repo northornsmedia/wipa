@@ -1083,7 +1083,7 @@ export default function ProfilePage() {
             )}
 
             {/* TAB 2: ABOUT SECTION */}
-            {(activeTab === 'about' || activeTab === 'activity') && (
+            {activeTab === 'about' && (
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">About</h3>
@@ -1119,7 +1119,7 @@ export default function ProfilePage() {
             )}
 
             {/* TAB 3: EXPERIENCE TIMELINE */}
-            {(activeTab === 'experience' || activeTab === 'activity') && (
+            {activeTab === 'experience' && (
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">Experience</h3>
@@ -1156,80 +1156,82 @@ export default function ProfilePage() {
             )}
 
             {/* TAB 4: EDUCATION & CERTIFICATIONS */}
-            {(activeTab === 'education' || activeTab === 'activity') && (
-              <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Education & Certifications</h3>
-                  <button 
-                    onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
-                    className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1"
-                  >
-                    <Plus size={16} /> Edit credential
-                  </button>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center text-xl shrink-0">
-                      🎓
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-base font-bold text-gray-900 dark:text-white">
-                        {profileData.education || 'Law & Technology Institute'}
-                      </h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        Degree & Professional Accreditation in Intellectual Property Law
-                      </p>
-                    </div>
+            {activeTab === 'education' && (
+              <>
+                <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Education & Certifications</h3>
+                    <button 
+                      onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
+                      className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1"
+                    >
+                      <Plus size={16} /> Edit credential
+                    </button>
                   </div>
 
-                  {/* LexisNexis Verified Accreditation */}
-                  <div className="flex gap-4 p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/25 border border-blue-200/80 dark:border-blue-500/20">
-                    <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xl shrink-0 shadow-md font-black text-sm">
-                      LN
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-base font-bold text-gray-900 dark:text-white">
-                          LexisNexis® Certified IP Analytics Specialist
-                        </h4>
-                        <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-700 dark:text-blue-300 text-[10px] font-extrabold uppercase">
-                          Verified Badge
-                        </span>
+                  <div className="space-y-6">
+                    <div className="flex gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center text-xl shrink-0">
+                        🎓
                       </div>
-                      <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mt-0.5">
-                        PatentSight+™ Portfolio Valuation & TotalPatent One® Search Mastery
-                      </p>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
-                        Issued in partnership with WIPA • Institutional ID: LN-WIPA-2024-8842
-                      </p>
+                      <div className="flex-1">
+                        <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                          {profileData.education || 'Law & Technology Institute'}
+                        </h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                          Degree & Professional Accreditation in Intellectual Property Law
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* LexisNexis Verified Accreditation */}
+                    <div className="flex gap-4 p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/25 border border-blue-200/80 dark:border-blue-500/20">
+                      <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xl shrink-0 shadow-md font-black text-sm">
+                        LN
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                            LexisNexis® Certified IP Analytics Specialist
+                          </h4>
+                          <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-700 dark:text-blue-300 text-[10px] font-extrabold uppercase">
+                            Verified Badge
+                          </span>
+                        </div>
+                        <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mt-0.5">
+                          PatentSight+™ Portfolio Valuation & TotalPatent One® Search Mastery
+                        </p>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                          Issued in partnership with WIPA • Institutional ID: LN-WIPA-2024-8842
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+
+                {/* WIPA MEMBER ADVANTAGE: LEXISNEXIS PERK CARD */}
+                <div className="p-6 rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div className="space-y-1.5 text-center sm:text-left">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[11px] font-extrabold uppercase tracking-wider">
+                      <Sparkles size={12} /> WIPA Member Advantage
+                    </div>
+                    <h3 className="text-xl font-black">LexisNexis® IP Suite 30-Day Guided Access</h3>
+                    <p className="text-xs text-white/90 max-w-xl leading-relaxed">
+                      As an active WIPA member, claim your complimentary 30-day enterprise access to PatentAdvisor® and PatentSight+™ analytics.
+                    </p>
+                  </div>
+                  <Link
+                    href="/platform/intelligence"
+                    className="px-6 py-3 rounded-2xl bg-white hover:bg-slate-100 text-blue-700 font-black text-xs transition-all shadow-lg shrink-0 cursor-pointer hover:scale-105 active:scale-95"
+                  >
+                    Launch Intelligence Hub →
+                  </Link>
+                </div>
+              </>
             )}
 
-            {/* WIPA MEMBER ADVANTAGE: LEXISNEXIS PERK CARD */}
-            <div className="p-6 rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="space-y-1.5 text-center sm:text-left">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[11px] font-extrabold uppercase tracking-wider">
-                  <Sparkles size={12} /> WIPA Member Advantage
-                </div>
-                <h3 className="text-xl font-black">LexisNexis® IP Suite 30-Day Guided Access</h3>
-                <p className="text-xs text-white/90 max-w-xl leading-relaxed">
-                  As an active WIPA member, claim your complimentary 30-day enterprise access to PatentAdvisor® and PatentSight+™ analytics.
-                </p>
-              </div>
-              <Link
-                href="/platform/intelligence"
-                className="px-6 py-3 rounded-2xl bg-white hover:bg-slate-100 text-blue-700 font-black text-xs transition-all shadow-lg shrink-0 cursor-pointer hover:scale-105 active:scale-95"
-              >
-                Launch Intelligence Hub →
-              </Link>
-            </div>
-
             {/* TAB 5: SKILLS & ENDORSEMENTS */}
-            {(activeTab === 'skills' || activeTab === 'activity') && (
+            {activeTab === 'skills' && (
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">Skills & Endorsements</h3>

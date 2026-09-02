@@ -765,7 +765,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             )}
 
             {/* TAB 2: ABOUT SECTION */}
-            {(activeTab === 'about' || activeTab === 'activity') && (
+            {activeTab === 'about' && (
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">About</h3>
                 <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
@@ -788,7 +788,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             )}
 
             {/* TAB 3: EXPERIENCE TIMELINE */}
-            {(activeTab === 'experience' || activeTab === 'activity') && (
+            {activeTab === 'experience' && (
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Experience</h3>
                 <div className="space-y-6">
@@ -807,7 +807,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             )}
 
             {/* TAB 4: EDUCATION & CERTIFICATIONS */}
-            {(activeTab === 'education' || activeTab === 'activity') && (
+            {activeTab === 'education' && (
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Education & Honors</h3>
                 <div className="flex gap-4">
@@ -823,7 +823,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             )}
 
             {/* TAB 5: SKILLS & ENDORSEMENTS */}
-            {(activeTab === 'skills' || activeTab === 'activity') && (
+            {activeTab === 'skills' && (
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Skills & Endorsements</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
