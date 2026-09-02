@@ -97,7 +97,7 @@ const REGIONAL_CHAIRS: GalleryItem[] = [
   {
     id: "member-2",
     title: "Dr. Shweta Singh",
-    subtitle: "Inaugural WIPA Chair - Asia",
+    subtitle: "Inaugural WIPA Chair - South Asia",
     image: "/Dr Shweta_AIPPI (1).png",
     color: "#fce7f3",
     flag: "https://flagcdn.com/w40/in.png",
