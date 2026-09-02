@@ -966,6 +966,17 @@ export default function ProfilePage() {
               {/* Action Buttons (LinkedIn/FB style) */}
               <div className="flex flex-wrap items-center gap-2.5 pt-2 md:pt-0">
                 
+                {/* Upload / Change Video Story Button */}
+                <button 
+                  onClick={() => videoInputRef.current?.click()}
+                  disabled={isUploadingVideo}
+                  className="px-4 py-2.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold text-sm flex items-center gap-2 transition-all cursor-pointer"
+                  title="Upload or Change Intro Video Story"
+                >
+                  {isUploadingVideo ? <Loader2 size={16} className="animate-spin" /> : <Video size={16} className="text-[#5a32fa] dark:text-[#ff90e8]" />}
+                  <span>{isUploadingVideo ? 'Uploading...' : profileData.introVideoUrl ? 'Change Story' : 'Add Story'}</span>
+                </button>
+
                 <button 
                   onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
                   className="px-5 py-2.5 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-semibold text-sm flex items-center gap-2 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
