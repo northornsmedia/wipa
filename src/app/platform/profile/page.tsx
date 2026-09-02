@@ -385,15 +385,23 @@ export default function ProfilePage() {
   };
 
   const handleSaveAbout = async () => {
-    if (!user?.id) return;
+    let currentUserId = user?.id;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id;
+    }
+    if (!currentUserId) {
+      setAboutSaveError("User session not found. Please log in again.");
+      return;
+    }
+
     setIsSavingAbout(true);
     setAboutSaveError(null);
     try {
       const { data: savedProfile, error } = await supabase.from('profiles').update({
         bio: aboutForm.bio,
-        practice_area: aboutForm.practiceAreas,
-        updated_at: new Date().toISOString()
-      }).eq('id', user.id).select('bio, practice_area').single();
+        practice_area: aboutForm.practiceAreas
+      }).eq('id', currentUserId).select('bio, practice_area').single();
 
       if (error) throw error;
 
