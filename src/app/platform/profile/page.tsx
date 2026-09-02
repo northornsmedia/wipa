@@ -34,6 +34,16 @@ export interface PositionItem {
   description?: string;
 }
 
+export interface EducationItem {
+  id: string;
+  institution: string;
+  degree: string;
+  fieldOfStudy?: string;
+  year?: string;
+  grade?: string;
+  description?: string;
+}
+
 export default function ProfilePage() {
   const { user, setUser } = useAppStore();
   const router = useRouter();
@@ -58,7 +68,8 @@ export default function ProfilePage() {
     verificationStatus: user?.verification_status || 'verified',
     isWipaRecommended: false,
     businessProfile: null as any,
-    positions: [] as PositionItem[]
+    positions: [] as PositionItem[],
+    educations: [] as EducationItem[]
   });
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -73,6 +84,11 @@ export default function ProfilePage() {
   const [experienceList, setExperienceList] = useState<PositionItem[]>([]);
   const [isSavingExperience, setIsSavingExperience] = useState(false);
   const [experienceSaveError, setExperienceSaveError] = useState<string | null>(null);
+
+  const [isEditEducationModalOpen, setIsEditEducationModalOpen] = useState(false);
+  const [educationList, setEducationList] = useState<EducationItem[]>([]);
+  const [isSavingEducation, setIsSavingEducation] = useState(false);
+  const [educationSaveError, setEducationSaveError] = useState<string | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -202,6 +218,19 @@ export default function ProfilePage() {
               }
             ];
 
+        const parsedEducations: EducationItem[] = Array.isArray(data.education_data) && data.education_data.length > 0
+          ? data.education_data
+          : [
+              {
+                id: 'edu-1',
+                institution: data.education || 'Law & Technology Institute',
+                degree: 'Degree & Professional Accreditation in Intellectual Property Law',
+                fieldOfStudy: 'Intellectual Property Law',
+                year: 'Graduated',
+                description: ''
+              }
+            ];
+
         const newProfile = {
           ...profileData,
           name: data.full_name || user?.name || 'WIPA Member',
@@ -221,11 +250,13 @@ export default function ProfilePage() {
           verificationStatus: data.verification_status || 'verified',
           isWipaRecommended: data.is_wipa_recommended ?? false,
           businessProfile: data.business_profiles,
-          positions: parsedPositions
+          positions: parsedPositions,
+          educations: parsedEducations
         };
         setProfileData(newProfile);
         setEditForm(newProfile);
         setExperienceList(parsedPositions);
+        setEducationList(parsedEducations);
         if (data.cover_url) {
           setCoverImage(data.cover_url);
         }
@@ -610,6 +641,102 @@ export default function ProfilePage() {
       setExperienceSaveError(err?.message || "Failed to save positions. Please try again.");
     } finally {
       setIsSavingExperience(false);
+    }
+  };
+
+  const handleAddEducation = () => {
+    setEducationList(prev => [
+      ...prev,
+      {
+        id: `edu-${Date.now()}`,
+        institution: '',
+        degree: '',
+        fieldOfStudy: '',
+        year: '',
+        grade: '',
+        description: ''
+      }
+    ]);
+  };
+
+  const handleUpdateEducation = (index: number, field: keyof EducationItem, value: any) => {
+    setEducationList(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  const handleRemoveEducation = (index: number) => {
+    setEducationList(prev => {
+      if (prev.length <= 1) {
+        return [{
+          id: `edu-${Date.now()}`,
+          institution: '',
+          degree: '',
+          fieldOfStudy: '',
+          year: '',
+          grade: '',
+          description: ''
+        }];
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const handleSaveEducation = async () => {
+    let currentUserId = user?.id;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id;
+    }
+    if (!currentUserId) {
+      setEducationSaveError("User session not found. Please log in again.");
+      return;
+    }
+
+    const validEducations = educationList.filter(e => e.institution.trim() || e.degree.trim());
+    if (validEducations.length === 0) {
+      setEducationSaveError("Please add at least one institution or degree.");
+      return;
+    }
+
+    setIsSavingEducation(true);
+    setEducationSaveError(null);
+
+    try {
+      const primaryEdu = validEducations[0];
+      const primaryTitle = primaryEdu.institution || primaryEdu.degree;
+
+      const { error } = await supabase.from('profiles').update({
+        education_data: validEducations,
+        education: primaryTitle
+      }).eq('id', currentUserId);
+
+      if (error) throw error;
+
+      setProfileData(prev => ({
+        ...prev,
+        education: primaryTitle,
+        educations: validEducations
+      }));
+
+      setEditForm(prev => ({
+        ...prev,
+        education: primaryTitle
+      }));
+
+      setUser({
+        ...user,
+        education: primaryTitle
+      });
+
+      setIsEditEducationModalOpen(false);
+    } catch (err: any) {
+      console.error("Error saving education credentials:", err);
+      setEducationSaveError(err?.message || "Failed to save education. Please try again.");
+    } finally {
+      setIsSavingEducation(false);
     }
   };
 
@@ -1449,29 +1576,71 @@ export default function ProfilePage() {
               <>
                 <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Education & Certifications</h3>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">Education & Certifications</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Degrees, academic credentials, and professional accreditations</p>
+                    </div>
                     <button 
-                      onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
-                      className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1"
+                      onClick={() => {
+                        setEducationSaveError(null);
+                        const currentEducations = (profileData.educations && profileData.educations.length > 0)
+                          ? profileData.educations
+                          : [
+                              {
+                                id: 'edu-1',
+                                institution: profileData.education || 'Law & Technology Institute',
+                                degree: 'Degree & Professional Accreditation in Intellectual Property Law',
+                                fieldOfStudy: 'Intellectual Property Law',
+                                year: 'Graduated',
+                                description: ''
+                              }
+                            ];
+                        setEducationList(JSON.parse(JSON.stringify(currentEducations)));
+                        setIsEditEducationModalOpen(true);
+                      }}
+                      className="px-3.5 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                      title="Add or Edit Credentials"
                     >
-                      <Plus size={16} /> Edit credential
+                      <Plus size={15} />
+                      <span>Edit credential</span>
                     </button>
                   </div>
 
                   <div className="space-y-6">
-                    <div className="flex gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center text-xl shrink-0">
-                        🎓
+                    {((profileData.educations && profileData.educations.length > 0) ? profileData.educations : [
+                      {
+                        id: 'edu-1',
+                        institution: profileData.education || 'Law & Technology Institute',
+                        degree: 'Degree & Professional Accreditation in Intellectual Property Law',
+                        year: ''
+                      }
+                    ]).map((edu, eIdx) => (
+                      <div key={edu.id || eIdx} className="flex gap-4 group">
+                        <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center text-xl shrink-0">
+                          🎓
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                            {edu.institution || 'Law & Technology Institute'}
+                          </h4>
+                          <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">
+                            {edu.degree || 'Degree in Intellectual Property Law'}
+                            {edu.fieldOfStudy ? ` · ${edu.fieldOfStudy}` : ''}
+                          </p>
+                          {edu.year && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              {edu.year}
+                              {edu.grade ? ` · Grade: ${edu.grade}` : ''}
+                            </p>
+                          )}
+                          {edu.description && (
+                            <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 leading-relaxed whitespace-pre-line bg-gray-50/60 dark:bg-white/[0.02] p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                              {edu.description}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <h4 className="text-base font-bold text-gray-900 dark:text-white">
-                          {profileData.education || 'Law & Technology Institute'}
-                        </h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                          Degree & Professional Accreditation in Intellectual Property Law
-                        </p>
-                      </div>
-                    </div>
+                    ))}
 
                     {/* LexisNexis Verified Accreditation */}
                     <div className="flex gap-4 p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/25 border border-blue-200/80 dark:border-blue-500/20">
@@ -1914,16 +2083,6 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Education</label>
-                <input 
-                  type="text" 
-                  value={editForm.education} 
-                  onChange={(e) => setEditForm({...editForm, education: e.target.value})}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent focus:border-[#5a32fa] outline-none"
-                />
-              </div>
-
-              <div>
                 <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Skills (comma separated)</label>
                 <input 
                   type="text" 
@@ -2240,6 +2399,173 @@ export default function ProfilePage() {
               >
                 {isSavingExperience ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
                 <span>{isSavingExperience ? 'Saving...' : 'Save Positions'}</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ================= EDIT EDUCATION & CREDENTIALS MODAL ================= */}
+      {isEditEducationModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#151c2c] w-full max-w-2xl max-h-[90vh] rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl flex flex-col text-gray-900 dark:text-white">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Manage Education & Credentials</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Add, edit, or update your degrees, academic honors, and accreditations</p>
+              </div>
+              <button 
+                onClick={() => setIsEditEducationModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Scrollable Education List */}
+            <div className="flex-1 overflow-y-auto py-4 space-y-5 pr-1">
+              {educationList.map((edu, idx) => (
+                <div 
+                  key={edu.id || idx} 
+                  className="p-5 rounded-2xl bg-gray-50/70 dark:bg-gray-800/40 border border-gray-200/80 dark:border-gray-700/80 space-y-4 relative group"
+                >
+                  {/* Item Header & Delete */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-[#5a32fa] text-white text-xs font-black flex items-center justify-center">
+                        {idx + 1}
+                      </span>
+                      <span className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white">
+                        {edu.institution ? edu.institution : `Credential #${idx + 1}`}
+                      </span>
+                      {idx === 0 && (
+                        <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-[#5a32fa] dark:text-[#ff90e8] text-[10px] font-bold">
+                          Primary Degree
+                        </span>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveEducation(idx)}
+                      className="text-gray-400 hover:text-rose-500 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+                      title="Remove this credential"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+
+                  {/* Form Inputs Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                    <div>
+                      <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        Institution / University <span className="text-red-500">*</span>
+                      </label>
+                      <input 
+                        type="text" 
+                        required
+                        value={edu.institution} 
+                        placeholder="e.g. Law & Technology Institute"
+                        onChange={(e) => handleUpdateEducation(idx, 'institution', e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none text-xs font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        Degree / Qualification <span className="text-red-500">*</span>
+                      </label>
+                      <input 
+                        type="text" 
+                        required
+                        value={edu.degree} 
+                        placeholder="e.g. LL.M in Intellectual Property"
+                        onChange={(e) => handleUpdateEducation(idx, 'degree', e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none text-xs font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        Field of Study / Major
+                      </label>
+                      <input 
+                        type="text" 
+                        value={edu.fieldOfStudy || ''} 
+                        placeholder="e.g. Patent Law & Licensing"
+                        onChange={(e) => handleUpdateEducation(idx, 'fieldOfStudy', e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none text-xs font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        Graduation Year / Dates
+                      </label>
+                      <input 
+                        type="text" 
+                        value={edu.year || ''} 
+                        placeholder="e.g. 2018 - 2022 or Graduated 2020"
+                        onChange={(e) => handleUpdateEducation(idx, 'year', e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none text-xs font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description / Honors */}
+                  <div>
+                    <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1 text-xs">
+                      Honors, Activities & Societies (Optional)
+                    </label>
+                    <textarea 
+                      rows={2}
+                      value={edu.description || ''} 
+                      placeholder="e.g. First Class Distinction, Editor of Law Review, IP Moot Court Winner..."
+                      onChange={(e) => handleUpdateEducation(idx, 'description', e.target.value)}
+                      className="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none text-xs leading-relaxed"
+                    />
+                  </div>
+                </div>
+              ))}
+
+              {/* Add Education Button */}
+              <button
+                type="button"
+                onClick={handleAddEducation}
+                className="w-full py-3.5 rounded-2xl border-2 border-dashed border-[#5a32fa]/40 hover:border-[#5a32fa] bg-[#5a32fa]/5 hover:bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#ff90e8] font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Plus size={16} />
+                <span>+ Add Another Credential</span>
+              </button>
+            </div>
+
+            {/* Error Message */}
+            {educationSaveError && (
+              <p className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300 shrink-0">
+                Could not save: {educationSaveError}
+              </p>
+            )}
+
+            {/* Modal Actions */}
+            <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3 shrink-0">
+              <button 
+                type="button"
+                onClick={() => setIsEditEducationModalOpen(false)}
+                className="px-5 py-2.5 text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button"
+                onClick={handleSaveEducation}
+                disabled={isSavingEducation}
+                className="px-6 py-2.5 text-xs sm:text-sm font-bold bg-[#5a32fa] hover:bg-[#4a24db] text-white rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {isSavingEducation ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                <span>{isSavingEducation ? 'Saving...' : 'Save Credentials'}</span>
               </button>
             </div>
 

@@ -105,6 +105,17 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                   description: ''
                 }
               ];
+
+          const parsedEducations = Array.isArray(data.education_data) && data.education_data.length > 0
+            ? data.education_data
+            : [
+                {
+                  id: 'edu-1',
+                  institution: data.education || 'Law & Technology Institute',
+                  degree: 'Degree & Professional Accreditation in Intellectual Property Law',
+                  year: ''
+                }
+              ];
           
           setProfileData({
             id: resolvedId,
@@ -126,7 +137,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             verificationStatus: data.verification_status || 'verified',
             isWipaRecommended: data.is_wipa_recommended ?? false,
             businessProfile: null,
-            positions: parsedPositions
+            positions: parsedPositions,
+            educations: parsedEducations
           });
 
           // Record Profile View (deduplicated & filtered for self-views)
@@ -852,14 +864,41 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             {activeTab === 'education' && (
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Education & Honors</h3>
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center text-xl shrink-0">
-                    🎓
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-base font-bold text-gray-900 dark:text-white">{profileData.education}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Master of Laws & Intellectual Property</p>
-                  </div>
+                <div className="space-y-6">
+                  {((profileData.educations && profileData.educations.length > 0) ? profileData.educations : [
+                    {
+                      id: 'edu-1',
+                      institution: profileData.education || 'Law & Technology Institute',
+                      degree: 'Degree & Professional Accreditation in Intellectual Property Law',
+                      year: ''
+                    }
+                  ]).map((edu: any, eIdx: number) => (
+                    <div key={edu.id || eIdx} className="flex gap-4 group">
+                      <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center text-xl shrink-0">
+                        🎓
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                          {edu.institution || 'Law & Technology Institute'}
+                        </h4>
+                        <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">
+                          {edu.degree || 'Degree in Intellectual Property Law'}
+                          {edu.fieldOfStudy ? ` · ${edu.fieldOfStudy}` : ''}
+                        </p>
+                        {edu.year && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            {edu.year}
+                            {edu.grade ? ` · Grade: ${edu.grade}` : ''}
+                          </p>
+                        )}
+                        {edu.description && (
+                          <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 leading-relaxed whitespace-pre-line bg-gray-50/60 dark:bg-white/[0.02] p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                            {edu.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
