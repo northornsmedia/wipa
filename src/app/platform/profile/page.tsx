@@ -49,6 +49,10 @@ export default function ProfilePage() {
   });
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditAboutModalOpen, setIsEditAboutModalOpen] = useState(false);
+  const [aboutForm, setAboutForm] = useState({ bio: '', practiceAreas: '' });
+  const [isSavingAbout, setIsSavingAbout] = useState(false);
+  const [aboutSaveError, setAboutSaveError] = useState<string | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -377,6 +381,43 @@ export default function ProfilePage() {
       setProfileSaveError(err?.message || 'Profile could not be saved. Please try again.');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSaveAbout = async () => {
+    if (!user?.id) return;
+    setIsSavingAbout(true);
+    setAboutSaveError(null);
+    try {
+      const { data: savedProfile, error } = await supabase.from('profiles').update({
+        bio: aboutForm.bio,
+        practice_area: aboutForm.practiceAreas,
+        updated_at: new Date().toISOString()
+      }).eq('id', user.id).select('bio, practice_area').single();
+
+      if (error) throw error;
+
+      setProfileData(prev => ({
+        ...prev,
+        bio: savedProfile?.bio ?? aboutForm.bio,
+        practiceAreas: savedProfile?.practice_area ?? aboutForm.practiceAreas
+      }));
+      setEditForm(prev => ({
+        ...prev,
+        bio: savedProfile?.bio ?? aboutForm.bio,
+        practiceAreas: savedProfile?.practice_area ?? aboutForm.practiceAreas
+      }));
+      setUser({
+        ...user,
+        practice_area: savedProfile?.practice_area ?? aboutForm.practiceAreas,
+        bio: savedProfile?.bio ?? aboutForm.bio
+      });
+      setIsEditAboutModalOpen(false);
+    } catch (err: any) {
+      console.error('Error saving about:', err);
+      setAboutSaveError(err?.message || 'Failed to update About details. Please try again.');
+    } finally {
+      setIsSavingAbout(false);
     }
   };
 
@@ -1088,10 +1129,19 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">About</h3>
                   <button 
-                    onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
-                    className="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                    onClick={() => {
+                      setAboutSaveError(null);
+                      setAboutForm({
+                        bio: profileData.bio,
+                        practiceAreas: profileData.practiceAreas
+                      });
+                      setIsEditAboutModalOpen(true);
+                    }}
+                    className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    title="Edit About & Practice Areas"
                   >
-                    <Edit3 size={18} />
+                    <Edit3 size={15} />
+                    <span>Edit About</span>
                   </button>
                 </div>
                 <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
@@ -1635,26 +1685,6 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">About / Biography</label>
-                <textarea 
-                  rows={4}
-                  value={editForm.bio} 
-                  onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent focus:border-[#5a32fa] outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Practice Areas (comma separated)</label>
-                <input 
-                  type="text" 
-                  value={editForm.practiceAreas} 
-                  onChange={(e) => setEditForm({...editForm, practiceAreas: e.target.value})}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent focus:border-[#5a32fa] outline-none"
-                />
-              </div>
-
-              <div>
                 <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Skills (comma separated)</label>
                 <input 
                   type="text" 
@@ -1684,6 +1714,73 @@ export default function ProfilePage() {
               >
                 {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
                 <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= EDIT ABOUT & PRACTICE AREAS MODAL ================= */}
+      {isEditAboutModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#151c2c] w-full max-w-lg rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl space-y-5 text-gray-900 dark:text-white">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Edit About & Specializations</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Update your professional biography and practice areas</p>
+              </div>
+              <button 
+                onClick={() => setIsEditAboutModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs sm:text-sm">
+              <div>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1.5">About / Biography</label>
+                <textarea 
+                  rows={6}
+                  value={aboutForm.bio} 
+                  placeholder="Write a brief overview of your background, legal experience, and practice focus..."
+                  onChange={(e) => setAboutForm({ ...aboutForm, bio: e.target.value })}
+                  className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 focus:border-[#5a32fa] focus:bg-white dark:focus:bg-[#151c2c] outline-none text-xs sm:text-sm leading-relaxed"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1.5">Practice Areas & Specializations (comma separated)</label>
+                <input 
+                  type="text" 
+                  value={aboutForm.practiceAreas} 
+                  placeholder="e.g. Patents, Trademarks, IP Strategy, Licensing"
+                  onChange={(e) => setAboutForm({ ...aboutForm, practiceAreas: e.target.value })}
+                  className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 focus:border-[#5a32fa] focus:bg-white dark:focus:bg-[#151c2c] outline-none text-xs sm:text-sm font-medium"
+                />
+              </div>
+            </div>
+
+            {aboutSaveError && (
+              <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
+                Could not save: {aboutSaveError}
+              </p>
+            )}
+
+            <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3">
+              <button 
+                onClick={() => setIsEditAboutModalOpen(false)}
+                className="px-5 py-2.5 text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSaveAbout}
+                disabled={isSavingAbout}
+                className="px-6 py-2.5 text-xs sm:text-sm font-bold bg-[#5a32fa] hover:bg-[#4a24db] text-white rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {isSavingAbout ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                <span>{isSavingAbout ? 'Saving...' : 'Save Changes'}</span>
               </button>
             </div>
           </div>
