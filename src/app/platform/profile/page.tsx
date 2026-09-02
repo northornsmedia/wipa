@@ -10,7 +10,7 @@ import {
   Folder, Lightbulb, HelpCircle, Headphones, Award, Gift, Sparkles, Plus,
   Image as ImageIcon, Video, Send, MoreHorizontal, Eye, TrendingUp, Search,
   Globe2, ShieldCheck, Check, Heart, MessageCircle, Repeat2, Bookmark, X,
-  Trash2, UploadCloud, Play, Volume2, FileText
+  Trash2, UploadCloud, Play, Volume2, FileText, Building2, Clock
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import Link from 'next/link';
@@ -1437,9 +1437,23 @@ export default function ProfilePage() {
 
             {/* TAB 2: ABOUT SECTION */}
             {activeTab === 'about' && (
-              <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">About</h3>
+              <div className="bg-white dark:bg-[#151c2c] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-gray-800 shadow-sm transition-all space-y-8">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100 dark:border-gray-800/80">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-500/15 via-pink-500/15 to-indigo-500/15 border border-purple-500/20 text-[#5a32fa] dark:text-[#ff90e8] flex items-center justify-center shadow-inner shrink-0">
+                      <User size={22} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-xl font-black text-gray-900 dark:text-white">About</h3>
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                          Biography
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Professional background, IP mission & core expertise</p>
+                    </div>
+                  </div>
                   <button 
                     onClick={() => {
                       setAboutSaveError(null);
@@ -1449,31 +1463,42 @@ export default function ProfilePage() {
                       });
                       setIsEditAboutModalOpen(true);
                     }}
-                    className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-4 py-2 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200/80 dark:border-purple-800/60 rounded-full flex items-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-sm cursor-pointer self-start sm:self-auto"
                     title="Edit About & Practice Areas"
                   >
-                    <Edit3 size={15} />
+                    <Edit3 size={14} className="stroke-[2.5]" />
                     <span>Edit About</span>
                   </button>
                 </div>
-                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-                  {profileData.bio || 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.'}
-                </p>
 
-                {/* Practice Areas Chips */}
-                <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
-                    Practice Areas & Specializations
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
+                {/* Bio Content Box */}
+                <div className="p-6 rounded-2xl bg-gray-50/70 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800">
+                  <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-line font-normal">
+                    {profileData.bio || 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.'}
+                  </p>
+                </div>
+
+                {/* Practice Areas & Specializations */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles size={16} className="text-[#5a32fa] dark:text-[#ff90e8]" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-gray-900 dark:text-white">
+                      Practice Areas & Specializations
+                    </h4>
+                  </div>
+                  <div className="flex flex-wrap gap-2.5">
                     {(profileData.practiceAreas || 'Patents, Trademarks, IP Strategy, Licensing')
                       .split(',')
                       .map(s => s.trim())
                       .filter(Boolean)
                       .map((area, idx) => (
-                        <span key={idx} className="bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] px-3 py-1 rounded-full text-xs font-semibold border border-[#5a32fa]/20">
-                          {area}
-                        </span>
+                        <div 
+                          key={idx} 
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-50/80 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-[#5a32fa] dark:text-[#ff90e8] font-bold text-xs border border-purple-200/70 dark:border-purple-800/60 transition-all hover:scale-105 shadow-sm"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5a32fa] dark:bg-[#ff90e8]"></span>
+                          <span>{area}</span>
+                        </div>
                       ))}
                   </div>
                 </div>
@@ -1625,12 +1650,23 @@ export default function ProfilePage() {
 
             {/* TAB 4: EDUCATION & CERTIFICATIONS */}
             {activeTab === 'education' && (
-              <>
-                <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">Education & Certifications</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Degrees, academic credentials, and professional accreditations</p>
+              <div className="space-y-6">
+                <div className="bg-white dark:bg-[#151c2c] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-gray-800 shadow-sm transition-all">
+                  {/* Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800/80">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500/15 via-orange-500/15 to-purple-500/15 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shadow-inner shrink-0">
+                        <GraduationCap size={22} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-xl font-black text-gray-900 dark:text-white">Education & Certifications</h3>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                            Credentials
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Degrees, academic credentials & professional accreditations</p>
+                      </div>
                     </div>
                     <button 
                       onClick={() => {
@@ -1650,77 +1686,95 @@ export default function ProfilePage() {
                         setEducationList(JSON.parse(JSON.stringify(currentEducations)));
                         setIsEditEducationModalOpen(true);
                       }}
-                      className="px-3.5 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="px-4 py-2 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200/80 dark:border-purple-800/60 rounded-full flex items-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-sm cursor-pointer self-start sm:self-auto"
                       title="Add or Edit Credentials"
                     >
-                      <Plus size={15} />
-                      <span>Edit credential</span>
+                      <Plus size={14} className="stroke-[3]" />
+                      <span>Edit Credentials</span>
                     </button>
                   </div>
 
+                  {/* Cards Container */}
                   <div className="space-y-6">
                     {((profileData.educations && profileData.educations.length > 0) ? profileData.educations : [
                       {
                         id: 'edu-1',
                         institution: profileData.education || 'Law & Technology Institute',
                         degree: 'Degree & Professional Accreditation in Intellectual Property Law',
-                        year: ''
+                        year: 'Graduated'
                       }
-                    ]).map((edu, eIdx) => (
-                      <div key={edu.id || eIdx} className="flex gap-4 group">
-                        <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/50 flex items-center justify-center text-xl shrink-0">
-                          🎓
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-base font-bold text-gray-900 dark:text-white">
-                            {edu.institution || 'Law & Technology Institute'}
-                          </h4>
-                          <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">
-                            {edu.degree || 'Degree in Intellectual Property Law'}
-                            {edu.fieldOfStudy ? ` · ${edu.fieldOfStudy}` : ''}
-                          </p>
-                          {edu.year && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                              {edu.year}
-                              {edu.grade ? ` · Grade: ${edu.grade}` : ''}
-                            </p>
-                          )}
-                          {edu.description && (
-                            <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 leading-relaxed whitespace-pre-line bg-gray-50/60 dark:bg-white/[0.02] p-3 rounded-xl border border-gray-100 dark:border-gray-800">
-                              {edu.description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                    ]).map((edu, eIdx) => {
+                      return (
+                        <div key={edu.id || eIdx} className="flex items-start gap-4 sm:gap-6 group">
+                          {/* Institution Cap Node */}
+                          <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center shadow-lg ring-4 ring-white dark:ring-[#151c2c] group-hover:scale-110 group-hover:shadow-amber-500/25 transition-all duration-300 shrink-0">
+                            <GraduationCap size={24} />
+                          </div>
 
-                    {/* LexisNexis Verified Accreditation */}
-                    <div className="flex gap-4 p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/25 border border-blue-200/80 dark:border-blue-500/20">
-                      <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xl shrink-0 shadow-md font-black text-sm">
+                          {/* Details Box */}
+                          <div className="flex-1 bg-gray-50/60 dark:bg-gray-800/40 hover:bg-gray-50 dark:hover:bg-gray-800/80 border border-gray-100 dark:border-gray-800 p-5 rounded-2xl transition-all duration-200 group-hover:border-amber-300 dark:group-hover:border-amber-700/60 group-hover:shadow-md">
+                            <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                              <h4 className="text-base sm:text-lg font-black text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                                {edu.institution || 'Law & Technology Institute'}
+                              </h4>
+                              {edu.year && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 text-[11px] font-extrabold border border-amber-500/30 shadow-sm">
+                                  <Calendar size={12} />
+                                  {edu.year}
+                                </span>
+                              )}
+                            </div>
+                            
+                            <p className="text-sm font-bold text-[#5a32fa] dark:text-[#ff90e8]">
+                              {edu.degree || 'Degree in Intellectual Property Law'}
+                              {edu.fieldOfStudy ? ` · ${edu.fieldOfStudy}` : ''}
+                            </p>
+
+                            {edu.grade && (
+                              <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1">
+                                Grade / Honors: <span className="text-gray-900 dark:text-white font-bold">{edu.grade}</span>
+                              </p>
+                            )}
+
+                            {edu.description && (
+                              <div className="mt-4 pt-3.5 border-t border-gray-200/60 dark:border-gray-700/60 text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line font-medium">
+                                {edu.description}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* LexisNexis Verified Accreditation Card */}
+                    <div className="flex items-start gap-4 sm:gap-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-purple-50/60 dark:from-blue-950/30 dark:via-indigo-950/20 dark:to-purple-950/20 border border-blue-200/80 dark:border-blue-500/30 shadow-sm">
+                      <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-black text-sm shadow-md ring-4 ring-white dark:ring-[#151c2c] shrink-0">
                         LN
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+                          <h4 className="text-base font-black text-gray-900 dark:text-white flex items-center gap-1.5">
                             LexisNexis® Certified IP Analytics Specialist
                           </h4>
-                          <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-700 dark:text-blue-300 text-[10px] font-extrabold uppercase">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-700 dark:text-blue-300 text-[10px] font-black uppercase tracking-wider border border-blue-500/30 shadow-sm">
+                            <ShieldCheck size={12} className="text-blue-500" />
                             Verified Badge
                           </span>
                         </div>
-                        <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mt-0.5">
+                        <p className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 mb-1.5">
                           PatentSight+™ Portfolio Valuation & TotalPatent One® Search Mastery
                         </p>
-                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
-                          Issued in partnership with WIPA • Institutional ID: LN-WIPA-2024-8842
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">
+                          Issued in partnership with WIPA • Institutional ID: <code className="px-1.5 py-0.5 rounded bg-blue-100/60 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 font-mono text-[10px]">LN-WIPA-2024-8842</code>
                         </p>
                       </div>
                     </div>
+
                   </div>
                 </div>
 
                 {/* WIPA MEMBER ADVANTAGE: LEXISNEXIS PERK CARD */}
-                <div className="p-6 rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
                   <div className="space-y-1.5 text-center sm:text-left">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[11px] font-extrabold uppercase tracking-wider">
                       <Sparkles size={12} /> WIPA Member Advantage
@@ -1737,23 +1791,38 @@ export default function ProfilePage() {
                     Launch Intelligence Hub →
                   </Link>
                 </div>
-              </>
+              </div>
             )}
 
             {/* TAB 5: SKILLS & ENDORSEMENTS */}
             {activeTab === 'skills' && (
-              <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Skills & Endorsements</h3>
+              <div className="bg-white dark:bg-[#151c2c] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-gray-800 shadow-sm transition-all">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800/80">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-500/15 via-purple-500/15 to-indigo-500/15 border border-pink-500/20 text-[#5a32fa] dark:text-[#ff90e8] flex items-center justify-center shadow-inner shrink-0">
+                      <Star size={22} className="fill-[#5a32fa]/20 dark:fill-[#ff90e8]/20" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-xl font-black text-gray-900 dark:text-white">Skills & Endorsements</h3>
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-pink-100 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
+                          {(profileData.skills || 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets').split(',').filter(Boolean).length} Skills
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">Peer-validated competencies in intellectual property and legal strategy</p>
+                    </div>
+                  </div>
                   <button 
                     onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
-                    className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1"
+                    className="px-4 py-2 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200/80 dark:border-purple-800/60 rounded-full flex items-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-sm cursor-pointer self-start sm:self-auto"
                   >
-                    <Plus size={16} /> Edit skills
+                    <Plus size={14} className="stroke-[3]" />
+                    <span>Edit Skills</span>
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {(profileData.skills || 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets')
                     .split(',')
                     .map(s => s.trim())
@@ -1777,38 +1846,34 @@ export default function ProfilePage() {
                     return (
                       <div 
                         key={idx} 
-                        className={`p-4 rounded-2xl border transition-all flex items-center justify-between group ${
+                        className={`p-5 rounded-2xl border transition-all duration-200 flex items-center justify-between group hover:shadow-md ${
                           state.endorsed 
-                            ? 'bg-[#5a32fa]/10 dark:bg-[#5a32fa]/15 border-[#5a32fa]/30 shadow-sm' 
-                            : 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-800 hover:border-[#5a32fa]/40'
+                            ? 'bg-gradient-to-r from-purple-500/10 via-pink-500/5 to-purple-500/10 dark:from-purple-950/30 dark:to-pink-950/20 border-purple-300 dark:border-purple-700/60 shadow-sm' 
+                            : 'bg-gray-50/70 dark:bg-gray-800/40 hover:bg-gray-50 dark:hover:bg-gray-800/80 border-gray-100 dark:border-gray-800 hover:border-purple-200 dark:hover:border-purple-800/50'
                         }`}
                       >
-                        <div className="flex-1 min-w-0 pr-2">
-                          <h4 className="font-bold text-sm text-gray-900 dark:text-white truncate">{skill}</h4>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-1">
+                        <div className="flex-1 min-w-0 pr-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className={`w-2 h-2 rounded-full ${state.endorsed ? 'bg-emerald-500 animate-pulse' : 'bg-[#5a32fa] dark:bg-[#ff90e8]'}`} />
+                            <h4 className="font-black text-sm sm:text-base text-gray-900 dark:text-white truncate group-hover:text-[#5a32fa] dark:group-hover:text-[#ff90e8] transition-colors">
+                              {skill}
+                            </h4>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5 font-medium pl-4">
                             <span>{state.count} endorsements</span>
-                            {state.endorsed && <span className="text-emerald-500 font-bold text-[11px]">· Endorsed by you</span>}
+                            {state.endorsed && <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">✓ Endorsed by you</span>}
                           </p>
                         </div>
                         <button 
                           onClick={handleEndorse}
-                          className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all active:scale-90 flex items-center gap-1 shrink-0 ${
+                          className={`px-4 py-2 rounded-full text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer ${
                             state.endorsed
-                              ? 'bg-[#5a32fa] text-white shadow-sm shadow-[#5a32fa]/30'
-                              : 'border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-[#5a32fa] hover:text-white hover:border-[#5a32fa]'
+                              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-emerald-500/25'
+                              : 'bg-white dark:bg-gray-900 hover:bg-[#5a32fa] hover:text-white text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:border-[#5a32fa]'
                           }`}
                         >
-                          {state.endorsed ? (
-                            <>
-                              <Check size={12} strokeWidth={3} />
-                              <span>Endorsed</span>
-                            </>
-                          ) : (
-                            <>
-                              <Plus size={12} />
-                              <span>Endorse</span>
-                            </>
-                          )}
+                          {state.endorsed ? <Check size={14} className="stroke-[3]" /> : <Plus size={14} className="stroke-[3]" />}
+                          <span>{state.endorsed ? 'Endorsed' : 'Endorse'}</span>
                         </button>
                       </div>
                     );
