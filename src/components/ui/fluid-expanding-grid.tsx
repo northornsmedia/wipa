@@ -168,6 +168,28 @@ const REGIONAL_CHAIRS: GalleryItem[] = [
         </p>
       </div>
     ),
+  },
+  {
+    id: "member-5",
+    title: "Tina Nan",
+    subtitle: "Inaugural WIPA Chair - East Asia",
+    image: "/tina-nan.jpg",
+    color: "#fee2e2",
+    flag: "https://flagcdn.com/w40/cn.png",
+    bio: (
+      <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed max-w-3xl">
+        <p className="font-semibold text-lg text-[#5a32fa] dark:text-[#ff90e8]">Inaugural WIPA Chair – East Asia | China</p>
+        <p>
+          Tina Nan is an internationally recognised intellectual property and technology strategist serving as the Inaugural WIPA Chair for East Asia. With deep expertise in cross-border IP prosecution, patent portfolio management, technology transfer, and commercialisation, Tina has advised global multinational corporations, fast-growing technology enterprises, and research institutions across China, East Asia, and international markets.
+        </p>
+        <p>
+          Throughout her career, Tina has been instrumental in facilitating international collaboration between Asian innovators and global intellectual property ecosystems. Her leadership bridges complex technological innovation with strategic IP asset protection, fostering cross-regional business development and commercial growth.
+        </p>
+        <p>
+          As Inaugural WIPA Chair for East Asia, Tina champions the empowerment and advancement of women leaders in intellectual property, driving initiatives that expand professional networks, educational opportunities, and global recognition for female practitioners throughout the region.
+        </p>
+      </div>
+    ),
   }
 ];
 
@@ -249,7 +271,7 @@ export function FluidExpandingGrid({
       </div>
 
       {/* SECTION 2: REGIONAL CHAIRS */}
-      <div className="w-full max-w-6xl mx-auto pt-4 border-t border-gray-200/60 dark:border-white/10">
+      <div className="w-full max-w-7xl mx-auto pt-4 border-t border-gray-200/60 dark:border-white/10">
         
         {/* Small Heading: Regional Chairs */}
         <div className="text-center mb-8 flex flex-col items-center">
@@ -262,8 +284,8 @@ export function FluidExpandingGrid({
           </h2>
         </div>
 
-        {/* 3 Regional Chairs Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl mx-auto">
+        {/* 4 Regional Chairs Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-7xl mx-auto">
           {REGIONAL_CHAIRS.map((item) => (
             <motion.div
               key={item.id}
