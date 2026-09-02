@@ -53,6 +53,8 @@ export default function ProfilePage() {
   const [aboutForm, setAboutForm] = useState({ bio: '', practiceAreas: '' });
   const [isSavingAbout, setIsSavingAbout] = useState(false);
   const [aboutSaveError, setAboutSaveError] = useState<string | null>(null);
+  const [isGeneratingBio, setIsGeneratingBio] = useState(false);
+  const [aiBioSuccess, setAiBioSuccess] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -426,6 +428,42 @@ export default function ProfilePage() {
       setAboutSaveError(err?.message || 'Failed to update About details. Please try again.');
     } finally {
       setIsSavingAbout(false);
+    }
+  };
+
+  const handleGenerateBioWithAI = async () => {
+    setIsGeneratingBio(true);
+    setAboutSaveError(null);
+    setAiBioSuccess(false);
+    try {
+      const res = await fetch('/api/ai/generate-bio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brief: aboutForm.bio,
+          name: profileData.name,
+          role: profileData.role,
+          company: profileData.company,
+          practiceAreas: aboutForm.practiceAreas || profileData.practiceAreas,
+          education: profileData.education,
+          experienceYears: profileData.experienceYears,
+          location: profileData.location
+        })
+      });
+
+      const data = await res.json();
+      if (data.text) {
+        setAboutForm(prev => ({ ...prev, bio: data.text }));
+        setAiBioSuccess(true);
+        setTimeout(() => setAiBioSuccess(false), 6000);
+      } else if (data.error) {
+        setAboutSaveError(`AI Generation note: ${data.error}`);
+      }
+    } catch (err: any) {
+      console.error('Error generating bio:', err);
+      setAboutSaveError('Could not generate bio with AI. Please try again.');
+    } finally {
+      setIsGeneratingBio(false);
     }
   };
 
@@ -1746,15 +1784,54 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-4 text-xs sm:text-sm">
-              <div>
-                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1.5">About / Biography</label>
-                <textarea 
-                  rows={6}
-                  value={aboutForm.bio} 
-                  placeholder="Write a brief overview of your background, legal experience, and practice focus..."
-                  onChange={(e) => setAboutForm({ ...aboutForm, bio: e.target.value })}
-                  className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 focus:border-[#5a32fa] focus:bg-white dark:focus:bg-[#151c2c] outline-none text-xs sm:text-sm leading-relaxed"
-                />
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-gray-700 dark:text-gray-300">
+                    About / Biography
+                  </label>
+                  {aiBioSuccess && (
+                    <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 animate-in fade-in">
+                      <Check size={12} /> Generated with AI! Review & edit below.
+                    </span>
+                  )}
+                </div>
+
+                <div className="relative rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 focus-within:border-[#5a32fa] focus-within:bg-white dark:focus-within:bg-[#151c2c] transition-all p-1">
+                  <textarea 
+                    rows={6}
+                    value={aboutForm.bio} 
+                    placeholder="Write a brief overview, rough notes, or bullet points (e.g. '10 yrs patent attorney in Delhi focusing on tech innovation & IP strategy')... Then click Write with AI!"
+                    onChange={(e) => setAboutForm({ ...aboutForm, bio: e.target.value })}
+                    className="w-full px-3 pt-2 pb-11 bg-transparent border-0 outline-none text-xs sm:text-sm leading-relaxed resize-y placeholder:text-gray-400"
+                  />
+
+                  {/* Bottom Action Bar inside Textarea Container */}
+                  <div className="absolute bottom-2 right-2.5 left-2.5 flex items-center justify-between pointer-events-none">
+                    <span className="text-[10px] text-gray-400 pointer-events-auto pl-1">
+                      {aboutForm.bio ? `${aboutForm.bio.length} chars` : 'Write brief & click AI'}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={handleGenerateBioWithAI}
+                      disabled={isGeneratingBio}
+                      className="pointer-events-auto px-3 py-1.5 rounded-full bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] hover:opacity-95 text-white font-extrabold text-[11px] flex items-center gap-1.5 shadow-sm shadow-indigo-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                      title="Write or expand your brief into a full professional bio with AI"
+                    >
+                      {isGeneratingBio ? (
+                        <>
+                          <Loader2 size={13} className="animate-spin" />
+                          <span>Writing with AI...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={13} />
+                          <span>{aboutForm.bio?.trim() ? 'Write / Polish with AI' : 'Write with AI'}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div>
