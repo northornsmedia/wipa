@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, User } from "lucide-react";
+import { X, Mail, User, Crown, Globe2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const LinkedinIcon = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
@@ -70,29 +70,30 @@ export interface GalleryItem {
   flag?: string;
 }
 
-const ITEMS: GalleryItem[] = [
-  {
-    id: "member-1",
-    title: "Michele S. Katz",
-    subtitle: "WIPA Inaugural President",
-    image: "/1.png",
-    color: "#fef3c7",
-    flag: "https://flagcdn.com/w40/us.png",
-    bio: (
-      <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed max-w-3xl">
-        <p className="font-semibold text-lg text-[#5a32fa] dark:text-[#ff90e8]">Founding Partner, Advitam IP LLC</p>
-        <p>
-          Michele S. Katz is the Founding Partner of Advitam IP, LLC and an internationally recognised intellectual property attorney with over 20 years of experience advising clients across IP strategy, prosecution, licensing, litigation and dispute resolution. Her practice spans trademarks, copyrights and patents, representing clients before state and federal courts, the Trademark Trial and Appeal Board (TTAB), US Customs and the US Court of Appeals for the Federal Circuit.
-        </p>
-        <p>
-          Recognised consistently by leading industry publications, Michele has been selected as a Super Lawyer every year since 2021 and has been named to the IAM Strategy 300 – The World’s Leading IP Strategists since 2019. Beyond her legal practice, she is a passionate mentor, educator and international speaker, actively supporting law students, emerging professionals and entrepreneurs through professional development and educational initiatives.
-        </p>
-        <p>
-          Michele is also a longstanding contributor to the Women’s IP World Annual and has played an active role in advancing the visibility, development and leadership of women across the global intellectual property profession. Her combination of legal expertise, mentorship and commitment to giving back has established her as a respected and influential voice within the international IP community.
-        </p>
-      </div>
-    ),
-  },
+const PRESIDENT_ITEM: GalleryItem = {
+  id: "member-1",
+  title: "Michele S. Katz",
+  subtitle: "WIPA Inaugural President",
+  image: "/1.png",
+  color: "#fef3c7",
+  flag: "https://flagcdn.com/w40/us.png",
+  bio: (
+    <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed max-w-3xl">
+      <p className="font-semibold text-lg text-[#5a32fa] dark:text-[#ff90e8]">Founding Partner, Advitam IP LLC</p>
+      <p>
+        Michele S. Katz is the Founding Partner of Advitam IP, LLC and an internationally recognised intellectual property attorney with over 20 years of experience advising clients across IP strategy, prosecution, licensing, litigation and dispute resolution. Her practice spans trademarks, copyrights and patents, representing clients before state and federal courts, the Trademark Trial and Appeal Board (TTAB), US Customs and the US Court of Appeals for the Federal Circuit.
+      </p>
+      <p>
+        Recognised consistently by leading industry publications, Michele has been selected as a Super Lawyer every year since 2021 and has been named to the IAM Strategy 300 – The World’s Leading IP Strategists since 2019. Beyond her legal practice, she is a passionate mentor, educator and international speaker, actively supporting law students, emerging professionals and entrepreneurs through professional development and educational initiatives.
+      </p>
+      <p>
+        Michele is also a longstanding contributor to the Women’s IP World Annual and has played an active role in advancing the visibility, development and leadership of women across the global intellectual property profession. Her combination of legal expertise, mentorship and commitment to giving back has established her as a respected and influential voice within the international IP community.
+      </p>
+    </div>
+  ),
+};
+
+const REGIONAL_CHAIRS: GalleryItem[] = [
   {
     id: "member-2",
     title: "Dr. Shweta Singh",
@@ -170,13 +171,13 @@ const ITEMS: GalleryItem[] = [
   }
 ];
 
+const ALL_MEMBERS = [PRESIDENT_ITEM, ...REGIONAL_CHAIRS];
+
 interface FluidExpandingGridProps {
-  items?: GalleryItem[];
   className?: string;
 }
 
 export function FluidExpandingGrid({
-  items = ITEMS,
   className,
 }: FluidExpandingGridProps) {
   const [activeItem, setActiveItem] = useState<GalleryItem | null>(null);
@@ -194,50 +195,117 @@ export function FluidExpandingGrid({
   }, [activeItem]);
 
   return (
-    <div className={cn("w-full mx-auto pt-0 pb-12 px-6", className)}>
-      {/* Unexpanded Grid */}
-      <div className="w-full mx-auto flex flex-wrap justify-center gap-6 pb-8">
-        {items.map((item) => (
+    <div className={cn("w-full mx-auto pt-0 pb-12 px-4 sm:px-6 space-y-12", className)}>
+      
+      {/* SECTION 1: ALLIANCE PRESIDENT */}
+      <div className="w-full flex flex-col items-center">
+        <motion.div
+          key={PRESIDENT_ITEM.id}
+          layoutId={`card-${PRESIDENT_ITEM.id}`}
+          onClick={() => setActiveItem(PRESIDENT_ITEM)}
+          className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-2xl w-full max-w-sm sm:max-w-md h-[490px] min-h-[490px] border-2 border-amber-400/40 hover:border-amber-400/80 transition-all hover:shadow-amber-500/10"
+          whileHover={{ scale: 0.985 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        >
           <motion.div
-            key={item.id}
-            layoutId={`card-${item.id}`}
-            onClick={() => setActiveItem(item)}
-            className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-xl w-full md:w-[calc(25%-18px)] h-[480px] min-h-[480px]"
-            whileHover={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            layoutId={`image-container-${PRESIDENT_ITEM.id}`}
+            className="absolute inset-0 bg-gray-200 dark:bg-gray-800"
           >
-            <motion.div
-              layoutId={`image-container-${item.id}`}
-              className="absolute inset-0 bg-gray-200 dark:bg-gray-800"
-            >
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-            </motion.div>
-
-            <motion.div 
-              layoutId={`content-${item.id}`}
-              className="absolute inset-0 p-6 flex flex-col justify-end text-white z-10"
-            >
-              <motion.h3 
-                layoutId={`title-${item.id}`}
-                className="text-xl md:text-2xl font-bold mb-1.5 tracking-tight flex items-center gap-2.5"
-              >
-                {item.flag && <img src={item.flag} alt="flag" className="w-6 h-4.5 object-cover rounded-sm shadow-sm shrink-0" />}
-                <span className="truncate">{item.title}</span>
-              </motion.h3>
-              <motion.p 
-                layoutId={`subtitle-${item.id}`}
-                className="text-white/80 font-medium text-xs md:text-sm line-clamp-1"
-              >
-                {item.subtitle}
-              </motion.p>
-            </motion.div>
+            <img
+              src={PRESIDENT_ITEM.image}
+              alt={PRESIDENT_ITEM.title}
+              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
           </motion.div>
-        ))}
+
+          {/* Top Badge on Card */}
+          <div className="absolute top-4 left-4 z-10">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/50 text-amber-300 text-xs font-black tracking-wide shadow-lg">
+              <Crown size={14} className="text-amber-400" />
+              Alliance President
+            </span>
+          </div>
+
+          <motion.div 
+            layoutId={`content-${PRESIDENT_ITEM.id}`}
+            className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-end text-white z-10"
+          >
+            <motion.h3 
+              layoutId={`title-${PRESIDENT_ITEM.id}`}
+              className="text-2xl sm:text-3xl font-black mb-1.5 tracking-tight flex items-center gap-2.5"
+            >
+              {PRESIDENT_ITEM.flag && <img src={PRESIDENT_ITEM.flag} alt="flag" className="w-7 h-5 object-cover rounded shadow-sm shrink-0" />}
+              <span>{PRESIDENT_ITEM.title}</span>
+            </motion.h3>
+            <motion.p 
+              layoutId={`subtitle-${PRESIDENT_ITEM.id}`}
+              className="text-amber-200/95 font-bold text-sm sm:text-base line-clamp-1"
+            >
+              {PRESIDENT_ITEM.subtitle}
+            </motion.p>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* SECTION 2: REGIONAL CHAIRS */}
+      <div className="w-full max-w-6xl mx-auto pt-4 border-t border-gray-200/60 dark:border-white/10">
+        
+        {/* Small Heading: Regional Chairs */}
+        <div className="text-center mb-8 flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-600 dark:text-pink-400 text-xs font-black uppercase tracking-wider mb-2 shadow-sm">
+            <Globe2 size={14} />
+            <span>Regional Leadership</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+            Regional Chairs
+          </h2>
+        </div>
+
+        {/* 3 Regional Chairs Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl mx-auto">
+          {REGIONAL_CHAIRS.map((item) => (
+            <motion.div
+              key={item.id}
+              layoutId={`card-${item.id}`}
+              onClick={() => setActiveItem(item)}
+              className="group relative cursor-pointer overflow-hidden rounded-[32px] shadow-xl w-full h-[470px] min-h-[470px] border border-gray-200/80 dark:border-white/10 hover:border-pink-500/50 transition-all hover:shadow-pink-500/5"
+              whileHover={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            >
+              <motion.div
+                layoutId={`image-container-${item.id}`}
+                className="absolute inset-0 bg-gray-200 dark:bg-gray-800"
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+              </motion.div>
+
+              <motion.div 
+                layoutId={`content-${item.id}`}
+                className="absolute inset-0 p-6 flex flex-col justify-end text-white z-10"
+              >
+                <motion.h3 
+                  layoutId={`title-${item.id}`}
+                  className="text-xl md:text-2xl font-bold mb-1.5 tracking-tight flex items-center gap-2.5"
+                >
+                  {item.flag && <img src={item.flag} alt="flag" className="w-6 h-4.5 object-cover rounded-sm shadow-sm shrink-0" />}
+                  <span className="truncate">{item.title}</span>
+                </motion.h3>
+                <motion.p 
+                  layoutId={`subtitle-${item.id}`}
+                  className="text-white/80 font-medium text-xs md:text-sm line-clamp-1"
+                >
+                  {item.subtitle}
+                </motion.p>
+              </motion.div>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
       {/* Expanded Modal Overlay */}
