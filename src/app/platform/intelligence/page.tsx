@@ -38,8 +38,8 @@ const PRODUCTS: ProductSolution[] = [
     tagline: 'Scientific Patent Portfolio Valuation & Patent Asset Index™',
     description: 'Transform subjective patent counts into objective commercial value. PatentSight+™ evaluates patent families using the globally validated Patent Asset Index™ to measure competitive impact and technology relevance.',
     icon: BarChart3,
-    accentColor: 'text-[#5a32fa] dark:text-[#ff90e8]',
-    accentBg: 'bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20',
+    accentColor: 'text-[#E8171F]',
+    accentBg: 'bg-red-50 dark:bg-red-950/30',
     badge: 'Flagship Valuation',
     metrics: [
       { label: 'Fortune 500 Index Coverage', value: '100%' },
@@ -62,8 +62,8 @@ const PRODUCTS: ProductSolution[] = [
     tagline: 'USPTO Examiner Analytics & Office Action Predictability',
     description: 'Eliminate prosecution guesswork. PatentAdvisor® leverages statistical modeling on 8,000+ USPTO examiners to forecast allowance rates, time-to-grant, and optimal response strategies.',
     icon: Activity,
-    accentColor: 'text-purple-600 dark:text-purple-400',
-    accentBg: 'bg-purple-500/10 dark:bg-purple-500/20',
+    accentColor: 'text-[#E8171F]',
+    accentBg: 'bg-red-50 dark:bg-red-950/30',
     badge: 'Examiner Intelligence',
     metrics: [
       { label: 'USPTO Examiners Indexed', value: '8,000+' },
@@ -164,7 +164,6 @@ export default function IntelligencePage() {
   const activeProduct = PRODUCTS.find(p => p.id === selectedProductId) || PRODUCTS[0];
   const estimatedHoursSaved = Math.round(annualFilings * 12.5);
   const estimatedCostSavings = Math.round(estimatedHoursSaved * hourlyRate * 0.45);
-  const estimatedProsecutionSpeedup = Math.min(48, Math.round(20 + (annualFilings * 0.3)));
 
   // Lead-Gen & Trial Modal State
   const [isTrialModalOpen, setIsTrialModalOpen] = useState(false);
@@ -208,12 +207,12 @@ export default function IntelligencePage() {
         {/* ─── HERO CO-BRANDED PARTNER BANNER ───────────────────────── */}
         <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-md overflow-hidden mb-8 relative">
           
-          {/* Top Brand Rainbow Accent Strip */}
-          <div className="h-2.5 w-full bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8]" />
+          {/* Top LexisNexis Red & WIPA Purple Accent Strip */}
+          <div className="h-2.5 w-full bg-gradient-to-r from-[#E8171F] via-[#5a32fa] to-[#ff90e8]" />
 
           {/* Ambient Background Glows */}
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#5a32fa]/5 dark:bg-[#5a32fa]/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#ff90e8]/5 dark:bg-[#ff90e8]/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#E8171F]/5 dark:bg-[#E8171F]/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#5a32fa]/5 dark:bg-[#5a32fa]/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="p-6 sm:p-10 lg:p-12 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -221,10 +220,10 @@ export default function IntelligencePage() {
               {/* Left 7 Columns: Co-Branded Header & Value Props */}
               <div className="lg:col-span-7 space-y-6">
                 
-                {/* Partnership Badges & Trust Lockup */}
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] text-xs font-extrabold border border-[#5a32fa]/20 shadow-xs">
-                    <Sparkles size={14} className="text-[#5a32fa] dark:text-[#ff90e8]" />
+                {/* Official Logo & Partnership Badges */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 text-[#E8171F] text-xs font-extrabold border border-red-500/20 shadow-xs">
+                    <img src="/lexisnexis-icon.svg" alt="LexisNexis" className="w-4 h-4 rounded-full" />
                     <span>Official Global IP Intelligence Partner</span>
                   </div>
 
@@ -234,10 +233,20 @@ export default function IntelligencePage() {
                   </div>
                 </div>
 
-                {/* Main Headline */}
-                <div className="space-y-2">
+                {/* Main Headline with Official Logo */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4">
+                    <div className="h-9 sm:h-11">
+                      <img 
+                        src="/lexisnexis-logo.svg" 
+                        alt="LexisNexis IP Solutions" 
+                        className="h-full w-auto object-contain dark:brightness-110" 
+                      />
+                    </div>
+                  </div>
+
                   <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-[1.15]">
-                    LexisNexis® <span className="bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] bg-clip-text text-transparent">IP Intelligence Hub</span>
+                    IP Intelligence & <span className="text-[#E8171F]">Solutions Hub</span>
                   </h1>
                   <p className="text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-200">
                     Institutional Patent Analytics, Prosecution Predictability & Portfolio Valuation for WIPA Members.
@@ -246,7 +255,7 @@ export default function IntelligencePage() {
 
                 {/* Description */}
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-normal">
-                  Through our strategic institutional partnership with <strong>LexisNexis® IP Solutions</strong>, verified WIPA practitioners and member firms receive direct VIP access to the world&apos;s leading patent search, examiner analytics, and portfolio valuation tools with exclusive preferred benefits.
+                  Through our strategic alliance with <strong>LexisNexis® IP Solutions</strong>, verified WIPA practitioners and member firms receive direct VIP access to the world&apos;s leading patent search, examiner analytics, and portfolio valuation tools with exclusive preferred benefits.
                 </p>
 
                 {/* Quick Value Pillars */}
@@ -262,11 +271,11 @@ export default function IntelligencePage() {
                   </span>
                 </div>
 
-                {/* Action Buttons */}
+                {/* Action Buttons (Red Themed) */}
                 <div className="flex flex-wrap items-center gap-3 pt-3">
                   <button
                     onClick={() => openTrialModal('LexisNexis® Complete IP Suite 30-Day Access')}
-                    className="px-7 py-3.5 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#5a32fa]/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    className="px-7 py-3.5 rounded-full bg-[#E8171F] hover:bg-[#c91219] text-white font-bold text-xs sm:text-sm shadow-md shadow-red-500/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                   >
                     <Sparkles size={16} /> Claim 30-Day WIPA VIP Pass
                   </button>
@@ -275,7 +284,7 @@ export default function IntelligencePage() {
                     onClick={() => openTrialModal('Enterprise Law Firm Demo & Pricing Consultation')}
                     className="px-6 py-3.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer"
                   >
-                    <Building2 size={16} className="text-[#5a32fa] dark:text-[#ff90e8]" /> Book Enterprise Demo
+                    <Building2 size={16} className="text-[#E8171F]" /> Book Enterprise Demo
                   </button>
                 </div>
 
@@ -285,20 +294,22 @@ export default function IntelligencePage() {
               <div className="lg:col-span-5 w-full">
                 <div className="relative rounded-3xl bg-gradient-to-br from-gray-900 via-slate-900 to-[#151c2c] text-white p-6 sm:p-7 shadow-xl border border-gray-700/80 overflow-hidden">
                   
-                  {/* Card Glowing Accents */}
-                  <div className="absolute -top-12 -right-12 w-44 h-44 bg-[#5a32fa]/30 rounded-full blur-2xl pointer-events-none" />
-                  <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-[#ff90e8]/20 rounded-full blur-2xl pointer-events-none" />
+                  {/* Card Glowing Red Accents */}
+                  <div className="absolute -top-12 -right-12 w-44 h-44 bg-[#E8171F]/30 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-[#5a32fa]/20 rounded-full blur-2xl pointer-events-none" />
 
                   <div className="relative z-10 space-y-5">
                     
                     {/* Pass Header Lockup */}
                     <div className="flex items-center justify-between border-b border-white/10 pb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-black text-lg shadow-md">
-                          LN
-                        </div>
+                        <img 
+                          src="/lexisnexis-icon.svg" 
+                          alt="LexisNexis" 
+                          className="w-12 h-12 rounded-2xl shadow-md object-contain" 
+                        />
                         <div>
-                          <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#ff90e8]">
+                          <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#E8171F]">
                             WIPA VIP Access Pass
                           </div>
                           <div className="text-base font-black text-white">
@@ -323,12 +334,12 @@ export default function IntelligencePage() {
 
                       <div className="flex items-center justify-between text-gray-300">
                         <span>Member Privilege:</span>
-                        <span className="font-bold text-emerald-400">Exclusive 20% Firm Discount</span>
+                        <span className="font-bold text-[#E8171F]">Exclusive 20% Firm Discount</span>
                       </div>
 
                       <div className="flex items-center justify-between text-gray-300">
                         <span>Trial Duration:</span>
-                        <span className="font-bold text-[#ff90e8]">30 Days Guided Access</span>
+                        <span className="font-bold text-white">30 Days Guided Access</span>
                       </div>
 
                       <div className="flex items-center justify-between text-gray-300">
@@ -353,10 +364,10 @@ export default function IntelligencePage() {
                       </div>
                     </div>
 
-                    {/* Action Button inside Pass */}
+                    {/* Action Button inside Pass (Red Glow) */}
                     <button
                       onClick={() => openTrialModal('LexisNexis® Complete IP Suite 30-Day VIP Pass')}
-                      className="w-full py-3 rounded-full bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8] hover:opacity-95 text-white font-extrabold text-xs shadow-lg shadow-[#5a32fa]/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                      className="w-full py-3.5 rounded-full bg-[#E8171F] hover:bg-[#c91219] text-white font-extrabold text-xs shadow-lg shadow-red-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                     >
                       <Sparkles size={14} /> Activate My 30-Day VIP Pass
                     </button>
@@ -372,8 +383,8 @@ export default function IntelligencePage() {
 
         {/* ─── WIPA MEMBER BENEFITS (3-CARD GRID) ───────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:border-[#5a32fa]/40 transition-all group">
-            <div className="w-11 h-11 rounded-2xl bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] flex items-center justify-center mb-3.5 group-hover:scale-105 transition-transform">
+          <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:border-[#E8171F]/40 transition-all group">
+            <div className="w-11 h-11 rounded-2xl bg-red-500/10 text-[#E8171F] flex items-center justify-center mb-3.5 group-hover:scale-105 transition-transform">
               <Sparkles size={22} />
             </div>
             <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5">30-Day Guided Enterprise Trial</h3>
@@ -382,8 +393,8 @@ export default function IntelligencePage() {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:border-emerald-500/40 transition-all group">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3.5 group-hover:scale-105 transition-transform">
+          <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:border-[#E8171F]/40 transition-all group">
+            <div className="w-11 h-11 rounded-2xl bg-red-500/10 text-[#E8171F] flex items-center justify-center mb-3.5 group-hover:scale-105 transition-transform">
               <Award size={22} />
             </div>
             <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5">Exclusive 20% Law Firm Discount</h3>
@@ -392,8 +403,8 @@ export default function IntelligencePage() {
             </p>
           </div>
 
-          <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:border-purple-500/40 transition-all group">
-            <div className="w-11 h-11 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3.5 group-hover:scale-105 transition-transform">
+          <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hover:border-[#E8171F]/40 transition-all group">
+            <div className="w-11 h-11 rounded-2xl bg-red-500/10 text-[#E8171F] flex items-center justify-center mb-3.5 group-hover:scale-105 transition-transform">
               <ShieldCheck size={22} />
             </div>
             <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1.5">Certified Specialist Credential</h3>
@@ -408,7 +419,7 @@ export default function IntelligencePage() {
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-gray-100 dark:border-gray-800">
             <div>
-              <div className="inline-flex items-center gap-1 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] mb-1">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E8171F] mb-1">
                 <Compass size={14} /> Interactive Solutions Explorer
               </div>
               <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">
@@ -431,7 +442,7 @@ export default function IntelligencePage() {
                   onClick={() => setSelectedProductId(p.id)}
                   className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     isSelected
-                      ? 'bg-[#5a32fa] text-white shadow-md shadow-[#5a32fa]/20 scale-102'
+                      ? 'bg-[#E8171F] text-white shadow-md shadow-red-500/20 scale-102'
                       : 'bg-gray-100 dark:bg-gray-800/80 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                   }`}
                 >
@@ -449,7 +460,7 @@ export default function IntelligencePage() {
             <div className="lg:col-span-7 space-y-5">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-full bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#ff90e8] text-xs font-extrabold border border-[#5a32fa]/20">
+                  <span className="px-3 py-1 rounded-full bg-red-500/10 text-[#E8171F] text-xs font-extrabold border border-red-500/20">
                     {activeProduct.category}
                   </span>
                   <span className="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-bold">
@@ -472,7 +483,7 @@ export default function IntelligencePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {activeProduct.keyFeatures.map((feat, idx) => (
                     <div key={idx} className="flex items-start gap-2.5 p-3 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800 text-xs text-gray-800 dark:text-gray-200">
-                      <CheckCircle2 size={16} className="text-[#00d26a] shrink-0 mt-0.5" />
+                      <CheckCircle2 size={16} className="text-[#E8171F] shrink-0 mt-0.5" />
                       <span className="font-medium leading-snug">{feat}</span>
                     </div>
                   ))}
@@ -480,8 +491,8 @@ export default function IntelligencePage() {
               </div>
 
               {/* Law Firm Use Case Box */}
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-[#5a32fa]/5 via-[#ff90e8]/5 to-transparent border border-[#5a32fa]/20 text-xs space-y-1">
-                <span className="font-bold text-[#5a32fa] dark:text-[#ff90e8] flex items-center gap-1">
+              <div className="p-4 rounded-2xl bg-red-50/50 dark:bg-red-950/20 border border-red-500/20 text-xs space-y-1">
+                <span className="font-bold text-[#E8171F] flex items-center gap-1">
                   <Star size={13} /> Recommended Practice Workflow:
                 </span>
                 <p className="text-gray-700 dark:text-gray-300 font-medium leading-relaxed">
@@ -493,7 +504,7 @@ export default function IntelligencePage() {
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   onClick={() => openTrialModal(`${activeProduct.name} 30-Day VIP Trial`)}
-                  className="px-6 py-3 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#5a32fa]/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  className="px-6 py-3 rounded-full bg-[#E8171F] hover:bg-[#c91219] text-white font-bold text-xs sm:text-sm shadow-md shadow-red-500/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                 >
                   <Sparkles size={15} /> Request {activeProduct.name} Trial
                 </button>
@@ -520,14 +531,14 @@ export default function IntelligencePage() {
                   {activeProduct.metrics.map((m, mIdx) => (
                     <div key={mIdx} className="flex items-center justify-between p-3 rounded-2xl bg-white dark:bg-[#151c2c] border border-gray-200/80 dark:border-gray-700 shadow-xs">
                       <span className="text-xs text-gray-600 dark:text-gray-300 font-semibold">{m.label}</span>
-                      <span className="text-sm font-black text-[#5a32fa] dark:text-[#ff90e8]">{m.value}</span>
+                      <span className="text-sm font-black text-[#E8171F]">{m.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Interactive Law Firm ROI Diagnostic Teaser */}
-              <div className="p-6 rounded-3xl bg-gradient-to-br from-[#5a32fa] to-[#4a24db] text-white shadow-lg space-y-3">
+              {/* Interactive Law Firm ROI Diagnostic Teaser (Red Accent) */}
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-[#E8171F] to-[#991B1B] text-white shadow-lg space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-extrabold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full">
                     Practice ROI Impact
@@ -540,7 +551,7 @@ export default function IntelligencePage() {
                 </p>
                 <button
                   onClick={() => openTrialModal('Custom Law Firm ROI & Pricing Assessment')}
-                  className="w-full py-2.5 rounded-full bg-white text-[#5a32fa] font-extrabold text-xs hover:bg-gray-50 transition-colors shadow-sm cursor-pointer"
+                  className="w-full py-2.5 rounded-full bg-white text-[#E8171F] font-extrabold text-xs hover:bg-gray-50 transition-colors shadow-sm cursor-pointer"
                 >
                   Request Firm ROI Assessment →
                 </button>
@@ -551,104 +562,11 @@ export default function IntelligencePage() {
           </div>
         </div>
 
-        {/* ─── INTERACTIVE LAW FIRM SAVINGS CALCULATOR ──────────────── */}
-        <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 sm:p-8 mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] mb-1">
-                <Sliders size={14} /> Interactive Law Firm Value Calculator
-              </div>
-              <h3 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
-                Estimate Your Firm&apos;s Annual Efficiency Gain
-              </h3>
-            </div>
-            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-              Adjust sliders below based on your filing volume
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Left 7 Columns: Sliders */}
-            <div className="lg:col-span-7 space-y-6">
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-gray-700 dark:text-gray-300">Annual Patent Filings / Active Applications:</span>
-                  <span className="text-[#5a32fa] dark:text-[#ff90e8] text-sm font-black">{annualFilings} applications/yr</span>
-                </div>
-                <input 
-                  type="range"
-                  min="5"
-                  max="150"
-                  value={annualFilings}
-                  onChange={(e) => setAnnualFilings(Number(e.target.value))}
-                  className="w-full cursor-pointer accent-[#5a32fa]"
-                />
-                <div className="flex justify-between text-[11px] text-gray-400 font-medium">
-                  <span>5 applications</span>
-                  <span>75 applications</span>
-                  <span>150+ applications</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-gray-700 dark:text-gray-300">Average Associate / Counsel Hourly Rate ($):</span>
-                  <span className="text-purple-600 dark:text-purple-400 text-sm font-black">${hourlyRate} / hr</span>
-                </div>
-                <input 
-                  type="range"
-                  min="250"
-                  max="850"
-                  step="25"
-                  value={hourlyRate}
-                  onChange={(e) => setHourlyRate(Number(e.target.value))}
-                  className="w-full cursor-pointer accent-purple-600"
-                />
-                <div className="flex justify-between text-[11px] text-gray-400 font-medium">
-                  <span>$250/hr</span>
-                  <span>$550/hr</span>
-                  <span>$850/hr</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right 5 Columns: Calculated Savings Outputs */}
-            <div className="lg:col-span-5 p-6 rounded-3xl bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 space-y-4">
-              <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="p-3.5 rounded-2xl bg-white dark:bg-[#151c2c] border border-gray-200/80 dark:border-gray-700">
-                  <div className="text-[10px] font-bold uppercase text-gray-500 dark:text-gray-400">Prosecution Hours Saved</div>
-                  <div className="text-2xl font-black text-[#5a32fa] dark:text-[#ff90e8] my-0.5">
-                    {estimatedHoursSaved} hrs
-                  </div>
-                  <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Per Year</div>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-white dark:bg-[#151c2c] border border-gray-200/80 dark:border-gray-700">
-                  <div className="text-[10px] font-bold uppercase text-gray-500 dark:text-gray-400">Estimated Value Gain</div>
-                  <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 my-0.5">
-                    ${(estimatedCostSavings).toLocaleString()}
-                  </div>
-                  <div className="text-[10px] text-gray-500 font-semibold">In Cost Recovery</div>
-                </div>
-              </div>
-
-              <button
-                onClick={() => openTrialModal('Custom Law Firm Efficiency & ROI Consultation')}
-                className="w-full py-3 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
-              >
-                Apply 20% WIPA Discount to Solution →
-              </button>
-            </div>
-
-          </div>
-        </div>
-
         {/* ─── CO-BRANDED RESEARCH REPORTS & WHITEPAPERS ─────────────── */}
         <div className="bg-white dark:bg-[#151c2c] rounded-3xl border border-gray-200 dark:border-gray-800 p-6 sm:p-8 shadow-sm mb-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
             <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] mb-1">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E8171F] mb-1">
                 <BookOpen size={14} /> Knowledge & Thought Leadership
               </div>
               <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white">
@@ -657,16 +575,16 @@ export default function IntelligencePage() {
             </div>
             <Link
               href="/platform/resources/research-reports"
-              className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:underline flex items-center gap-1 shrink-0"
+              className="text-xs font-bold text-[#E8171F] hover:underline flex items-center gap-1 shrink-0"
             >
               Browse All Research Reports <ArrowRight size={14} />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-700/80 space-y-2.5 flex flex-col justify-between hover:border-[#5a32fa]/40 transition-all">
+            <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-700/80 space-y-2.5 flex flex-col justify-between hover:border-[#E8171F]/40 transition-all">
               <div className="space-y-2">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-[#5a32fa] dark:text-[#ff90e8]">Global Benchmark</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#E8171F]">Global Benchmark</div>
                 <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-snug">
                   Top 100 Global Innovators: Patent Asset Index™ Benchmark
                 </h4>
@@ -676,15 +594,15 @@ export default function IntelligencePage() {
               </div>
               <Link
                 href="/platform/resources/research-reports"
-                className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] flex items-center gap-1 hover:underline pt-2"
+                className="text-xs font-bold text-[#E8171F] flex items-center gap-1 hover:underline pt-2"
               >
                 <Download size={13} /> Download Report (PDF)
               </Link>
             </div>
 
-            <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-700/80 space-y-2.5 flex flex-col justify-between hover:border-purple-500/40 transition-all">
+            <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-700/80 space-y-2.5 flex flex-col justify-between hover:border-[#E8171F]/40 transition-all">
               <div className="space-y-2">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">Standard Essential Patents</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#E8171F]">Standard Essential Patents</div>
                 <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-snug">
                   5G & Frontier Tech: SEP Ownership and Licensing Playbook
                 </h4>
@@ -694,15 +612,15 @@ export default function IntelligencePage() {
               </div>
               <Link
                 href="/platform/resources/research-reports"
-                className="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1 hover:underline pt-2"
+                className="text-xs font-bold text-[#E8171F] flex items-center gap-1 hover:underline pt-2"
               >
                 <Download size={13} /> Download Report (PDF)
               </Link>
             </div>
 
-            <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-700/80 space-y-2.5 flex flex-col justify-between hover:border-emerald-500/40 transition-all">
+            <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200/80 dark:border-gray-700/80 space-y-2.5 flex flex-col justify-between hover:border-[#E8171F]/40 transition-all">
               <div className="space-y-2">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Prosecution Analytics</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#E8171F]">Prosecution Analytics</div>
                 <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-snug">
                   USPTO Examiner Tendencies: Data-Driven Prosecution Strategy
                 </h4>
@@ -712,7 +630,7 @@ export default function IntelligencePage() {
               </div>
               <Link
                 href="/platform/resources/research-reports"
-                className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 hover:underline pt-2"
+                className="text-xs font-bold text-[#E8171F] flex items-center gap-1 hover:underline pt-2"
               >
                 <Download size={13} /> Download Report (PDF)
               </Link>
@@ -723,9 +641,11 @@ export default function IntelligencePage() {
         {/* ─── CO-BRANDED FOOTER BAR ─────────────────────────────────── */}
         <div className="p-6 rounded-3xl bg-white dark:bg-[#151c2c] border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-[#5a32fa] text-white flex items-center justify-center font-bold text-sm shadow-sm">
-              LN
-            </div>
+            <img 
+              src="/lexisnexis-icon.svg" 
+              alt="LexisNexis" 
+              className="w-10 h-10 rounded-xl shadow-sm object-contain" 
+            />
             <div>
               <div className="text-xs font-bold text-gray-900 dark:text-white">LexisNexis® Global IP Intelligence Partner</div>
               <div className="text-[11px] text-gray-500 dark:text-gray-400">Official Strategic Partner of Women in Intellectual Property Alliance (WIPA)</div>
@@ -741,7 +661,7 @@ export default function IntelligencePage() {
             </Link>
             <button 
               onClick={() => openTrialModal('LexisNexis® Complete IP Suite 30-Day VIP Pass')}
-              className="px-6 py-2.5 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white text-xs font-bold transition-all shadow-sm shrink-0 cursor-pointer active:scale-95"
+              className="px-6 py-2.5 rounded-full bg-[#E8171F] hover:bg-[#c91219] text-white text-xs font-bold transition-all shadow-sm shrink-0 cursor-pointer active:scale-95"
             >
               Claim 30-Day Pass
             </button>
@@ -757,7 +677,7 @@ export default function IntelligencePage() {
             
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#ff90e8] text-xs font-bold uppercase mb-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 text-[#E8171F] text-xs font-bold uppercase mb-2 border border-red-500/20">
                   <Sparkles size={13} /> WIPA Member Advantage
                 </div>
                 <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
@@ -787,13 +707,13 @@ export default function IntelligencePage() {
                   </p>
                 </div>
                 <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 text-left text-xs text-gray-700 dark:text-gray-300 space-y-1 border border-gray-200 dark:border-gray-700">
-                  <div className="font-bold text-[#5a32fa] dark:text-[#ff90e8]">Your Priority Reference:</div>
+                  <div className="font-bold text-[#E8171F]">Your Priority Reference:</div>
                   <div>VIP Pass ID: <span className="font-mono font-bold">WIPA-LN-2026-VIP</span></div>
                   <div>Selected Solutions: <span className="font-semibold">{trialFormData.selectedProducts.join(', ')}</span></div>
                 </div>
                 <button
                   onClick={() => setIsTrialModalOpen(false)}
-                  className="w-full py-3 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs transition-colors cursor-pointer"
+                  className="w-full py-3 rounded-full bg-[#E8171F] hover:bg-[#c91219] text-white font-bold text-xs transition-colors cursor-pointer"
                 >
                   Return to Solutions Hub
                 </button>
@@ -811,11 +731,11 @@ export default function IntelligencePage() {
                           onClick={() => toggleProductSelection(p)}
                           className={`p-2.5 rounded-xl border cursor-pointer font-semibold flex items-center gap-2 transition-all ${
                             checked 
-                              ? 'bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 border-[#5a32fa] text-[#5a32fa] dark:text-[#ff90e8]' 
+                              ? 'bg-red-50 dark:bg-red-950/30 border-[#E8171F] text-[#E8171F]' 
                               : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
                           }`}
                         >
-                          <div className={`w-4 h-4 rounded flex items-center justify-center border ${checked ? 'bg-[#5a32fa] border-[#5a32fa] text-white' : 'border-gray-300 dark:border-gray-600'}`}>
+                          <div className={`w-4 h-4 rounded flex items-center justify-center border ${checked ? 'bg-[#E8171F] border-[#E8171F] text-white' : 'border-gray-300 dark:border-gray-600'}`}>
                             {checked && <Check size={12} />}
                           </div>
                           <span className="truncate">{p}</span>
@@ -834,7 +754,7 @@ export default function IntelligencePage() {
                       value={trialFormData.name}
                       onChange={(e) => setTrialFormData(prev => ({ ...prev, name: e.target.value }))}
                       placeholder="Jane Doe, Esq."
-                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#E8171F]"
                     />
                   </div>
                   <div>
@@ -845,7 +765,7 @@ export default function IntelligencePage() {
                       value={trialFormData.email}
                       onChange={(e) => setTrialFormData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="jane@lawfirm.com"
-                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#E8171F]"
                     />
                   </div>
                 </div>
@@ -858,7 +778,7 @@ export default function IntelligencePage() {
                       value={trialFormData.company}
                       onChange={(e) => setTrialFormData(prev => ({ ...prev, company: e.target.value }))}
                       placeholder="International IP Law LLP"
-                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#E8171F]"
                     />
                   </div>
                   <div>
@@ -868,7 +788,7 @@ export default function IntelligencePage() {
                       value={trialFormData.role}
                       onChange={(e) => setTrialFormData(prev => ({ ...prev, role: e.target.value }))}
                       placeholder="Partner / Senior IP Counsel"
-                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                      className="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:border-[#E8171F]"
                     />
                   </div>
                 </div>
@@ -879,7 +799,7 @@ export default function IntelligencePage() {
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-full bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-xs shadow-md transition-all cursor-pointer active:scale-95"
+                  className="w-full py-3.5 rounded-full bg-[#E8171F] hover:bg-[#c91219] text-white font-bold text-xs shadow-md shadow-red-500/20 transition-all cursor-pointer active:scale-95"
                 >
                   Activate My 30-Day VIP Pass →
                 </button>
