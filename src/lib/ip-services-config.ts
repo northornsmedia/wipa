@@ -57,6 +57,12 @@ export interface IPServiceConfig {
     description?: string;
     discount?: string;
     promoCode?: string;
+    promoCodes?: Array<{
+      code: string;
+      label: string;
+      discount: string;
+      period: string;
+    }>;
     ctaText?: string;
     ctaUrl?: string;
     contactEmail?: string;
@@ -313,36 +319,50 @@ export const DEFAULT_GENIE_CONFIG: IPServiceConfig = {
   offer: {
     enabled: true,
     badge: "Exclusive WIPA Member Benefit",
-    title: "50% off Genie Pro for your first 3 months",
-    description: "As a Women's IP Alliance member, you get full access to Genie's drafting and negotiation tools — essential for licensing agreements, assignment agreements and NDAs — at half price while you get set up.",
-    discount: "50% Off for 3 Months",
-    promoCode: "WIPA",
-    ctaText: "Claim Your 50% Discount",
+    title: "50% off for 3 Months or 25% off for 12 Months",
+    description: "As a Women's IP Alliance member, you get full access to Genie's drafting and negotiation tools — essential for licensing agreements, assignment agreements and NDAs. Choose 50% off for your first 3 months with code WIPA, or 25% off for 12 months with code WIPA25.",
+    discount: "Up to 50% Off",
+    promoCode: "WIPA / WIPA25",
+    promoCodes: [
+      {
+        code: "WIPA",
+        label: "3 Months Plan",
+        discount: "50% OFF",
+        period: "50% off for your first 3 months"
+      },
+      {
+        code: "WIPA25",
+        label: "12 Months Plan",
+        discount: "25% OFF",
+        period: "25% off for 12 months (Annual)"
+      }
+    ],
+    ctaText: "Claim Your Partner Discount",
     ctaUrl: "https://www.genieai.co/partners/wipa",
     contactEmail: "partnerships@genieai.co",
-    terms: "Offer details: 50% off Genie Pro for 3 months when your customers use code WIPA at checkout.",
+    terms: "Offer details: 50% off Genie Pro for 3 months with code WIPA, or 25% off for 12 months with code WIPA25 at checkout.",
     steps: [
       "Visit the partner landing page: genieai.co/partners/wipa",
       "Sign up for an account with your business email.",
-      "Enter promo code WIPA at checkout.",
-      "Enjoy 50% off Genie Pro for your first 3 months!"
+      "Enter promo code WIPA (50% off 3 mos) or WIPA25 (25% off 12 mos) at checkout.",
+      "Enjoy full access to Genie Pro contract creation, editing, and negotiation tools!"
     ]
   },
   versions: {
     v1: {
       label: "Version 1: Short and simple",
       hint: "Best for: an email signature blurb, a banner, or a quick mention in a newsletter.",
-      text: "GenieAI is a legal AI platform that helps you create, edit and negotiate contracts, used by over 200,000 people across 150+ jurisdictions. Through its partnership with Women's IP Alliance, you get 50% off Genie Pro for your first three months, so you can get licensing agreements, NDAs and other IP contracts done quickly and safely, allowing you to focus on scaling your business with confidence."
+      text: "GenieAI is a legal AI platform that helps you create, edit and negotiate contracts, used by over 200,000 people across 150+ jurisdictions. Through its partnership with Women's IP Alliance, you get 50% off Genie Pro for your first three months (code: WIPA) or 25% off for 12 months (code: WIPA25), so you can get licensing agreements, NDAs and other IP contracts done quickly and safely, allowing you to focus on scaling your business with confidence."
     },
     v2: {
       label: "Version 2: Standard",
       hint: "Best for: a dedicated email to customers, or a section on a partner page.",
-      text: "GenieAI is built to take the friction out of legal paperwork. It lets you create, edit and negotiate contracts using AI, covering 1,000+ contract types across 150+ jurisdictions and 40+ languages. It's backed by Google Ventures and Khosla Ventures, and used by more than 200,000 people worldwide.\n\nAs a Women's IP Alliance member, you can get 50% off Genie Pro for your first three months. That's full access to Genie's drafting and negotiation tools, useful for the licensing agreements, assignment agreements and NDAs that come with protecting and commercialising IP, at half price while you get set up."
+      text: "GenieAI is built to take the friction out of legal paperwork. It lets you create, edit and negotiate contracts using AI, covering 1,000+ contract types across 150+ jurisdictions and 40+ languages. It's backed by Google Ventures and Khosla Ventures, and used by more than 200,000 people worldwide.\n\nAs a Women's IP Alliance member, you can get 50% off Genie Pro for your first three months with promo code WIPA, or 25% off for 12 months with promo code WIPA25. That's full access to Genie's drafting and negotiation tools, useful for the licensing agreements, assignment agreements and NDAs that come with protecting and commercialising IP, at exclusive member pricing while you get set up."
     },
     v3: {
       label: "Version 3: Longer, with offer detail",
       hint: "Best for: a partner newsletter feature, a landing page section, or anywhere the offer terms need to be spelled out clearly.",
-      text: "About Genie\nGenie AI helps businesses create, edit and negotiate contracts using AI, so legal work stops being the thing that holds a deal up. It covers 1,000+ contract types across 150+ jurisdictions and 40+ languages, and is trusted by over 200,000 users. Genie is backed by Google Ventures and Khosla Ventures.\n\nWe've partnered with Women's IP Alliance to bring its members a better way to handle contracts, from licensing and assignment agreements to NDAs, without needing a full legal team on hand for every one.\n\nThe offer\nAs a Women's IP Alliance member, you get:\n• 50% off Genie Pro for your first 3 months\n• Full access to Genie's contract creation, editing and negotiation tools\n• Promo code: WIPA\n• Landing page: https://www.genieai.co/partners/wipa\n• Contact: partnerships@genieai.co"
+      text: "About Genie\nGenie AI helps businesses create, edit and negotiate contracts using AI, so legal work stops being the thing that holds a deal up. It covers 1,000+ contract types across 150+ jurisdictions and 40+ languages, and is trusted by over 200,000 users. Genie is backed by Google Ventures and Khosla Ventures.\n\nWe've partnered with Women's IP Alliance to bring its members a better way to handle contracts, from licensing and assignment agreements to NDAs, without needing a full legal team on hand for every one.\n\nThe offer\nAs a Women's IP Alliance member, you get:\n• 50% off Genie Pro for your first 3 months (Promo code: WIPA)\n• 25% off Genie Pro for 12 months (Promo code: WIPA25)\n• Full access to Genie's contract creation, editing and negotiation tools\n• Landing page: https://www.genieai.co/partners/wipa\n• Contact: partnerships@genieai.co"
     }
   },
   services: [

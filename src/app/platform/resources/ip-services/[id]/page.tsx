@@ -145,8 +145,8 @@ const MOCK_COMPANIES = [
     location: "London, UK & Worldwide (150+ Jurisdictions)",
     website: "www.genieai.co",
     landingPage: "https://www.genieai.co/partners/wipa",
-    promoCode: "WIPA",
-    offer: "50% off Genie Pro for your first 3 months",
+    promoCode: "WIPA / WIPA25",
+    offer: "50% off for 3 Months (Code: WIPA) or 25% off for 12 Months (Code: WIPA25)",
     sponsored: true,
     logo: "/genie-ai-logo.svg",
     icon: "/genie-icon.svg",
@@ -179,24 +179,44 @@ const MOCK_COMPANIES = [
     locations: ["United Kingdom", "United States", "European Union", "150+ Jurisdictions Worldwide"]
   },
   {
-    id: "tech-protect-llp",
-    name: "TechProtect LLP",
-    type: "Digital IP Specialists",
-    location: "San Francisco, CA",
-    website: "www.techprotect.com",
-    sponsored: false,
-    description: "Specializing in copyright protection for digital assets, software patents, and AI-generated content licensing.",
-    services: ["Software Patents", "Digital Copyrights", "Open Source Compliance"],
-  },
-  {
-    id: "innovate-partners",
-    name: "Innovate Partners",
-    type: "Consulting & Strategy",
-    location: "London, UK",
-    website: "www.innovatepartners.co.uk",
-    sponsored: false,
-    description: "Strategic IP consulting firm helping startups and enterprises maximize the valuation of their intellectual property assets.",
-    services: ["IP Valuation", "Strategy Consulting", "Due Diligence"],
+    id: "lexisnexis-ip",
+    name: "LexisNexis® IP",
+    type: "Patent Analytics, Prosecution & Portfolio Intelligence",
+    location: "Global / Worldwide Practice (100+ Countries)",
+    website: "www.lexisnexisip.com",
+    landingPage: "https://www.lexisnexisip.com/partners/wipa",
+    promoCode: "WIPA-LN2026",
+    offer: "Special Access to PatentSight+™ & TotalPatent One®",
+    sponsored: true,
+    logo: "/lexisnexis-logo.svg",
+    icon: "/lexisnexis-icon.svg",
+    headline: "Transforming IP data into clear, actionable business insights.",
+    subheadline: "LexisNexis IP provides world-class patent analytics, drafting intelligence, and portfolio valuation for modern innovators.",
+    quote: "Patent data shouldn't be complex. With PatentSight+ and Lexis+, IP leaders turn vast patent portfolios into actionable corporate strategy.",
+    description: "LexisNexis IP empowers IP practitioners, patent attorneys, and innovation enterprises to make confident, data-driven decisions across the entire patent lifecycle.",
+    backedBy: ["RELX Group", "LexisNexis Legal & Professional"],
+    metrics: [
+      { label: "Global Patents", value: "140M+" },
+      { label: "Patent Authorities", value: "100+" },
+      { label: "Fortune 500 Clients", value: "85%" },
+      { label: "Data Quality Rating", value: "99.9%" }
+    ],
+    services: [
+      "PatentSight+™ Portfolio Valuation",
+      "TotalPatent One® Global Patent Search",
+      "PatentOptimizer® Drafting & Quality",
+      "Lexis+® IP Legal Research Intelligence",
+      "Custom Competitive Landscaping Reports",
+      "IP Litigation Analytics & Court Data",
+      "Freedom to Operate & Whitespace Analysis",
+      "WIPA Member Preferred Rate Structures"
+    ],
+    contact: {
+      phone: "+1 800 543 6862",
+      email: "ip-partnerships@lexisnexis.com",
+      address: "LexisNexis IP, 9443 Springboro Pike, Miamisburg, OH 45342, USA"
+    },
+    locations: ["United States", "United Kingdom", "European Union", "Asia-Pacific", "100+ Countries"]
   }
 ];
 
@@ -207,7 +227,7 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
   const [dbConfig, setDbConfig] = useState<IPServiceConfig | null>(null);
   const [activeTab, setActiveTab] = useState('Overview');
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-  const [copiedCode, setCopiedCode] = useState(false);
+  const [copiedCode, setCopiedCode] = useState<string | boolean>(false);
   const [selectedVersion, setSelectedVersion] = useState<'v1' | 'v2' | 'v3'>('v2');
 
   // Fetch dynamic configuration from Supabase
@@ -266,7 +286,7 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
     sponsored: dbConfig?.is_splash_sponsored ?? (mockCompany as any).sponsored,
     theme: dbConfig?.theme || (isGenie ? DEFAULT_GENIE_CONFIG.theme : DEFAULT_PSS_CONFIG.theme),
     hero: dbConfig?.hero || (isGenie ? DEFAULT_GENIE_CONFIG.hero : DEFAULT_PSS_CONFIG.hero),
-    backedBy: dbConfig?.backedBy || (mockCompany as any).backedBy || (isGenie ? DEFAULT_GENIE_CONFIG.backedBy : DEFAULT_PSS_CONFIG.backedBy),
+    backedBy: (dbConfig as any)?.backedBy || (mockCompany as any).backedBy || (isGenie ? DEFAULT_GENIE_CONFIG.backedBy : DEFAULT_PSS_CONFIG.backedBy),
     about: dbConfig?.about || (isGenie ? DEFAULT_GENIE_CONFIG.about : DEFAULT_PSS_CONFIG.about),
     metrics: dbConfig?.metrics || (isGenie ? DEFAULT_GENIE_CONFIG.metrics : DEFAULT_PSS_CONFIG.metrics),
     offer: dbConfig?.offer || (isGenie ? DEFAULT_GENIE_CONFIG.offer : DEFAULT_PSS_CONFIG.offer),
@@ -279,7 +299,7 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
 
   const handleCopyPromoCode = (code: string) => {
     navigator.clipboard.writeText(code);
-    setCopiedCode(true);
+    setCopiedCode(code);
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
@@ -528,24 +548,60 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                         </div>
                       </div>
 
-                      {/* Promo Code Box */}
-                      {company.offer?.promoCode && (
+                      {/* Promo Code Box / Multi-Code Box */}
+                      {((company.offer as any)?.promoCodes && (company.offer as any).promoCodes.length > 0) ? (
+                        <div className="w-full xl:w-auto shrink-0">
+                          <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 sm:p-7 rounded-3xl flex flex-col gap-3.5 shadow-2xl min-w-[320px]">
+                            <span className="text-purple-300 text-xs font-black uppercase tracking-widest text-center">
+                              Checkout Promo Codes
+                            </span>
+                            {(company.offer as any).promoCodes.map((pc: any, idx: number) => (
+                              <div key={idx} className="p-3.5 bg-black/40 rounded-2xl border border-purple-400/40 flex items-center justify-between gap-3">
+                                <div className="text-left">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xl sm:text-2xl font-black tracking-wider text-purple-300 font-mono">
+                                      {pc.code}
+                                    </span>
+                                    <span className="px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200 text-[10px] font-extrabold uppercase">
+                                      {pc.discount}
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-purple-200/80 mt-0.5 font-medium">
+                                    {pc.period}
+                                  </p>
+                                </div>
+                                <button 
+                                  onClick={() => handleCopyPromoCode(pc.code)}
+                                  className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all flex items-center gap-1.5 text-xs font-bold shrink-0 cursor-pointer active:scale-95 shadow-md"
+                                  title={`Copy ${pc.code}`}
+                                >
+                                  {copiedCode === pc.code ? <Check size={14} /> : <Copy size={14} />}
+                                  <span>{copiedCode === pc.code ? 'Copied' : 'Copy'}</span>
+                                </button>
+                              </div>
+                            ))}
+                            <p className="text-[11px] text-purple-200/80 text-center font-medium">
+                              Enter selected code at partner checkout
+                            </p>
+                          </div>
+                        </div>
+                      ) : company.offer?.promoCode ? (
                         <div className="w-full xl:w-auto shrink-0">
                           <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl flex flex-col items-center text-center shadow-2xl min-w-[280px]">
                             <span className="text-purple-300 text-xs font-black uppercase tracking-widest mb-2">
                               Checkout Promo Code
                             </span>
                             <div className="my-3 px-6 py-3 bg-black/40 rounded-2xl border border-purple-400/50 flex items-center gap-4">
-                              <span className="text-3xl font-black tracking-widest text-purple-300">
+                              <span className="text-3xl font-black tracking-widest text-purple-300 font-mono">
                                 {company.offer.promoCode}
                               </span>
                               <button 
                                 onClick={() => handleCopyPromoCode(company.offer?.promoCode || 'WIPA')}
-                                className="p-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-colors flex items-center gap-1.5 text-xs font-bold"
+                                className="p-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-colors flex items-center gap-1.5 text-xs font-bold cursor-pointer"
                                 title="Copy Promo Code"
                               >
-                                {copiedCode ? <Check size={16} /> : <Copy size={16} />}
-                                {copiedCode ? 'Copied' : 'Copy'}
+                                {copiedCode === company.offer.promoCode ? <Check size={16} /> : <Copy size={16} />}
+                                {copiedCode === company.offer.promoCode ? 'Copied' : 'Copy'}
                               </button>
                             </div>
                             <p className="text-xs text-purple-200/80 mt-2 font-medium">
@@ -553,7 +609,7 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                             </p>
                           </div>
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 )}
@@ -864,6 +920,29 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                         )}
                       </ol>
                     </div>
+
+                    {((company.offer as any)?.promoCodes && (company.offer as any).promoCodes.length > 0) && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                        {(company.offer as any).promoCodes.map((pc: any, idx: number) => (
+                          <div key={idx} className="p-4 bg-black/40 rounded-2xl border border-purple-400/40 flex items-center justify-between gap-3 shadow-lg">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl font-black text-purple-300 font-mono">{pc.code}</span>
+                                <span className="px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200 text-[10px] font-extrabold uppercase">{pc.discount}</span>
+                              </div>
+                              <p className="text-xs text-purple-200/80 mt-1 font-medium">{pc.period}</p>
+                            </div>
+                            <button
+                              onClick={() => handleCopyPromoCode(pc.code)}
+                              className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-md shrink-0"
+                            >
+                              {copiedCode === pc.code ? <Check size={14} /> : <Copy size={14} />}
+                              <span>{copiedCode === pc.code ? 'Copied' : 'Copy'}</span>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
 
                     <div className="flex flex-wrap items-center gap-4">
                       <a 
