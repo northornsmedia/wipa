@@ -223,7 +223,7 @@ export default function IntelligencePage() {
                 {/* Official Logo & Partnership Badges */}
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 text-[#E8171F] text-xs font-extrabold border border-red-500/20 shadow-xs">
-                    <img src="/lexisnexis-icon.svg" alt="LexisNexis" className="w-4 h-4 rounded-full" />
+                    <img src="/lexisnexis-icon.png" alt="LexisNexis" className="w-4 h-4 object-contain" />
                     <span>Official Global IP Intelligence Partner</span>
                   </div>
 
@@ -235,14 +235,20 @@ export default function IntelligencePage() {
 
                 {/* Main Headline with Official Logo */}
                 <div className="space-y-3">
-                  <div className="flex items-center gap-4">
-                    <div className="h-9 sm:h-11">
-                      <img 
-                        src="/lexisnexis-logo.svg" 
-                        alt="LexisNexis IP Solutions" 
-                        className="h-full w-auto object-contain dark:brightness-110" 
-                      />
-                    </div>
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src="/lexisnexis-logo.png" 
+                      alt="LexisNexis" 
+                      className="h-10 sm:h-12 w-auto object-contain block dark:hidden" 
+                    />
+                    <img 
+                      src="/lexisnexis-logo-white.png" 
+                      alt="LexisNexis" 
+                      className="h-10 sm:h-12 w-auto object-contain hidden dark:block" 
+                    />
+                    <span className="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-[#E8171F] font-black text-[11px] tracking-wider uppercase border border-red-200 dark:border-red-900/50">
+                      IP Solutions
+                    </span>
                   </div>
 
                   <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-[1.15]">
@@ -304,9 +310,9 @@ export default function IntelligencePage() {
                     <div className="flex items-center justify-between border-b border-white/10 pb-4">
                       <div className="flex items-center gap-3">
                         <img 
-                          src="/lexisnexis-icon.svg" 
+                          src="/lexisnexis-icon.png" 
                           alt="LexisNexis" 
-                          className="w-12 h-12 rounded-2xl shadow-md object-contain" 
+                          className="w-12 h-12 rounded-2xl shadow-md object-contain bg-white/5 p-1" 
                         />
                         <div>
                           <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#E8171F]">
@@ -642,9 +648,9 @@ export default function IntelligencePage() {
         <div className="p-6 rounded-3xl bg-white dark:bg-[#151c2c] border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <img 
-              src="/lexisnexis-icon.svg" 
+              src="/lexisnexis-icon.png" 
               alt="LexisNexis" 
-              className="w-10 h-10 rounded-xl shadow-sm object-contain" 
+              className="w-11 h-11 rounded-2xl shadow-sm object-contain bg-white dark:bg-gray-800 p-1 border border-gray-200 dark:border-gray-700" 
             />
             <div>
               <div className="text-xs font-bold text-gray-900 dark:text-white">LexisNexis® Global IP Intelligence Partner</div>
@@ -677,8 +683,20 @@ export default function IntelligencePage() {
             
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 text-[#E8171F] text-xs font-bold uppercase mb-2 border border-red-500/20">
-                  <Sparkles size={13} /> WIPA Member Advantage
+                <div className="flex items-center gap-2 mb-2.5">
+                  <img 
+                    src="/lexisnexis-logo.png" 
+                    alt="LexisNexis" 
+                    className="h-6 w-auto object-contain block dark:hidden" 
+                  />
+                  <img 
+                    src="/lexisnexis-logo-white.png" 
+                    alt="LexisNexis" 
+                    className="h-6 w-auto object-contain hidden dark:block" 
+                  />
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-500/10 text-[#E8171F] text-[10px] font-extrabold uppercase border border-red-500/20">
+                    <Sparkles size={11} /> WIPA Member Advantage
+                  </span>
                 </div>
                 <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white">
                   {trialFormSubmitted ? 'Access Request Confirmed' : 'Claim LexisNexis® VIP Access'}
