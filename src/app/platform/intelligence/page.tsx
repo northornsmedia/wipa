@@ -296,59 +296,59 @@ export default function IntelligencePage() {
 
               </div>
 
-              {/* Right 5 Columns: Digital VIP Member Access Pass Card */}
+              {/* Right 5 Columns: Digital VIP Member Access Pass Card (White in Light Theme / Dark in Dark Theme) */}
               <div className="lg:col-span-5 w-full">
-                <div className="relative rounded-3xl bg-gradient-to-br from-gray-900 via-slate-900 to-[#151c2c] text-white p-6 sm:p-7 shadow-xl border border-gray-700/80 overflow-hidden">
+                <div className="relative rounded-3xl bg-gray-50/90 dark:bg-[#111625] text-gray-900 dark:text-white p-6 sm:p-7 shadow-lg border border-gray-200 dark:border-gray-700/80 overflow-hidden">
                   
-                  {/* Card Glowing Red Accents */}
-                  <div className="absolute -top-12 -right-12 w-44 h-44 bg-[#E8171F]/30 rounded-full blur-2xl pointer-events-none" />
-                  <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-[#5a32fa]/20 rounded-full blur-2xl pointer-events-none" />
+                  {/* Card Subtle Red Accents */}
+                  <div className="absolute -top-12 -right-12 w-44 h-44 bg-[#E8171F]/10 dark:bg-[#E8171F]/20 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-[#5a32fa]/5 dark:bg-[#5a32fa]/10 rounded-full blur-2xl pointer-events-none" />
 
                   <div className="relative z-10 space-y-5">
                     
                     {/* Pass Header Lockup */}
-                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                    <div className="flex items-center justify-between border-b border-gray-200/80 dark:border-white/10 pb-4">
                       <div className="flex items-center gap-3">
                         <img 
                           src="/lexisnexis-icon.png" 
                           alt="LexisNexis" 
-                          className="w-12 h-12 rounded-2xl shadow-md object-contain bg-white/5 p-1" 
+                          className="w-12 h-12 rounded-2xl shadow-sm object-contain bg-white dark:bg-white/5 p-1 border border-gray-200/60 dark:border-white/10" 
                         />
                         <div>
                           <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#E8171F]">
                             WIPA VIP Access Pass
                           </div>
-                          <div className="text-base font-black text-white">
+                          <div className="text-base font-black text-gray-900 dark:text-white">
                             LexisNexis® IP Suite
                           </div>
                         </div>
                       </div>
 
-                      <div className="p-2 rounded-xl bg-white/10 border border-white/15">
+                      <div className="p-2 rounded-xl bg-emerald-50 dark:bg-white/10 border border-emerald-200/80 dark:border-white/15 text-emerald-600 dark:text-emerald-400">
                         <ShieldCheck size={22} className="text-[#00d26a]" />
                       </div>
                     </div>
 
                     {/* Member Pass Metadata */}
                     <div className="space-y-2.5 text-xs">
-                      <div className="flex items-center justify-between text-gray-300">
+                      <div className="flex items-center justify-between text-gray-600 dark:text-gray-300">
                         <span>Pass Reference:</span>
-                        <span className="font-mono font-bold text-white bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/10">
+                        <span className="font-mono font-bold text-gray-900 dark:text-white bg-white dark:bg-white/10 px-2.5 py-0.5 rounded-lg border border-gray-200 dark:border-white/10 shadow-2xs">
                           LN-WIPA-2026-VIP
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between text-gray-300">
+                      <div className="flex items-center justify-between text-gray-600 dark:text-gray-300">
                         <span>Member Privilege:</span>
                         <span className="font-bold text-[#E8171F]">Exclusive 20% Firm Discount</span>
                       </div>
 
-                      <div className="flex items-center justify-between text-gray-300">
+                      <div className="flex items-center justify-between text-gray-600 dark:text-gray-300">
                         <span>Trial Duration:</span>
-                        <span className="font-bold text-white">30 Days Guided Access</span>
+                        <span className="font-bold text-gray-900 dark:text-white">30 Days Guided Access</span>
                       </div>
 
-                      <div className="flex items-center justify-between text-gray-300">
+                      <div className="flex items-center justify-between text-gray-600 dark:text-gray-300">
                         <span>Status:</span>
                         <span className="inline-flex items-center gap-1 font-bold text-[#00d26a]">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#00d26a] animate-pulse" /> Verified Eligible
@@ -357,23 +357,23 @@ export default function IntelligencePage() {
                     </div>
 
                     {/* Included Solutions Chips */}
-                    <div className="pt-2 border-t border-white/10 space-y-2">
-                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">
+                    <div className="pt-2 border-t border-gray-200/80 dark:border-white/10 space-y-2">
+                      <div className="text-[10px] font-extrabold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                         Included Suite Products:
                       </div>
                       <div className="flex flex-wrap gap-1.5 text-[11px]">
                         {['PatentSight+™', 'PatentAdvisor®', 'TotalPatent One®', 'IPlytics™', 'PatentOptimizer®'].map((p) => (
-                          <span key={p} className="px-2.5 py-1 rounded-lg bg-white/10 text-white font-semibold border border-white/10">
+                          <span key={p} className="px-2.5 py-1 rounded-lg bg-white dark:bg-white/10 text-gray-700 dark:text-white font-semibold border border-gray-200 dark:border-white/10 shadow-2xs">
                             {p}
                           </span>
                         ))}
                       </div>
                     </div>
 
-                    {/* Action Button inside Pass (Red Glow) */}
+                    {/* Action Button inside Pass */}
                     <button
                       onClick={() => openTrialModal('LexisNexis® Complete IP Suite 30-Day VIP Pass')}
-                      className="w-full py-3.5 rounded-full bg-[#E8171F] hover:bg-[#c91219] text-white font-extrabold text-xs shadow-lg shadow-red-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                      className="w-full py-3.5 rounded-full bg-[#E8171F] hover:bg-[#c91219] text-white font-extrabold text-xs shadow-md shadow-red-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                     >
                       <Sparkles size={14} /> Activate My 30-Day VIP Pass
                     </button>
