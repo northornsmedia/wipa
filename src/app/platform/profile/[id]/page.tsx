@@ -71,7 +71,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     memberId: '',
     verificationStatus: 'verified',
     isWipaRecommended: false,
-    businessProfile: null as any
+    businessProfile: null as any,
+    positions: [] as any[]
   });
 
   const [stats, setStats] = useState({ connections: 0, followers: 0, posts: 0 });
@@ -91,6 +92,19 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
           
         if (data) {
           const resolvedId = data.id;
+          const parsedPositions = Array.isArray(data.experience_data) && data.experience_data.length > 0
+            ? data.experience_data
+            : [
+                {
+                  id: 'pos-1',
+                  title: data.role || 'Intellectual Property Specialist | WIPA Member',
+                  company: data.company || 'International IP Practice',
+                  location: data.country || 'Global',
+                  years: data.experience_years || 5,
+                  current: true,
+                  description: ''
+                }
+              ];
           
           setProfileData({
             id: resolvedId,
@@ -111,7 +125,8 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             memberId: data.member_id || '',
             verificationStatus: data.verification_status || 'verified',
             isWipaRecommended: data.is_wipa_recommended ?? false,
-            businessProfile: null
+            businessProfile: null,
+            positions: parsedPositions
           });
 
           // Record Profile View (deduplicated & filtered for self-views)
@@ -792,16 +807,43 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Experience</h3>
                 <div className="space-y-6">
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/50 flex items-center justify-center text-xl shrink-0">
-                      ⚖️
+                  {((profileData.positions && profileData.positions.length > 0) ? profileData.positions : [
+                    {
+                      id: 'pos-1',
+                      title: profileData.role,
+                      company: profileData.company,
+                      location: profileData.location,
+                      years: profileData.experienceYears,
+                      current: true
+                    }
+                  ]).map((pos: any, pIdx: number) => (
+                    <div key={pos.id || pIdx} className="flex gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/50 flex items-center justify-center text-xl shrink-0">
+                        ⚖️
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-base font-bold text-gray-900 dark:text-white">{pos.title}</h4>
+                          {pos.current && (
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold uppercase">
+                              Current
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">{pos.company}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                          {pos.years ? `${pos.years} yrs Experience` : ''}
+                          {pos.years && pos.location ? ' · ' : ''}
+                          {pos.location || ''}
+                        </p>
+                        {pos.description && (
+                          <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 leading-relaxed whitespace-pre-line bg-gray-50/60 dark:bg-white/[0.02] p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                            {pos.description}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h4 className="text-base font-bold text-gray-900 dark:text-white">{profileData.role}</h4>
-                      <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">{profileData.company}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{profileData.experienceYears} yrs Experience · {profileData.location}</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             )}

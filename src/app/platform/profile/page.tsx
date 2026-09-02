@@ -22,6 +22,18 @@ import { fetchUserAnalytics, UserAnalytics } from '@/lib/analytics';
 import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
 import ImageCropperModal from '@/components/ImageCropperModal';
 
+export interface PositionItem {
+  id: string;
+  title: string;
+  company: string;
+  location?: string;
+  years?: number | string;
+  current?: boolean;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+}
+
 export default function ProfilePage() {
   const { user, setUser } = useAppStore();
   const router = useRouter();
@@ -45,7 +57,8 @@ export default function ProfilePage() {
     memberId: user?.member_id || '',
     verificationStatus: user?.verification_status || 'verified',
     isWipaRecommended: false,
-    businessProfile: null as any
+    businessProfile: null as any,
+    positions: [] as PositionItem[]
   });
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -55,6 +68,11 @@ export default function ProfilePage() {
   const [aboutSaveError, setAboutSaveError] = useState<string | null>(null);
   const [isGeneratingBio, setIsGeneratingBio] = useState(false);
   const [aiBioSuccess, setAiBioSuccess] = useState(false);
+
+  const [isEditExperienceModalOpen, setIsEditExperienceModalOpen] = useState(false);
+  const [experienceList, setExperienceList] = useState<PositionItem[]>([]);
+  const [isSavingExperience, setIsSavingExperience] = useState(false);
+  const [experienceSaveError, setExperienceSaveError] = useState<string | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -170,6 +188,20 @@ export default function ProfilePage() {
       }
         
       if (data) {
+        const parsedPositions = Array.isArray(data.experience_data) && data.experience_data.length > 0
+          ? data.experience_data
+          : [
+              {
+                id: 'pos-1',
+                title: data.role || 'Intellectual Property Specialist | WIPA Member',
+                company: data.company || 'International IP Practice',
+                location: data.country || 'Global',
+                years: data.experience_years ?? 5,
+                current: true,
+                description: ''
+              }
+            ];
+
         const newProfile = {
           ...profileData,
           name: data.full_name || user?.name || 'WIPA Member',
@@ -188,10 +220,12 @@ export default function ProfilePage() {
           memberId: data.member_id || profileData.memberId,
           verificationStatus: data.verification_status || 'verified',
           isWipaRecommended: data.is_wipa_recommended ?? false,
-          businessProfile: data.business_profiles
+          businessProfile: data.business_profiles,
+          positions: parsedPositions
         };
         setProfileData(newProfile);
         setEditForm(newProfile);
+        setExperienceList(parsedPositions);
         if (data.cover_url) {
           setCoverImage(data.cover_url);
         }
@@ -464,6 +498,118 @@ export default function ProfilePage() {
       setAboutSaveError('Could not generate bio with AI. Please try again.');
     } finally {
       setIsGeneratingBio(false);
+    }
+  };
+
+  const handleAddPosition = () => {
+    setExperienceList(prev => [
+      ...prev,
+      {
+        id: `pos-${Date.now()}`,
+        title: '',
+        company: '',
+        location: '',
+        years: 1,
+        current: false,
+        startDate: '',
+        endDate: '',
+        description: ''
+      }
+    ]);
+  };
+
+  const handleUpdatePosition = (index: number, field: keyof PositionItem, value: any) => {
+    setExperienceList(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  const handleRemovePosition = (index: number) => {
+    setExperienceList(prev => {
+      if (prev.length <= 1) {
+        // Reset instead of empty array
+        return [{
+          id: `pos-${Date.now()}`,
+          title: '',
+          company: '',
+          location: '',
+          years: 1,
+          current: true,
+          description: ''
+        }];
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const handleSaveExperience = async () => {
+    let currentUserId = user?.id;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id;
+    }
+    if (!currentUserId) {
+      setExperienceSaveError("User session not found. Please log in again.");
+      return;
+    }
+
+    const validPositions = experienceList.filter(p => p.title.trim() || p.company.trim());
+    if (validPositions.length === 0) {
+      setExperienceSaveError("Please add at least one position with a title or company.");
+      return;
+    }
+
+    setIsSavingExperience(true);
+    setExperienceSaveError(null);
+
+    try {
+      // Find current or primary position (first position)
+      const primaryPos = validPositions.find(p => p.current) || validPositions[0];
+      const updatePayload: any = {
+        experience_data: validPositions,
+        role: primaryPos.title || profileData.role,
+        company: primaryPos.company || profileData.company,
+        country: primaryPos.location || profileData.location
+      };
+      if (primaryPos.years && !isNaN(Number(primaryPos.years))) {
+        updatePayload.experience_years = Number(primaryPos.years);
+      }
+
+      const { error } = await supabase.from('profiles').update(updatePayload).eq('id', currentUserId);
+      if (error) throw error;
+
+      setProfileData(prev => ({
+        ...prev,
+        role: primaryPos.title || prev.role,
+        company: primaryPos.company || prev.company,
+        location: primaryPos.location || prev.location,
+        experienceYears: Number(primaryPos.years) || prev.experienceYears,
+        positions: validPositions
+      }));
+
+      setEditForm(prev => ({
+        ...prev,
+        role: primaryPos.title || prev.role,
+        company: primaryPos.company || prev.company,
+        location: primaryPos.location || prev.location,
+        experienceYears: Number(primaryPos.years) || prev.experienceYears
+      }));
+
+      setUser({
+        ...user,
+        role: primaryPos.title || user.role,
+        company: primaryPos.company || user.company,
+        country: primaryPos.location || user.country
+      });
+
+      setIsEditExperienceModalOpen(false);
+    } catch (err: any) {
+      console.error("Error saving positions:", err);
+      setExperienceSaveError(err?.message || "Failed to save positions. Please try again.");
+    } finally {
+      setIsSavingExperience(false);
     }
   };
 
@@ -1218,35 +1364,82 @@ export default function ProfilePage() {
             {activeTab === 'experience' && (
               <div className="bg-white dark:bg-[#151c2c] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Experience</h3>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Experience</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Professional practice & career history</p>
+                  </div>
                   <button 
-                    onClick={() => { setProfileSaveError(null); setEditForm(profileData); setIsEditModalOpen(true); }}
-                    className="px-3 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1"
+                    onClick={() => {
+                      setExperienceSaveError(null);
+                      const currentPositions = (profileData.positions && profileData.positions.length > 0)
+                        ? profileData.positions
+                        : [
+                            {
+                              id: 'pos-1',
+                              title: profileData.role || 'Intellectual Property Specialist | WIPA Member',
+                              company: profileData.company || 'International IP Practice',
+                              location: profileData.location || 'Global',
+                              years: profileData.experienceYears || 5,
+                              current: true,
+                              startDate: '',
+                              endDate: '',
+                              description: ''
+                            }
+                          ];
+                      setExperienceList(JSON.parse(JSON.stringify(currentPositions)));
+                      setIsEditExperienceModalOpen(true);
+                    }}
+                    className="px-3.5 py-1.5 text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:bg-[#5a32fa]/10 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+                    title="Add or Edit Positions"
                   >
-                    <Plus size={16} /> Edit position
+                    <Plus size={15} />
+                    <span>Edit position</span>
                   </button>
                 </div>
 
                 <div className="space-y-6">
-                  {/* Position 1 */}
-                  <div className="flex gap-4 group">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/50 flex items-center justify-center text-xl shrink-0">
-                      ⚖️
+                  {((profileData.positions && profileData.positions.length > 0) ? profileData.positions : [
+                    {
+                      id: 'pos-1',
+                      title: profileData.role || 'Intellectual Property Specialist | WIPA Member',
+                      company: profileData.company || 'International IP Practice',
+                      location: profileData.location || 'Global',
+                      years: profileData.experienceYears || 5,
+                      current: true,
+                      description: ''
+                    }
+                  ]).map((pos, pIdx) => (
+                    <div key={pos.id || pIdx} className="flex gap-4 group">
+                      <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/50 flex items-center justify-center text-xl shrink-0">
+                        ⚖️
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                            {pos.title || 'Intellectual Property Specialist'}
+                          </h4>
+                          {pos.current && (
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold uppercase">
+                              Current
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">
+                          {pos.company || 'International IP Practice'}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                          {pos.years ? `${pos.years} years experience` : ''}
+                          {pos.years && pos.location ? ' · ' : ''}
+                          {pos.location || ''}
+                        </p>
+                        {pos.description && (
+                          <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 leading-relaxed whitespace-pre-line bg-gray-50/60 dark:bg-white/[0.02] p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                            {pos.description}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h4 className="text-base font-bold text-gray-900 dark:text-white">
-                        {profileData.role || 'Intellectual Property Specialist | WIPA Member'}
-                      </h4>
-                      <p className="text-sm font-semibold text-[#5a32fa] dark:text-[#ff90e8]">
-                        {profileData.company || 'International IP Practice'}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        {profileData.experienceYears > 0 ? `${profileData.experienceYears} years experience` : '5+ years experience'}
-                        {' · '}
-                        {profileData.location || 'Global'}
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -1868,6 +2061,188 @@ export default function ProfilePage() {
                 <span>{isSavingAbout ? 'Saving...' : 'Save Changes'}</span>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= EDIT EXPERIENCE & POSITIONS MODAL ================= */}
+      {isEditExperienceModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#151c2c] w-full max-w-2xl max-h-[90vh] rounded-3xl p-6 sm:p-8 border border-gray-200 dark:border-gray-800 shadow-2xl flex flex-col text-gray-900 dark:text-white">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Manage Experience & Positions</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Add, edit, or remove your career history and practice roles</p>
+              </div>
+              <button 
+                onClick={() => setIsEditExperienceModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Scrollable Positions List */}
+            <div className="flex-1 overflow-y-auto py-4 space-y-5 pr-1">
+              {experienceList.map((pos, idx) => (
+                <div 
+                  key={pos.id || idx} 
+                  className="p-5 rounded-2xl bg-gray-50/70 dark:bg-gray-800/40 border border-gray-200/80 dark:border-gray-700/80 space-y-4 relative group"
+                >
+                  {/* Position Header & Delete button */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-[#5a32fa] text-white text-xs font-black flex items-center justify-center">
+                        {idx + 1}
+                      </span>
+                      <span className="font-bold text-xs sm:text-sm text-gray-900 dark:text-white">
+                        {pos.title ? pos.title : `Position #${idx + 1}`}
+                      </span>
+                      {idx === 0 && (
+                        <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-[#5a32fa] dark:text-[#ff90e8] text-[10px] font-bold">
+                          Primary / Headline
+                        </span>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePosition(idx)}
+                      className="text-gray-400 hover:text-rose-500 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+                      title="Remove this position"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+
+                  {/* Form Inputs Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                    <div>
+                      <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        Job Title / Role <span className="text-red-500">*</span>
+                      </label>
+                      <input 
+                        type="text" 
+                        required
+                        value={pos.title} 
+                        placeholder="e.g. Senior Patent Attorney"
+                        onChange={(e) => handleUpdatePosition(idx, 'title', e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none text-xs font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        Company / Organization <span className="text-red-500">*</span>
+                      </label>
+                      <input 
+                        type="text" 
+                        required
+                        value={pos.company} 
+                        placeholder="e.g. International IP Practice"
+                        onChange={(e) => handleUpdatePosition(idx, 'company', e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none text-xs font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        Location / Country
+                      </label>
+                      <input 
+                        type="text" 
+                        value={pos.location || ''} 
+                        placeholder="e.g. Delhi, India or London, UK"
+                        onChange={(e) => handleUpdatePosition(idx, 'location', e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none text-xs font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">
+                        Years in this role / Experience
+                      </label>
+                      <input 
+                        type="number" 
+                        min={0}
+                        max={60}
+                        value={pos.years ?? ''} 
+                        placeholder="e.g. 5"
+                        onChange={(e) => handleUpdatePosition(idx, 'years', e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none text-xs font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Current Position Checkbox */}
+                  <label className="flex items-center gap-2 cursor-pointer pt-1">
+                    <input 
+                      type="checkbox"
+                      checked={!!pos.current}
+                      onChange={(e) => handleUpdatePosition(idx, 'current', e.target.checked)}
+                      className="w-4 h-4 rounded text-[#5a32fa] focus:ring-[#5a32fa]"
+                    />
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                      I am currently working in this role
+                    </span>
+                  </label>
+
+                  {/* Description / Highlights */}
+                  <div>
+                    <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1 text-xs">
+                      Key Highlights & Responsibilities (Optional)
+                    </label>
+                    <textarea 
+                      rows={2}
+                      value={pos.description || ''} 
+                      placeholder="e.g. Leading cross-border patent prosecution and trademark enforcement across APAC region..."
+                      onChange={(e) => handleUpdatePosition(idx, 'description', e.target.value)}
+                      className="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#151c2c] focus:border-[#5a32fa] outline-none text-xs leading-relaxed"
+                    />
+                  </div>
+                </div>
+              ))}
+
+              {/* Add Position Button */}
+              <button
+                type="button"
+                onClick={handleAddPosition}
+                className="w-full py-3.5 rounded-2xl border-2 border-dashed border-[#5a32fa]/40 hover:border-[#5a32fa] bg-[#5a32fa]/5 hover:bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#ff90e8] font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <Plus size={16} />
+                <span>+ Add Another Position</span>
+              </button>
+            </div>
+
+            {/* Error Message */}
+            {experienceSaveError && (
+              <p className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300 shrink-0">
+                Could not save: {experienceSaveError}
+              </p>
+            )}
+
+            {/* Modal Actions */}
+            <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3 shrink-0">
+              <button 
+                type="button"
+                onClick={() => setIsEditExperienceModalOpen(false)}
+                className="px-5 py-2.5 text-xs sm:text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button"
+                onClick={handleSaveExperience}
+                disabled={isSavingExperience}
+                className="px-6 py-2.5 text-xs sm:text-sm font-bold bg-[#5a32fa] hover:bg-[#4a24db] text-white rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+              >
+                {isSavingExperience ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                <span>{isSavingExperience ? 'Saving...' : 'Save Positions'}</span>
+              </button>
+            </div>
+
           </div>
         </div>
       )}
