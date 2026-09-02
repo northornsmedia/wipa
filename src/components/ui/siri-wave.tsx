@@ -309,14 +309,16 @@ export function SiriWave({
 
     try {
       const compile = (type: number, src: string) => {
-        if (!gl) return null
+        if (!gl || gl.isContextLost()) return null
         const shader = gl.createShader(type)
         if (!shader) return null
         gl.shaderSource(shader, src)
         gl.compileShader(shader)
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
           const log = gl.getShaderInfoLog(shader)
-          console.warn("SiriWave shader compile warning:", log)
+          if (log && log.trim() && !gl.isContextLost()) {
+            console.warn("SiriWave shader compile warning:", log)
+          }
           gl.deleteShader(shader)
           return null
         }
@@ -339,7 +341,10 @@ export function SiriWave({
       gl.attachShader(program, fs)
       gl.linkProgram(program)
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.warn("SiriWave program link warning:", gl.getProgramInfoLog(program))
+        const linkLog = gl.getProgramInfoLog(program)
+        if (linkLog && linkLog.trim() && !gl.isContextLost()) {
+          console.warn("SiriWave program link warning:", linkLog)
+        }
         return
       }
       gl.useProgram(program)
