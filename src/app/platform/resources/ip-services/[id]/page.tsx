@@ -489,27 +489,7 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                   </div>
                 )}
 
-                {/* 3. About Section */}
-                <section className="bg-white dark:bg-[#0f172a] p-8 md:p-12 rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-sm w-full">
-                  <div className="inline-block px-3.5 py-1.5 rounded-full bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-black uppercase tracking-wider mb-4">
-                    {company.about?.badge || `About ${company.name}`}
-                  </div>
-                  <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-6">
-                    {company.about?.heading || "Legal AI built for modern business teams"}
-                  </h3>
-                  <div className="space-y-5 text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-medium max-w-5xl">
-                    {company.about?.paragraphs?.map((para, idx) => (
-                      <p key={idx}>{para}</p>
-                    ))}
-                    {company.about?.quote && (
-                      <p className="border-l-4 border-purple-500 pl-5 italic text-slate-800 dark:text-slate-200 font-semibold bg-purple-50/50 dark:bg-purple-950/20 py-3 rounded-r-2xl">
-                        "{company.about.quote}"
-                      </p>
-                    )}
-                  </div>
-                </section>
-
-                {/* 4. Exclusive Offer Banner Card */}
+                {/* 3. Exclusive Offer Banner Card (Placed above About Genie) */}
                 {company.offer?.enabled !== false && (
                   <div className="bg-gradient-to-br from-purple-950 via-[#2e1065] to-slate-950 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border border-purple-500/30 w-full text-white">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 blur-[100px] rounded-full pointer-events-none"></div>
@@ -521,7 +501,7 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                         </span>
                         
                         <h3 className="text-3xl md:text-5xl font-black text-white mb-4 leading-tight">
-                          {company.offer?.title || "50% off Genie Pro for your first 3 months"}
+                          {company.offer?.title || "25% off Genie Pro for your first 12 months"}
                         </h3>
                         
                         <p className="text-purple-200 text-lg leading-relaxed mb-6 max-w-2xl font-medium">
@@ -535,7 +515,7 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                             rel="noopener noreferrer"
                             className="bg-white hover:bg-purple-50 text-purple-950 px-8 py-4 rounded-2xl font-black flex items-center gap-2 shadow-xl hover:scale-105 transition-all text-base"
                           >
-                            {company.offer?.ctaText || "Claim Your Discount"} <ArrowRight size={18} />
+                            {company.offer?.ctaText || "Claim Your 25% Discount"} <ArrowRight size={18} />
                           </a>
                           {company.offer?.contactEmail && (
                             <a 
@@ -548,44 +528,8 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                         </div>
                       </div>
 
-                      {/* Promo Code Box / Multi-Code Box */}
-                      {((company.offer as any)?.promoCodes && (company.offer as any).promoCodes.length > 0) ? (
-                        <div className="w-full xl:w-auto shrink-0">
-                          <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 sm:p-7 rounded-3xl flex flex-col gap-3.5 shadow-2xl min-w-[320px]">
-                            <span className="text-purple-300 text-xs font-black uppercase tracking-widest text-center">
-                              Checkout Promo Codes
-                            </span>
-                            {(company.offer as any).promoCodes.map((pc: any, idx: number) => (
-                              <div key={idx} className="p-3.5 bg-black/40 rounded-2xl border border-purple-400/40 flex items-center justify-between gap-3">
-                                <div className="text-left">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xl sm:text-2xl font-black tracking-wider text-purple-300 font-mono">
-                                      {pc.code}
-                                    </span>
-                                    <span className="px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-200 text-[10px] font-extrabold uppercase">
-                                      {pc.discount}
-                                    </span>
-                                  </div>
-                                  <p className="text-[11px] text-purple-200/80 mt-0.5 font-medium">
-                                    {pc.period}
-                                  </p>
-                                </div>
-                                <button 
-                                  onClick={() => handleCopyPromoCode(pc.code)}
-                                  className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all flex items-center gap-1.5 text-xs font-bold shrink-0 cursor-pointer active:scale-95 shadow-md"
-                                  title={`Copy ${pc.code}`}
-                                >
-                                  {copiedCode === pc.code ? <Check size={14} /> : <Copy size={14} />}
-                                  <span>{copiedCode === pc.code ? 'Copied' : 'Copy'}</span>
-                                </button>
-                              </div>
-                            ))}
-                            <p className="text-[11px] text-purple-200/80 text-center font-medium">
-                              Enter selected code at partner checkout
-                            </p>
-                          </div>
-                        </div>
-                      ) : company.offer?.promoCode ? (
+                      {/* Promo Code Box */}
+                      {company.offer?.promoCode && (
                         <div className="w-full xl:w-auto shrink-0">
                           <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl flex flex-col items-center text-center shadow-2xl min-w-[280px]">
                             <span className="text-purple-300 text-xs font-black uppercase tracking-widest mb-2">
@@ -609,10 +553,30 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                             </p>
                           </div>
                         </div>
-                      ) : null}
+                      )}
                     </div>
                   </div>
                 )}
+
+                {/* 4. About Section */}
+                <section className="bg-white dark:bg-[#0f172a] p-8 md:p-12 rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-sm w-full">
+                  <div className="inline-block px-3.5 py-1.5 rounded-full bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-black uppercase tracking-wider mb-4">
+                    {company.about?.badge || `About ${company.name}`}
+                  </div>
+                  <h3 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-6">
+                    {company.about?.heading || "Legal AI built for modern business teams"}
+                  </h3>
+                  <div className="space-y-5 text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-medium max-w-5xl">
+                    {company.about?.paragraphs?.map((para, idx) => (
+                      <p key={idx}>{para}</p>
+                    ))}
+                    {company.about?.quote && (
+                      <p className="border-l-4 border-purple-500 pl-5 italic text-slate-800 dark:text-slate-200 font-semibold bg-purple-50/50 dark:bg-purple-950/20 py-3 rounded-r-2xl">
+                        "{company.about.quote}"
+                      </p>
+                    )}
+                  </div>
+                </section>
 
                 {/* 5. Three Content Versions */}
                 {company.versions && (
