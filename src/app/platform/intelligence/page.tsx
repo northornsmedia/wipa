@@ -31,6 +31,30 @@ interface ProductSolution {
 
 const PRODUCTS: ProductSolution[] = [
   {
+    id: 'protege',
+    name: 'Lexis+® with Protégé™',
+    shortName: 'Agentic Legal AI',
+    category: 'Generative AI',
+    tagline: 'Personalized, Agentic Generative AI for Legal & IP Practice',
+    description: 'Lexis+® with Protégé™ combines cutting-edge generative AI with the world’s most authoritative legal and patent databases. Autonomously draft complex patent claims, analyze contracts, and conduct multi-step legal research grounded entirely in cited Shepard’s® authority.',
+    icon: Sparkles,
+    accentColor: 'text-[#E8171F]',
+    accentBg: 'bg-red-50 dark:bg-red-950/30',
+    badge: 'NEW LAUNCH 2026',
+    metrics: [
+      { label: 'Proprietary Legal Corpus', value: '1.4B+ Records' },
+      { label: 'Hallucination Prevention', value: '100% Shepard’s® Grounded' },
+      { label: 'Drafting Efficiency Gain', value: 'Up to 5x Faster' }
+    ],
+    keyFeatures: [
+      'Agentic AI workflows that plan and execute multi-step IP and litigation research',
+      'Personalized drafting that adapts to your firm’s unique tone, precedents, and standards',
+      '100% grounded in LexisNexis primary law with point-in-time citation verification',
+      'Enterprise-grade security: Zero customer data shared or used to train public LLMs'
+    ],
+    useCase: 'IP Litigators, Managing Partners & Patent Counsel wanting to automate complex legal drafting and research.'
+  },
+  {
     id: 'patentsight',
     name: 'PatentSight+™',
     shortName: 'Portfolio Valuation',
@@ -362,7 +386,7 @@ export default function IntelligencePage() {
                         Included Suite Products:
                       </div>
                       <div className="flex flex-wrap gap-1.5 text-[11px]">
-                        {['PatentSight+™', 'PatentAdvisor®', 'TotalPatent One®', 'IPlytics™', 'PatentOptimizer®'].map((p) => (
+                        {['Lexis+® with Protégé™', 'PatentSight+™', 'PatentAdvisor®', 'TotalPatent One®', 'IPlytics™', 'PatentOptimizer®'].map((p) => (
                           <span key={p} className="px-2.5 py-1 rounded-lg bg-white dark:bg-white/10 text-gray-700 dark:text-white font-semibold border border-gray-200 dark:border-white/10 shadow-2xs">
                             {p}
                           </span>
@@ -384,6 +408,124 @@ export default function IntelligencePage() {
               </div>
 
             </div>
+          </div>
+        </div>
+
+        {/* ─── FEATURED SPOTLIGHT: LEXIS+® WITH PROTÉGÉ™ (NEW LAUNCH) ── */}
+        <div className="bg-gradient-to-br from-white via-red-50/40 to-slate-50 dark:from-[#151c2c] dark:via-[#1c1825] dark:to-[#111625] rounded-3xl border-2 border-red-500/30 dark:border-red-500/40 shadow-xl p-6 sm:p-10 mb-10 relative overflow-hidden">
+          
+          {/* Glowing Red & Purple Mesh Background */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#E8171F]/10 dark:bg-[#E8171F]/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/15 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+            
+            {/* Left Content */}
+            <div className="max-w-3xl space-y-4">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#E8171F] text-white text-xs font-black uppercase tracking-wider shadow-sm shadow-red-500/25 animate-pulse">
+                  <Sparkles size={13} /> NEW FLAGSHIP LAUNCH 2026
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 dark:bg-red-500/20 text-[#E8171F] text-xs font-bold border border-red-500/20">
+                  <Zap size={13} /> Next-Gen Agentic Legal & IP AI
+                </span>
+              </div>
+
+              <div className="space-y-1.5">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+                  Lexis+® with <span className="text-[#E8171F]">Protégé™</span>
+                </h2>
+                <p className="text-sm sm:text-base font-bold text-gray-700 dark:text-gray-200">
+                  Your personalized, agentic AI partner for complex IP drafting, patent claim generation, and legal research.
+                </p>
+              </div>
+
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-normal">
+                Lexis+® with Protégé™ combines next-generation conversational generative AI with the world’s most authoritative legal and patent repository. Conduct multi-step IP research, draft responses that reflect your firm’s unique style, and verify citations with 100% Shepard’s® authority.
+              </p>
+
+              {/* 4 Feature Highlights Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-gray-200/80 dark:border-white/10 text-xs text-gray-800 dark:text-gray-200 shadow-2xs">
+                  <Cpu size={16} className="text-[#E8171F] shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="block text-gray-900 dark:text-white font-bold">Agentic Multi-Step Reasoning</strong>
+                    <span className="text-[11px] text-gray-500 dark:text-gray-400">Plans and executes complex patent & prior art research autonomously.</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-gray-200/80 dark:border-white/10 text-xs text-gray-800 dark:text-gray-200 shadow-2xs">
+                  <FileCheck size={16} className="text-[#E8171F] shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="block text-gray-900 dark:text-white font-bold">Personalized Firm Voice</strong>
+                    <span className="text-[11px] text-gray-500 dark:text-gray-400">Drafts arguments and claims adapted to your firm’s standards & precedents.</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-gray-200/80 dark:border-white/10 text-xs text-gray-800 dark:text-gray-200 shadow-2xs">
+                  <ShieldCheck size={16} className="text-[#00d26a] shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="block text-gray-900 dark:text-white font-bold">100% Shepard’s® Grounded</strong>
+                    <span className="text-[11px] text-gray-500 dark:text-gray-400">Eliminates hallucinations with real-time verified legal authority citations.</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-white/80 dark:bg-white/[0.04] border border-gray-200/80 dark:border-white/10 text-xs text-gray-800 dark:text-gray-200 shadow-2xs">
+                  <Lock size={16} className="text-[#5a32fa] dark:text-[#ff90e8] shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="block text-gray-900 dark:text-white font-bold">Enterprise Vault Security</strong>
+                    <span className="text-[11px] text-gray-500 dark:text-gray-400">Privileged attorney-client confidentiality; zero data training on public LLMs.</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-3">
+                <button
+                  onClick={() => openTrialModal('Lexis+® with Protégé™ VIP Preview & Pilot Access')}
+                  className="px-7 py-3.5 rounded-full bg-[#E8171F] hover:bg-[#c91219] text-white font-black text-xs sm:text-sm shadow-md shadow-red-500/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <Sparkles size={16} /> Request Protégé™ VIP Preview
+                </button>
+
+                <button
+                  onClick={() => openTrialModal('Lexis+® with Protégé™ Live AI Demonstration')}
+                  className="px-6 py-3.5 rounded-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <Laptop size={16} className="text-[#E8171F]" /> Watch Live AI Demo
+                </button>
+              </div>
+
+            </div>
+
+            {/* Right KPI Box */}
+            <div className="shrink-0 w-full lg:w-72 p-6 rounded-3xl bg-white dark:bg-[#111625] border border-gray-200 dark:border-gray-700/80 shadow-md flex flex-col justify-between gap-4">
+              <div className="text-[11px] font-extrabold uppercase tracking-wider text-[#E8171F] flex items-center gap-1.5">
+                <Sparkle size={14} /> Protégé™ Benchmarks
+              </div>
+
+              <div className="space-y-3">
+                <div className="p-3 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase">Legal AI Corpus</div>
+                  <div className="text-xl font-black text-gray-900 dark:text-white">1.4B+ Records</div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase">Drafting Velocity</div>
+                  <div className="text-xl font-black text-[#E8171F]">Up to 5x Faster</div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700">
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase">Citation Accuracy</div>
+                  <div className="text-xl font-black text-emerald-600 dark:text-emerald-400">100% Shepard&apos;s®</div>
+                </div>
+              </div>
+
+              <div className="text-[11px] text-gray-500 dark:text-gray-400 text-center font-semibold">
+                Available now for WIPA Law Firms
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -741,7 +883,7 @@ export default function IntelligencePage() {
                 <div>
                   <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Select Solutions of Interest:</label>
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    {['PatentSight+™', 'PatentAdvisor®', 'TotalPatent One®', 'IPlytics™ (SEPs)', 'PatentOptimizer®'].map((p) => {
+                    {['Lexis+® with Protégé™', 'PatentSight+™', 'PatentAdvisor®', 'TotalPatent One®', 'IPlytics™ (SEPs)', 'PatentOptimizer®'].map((p) => {
                       const checked = trialFormData.selectedProducts.includes(p);
                       return (
                         <div 
