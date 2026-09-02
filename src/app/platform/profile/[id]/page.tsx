@@ -37,6 +37,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending_sent' | 'pending_received' | 'accepted'>('none');
   const [activeTab, setActiveTab] = useState<'activity' | 'about' | 'experience' | 'education' | 'skills'>('activity');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [storyProgress, setStoryProgress] = useState(0);
   const [previewModalImage, setPreviewModalImage] = useState<string | null>(null);
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -969,52 +970,75 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
 
       {/* ================= FULL-SCREEN INTRODUCTION STORY VIDEO MODAL ================= */}
       {isVideoModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="bg-[#0f172a] text-white w-full max-w-lg rounded-3xl border border-gray-800 shadow-2xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
-            
-            <div className="p-4 bg-black/40 backdrop-blur-md flex items-center justify-between z-10 border-b border-white/10">
-              <div className="flex items-center gap-3">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/90 backdrop-blur-md"
+          onClick={() => { setStoryProgress(0); setIsVideoModalOpen(false); }}
+        >
+          <div 
+            className="bg-black text-white w-full max-w-sm sm:max-w-md h-full sm:h-auto sm:max-h-[85vh] sm:rounded-3xl border-0 sm:border border-white/10 shadow-2xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Story Header & Progress Line */}
+            <div className="absolute top-0 left-0 right-0 z-30 p-4 pt-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-auto">
+              {/* Progress Line */}
+              <div className="w-full h-1 bg-white/30 rounded-full overflow-hidden mb-3">
                 <div 
-                  className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-sm overflow-hidden"
-                  style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover' }}
-                >
-                  {!profileData.avatarUrl && profileData.name.charAt(0)}
-                </div>
-                <div>
-                  <h4 className="font-bold text-sm text-white flex items-center gap-1.5">
-                    {profileData.name} <BadgeCheck size={14} className="text-[#00d26a]" />
-                  </h4>
-                  <p className="text-xs text-white/70">Introduction Story Video</p>
-                </div>
+                  className="h-full bg-white transition-all duration-100 ease-linear rounded-full"
+                  style={{ width: `${storyProgress}%` }}
+                />
               </div>
 
-              <button 
-                onClick={() => setIsVideoModalOpen(false)}
-                className="p-2 text-white/70 hover:text-white rounded-xl hover:bg-white/10 transition-colors"
-              >
-                <X size={20} />
-              </button>
+              {/* Story User Info & Close */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div 
+                    className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs ring-2 ring-white/50 overflow-hidden"
+                    style={{ backgroundImage: profileData.avatarUrl ? `url(${profileData.avatarUrl})` : undefined, backgroundSize: 'cover' }}
+                  >
+                    {!profileData.avatarUrl && profileData.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs sm:text-sm text-white flex items-center gap-1">
+                      {profileData.name} <BadgeCheck size={14} className="text-[#00d26a]" />
+                    </h4>
+                    <p className="text-[10px] text-white/70">Story Video</p>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => { setStoryProgress(0); setIsVideoModalOpen(false); }}
+                  className="p-1.5 text-white/80 hover:text-white rounded-full bg-black/40 hover:bg-black/60 transition-colors cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
-            <div className="w-full bg-black flex items-center justify-center min-h-[380px] max-h-[70vh] relative">
+            {/* Video Player Container */}
+            <div className="w-full h-full sm:min-h-[500px] sm:max-h-[75vh] bg-black flex items-center justify-center relative overflow-hidden">
               <video 
                 key={profileData.introVideoUrl}
-                controls
                 autoPlay
                 playsInline
                 preload="auto"
-                className="w-full h-full object-contain max-h-[65vh]"
+                onTimeUpdate={(e) => {
+                  const v = e.currentTarget;
+                  if (v.duration > 0) {
+                    setStoryProgress((v.currentTime / v.duration) * 100);
+                  }
+                }}
+                onEnded={() => {
+                  setStoryProgress(100);
+                  setIsVideoModalOpen(false);
+                }}
                 onError={(e) => {
                   e.currentTarget.src = DEFAULT_MOCK_VIDEO;
                 }}
+                className="w-full h-full object-cover sm:object-contain"
               >
                 <source src={profileData.introVideoUrl || DEFAULT_MOCK_VIDEO} type="video/mp4" />
                 Your browser does not support HTML video.
               </video>
-            </div>
-
-            <div className="p-4 bg-gray-900/90 text-center text-xs text-gray-400 border-t border-white/5">
-              <span>🌟 WIPA Video Introductions • Empowering Women in IP</span>
             </div>
 
           </div>
