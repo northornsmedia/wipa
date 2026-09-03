@@ -692,7 +692,7 @@ export default function PlatformPage() {
               <div className="w-full max-w-full sm:max-w-4xl min-w-0 space-y-0 sm:space-y-6 box-border">
 
               {/* MOBILE INSTAGRAM-STYLE STORIES & SUB-HEADER (MOBILE ONLY) */}
-              <div className="md:hidden w-full max-w-full overflow-hidden bg-gradient-to-b from-[#b6e0fe]/30 via-[#dbeafe]/15 to-transparent px-2.5 pt-1 pb-2">
+              <div className="md:hidden w-full max-w-full overflow-hidden bg-gradient-to-b from-[#b6e0fe]/30 via-[#dbeafe]/15 to-transparent px-2.5 pt-1 pb-2 border-0 border-none shadow-none">
                 {/* 1. Stories Carousel */}
                 <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
               </div>
@@ -844,7 +844,7 @@ export default function PlatformPage() {
                     <React.Fragment key={post.id}>
                     <div 
                       onClick={(event) => handlePostDoubleTap(post.id, event)}
-                      className="w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-6 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border relative overflow-hidden select-none"
+                      className="w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b first:border-t-0 sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-6 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border relative overflow-hidden select-none"
                     >
                       {/* Sleek Minimal Double-Tap Heart Animation */}
                       {animatingHeartPostIds.has(post.id) && (
