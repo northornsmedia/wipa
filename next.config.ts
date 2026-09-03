@@ -52,6 +52,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  compress: true,
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'date-fns', 'framer-motion'],
+  },
   async headers() {
     return [
       {

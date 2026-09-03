@@ -17,7 +17,7 @@ export default function ScratchCardAd() {
 
     // Load texture
     const img = new window.Image();
-    img.src = 'https://www.transparenttextures.com/patterns/brushed-alum.png';
+    img.src = '/patterns/brushed-alum.png';
     
     const initCanvas = () => {
       canvas.width = canvas.offsetWidth;

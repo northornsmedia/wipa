@@ -22,10 +22,18 @@ export default function MobileTopBar() {
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Fetch unread notifications count
   useEffect(() => {
-    if (!user?.id) return;
+    const checkViewport = () => setIsMobile(window.innerWidth < 768);
+    checkViewport();
+    window.addEventListener('resize', checkViewport, { passive: true });
+    return () => window.removeEventListener('resize', checkViewport);
+  }, []);
+
+  // Fetch unread notifications count only on mobile screens
+  useEffect(() => {
+    if (!user?.id || !isMobile) return;
     async function fetchCounts() {
       try {
         const { count: notifCount } = await supabase

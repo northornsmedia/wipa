@@ -170,7 +170,7 @@ export default function InHouseCounselHubPage() {
         <div className="absolute bottom-0 left-0 w-[600px] h-[400px] bg-cyan-300/20 dark:bg-cyan-900/30 rounded-full blur-[120px] pointer-events-none z-0 mix-blend-screen"></div>
         
         {/* Ice crystals overlay pattern */}
-        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-0 pointer-events-none"></div>
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1] bg-[url('/patterns/cubes.png')] z-0 pointer-events-none"></div>
 
         <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 relative z-10 flex flex-col items-center justify-center h-full mt-8 md:mt-12">
            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-400 text-xs font-bold uppercase tracking-widest mb-6 shadow-lg shadow-sky-500/10 backdrop-blur-md">

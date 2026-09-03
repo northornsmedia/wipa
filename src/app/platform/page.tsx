@@ -703,10 +703,9 @@ export default function PlatformPage() {
                 <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
                    <div className="absolute -top-[50%] -right-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_20s_linear_infinite] transform-gpu"></div>
                    <div className="absolute -bottom-[50%] -left-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#00d26a] to-[#00b8ff] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_25s_linear_infinite_reverse] transform-gpu"></div>
-                   
-                {/* Glassmorphic Grain Overlay */}
-                   <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] z-0 mix-blend-overlay"></div>
-                </div>
+                                   {/* Glassmorphic Grain Overlay */}
+                    <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-[url('/patterns/stardust.png')] z-0 mix-blend-overlay"></div>
+                 </div>
                 
                 {/* IP Wisdom Card - Top Right (9:16 Thumbnail) */}
                 <div 

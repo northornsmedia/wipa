@@ -72,6 +72,8 @@ export default function RootLayout({
         />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/wipaoffm.png" />
+        {/* Preload critical LCP background pattern to eliminate CSS waterfall */}
+        <link rel="preload" as="image" href="/patterns/stardust.png" fetchPriority="high" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -90,7 +92,7 @@ export default function RootLayout({
         <NativeBackHandler />
         <PWARegister />
         
-        <Script id="clarity-script" strategy="afterInteractive">
+        <Script id="clarity-script" strategy="lazyOnload">
           {`
             (function(c,l,a,r,i,t,y){
                 c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};

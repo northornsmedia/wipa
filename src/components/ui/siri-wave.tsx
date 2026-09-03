@@ -4,17 +4,6 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-/**
- * Siri-style GLSL shaders rendered on a raw WebGL canvas.
- *
- * - `"wave"`        — the iOS voice waveform (chromatic, frequency-reactive).
- * - `"fluid-dots"`  — six metaball dots that merge, scatter and gather.
- *
- * Self-contained: a single fullscreen triangle drives a fragment shader, no
- * external WebGL library. The shaders are ported verbatim from the original
- * `siriWaveCore` / `siriFluidDotsCore` sources.
- */
-
 export type SiriWaveVariant = "wave" | "fluid-dots"
 
 const VERTEX_SHADER = `attribute vec2 aPos; void main(){ gl_Position=vec4(aPos,0.0,1.0); }`
@@ -272,15 +261,12 @@ const FRAGMENT_SHADERS: Record<SiriWaveVariant, string> = {
 
 export interface SiriWaveProps
   extends Omit<React.HTMLAttributes<HTMLCanvasElement>, "children"> {
-  /** Which shader to render. */
   variant?: SiriWaveVariant
-  /** CSS display size of the square canvas, in px. */
   size?: number
-  /** Internal render resolution multiplier (lower = cheaper/blurrier). */
   renderScale?: number
 }
 
-export function SiriWave({
+export const SiriWave = React.memo(function SiriWave({
   variant = "wave",
   size = 420,
   renderScale = 0.75,
@@ -289,14 +275,30 @@ export function SiriWave({
   ...props
 }: SiriWaveProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
+  const [isReady, setIsReady] = React.useState(false)
+
+  // Defer initialization past critical initial render window to prevent main-thread long tasks
+  React.useEffect(() => {
+    let cancelId: any
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      cancelId = (window as any).requestIdleCallback(() => setIsReady(true), { timeout: 400 })
+      return () => (window as any).cancelIdleCallback?.(cancelId)
+    } else {
+      const timer = setTimeout(() => setIsReady(true), 150)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   React.useEffect(() => {
+    if (!isReady) return
     const canvas = canvasRef.current
     if (!canvas) return
+
     let gl: WebGLRenderingContext | null = null
     try {
-      gl = canvas.getContext("webgl", { alpha: true }) || (canvas.getContext("experimental-webgl", { alpha: true }) as WebGLRenderingContext)
-    } catch (e) {
+      gl = canvas.getContext("webgl", { alpha: true, powerPreference: "low-power" }) ||
+           (canvas.getContext("experimental-webgl", { alpha: true }) as WebGLRenderingContext)
+    } catch {
       return
     }
     if (!gl) return
@@ -306,6 +308,13 @@ export function SiriWave({
     let vs: WebGLShader | null = null
     let fs: WebGLShader | null = null
     let buffer: WebGLBuffer | null = null
+    let isVisible = true
+
+    // Pause RAF loop when canvas is offscreen or hidden
+    const observer = new IntersectionObserver((entries) => {
+      isVisible = entries[0]?.isIntersecting ?? false
+    }, { threshold: 0.05 })
+    observer.observe(canvas)
 
     try {
       const compile = (type: number, src: string) => {
@@ -315,10 +324,6 @@ export function SiriWave({
         gl.shaderSource(shader, src)
         gl.compileShader(shader)
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-          const log = gl.getShaderInfoLog(shader)
-          if (log && log.trim() && !gl.isContextLost()) {
-            console.warn("SiriWave shader compile warning:", log)
-          }
           gl.deleteShader(shader)
           return null
         }
@@ -341,10 +346,6 @@ export function SiriWave({
       gl.attachShader(program, fs)
       gl.linkProgram(program)
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        const linkLog = gl.getProgramInfoLog(program)
-        if (linkLog && linkLog.trim() && !gl.isContextLost()) {
-          console.warn("SiriWave program link warning:", linkLog)
-        }
         return
       }
       gl.useProgram(program)
@@ -366,39 +367,41 @@ export function SiriWave({
       const uResolution = gl.getUniformLocation(program, "iResolution")
       const uTime = gl.getUniformLocation(program, "iTime")
 
-      const dim = Math.round(size * renderScale)
+      // Lower internal resolution for small icons to eliminate GPU/CPU overhead
+      const scale = size <= 64 ? 0.5 : renderScale
+      const dim = Math.max(24, Math.round(size * scale))
       canvas.width = dim
       canvas.height = dim
       gl.viewport(0, 0, dim, dim)
 
-      const start =
-        typeof performance !== "undefined" ? performance.now() : Date.now()
-      
+      const start = typeof performance !== "undefined" ? performance.now() : Date.now()
+
       const frame = () => {
         if (!gl || !program) return
-        const now =
-          typeof performance !== "undefined" ? performance.now() : Date.now()
-        const t = (now - start) / 1000
-        
-        gl.clearColor(0, 0, 0, 0); // Clear with transparent background
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        if (isVisible && document.visibilityState === "visible") {
+          const now = typeof performance !== "undefined" ? performance.now() : Date.now()
+          const t = (now - start) / 1000
 
-        if (uResolution) gl.uniform2f(uResolution, dim, dim)
-        if (uTime) gl.uniform1f(uTime, t)
-        
-        // Enable blending to respect the transparent background
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+          gl.clearColor(0, 0, 0, 0)
+          gl.clear(gl.COLOR_BUFFER_BIT)
 
-        gl.drawArrays(gl.TRIANGLES, 0, 3)
+          if (uResolution) gl.uniform2f(uResolution, dim, dim)
+          if (uTime) gl.uniform1f(uTime, t)
+
+          gl.enable(gl.BLEND)
+          gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
+          gl.drawArrays(gl.TRIANGLES, 0, 3)
+        }
         raf = requestAnimationFrame(frame)
       }
-      frame()
-    } catch (err) {
-      console.warn("SiriWave init caught error:", err)
+      raf = requestAnimationFrame(frame)
+    } catch {
+      // Graceful fallback
     }
 
     return () => {
+      observer.disconnect()
       if (raf) cancelAnimationFrame(raf)
       if (gl) {
         if (program) gl.deleteProgram(program)
@@ -407,16 +410,16 @@ export function SiriWave({
         if (buffer) gl.deleteBuffer(buffer)
       }
     }
-  }, [variant, size, renderScale])
+  }, [isReady, variant, size, renderScale])
 
   return (
     <canvas
       ref={canvasRef}
-      className={cn("block bg-transparent pointer-events-none", className)}
+      className={cn("block bg-transparent pointer-events-none transition-opacity duration-300", isReady ? "opacity-100" : "opacity-0", className)}
       style={{ width: size, height: size, ...style }}
       {...props}
     />
   )
-}
+})
 
 export default SiriWave

@@ -148,7 +148,7 @@ export default function GiftMembershipPage() {
               {/* Dynamic Gift Card Preview */}
               <div className="bg-gradient-to-br from-[#12121a] to-[#20202a] rounded-[2rem] p-8 shadow-2xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#5a32fa]/40 to-[#ff90e8]/40 blur-[60px] rounded-full pointer-events-none group-hover:scale-110 transition-transform duration-700"></div>
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-overlay pointer-events-none"></div>
+                <div className="absolute inset-0 bg-[url('/patterns/stardust.png')] opacity-20 mix-blend-overlay pointer-events-none"></div>
                 
                 <div className="relative z-10 flex justify-between items-start mb-16">
                   <div>

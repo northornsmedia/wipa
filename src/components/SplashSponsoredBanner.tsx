@@ -58,7 +58,7 @@ export default function SplashSponsoredBanner({
       style={{ backgroundColor: bgColor || '#0ea5e9' }}
     >
       {/* Animated subtle background */}
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-overlay pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[url('/patterns/stardust.png')] opacity-20 mix-blend-overlay pointer-events-none"></div>
       <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent pointer-events-none z-0"></div>
       
       {/* Decorative blobs */}

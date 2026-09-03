@@ -135,7 +135,7 @@ export default function IPServicesPage() {
       <div className="relative w-full border-b border-slate-200 dark:border-white/10 overflow-hidden bg-white dark:bg-[#0b1120]">
         {/* Background elements */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-300/20 dark:bg-sky-600/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
-        <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-0 pointer-events-none"></div>
+        <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] bg-[url('/patterns/cubes.png')] z-0 pointer-events-none"></div>
 
         <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 relative z-10 py-16 md:py-24 flex flex-col lg:flex-row items-center gap-12">
           <Link
@@ -261,7 +261,7 @@ export default function IPServicesPage() {
                   <div className="absolute inset-x-0 top-0 z-20 h-1 bg-gradient-to-r from-sky-500 via-cyan-400 to-blue-600" />
                   {/* Glowing ambient gradient */}
                   <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-sky-500/25 via-blue-500/15 to-transparent blur-[80px] rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-700"></div>
-                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.03] dark:opacity-[0.12] mix-blend-overlay"></div>
+                  <div className="absolute inset-0 bg-[url('/patterns/stardust.png')] opacity-[0.03] dark:opacity-[0.12] mix-blend-overlay"></div>
                   
                   <div className="relative z-10 p-8 md:p-12 flex flex-col justify-between h-full">
                     
@@ -339,7 +339,7 @@ export default function IPServicesPage() {
                 <div className="absolute inset-x-0 top-0 z-20 h-1 origin-left scale-x-0 bg-gradient-to-r from-sky-500 to-cyan-400 transition-transform duration-500 group-hover:scale-x-100" />
                 {/* Branded Abstract Glow */}
                 <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-500/20 to-cyan-500/20 blur-[70px] rounded-full pointer-events-none opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700`}></div>
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.02] dark:opacity-[0.1] mix-blend-overlay"></div>
+                <div className="absolute inset-0 bg-[url('/patterns/stardust.png')] opacity-[0.02] dark:opacity-[0.1] mix-blend-overlay"></div>
                 
                 <div className="relative z-10 flex h-full flex-col p-8 md:p-9">
                   

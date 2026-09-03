@@ -32,7 +32,7 @@ export default function UniversityProfilePage() {
         </div>
         
         {/* Texture Overlay Pattern */}
-        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] z-0 pointer-events-none"></div>
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1] bg-[url('/patterns/cubes.png')] z-0 pointer-events-none"></div>
 
         {/* Top Nav Overlay */}
         <div className="relative z-50 p-6 flex items-center justify-between">
