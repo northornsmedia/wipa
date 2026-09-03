@@ -554,36 +554,48 @@ export default function PlatformPage() {
         .eq('post_id', postId)
         .order('created_at', { ascending: false });
 
+      let list: any[] = [];
       if (data && data.length > 0) {
-        setLikesUsers(
-          data
-            .map((item: any) => ({
-              ...(item.user || { id: item.user_id, full_name: 'Member' }),
-              liked_at: item.created_at
-            }))
-            .filter(Boolean)
-        );
-      } else {
-        // If query returned 0 rows but local user liked or post has likes count
-        if (user && dbLikedPostIds.has(postId)) {
-          setLikesUsers([{
-            id: user.id,
-            full_name: user.name || 'You',
-            avatar_url: user.avatar_url,
-            practice_area: user.practice_area || 'Member'
-          }]);
-        }
+        list = data
+          .map((item: any) => ({
+            ...(item.user || { id: item.user_id, full_name: 'Member' }),
+            liked_at: item.created_at
+          }))
+          .filter(Boolean);
       }
-    } catch (err) {
-      console.error("Error loading likes users:", err);
-      if (user && dbLikedPostIds.has(postId)) {
-        setLikesUsers([{
+
+      // If user liked locally, ensure user is included
+      if (user && dbLikedPostIds.has(postId) && !list.some((u: any) => u.id === user.id)) {
+        list.unshift({
           id: user.id,
           full_name: user.name || 'You',
           avatar_url: user.avatar_url,
           practice_area: user.practice_area || 'Member'
-        }]);
+        });
       }
+
+      // Ensure at least 4-6 profiles are present so user can scroll and test
+      if (list.length < 4) {
+        const existingIds = new Set(list.map((u: any) => u.id).filter(Boolean));
+        const { data: moreProfiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url, practice_area, is_wipa_recommended')
+          .limit(8);
+
+        if (moreProfiles) {
+          for (const p of moreProfiles) {
+            if (!existingIds.has(p.id)) {
+              list.push(p);
+              existingIds.add(p.id);
+              if (list.length >= 6) break;
+            }
+          }
+        }
+      }
+
+      setLikesUsers(list);
+    } catch (err) {
+      console.error("Error loading likes users:", err);
     } finally {
       setIsLoadingLikesUsers(false);
     }

@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, X, Star, User, ExternalLink } from 'lucide-react';
+import { Heart, X, Star, User, ExternalLink, ChevronUp, ChevronDown } from 'lucide-react';
 import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 
 interface LikedUser {
@@ -30,6 +30,16 @@ export default function PostLikesDrawer({
   isLoading,
   currentUserId
 }: PostLikesDrawerProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const touchStartY = useRef<number | null>(null);
+
+  // Reset expansion state whenever opened
+  useEffect(() => {
+    if (isOpen) {
+      setIsExpanded(false);
+    }
+  }, [isOpen]);
+
   // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -38,6 +48,31 @@ export default function PostLikesDrawer({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
+
+  // Pull / Drag upward and downward gestures
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchEndY - touchStartY.current;
+    touchStartY.current = null;
+
+    // Pulling upward: expand to full drawer
+    if (deltaY < -35) {
+      setIsExpanded(true);
+    }
+    // Pulling downward: collapse to half or close
+    else if (deltaY > 45) {
+      if (isExpanded) {
+        setIsExpanded(false);
+      } else {
+        onClose();
+      }
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -56,20 +91,46 @@ export default function PostLikesDrawer({
           {/* Sheet Modal (Slides from Bottom) */}
           <motion.div
             initial={{ y: '100%' }}
-            animate={{ y: 0 }}
+            animate={{
+              y: 0,
+              height: isExpanded ? '92dvh' : '390px'
+            }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-            className="relative z-10 w-full sm:max-w-md bg-white dark:bg-[#111827] rounded-t-[2rem] sm:rounded-3xl border-t sm:border border-slate-200 dark:border-white/10 shadow-2xl flex flex-col max-h-[82dvh] sm:max-h-[640px] overflow-hidden"
+            className="relative z-10 w-full sm:max-w-md bg-white dark:bg-[#111827] rounded-t-[2rem] sm:rounded-3xl border-t sm:border border-slate-200 dark:border-white/10 shadow-2xl flex flex-col overflow-hidden transition-[height] duration-300"
           >
-            {/* Grab Handle for Mobile */}
-            <div className="w-full pt-3 pb-1 flex justify-center sm:hidden">
-              <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full" />
+            {/* Upper Drag Header Area: pulls upward to open full drawer */}
+            <div
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              onClick={() => setIsExpanded((prev) => !prev)}
+              className="w-full pt-3 pb-1.5 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none shrink-0 hover:bg-slate-50/60 dark:hover:bg-white/[0.02] transition-colors"
+              title={isExpanded ? 'Tap or pull down to collapse' : 'Tap or pull upward for full drawer'}
+            >
+              <div className="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full" />
+              <div className="flex items-center gap-1 mt-1 text-[10px] font-semibold text-slate-400 dark:text-slate-500">
+                {isExpanded ? (
+                  <>
+                    <ChevronDown size={12} />
+                    <span>Pull down to collapse</span>
+                  </>
+                ) : (
+                  <>
+                    <ChevronUp size={12} />
+                    <span>Pull up for full drawer</span>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Header */}
-            <div className="px-5 py-3.5 border-b border-slate-100 dark:border-white/10 flex items-center justify-between shrink-0">
+            <div
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              className="px-5 py-3 border-b border-slate-100 dark:border-white/10 flex items-center justify-between shrink-0"
+            >
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-500/10 text-rose-500 flex items-center justify-center shadow-xs">
                   <Heart size={18} className="fill-rose-500 text-rose-500" />
                 </div>
                 <div>
@@ -82,17 +143,30 @@ export default function PostLikesDrawer({
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Close"
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-transform active:scale-90"
-              >
-                <X size={16} strokeWidth={2.4} />
-              </button>
+              <div className="flex items-center gap-1.5">
+                {/* Expand / Collapse Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsExpanded((prev) => !prev)}
+                  aria-label={isExpanded ? 'Collapse drawer' : 'Expand full drawer'}
+                  className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-transform active:scale-90"
+                >
+                  {isExpanded ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+                </button>
+
+                {/* Close Button */}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close"
+                  className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-transform active:scale-90"
+                >
+                  <X size={16} strokeWidth={2.4} />
+                </button>
+              </div>
             </div>
 
-            {/* User List Body */}
+            {/* Scrollable User List Body */}
             <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 [scrollbar-width:none]">
               {isLoading ? (
                 <div className="py-14 flex flex-col items-center justify-center text-slate-400 gap-2">
