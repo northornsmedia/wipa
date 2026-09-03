@@ -967,7 +967,7 @@ export default function PlatformPage() {
                       ) : (
                         post.content && (
                           <div className="mb-2.5">
-                            <div className="text-[13px] sm:text-[14px] text-gray-900 dark:text-gray-100 leading-relaxed font-normal inline">
+                            <div className="text-[13.4px] sm:text-[14.42px] text-gray-900 dark:text-gray-100 leading-relaxed font-normal inline">
                               <FormattedPostText text={displayContent} />
                               {hasMore && !isExpanded && (
                                 <button 
@@ -976,7 +976,7 @@ export default function PlatformPage() {
                                     e.stopPropagation();
                                     toggleExpandPost(post.id);
                                   }} 
-                                  className="inline text-gray-500 hover:text-[#5a32fa] dark:text-gray-400 dark:hover:text-[#ff90e8] font-bold text-xs ml-1 cursor-pointer transition-colors"
+                                  className="inline text-gray-500 hover:text-[#5a32fa] dark:text-gray-400 dark:hover:text-[#ff90e8] font-bold text-[12.36px] ml-1 cursor-pointer transition-colors"
                                 >
                                   ...read more
                                 </button>
@@ -989,7 +989,7 @@ export default function PlatformPage() {
                                   e.stopPropagation();
                                   toggleExpandPost(post.id);
                                 }} 
-                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-medium mt-1.5 block cursor-pointer"
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-[12.36px] font-medium mt-1.5 block cursor-pointer"
                               >
                                 Show less
                               </button>
