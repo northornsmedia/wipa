@@ -216,61 +216,25 @@ export default function LiveChatSupportPage() {
     }
   }, [user?.email, transcriptEmail]);
 
-  // Connect to live Supabase support session & realtime channel
+  // Check for any existing active session that already has messages
   useEffect(() => {
     let activeChannel: any = null;
 
-    const initSupabaseSession = async () => {
+    const checkExistingSession = async () => {
       try {
         const uId = user?.id || null;
-        const uName = user?.name || 'WIPA Member';
-        const uEmail = user?.email || null;
-        const uAvatar = user?.avatar_url || null;
-        const uTier = user?.membership_tier || 'Verified Member';
+        if (!uId) return;
 
-        let sess: any = null;
+        const { data: existing } = await supabase
+          .from('support_sessions')
+          .select('*')
+          .eq('user_id', uId)
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(1);
 
-        if (uId) {
-          const { data: existing } = await supabase
-            .from('support_sessions')
-            .select('*')
-            .eq('user_id', uId)
-            .eq('status', 'active')
-            .order('created_at', { ascending: false })
-            .limit(1);
-
-          if (existing && existing.length > 0) {
-            sess = existing[0];
-          }
-        }
-
-        if (!sess) {
-          const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-          const tNum = `WIP-${randomSuffix}`;
-          const { data: created, error } = await supabase
-            .from('support_sessions')
-            .insert({
-              ticket_number: tNum,
-              user_id: uId,
-              user_name: uName,
-              user_email: uEmail,
-              user_avatar: uAvatar,
-              user_tier: uTier,
-              status: 'active',
-              priority: 'high',
-              category: 'General',
-              last_message: 'Session initiated',
-              last_message_at: new Date().toISOString()
-            })
-            .select()
-            .single();
-
-          if (!error && created) {
-            sess = created;
-          }
-        }
-
-        if (sess) {
+        if (existing && existing.length > 0) {
+          const sess = existing[0];
           setSessionId(sess.id);
           setTicketNumber(sess.ticket_number);
 
@@ -327,11 +291,11 @@ export default function LiveChatSupportPage() {
             .subscribe();
         }
       } catch (err) {
-        console.warn('Supabase realtime init fallback:', err);
+        console.warn('Session check fallback:', err);
       }
     };
 
-    initSupabaseSession();
+    checkExistingSession();
 
     return () => {
       if (activeChannel) supabase.removeChannel(activeChannel);
@@ -405,21 +369,20 @@ export default function LiveChatSupportPage() {
     }, 1100);
   };
 
-  const handleSendMessage = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const trimmed = inputMessage.trim();
-    if (!trimmed && !selectedAttachment) return;
+  const submitUserMessage = async (text: string, attachmentObj?: any) => {
+    const textToSend = text.trim() || (attachmentObj ? 'Attached file for review' : '');
+    if (!textToSend && !attachmentObj) return;
 
     const newMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       sender: 'user',
-      text: trimmed,
+      text: textToSend,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      attachment: selectedAttachment ? {
-        name: selectedAttachment.name,
-        size: selectedAttachment.size,
-        type: selectedAttachment.type,
-        url: selectedAttachment.preview
+      attachment: attachmentObj ? {
+        name: attachmentObj.name,
+        size: attachmentObj.size,
+        type: attachmentObj.type,
+        url: attachmentObj.preview
       } : undefined
     };
 
@@ -427,42 +390,105 @@ export default function LiveChatSupportPage() {
     setInputMessage('');
     setSelectedAttachment(null);
 
-    // Persist to Supabase if session exists
-    if (sessionId) {
-      supabase.from('support_messages').insert({
-        session_id: sessionId,
-        sender_type: 'user',
-        sender_name: user?.name || 'WIPA Member',
-        sender_avatar: user?.avatar_url,
-        sender_id: user?.id,
-        content: trimmed || 'Attached file for review',
-        attachment_name: selectedAttachment?.name,
-        attachment_size: selectedAttachment?.size,
-        attachment_type: selectedAttachment?.type
-      }).then(() => {});
+    // Persist to Supabase: Only creates session when user actually sends a message!
+    try {
+      let activeSessId = sessionId;
 
-      supabase.from('support_sessions').update({
-        last_message: trimmed || 'Attached file for review',
-        last_message_at: new Date().toISOString(),
-        unread_agent_count: 1
-      }).eq('id', sessionId).then(() => {});
+      if (!activeSessId) {
+        const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+        const tNum = `WIP-${randomSuffix}`;
+        setTicketNumber(tNum);
+
+        const { data: created } = await supabase
+          .from('support_sessions')
+          .insert({
+            ticket_number: tNum,
+            user_id: user?.id || null,
+            user_name: user?.name || 'WIPA Member',
+            user_email: user?.email || null,
+            user_avatar: user?.avatar_url || null,
+            user_tier: user?.membership_tier || 'Verified Member',
+            status: 'active',
+            priority: 'high',
+            category: 'General',
+            last_message: textToSend,
+            last_message_at: new Date().toISOString(),
+            unread_agent_count: 1
+          })
+          .select()
+          .single();
+
+        if (created) {
+          activeSessId = created.id;
+          setSessionId(created.id);
+
+          // Subscribe to live replies from agent
+          supabase.channel(`member-session-${created.id}`)
+            .on('postgres_changes', {
+              event: 'INSERT',
+              schema: 'public',
+              table: 'support_messages',
+              filter: `session_id=eq.${created.id}`
+            }, (payload: any) => {
+              const m = payload.new;
+              if (m.sender_type === 'agent') {
+                if (m.content?.startsWith('[INTERNAL NOTE]')) return;
+                setMessages(prev => {
+                  if (prev.some(e => e.id === m.id)) return prev;
+                  return [
+                    ...prev,
+                    {
+                      id: m.id,
+                      sender: 'agent',
+                      agentName: m.sender_name || 'Sarah Jenkins',
+                      agentAvatar: m.sender_avatar,
+                      agentRole: 'Senior Member Support Specialist',
+                      text: m.content,
+                      timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    }
+                  ];
+                });
+                playNotificationSound();
+              }
+            })
+            .subscribe();
+        }
+      } else {
+        await supabase.from('support_sessions').update({
+          last_message: textToSend,
+          last_message_at: new Date().toISOString(),
+          unread_agent_count: 1
+        }).eq('id', activeSessId);
+      }
+
+      if (activeSessId) {
+        await supabase.from('support_messages').insert({
+          session_id: activeSessId,
+          sender_type: 'user',
+          sender_name: user?.name || 'WIPA Member',
+          sender_avatar: user?.avatar_url,
+          sender_id: user?.id,
+          content: textToSend,
+          attachment_name: attachmentObj?.name,
+          attachment_size: attachmentObj?.size,
+          attachment_type: attachmentObj?.type
+        });
+      }
+    } catch (err) {
+      console.warn('Sync error:', err);
     }
 
     // Trigger concierge agent reply
-    generateAgentResponse(trimmed || 'Attached file for review');
+    generateAgentResponse(textToSend);
+  };
+
+  const handleSendMessage = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    submitUserMessage(inputMessage, selectedAttachment);
   };
 
   const handlePromptClick = (text: string) => {
-    setInputMessage('');
-    const newMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
-      sender: 'user',
-      text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
-    generateAgentResponse(text);
+    submitUserMessage(text);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
