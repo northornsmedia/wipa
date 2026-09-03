@@ -302,73 +302,6 @@ export default function LiveChatSupportPage() {
     };
   }, [user?.id]);
 
-  // Generate contextual AI/Support response
-  const generateAgentResponse = (userText: string) => {
-    setIsTyping(true);
-    const lower = userText.toLowerCase();
-
-    setTimeout(() => {
-      let reply = '';
-      let actions: { label: string; href: string }[] | undefined = undefined;
-
-      if (lower.includes('calendar') || lower.includes('google') || lower.includes('sync')) {
-        reply = `Great question! You can integrate your WIPA calendar with Google Calendar in just 2 clicks:\n\n1. Visit the **Calendar** page in your platform navigation.\n2. Click the **"Sync Google Calendar"** button on the top right.\n3. Approve the Google OAuth consent.\n\nAll your RSVP'd panels, keynote discussions, and regional networking sessions will immediately reflect with Google reminders!`;
-        actions = [
-          { label: 'Go to Calendar', href: '/platform/calendar' },
-          { label: 'Browse Events', href: '/platform/events' }
-        ];
-      } else if (lower.includes('bill') || lower.includes('tier') || lower.includes('upgrade') || lower.includes('invoice') || lower.includes('price')) {
-        reply = `We'd love to help with your membership! WIPA offers **Student/Associate**, **Professional**, and **Executive Corporate** tiers.\n\n• **Invoices & Receipts**: Available in your Settings > Billing history tab.\n• **Upgrades**: Unlock full IP Intelligence databases, verified attorney badges, and VIP roundtables.\n\nWould you like me to guide you through an upgrade or apply a corporate partner discount?`;
-        actions = [
-          { label: 'View Pricing & Tiers', href: '/pricing' },
-          { label: 'Billing Settings', href: '/platform/settings' }
-        ];
-      } else if (lower.includes('mentor') || lower.includes('mentee') || lower.includes('mentorship')) {
-        reply = `The **WIPA Global Mentorship Program** connects seasoned IP partners, patent examiners, and in-house counsel with emerging legal talents.\n\n• **Matches**: Computed based on your practice area (e.g. Biotech, AI Law, Patent Prosecution) and timezone.\n• **Cadence**: 1-hour monthly structured virtual sessions with shared resource toolkits.`;
-        actions = [
-          { label: 'Open Mentorship Hub', href: '/platform/mentorship' },
-          { label: 'Update Practice Areas', href: '/platform/settings' }
-        ];
-      } else if (lower.includes('firm') || lower.includes('business') || lower.includes('directory')) {
-        reply = `Creating a **Verified Law Firm / IP Business Profile** showcases your practice to our global network of over 12,000 IP leaders and corporate decision-makers.\n\nYou can add your firm's practice specialties, partner rosters, representative matters, and direct consultation booking links!`;
-        actions = [
-          { label: 'Create Business Profile', href: '/platform/business/create' },
-          { label: 'Explore Directory', href: '/platform/resources/ip-firms' }
-        ];
-      } else if (lower.includes('human') || lower.includes('person') || lower.includes('agent') || lower.includes('speak') || lower.includes('specialist')) {
-        reply = `You're currently connected directly with **Sarah Jenkins** (Senior Support Specialist) along with our automated concierge engine.\n\nI have flagged this conversation with **Tier 1 Member Priority**. You can also schedule an immediate 1:1 call using the "Request Call Back" button at the top!`;
-        actions = [
-          { label: 'Request Call Back', href: '#' }
-        ];
-      } else if (lower.includes('bug') || lower.includes('issue') || lower.includes('error') || lower.includes('problem')) {
-        reply = `Thank you for reporting this. Our engineering and platform team investigates every bug immediately.\n\n• Ticket has been tagged: **#WIP-8942-DEV**\n• If you have a screenshot of the error, please click the paperclip icon below to attach it.\n• We have logged your browser telemetry and session details.`;
-      } else {
-        reply = `Thanks for reaching out! I've noted: "${userText}".\n\nOur team is on standby to assist with any platform features, event registrations, or membership services. Is there a specific section of WIPA you'd like guidance on?`;
-        actions = [
-          { label: 'Platform Home', href: '/platform' },
-          { label: 'Explore Resources', href: '/platform/resources' }
-        ];
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `msg-${Date.now()}`,
-          sender: 'agent',
-          agentName: 'Sarah Jenkins',
-          agentAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
-          agentRole: 'Senior Member Support Specialist',
-          text: reply,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          actions
-        }
-      ]);
-
-      setIsTyping(false);
-      playNotificationSound();
-    }, 1100);
-  };
-
   const submitUserMessage = async (text: string, attachmentObj?: any) => {
     const textToSend = text.trim() || (attachmentObj ? 'Attached file for review' : '');
     if (!textToSend && !attachmentObj) return;
@@ -477,9 +410,6 @@ export default function LiveChatSupportPage() {
     } catch (err) {
       console.warn('Sync error:', err);
     }
-
-    // Trigger concierge agent reply
-    generateAgentResponse(textToSend);
   };
 
   const handleSendMessage = (e?: React.FormEvent) => {
