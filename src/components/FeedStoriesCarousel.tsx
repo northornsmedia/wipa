@@ -67,13 +67,13 @@ export default function FeedStoriesCarousel({ onOpenCreatePost }: { onOpenCreate
   const user = useAppStore((state) => state.user);
 
   return (
-    <div className="w-full max-w-full min-w-0 bg-transparent py-1 sm:py-2 mb-3 box-border">
-      <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-1 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full max-w-full min-w-0 box-border px-1">
+    <div className="w-full max-w-full min-w-0 bg-transparent py-1 sm:py-2 mb-3 box-border border-0 border-none">
+      <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-1 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full max-w-full min-w-0 box-border px-3.5 sm:px-4">
         
         {/* 1. Share / Your Story Tile */}
         <Link
           href="/platform/create-post"
-          className="w-22 sm:w-24 md:w-36 h-32 sm:h-34 md:h-28 rounded-2xl shrink-0 border border-slate-200/80 dark:border-white/10 bg-white dark:bg-slate-900 md:bg-gray-50/80 md:dark:bg-white/[0.04] hover:bg-gray-50 dark:hover:bg-white/[0.08] flex flex-col items-center justify-center p-2 transition-all group active:scale-95 text-center relative overflow-hidden shadow-xs"
+          className="w-[96px] h-[138px] sm:w-28 sm:h-38 md:w-36 md:h-28 rounded-2xl shrink-0 border border-slate-200/80 dark:border-white/10 bg-white dark:bg-slate-900 md:bg-gray-50/80 md:dark:bg-white/[0.04] hover:bg-gray-50 dark:hover:bg-white/[0.08] flex flex-col items-center justify-center p-2 transition-all group active:scale-95 text-center relative overflow-hidden shadow-xs"
         >
           {/* Mobile Layout (Your Story) */}
           <div className="flex flex-col items-center md:hidden">
@@ -112,7 +112,7 @@ export default function FeedStoriesCarousel({ onOpenCreatePost }: { onOpenCreate
           <Link
             key={story.id}
             href={story.path}
-            className="w-22 sm:w-24 md:w-36 h-32 sm:h-34 md:h-28 rounded-2xl shrink-0 relative overflow-hidden group border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md transition-all active:scale-95 block"
+            className="w-[96px] h-[138px] sm:w-28 sm:h-38 md:w-36 md:h-28 rounded-2xl shrink-0 relative overflow-hidden group border border-slate-200/80 dark:border-white/10 shadow-xs hover:shadow-md transition-all active:scale-95 block"
           >
             {/* Background Image */}
             <img
