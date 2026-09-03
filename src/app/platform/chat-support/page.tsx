@@ -35,7 +35,8 @@ import {
   FileText,
   AlertCircle,
   History,
-  CheckCircle2
+  CheckCircle2,
+  Lock
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
@@ -515,6 +516,10 @@ export default function LiveChatSupportPage() {
   }, [user?.id, user?.email]);
 
   const submitUserMessage = async (text: string, attachmentObj?: any) => {
+    if (currentSessionStatus === 'resolved' || currentSessionStatus === 'closed') {
+      return;
+    }
+
     const textToSend = text.trim() || (attachmentObj ? 'Attached file for review' : '');
     if (!textToSend && !attachmentObj) return;
 
@@ -652,12 +657,9 @@ export default function LiveChatSupportPage() {
             .subscribe();
         }
       } else {
-        // Automatically reopen if replying to an archived/resolved session
-        setCurrentSessionStatus('active');
-        setPastSessions(prev => prev.map(s => s.id === activeSessId ? { ...s, status: 'active', last_message: textToSend } : s));
+        setPastSessions(prev => prev.map(s => s.id === activeSessId ? { ...s, last_message: textToSend } : s));
 
         await supabase.from('support_sessions').update({
-          status: 'active',
           last_message: textToSend,
           last_message_at: new Date().toISOString(),
           unread_agent_count: 1
@@ -689,10 +691,12 @@ export default function LiveChatSupportPage() {
 
   const handleSendMessage = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (currentSessionStatus === 'resolved' || currentSessionStatus === 'closed') return;
     submitUserMessage(inputMessage, selectedAttachment);
   };
 
   const handlePromptClick = (text: string) => {
+    if (currentSessionStatus === 'resolved' || currentSessionStatus === 'closed') return;
     submitUserMessage(text);
   };
 
@@ -1076,111 +1080,110 @@ export default function LiveChatSupportPage() {
             </div>
           </div>
 
-          {/* Input Form Bar with Resolved/Closed Banner */}
+          {/* Input Form Bar or Resolved/Closed Locked State */}
           <div className="shrink-0 p-4 sm:p-6 bg-white/95 dark:bg-[#0c1020]/95 border-t border-slate-200/80 dark:border-white/10 backdrop-blur-xl z-20">
             <div className="max-w-3xl mx-auto">
               
-              {/* Resolved Ticket Banner */}
-              {(currentSessionStatus === 'resolved' || currentSessionStatus === 'closed') && (
-                <div className="mb-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
-                    <div className="text-xs min-w-0">
-                      <p className="font-bold text-emerald-900 dark:text-emerald-200">
-                        Ticket #{ticketNumber} is Marked Resolved
-                      </p>
-                      <p className="text-emerald-700/80 dark:text-emerald-300/70 text-[11px] truncate">
-                        You are viewing the archived chat history with {assignedAgentName}.
-                      </p>
-                    </div>
+              {/* If Resolved or Closed, HIDE typing bar completely and show locked action banner */}
+              {(currentSessionStatus === 'resolved' || currentSessionStatus === 'closed') ? (
+                <div className="rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200/90 dark:border-white/10 p-5 text-center space-y-3 shadow-xs animate-fade-in">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-200 text-xs font-bold">
+                    <Lock size={13} className="text-amber-600 dark:text-amber-400" />
+                    <span>Ticket #{ticketNumber} is Resolved &amp; Closed</span>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                    This support ticket was marked as resolved by {assignedAgentName && assignedAgentName !== 'Unassigned' ? assignedAgentName : 'our team'}. The chat input is locked. To send a follow-up message, please reopen this ticket or start a new one.
+                  </p>
+                  <div className="flex items-center justify-center gap-3 pt-1">
                     <button
                       type="button"
                       onClick={handleReopenTicket}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-200 bg-white dark:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-800 transition-all cursor-pointer shadow-2xs"
+                      className="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] hover:from-[#4b26dc] hover:to-[#6d28d9] shadow-md shadow-purple-500/25 transition-all cursor-pointer flex items-center gap-1.5"
                     >
-                      Reopen Ticket
+                      <RefreshCw size={14} />
+                      <span>Reopen Ticket #{ticketNumber}</span>
                     </button>
                     <button
                       type="button"
                       onClick={handleStartNewTicket}
-                      className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#5a32fa] hover:bg-[#4b26dc] transition-all cursor-pointer shadow-xs"
+                      className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/15 border border-slate-200 dark:border-white/10 transition-all cursor-pointer shadow-2xs"
                     >
-                      + New Ticket
+                      + Start New Ticket
                     </button>
                   </div>
                 </div>
-              )}
+              ) : (
+                <>
+                  {/* Attachment Preview Chip if selected */}
+                  {selectedAttachment && (
+                    <div className="mb-2.5 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/70 dark:border-purple-500/30 text-xs text-slate-700 dark:text-slate-300">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Paperclip size={13} className="text-[#5a32fa] shrink-0" />
+                        <span className="font-semibold truncate">{selectedAttachment.name}</span>
+                        <span className="text-slate-400 text-[11px]">({selectedAttachment.size})</span>
+                      </div>
+                      <button 
+                        type="button" 
+                        onClick={() => setSelectedAttachment(null)}
+                        className="p-1 rounded-lg hover:bg-purple-200/60 dark:hover:bg-purple-900/60 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer"
+                      >
+                        <X size={13} />
+                      </button>
+                    </div>
+                  )}
 
-              {/* Attachment Preview Chip if selected */}
-              {selectedAttachment && (
-                <div className="mb-2.5 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/70 dark:border-purple-500/30 text-xs text-slate-700 dark:text-slate-300">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <Paperclip size={13} className="text-[#5a32fa] shrink-0" />
-                    <span className="font-semibold truncate">{selectedAttachment.name}</span>
-                    <span className="text-slate-400 text-[11px]">({selectedAttachment.size})</span>
+                  {/* Form container */}
+                  <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileChange} 
+                      className="hidden" 
+                      accept="image/*,.pdf,.doc,.docx" 
+                    />
+
+                    {/* Attach file button */}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="p-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 text-slate-500 hover:text-[#5a32fa] hover:border-[#5a32fa]/40 hover:bg-purple-50 dark:text-slate-400 dark:hover:text-purple-300 dark:hover:bg-white/5 transition-all cursor-pointer shrink-0"
+                      title="Attach screenshot or file"
+                    >
+                      <Paperclip size={18} />
+                    </button>
+
+                    {/* Text input */}
+                    <div className="flex-1 relative">
+                      <input
+                        type="text"
+                        value={inputMessage}
+                        onChange={(e) => setInputMessage(e.target.value)}
+                        placeholder="Type your question or request assistance here... (Press Enter to send)"
+                        className="w-full rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 px-4 py-2.5 text-xs sm:text-[13px] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:border-[#5a32fa] focus:ring-2 focus:ring-[#5a32fa]/20 transition-all"
+                      />
+                    </div>
+
+                    {/* Send Button */}
+                    <button
+                      type="submit"
+                      disabled={!inputMessage.trim() && !selectedAttachment}
+                      className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-[13px] text-white bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] hover:from-[#4b26dc] hover:to-[#6d28d9] shadow-md shadow-purple-500/25 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer shrink-0 flex items-center gap-1.5"
+                    >
+                      <span className="hidden sm:inline">Send</span>
+                      <Send size={15} />
+                    </button>
+                  </form>
+
+                  <div className="flex items-center justify-between mt-2 px-1 text-[11px] text-slate-400">
+                    <span className="hidden sm:inline">
+                      ⚡ Powered by WIPA Intelligent Assistant + Live Human Specialists
+                    </span>
+                    <span className="ml-auto">
+                      Press <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 font-mono text-[10px]">Enter ↵</kbd>
+                    </span>
                   </div>
-                  <button 
-                    type="button" 
-                    onClick={() => setSelectedAttachment(null)}
-                    className="p-1 rounded-lg hover:bg-purple-200/60 dark:hover:bg-purple-900/60 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer"
-                  >
-                    <X size={13} />
-                  </button>
-                </div>
+                </>
               )}
-
-              {/* Form container */}
-              <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleFileChange} 
-                  className="hidden" 
-                  accept="image/*,.pdf,.doc,.docx" 
-                />
-
-                {/* Attach file button */}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="p-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 text-slate-500 hover:text-[#5a32fa] hover:border-[#5a32fa]/40 hover:bg-purple-50 dark:text-slate-400 dark:hover:text-purple-300 dark:hover:bg-white/5 transition-all cursor-pointer shrink-0"
-                  title="Attach screenshot or file"
-                >
-                  <Paperclip size={18} />
-                </button>
-
-                {/* Text input */}
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Type your question or request assistance here... (Press Enter to send)"
-                    className="w-full rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 px-4 py-2.5 text-xs sm:text-[13px] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:border-[#5a32fa] focus:ring-2 focus:ring-[#5a32fa]/20 transition-all"
-                  />
-                </div>
-
-                {/* Send Button */}
-                <button
-                  type="submit"
-                  disabled={!inputMessage.trim() && !selectedAttachment}
-                  className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-[13px] text-white bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] hover:from-[#4b26dc] hover:to-[#6d28d9] shadow-md shadow-purple-500/25 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer shrink-0 flex items-center gap-1.5"
-                >
-                  <span className="hidden sm:inline">Send</span>
-                  <Send size={15} />
-                </button>
-              </form>
-
-              <div className="flex items-center justify-between mt-2 px-1 text-[11px] text-slate-400">
-                <span className="hidden sm:inline">
-                  ⚡ Powered by WIPA Intelligent Assistant + Live Human Specialists
-                </span>
-                <span className="ml-auto">
-                  Press <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 font-mono text-[10px]">Enter ↵</kbd>
-                </span>
-              </div>
             </div>
           </div>
         </section>
