@@ -163,20 +163,21 @@ export default function LiveChatSupportPage() {
   const [ticketNumber, setTicketNumber] = useState('Pending');
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [currentSessionStatus, setCurrentSessionStatus] = useState<'active' | 'pending' | 'resolved' | 'closed' | 'new'>('new');
-  const [assignedAgentName, setAssignedAgentName] = useState<string>('Sarah Jenkins');
-  const [assignedAgentAvatar, setAssignedAgentAvatar] = useState<string>('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop');
+  const [assignedAgentName, setAssignedAgentName] = useState<string>('Unassigned');
+  const [assignedAgentAvatar, setAssignedAgentAvatar] = useState<string>('');
   const [pastSessions, setPastSessions] = useState<any[]>([]);
+  const waitingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Initialize messages
+  // Initialize messages with welcoming queue intake greeting
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
-      id: 'msg-1',
+      id: 'msg-welcome-intake',
       sender: 'agent',
-      agentName: 'Sarah Jenkins',
+      agentName: 'WIPA Member Support',
       agentAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
-      agentRole: 'Senior Member Support Specialist',
-      text: `Hello ${user?.name ? user.name.split(' ')[0] : 'there'}! 👋 Welcome to WIPA Live Support. I'm Sarah from the Member Experience team.\n\nWhether you need assistance with event registrations, Google Calendar sync, membership tiers, or navigating platform tools, I'm here to help in real-time. How can we assist you today?`,
-      timestamp: 'Just now',
+      agentRole: 'Member Experience Team',
+      text: `Hello ${user?.name ? user.name.split(' ')[0] : 'there'}! 👋 Welcome to WIPA Live Support.\n\nWhether you need assistance with event registrations, Google Calendar sync, membership tiers, or navigating platform tools, our Member Experience specialists are on standby.\n\nType your question below and we will assign a live specialist to assist you.`,
+      timestamp: 'Queue Ready',
       actions: [
         { label: 'Sync Calendar', href: '/platform/calendar' },
         { label: 'View Tiers', href: '/pricing' },
@@ -223,17 +224,16 @@ export default function LiveChatSupportPage() {
   }, [user?.email, transcriptEmail]);
 
   const loadSessionIntoView = async (sess: any) => {
-    if (!sess) return;
+    const isAssigned = sess.assigned_agent_name && sess.assigned_agent_name !== 'Unassigned';
     setSessionId(sess.id);
     setCurrentSessionStatus(sess.status || 'active');
     if (sess.ticket_number) setTicketNumber(sess.ticket_number);
-    if (sess.assigned_agent_name && sess.assigned_agent_name !== 'Unassigned') {
+    if (isAssigned) {
       setAssignedAgentName(sess.assigned_agent_name);
+      if (sess.assigned_agent_avatar) setAssignedAgentAvatar(sess.assigned_agent_avatar);
     } else {
-      setAssignedAgentName('Sarah Jenkins');
-    }
-    if (sess.assigned_agent_avatar) {
-      setAssignedAgentAvatar(sess.assigned_agent_avatar);
+      setAssignedAgentName('Unassigned');
+      setAssignedAgentAvatar('');
     }
 
     // Fetch previous messages for this session
@@ -247,10 +247,12 @@ export default function LiveChatSupportPage() {
       const welcomeMessage: ChatMessage = {
         id: 'msg-welcome',
         sender: 'agent',
-        agentName: sess.assigned_agent_name && sess.assigned_agent_name !== 'Unassigned' ? sess.assigned_agent_name : 'Sarah Jenkins',
-        agentAvatar: sess.assigned_agent_avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
-        agentRole: 'Senior Member Support Specialist',
-        text: `Welcome to WIPA Live Support. Ticket #${sess.ticket_number || 'Pending'} — ${sess.status === 'resolved' ? 'Archived Ticket' : 'Active Conversation'}.`,
+        agentName: isAssigned ? sess.assigned_agent_name : 'WIPA Member Support',
+        agentAvatar: isAssigned ? sess.assigned_agent_avatar : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+        agentRole: isAssigned ? 'Senior Member Support Specialist' : 'Member Experience Team',
+        text: isAssigned
+          ? `Welcome to WIPA Live Support. Ticket #${sess.ticket_number || 'Pending'} — ${sess.status === 'resolved' ? 'Archived Ticket' : 'Active Conversation'}.`
+          : `Hello ${user?.name ? user.name.split(' ')[0] : 'there'}! 👋 Welcome to WIPA Live Support. Type your question below and we will connect you with a live specialist.`,
         timestamp: 'Session Started'
       };
 
@@ -273,19 +275,21 @@ export default function LiveChatSupportPage() {
   };
 
   const handleStartNewTicket = () => {
+    if (waitingTimerRef.current) clearTimeout(waitingTimerRef.current);
     setSessionId(null);
     setTicketNumber('Pending');
     setCurrentSessionStatus('new');
-    setAssignedAgentName('Sarah Jenkins');
+    setAssignedAgentName('Unassigned');
+    setAssignedAgentAvatar('');
     setMessages([
       {
-        id: 'msg-1',
+        id: 'msg-welcome-intake',
         sender: 'agent',
-        agentName: 'Sarah Jenkins',
+        agentName: 'WIPA Member Support',
         agentAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
-        agentRole: 'Senior Member Support Specialist',
-        text: `Hello ${user?.name ? user.name.split(' ')[0] : 'there'}! 👋 Ready to start a new support ticket. What can we help you with today?`,
-        timestamp: 'Just now',
+        agentRole: 'Member Experience Team',
+        text: `Hello ${user?.name ? user.name.split(' ')[0] : 'there'}! 👋 Ready to assist. Type your message below and we will connect you with a live specialist.`,
+        timestamp: 'Queue Ready',
         actions: [
           { label: 'Sync Calendar', href: '/platform/calendar' },
           { label: 'View Tiers', href: '/pricing' },
@@ -354,8 +358,34 @@ export default function LiveChatSupportPage() {
               filter: `session_id=eq.${targetSess.id}`
             }, (payload: any) => {
               const m = payload.new;
+              if (m.sender_type === 'system') {
+                setMessages(prev => {
+                  if (prev.some(e => e.id === m.id)) return prev;
+                  return [
+                    ...prev,
+                    {
+                      id: m.id,
+                      sender: 'system',
+                      text: m.content,
+                      timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    }
+                  ];
+                });
+                return;
+              }
+
               if (m.sender_type === 'agent') {
                 if (m.content?.startsWith('[INTERNAL NOTE]')) return;
+                
+                // Clear waiting timer
+                if (waitingTimerRef.current) clearTimeout(waitingTimerRef.current);
+
+                // Update assigned agent state
+                if (m.sender_name) {
+                  setAssignedAgentName(m.sender_name);
+                  if (m.sender_avatar) setAssignedAgentAvatar(m.sender_avatar);
+                }
+
                 setMessages(prev => {
                   if (prev.some(e => e.id === m.id)) return prev;
                   return [
@@ -363,7 +393,7 @@ export default function LiveChatSupportPage() {
                     {
                       id: m.id,
                       sender: 'agent',
-                      agentName: m.sender_name || 'Sarah Jenkins',
+                      agentName: m.sender_name || 'Member Specialist',
                       agentAvatar: m.sender_avatar,
                       agentRole: 'Senior Member Support Specialist',
                       text: m.content,
@@ -384,10 +414,9 @@ export default function LiveChatSupportPage() {
               if (s.ticket_number) setTicketNumber(s.ticket_number);
               if (s.status) setCurrentSessionStatus(s.status);
               if (s.assigned_agent_name && s.assigned_agent_name !== 'Unassigned') {
+                if (waitingTimerRef.current) clearTimeout(waitingTimerRef.current);
                 setAssignedAgentName(s.assigned_agent_name);
-              }
-              if (s.assigned_agent_avatar) {
-                setAssignedAgentAvatar(s.assigned_agent_avatar);
+                if (s.assigned_agent_avatar) setAssignedAgentAvatar(s.assigned_agent_avatar);
               }
               setPastSessions(prev => prev.map(item => item.id === s.id ? { ...item, ...s } : item));
             })
@@ -455,8 +484,42 @@ export default function LiveChatSupportPage() {
           activeSessId = created.id;
           setSessionId(created.id);
           setCurrentSessionStatus('active');
+          setAssignedAgentName('Unassigned');
+          setAssignedAgentAvatar('');
           if (created.ticket_number) setTicketNumber(created.ticket_number);
           setPastSessions(prev => [created, ...prev.filter(s => s.id !== created.id)]);
+
+          // Post immediate assignment queue indicator
+          setMessages(prev => [
+            ...prev,
+            {
+              id: `sys-waiting-${Date.now()}`,
+              sender: 'system',
+              text: '⏳ Please wait, we are assigning an available specialist to you...',
+              timestamp: 'Just now'
+            }
+          ]);
+
+          // Set 5-minute timeout for bot fallback if no agent replies
+          if (waitingTimerRef.current) clearTimeout(waitingTimerRef.current);
+          waitingTimerRef.current = setTimeout(() => {
+            setMessages(prev => {
+              const hasHumanReplied = prev.some(m => m.sender === 'agent' && m.agentName !== 'WIPA Member Support');
+              if (hasHumanReplied) return prev;
+              return [
+                ...prev,
+                {
+                  id: `bot-delay-${Date.now()}`,
+                  sender: 'agent',
+                  agentName: 'WIPA Support Assistant',
+                  agentAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop',
+                  agentRole: 'Queue Dispatcher',
+                  text: `All our specialists are currently assisting other members. Thank you for your patience! We have your ticket (#${created.ticket_number}) prioritized at the top of our queue and the next available agent will join shortly.\n\nIf you need immediate assistance or are on a tight schedule, you can also click 'Call Back' above to schedule a direct phone consultation.`,
+                  timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                }
+              ];
+            });
+          }, 300000); // 5 minutes
 
           // Subscribe to live replies from agent
           supabase.channel(`member-session-${created.id}`)
@@ -467,8 +530,29 @@ export default function LiveChatSupportPage() {
               filter: `session_id=eq.${created.id}`
             }, (payload: any) => {
               const m = payload.new;
+              if (m.sender_type === 'system') {
+                setMessages(prev => {
+                  if (prev.some(e => e.id === m.id)) return prev;
+                  return [
+                    ...prev,
+                    {
+                      id: m.id,
+                      sender: 'system',
+                      text: m.content,
+                      timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    }
+                  ];
+                });
+                return;
+              }
+
               if (m.sender_type === 'agent') {
                 if (m.content?.startsWith('[INTERNAL NOTE]')) return;
+                if (waitingTimerRef.current) clearTimeout(waitingTimerRef.current);
+                if (m.sender_name) {
+                  setAssignedAgentName(m.sender_name);
+                  if (m.sender_avatar) setAssignedAgentAvatar(m.sender_avatar);
+                }
                 setMessages(prev => {
                   if (prev.some(e => e.id === m.id)) return prev;
                   return [
@@ -476,7 +560,7 @@ export default function LiveChatSupportPage() {
                     {
                       id: m.id,
                       sender: 'agent',
-                      agentName: m.sender_name || 'Sarah Jenkins',
+                      agentName: m.sender_name || 'Member Specialist',
                       agentAvatar: m.sender_avatar,
                       agentRole: 'Senior Member Support Specialist',
                       text: m.content,
@@ -497,10 +581,9 @@ export default function LiveChatSupportPage() {
               if (s.ticket_number) setTicketNumber(s.ticket_number);
               if (s.status) setCurrentSessionStatus(s.status);
               if (s.assigned_agent_name && s.assigned_agent_name !== 'Unassigned') {
+                if (waitingTimerRef.current) clearTimeout(waitingTimerRef.current);
                 setAssignedAgentName(s.assigned_agent_name);
-              }
-              if (s.assigned_agent_avatar) {
-                setAssignedAgentAvatar(s.assigned_agent_avatar);
+                if (s.assigned_agent_avatar) setAssignedAgentAvatar(s.assigned_agent_avatar);
               }
               setPastSessions(prev => prev.map(item => item.id === s.id ? { ...item, ...s } : item));
             })
@@ -602,30 +685,72 @@ export default function LiveChatSupportPage() {
       <header className="shrink-0 z-20 border-b border-slate-200/80 bg-white/95 dark:border-white/10 dark:bg-[#0c1020]/95 backdrop-blur-xl px-4 sm:px-6 py-3.5 flex items-center justify-between shadow-2xs">
         <div className="flex items-center gap-3 min-w-0">
           <div className="relative">
-            <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-gradient-to-br from-[#5a32fa] via-[#7c3aed] to-[#ff2a5f] p-0.5 shadow-md shadow-purple-500/20">
-              <img 
-                src={assignedAgentAvatar} 
-                alt={assignedAgentName} 
-                className="h-full w-full rounded-[14px] object-cover" 
-              />
-            </div>
-            <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0c1020] animate-pulse" />
+            {assignedAgentName && assignedAgentName !== 'Unassigned' && assignedAgentAvatar ? (
+              <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-gradient-to-br from-[#5a32fa] via-[#7c3aed] to-[#ff2a5f] p-0.5 shadow-md shadow-purple-500/20">
+                <img 
+                  src={assignedAgentAvatar} 
+                  alt={assignedAgentName} 
+                  className="h-full w-full rounded-[14px] object-cover" 
+                />
+              </div>
+            ) : (
+              <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-gradient-to-br from-[#5a32fa] via-[#7c3aed] to-[#ff2a5f] p-0.5 shadow-md shadow-purple-500/20 flex items-center justify-center">
+                <div className="h-full w-full rounded-[14px] bg-[#0c1020] flex items-center justify-center">
+                  <Headphones size={20} className="text-purple-400" />
+                </div>
+              </div>
+            )}
+            <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full ring-2 ring-white dark:ring-[#0c1020] ${
+              assignedAgentName && assignedAgentName !== 'Unassigned' 
+                ? 'bg-emerald-500 animate-pulse' 
+                : sessionId 
+                  ? 'bg-amber-500 animate-ping' 
+                  : 'bg-purple-500'
+            }`} />
           </div>
 
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                WIPA Live Support
+                {assignedAgentName && assignedAgentName !== 'Unassigned' ? assignedAgentName : 'WIPA Live Support'}
               </h1>
-              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/70 dark:border-emerald-800/50">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-                Live Agent Active
-              </span>
+              {assignedAgentName && assignedAgentName !== 'Unassigned' ? (
+                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/70 dark:border-emerald-800/50">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  Live Agent Active
+                </span>
+              ) : sessionId ? (
+                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-200/70 dark:border-amber-800/50 animate-pulse">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping" />
+                  Assigning Specialist...
+                </span>
+              ) : (
+                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded-full border border-purple-200/70 dark:border-purple-800/50">
+                  <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+                  Team on Standby
+                </span>
+              )}
             </div>
             <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate flex items-center gap-1.5">
-              <span>{assignedAgentName}</span>
-              <span className="text-slate-300 dark:text-slate-600">•</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-medium">Avg. response &lt; 1 min</span>
+              {assignedAgentName && assignedAgentName !== 'Unassigned' ? (
+                <>
+                  <span>Senior Member Support Specialist</span>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">In chat with you</span>
+                </>
+              ) : sessionId ? (
+                <>
+                  <span className="text-amber-600 dark:text-amber-400 font-medium">Matching available specialist</span>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
+                  <span>Avg response &lt; 2 mins</span>
+                </>
+              ) : (
+                <>
+                  <span>Member Experience Team</span>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
+                  <span className="text-purple-600 dark:text-purple-400 font-medium">Ready when you are</span>
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -741,6 +866,17 @@ export default function LiveChatSupportPage() {
             {/* Message Stream */}
             <div className="max-w-3xl mx-auto space-y-4">
               {messages.map((msg) => {
+                if (msg.sender === 'system') {
+                  return (
+                    <div key={msg.id} className="flex justify-center my-3 animate-fade-in">
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 dark:bg-purple-950/70 border border-purple-200/80 dark:border-purple-800/60 text-purple-700 dark:text-purple-300 text-xs font-medium shadow-2xs">
+                        <Sparkles size={13} className="text-purple-500 shrink-0 animate-pulse" />
+                        <span>{msg.text}</span>
+                      </div>
+                    </div>
+                  );
+                }
+
                 const isUser = msg.sender === 'user';
 
                 return (
