@@ -118,7 +118,7 @@ export default function MobileTopBar() {
     <>
       {/* FEED PAGE CUSTOM MOBILE TOP BAR (Matches user screenshot) */}
       {pathname === '/platform' ? (
-        <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-gradient-to-b from-[#7ec8f8]/40 via-[#b6e0fe]/25 to-slate-50/0 dark:from-[#1e3a8a]/35 dark:via-[#1e293b]/25 dark:to-transparent pt-safe px-3.5 pb-2 transition-all w-full max-w-full box-border">
+        <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-gradient-to-b from-[#7ec8f8]/35 to-[#90cbfd]/20 dark:from-[#1e3a8a]/30 dark:to-[#1e3a8a]/18 pt-safe px-3.5 pb-0 transition-all w-full max-w-full box-border border-0 shadow-none">
           <div className="h-14 flex items-center justify-between w-full">
             {/* Left: Menu button + Home title */}
             <div className="flex items-center gap-3">
