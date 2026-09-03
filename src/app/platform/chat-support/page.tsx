@@ -158,8 +158,10 @@ export default function LiveChatSupportPage() {
   const [transcriptEmail, setTranscriptEmail] = useState(user?.email || '');
   const [transcriptSent, setTranscriptSent] = useState(false);
   const [copiedTicket, setCopiedTicket] = useState(false);
-  const [ticketNumber, setTicketNumber] = useState('WIP-8942');
+  const [ticketNumber, setTicketNumber] = useState('Pending');
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [assignedAgentName, setAssignedAgentName] = useState<string>('Sarah Jenkins');
+  const [assignedAgentAvatar, setAssignedAgentAvatar] = useState<string>('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop');
 
   // Initialize messages
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
@@ -236,7 +238,13 @@ export default function LiveChatSupportPage() {
         if (existing && existing.length > 0) {
           const sess = existing[0];
           setSessionId(sess.id);
-          setTicketNumber(sess.ticket_number);
+          if (sess.ticket_number) setTicketNumber(sess.ticket_number);
+          if (sess.assigned_agent_name && sess.assigned_agent_name !== 'Unassigned') {
+            setAssignedAgentName(sess.assigned_agent_name);
+          }
+          if (sess.assigned_agent_avatar) {
+            setAssignedAgentAvatar(sess.assigned_agent_avatar);
+          }
 
           // Fetch previous messages for this session
           const { data: dbMsgs } = await supabase
@@ -288,6 +296,21 @@ export default function LiveChatSupportPage() {
                 playNotificationSound();
               }
             })
+            .on('postgres_changes', {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'support_sessions',
+              filter: `id=eq.${sess.id}`
+            }, (payload: any) => {
+              const s = payload.new;
+              if (s.ticket_number) setTicketNumber(s.ticket_number);
+              if (s.assigned_agent_name && s.assigned_agent_name !== 'Unassigned') {
+                setAssignedAgentName(s.assigned_agent_name);
+              }
+              if (s.assigned_agent_avatar) {
+                setAssignedAgentAvatar(s.assigned_agent_avatar);
+              }
+            })
             .subscribe();
         }
       } catch (err) {
@@ -328,14 +351,10 @@ export default function LiveChatSupportPage() {
       let activeSessId = sessionId;
 
       if (!activeSessId) {
-        const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-        const tNum = `WIP-${randomSuffix}`;
-        setTicketNumber(tNum);
-
+        // Sequential ticket number is generated automatically by the Postgres sequence & trigger!
         const { data: created } = await supabase
           .from('support_sessions')
           .insert({
-            ticket_number: tNum,
             user_id: user?.id || null,
             user_name: user?.name || 'WIPA Member',
             user_email: user?.email || null,
@@ -344,6 +363,7 @@ export default function LiveChatSupportPage() {
             status: 'active',
             priority: 'high',
             category: 'General',
+            assigned_agent_name: 'Unassigned',
             last_message: textToSend,
             last_message_at: new Date().toISOString(),
             unread_agent_count: 1
@@ -354,6 +374,7 @@ export default function LiveChatSupportPage() {
         if (created) {
           activeSessId = created.id;
           setSessionId(created.id);
+          if (created.ticket_number) setTicketNumber(created.ticket_number);
 
           // Subscribe to live replies from agent
           supabase.channel(`member-session-${created.id}`)
@@ -382,6 +403,21 @@ export default function LiveChatSupportPage() {
                   ];
                 });
                 playNotificationSound();
+              }
+            })
+            .on('postgres_changes', {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'support_sessions',
+              filter: `id=eq.${created.id}`
+            }, (payload: any) => {
+              const s = payload.new;
+              if (s.ticket_number) setTicketNumber(s.ticket_number);
+              if (s.assigned_agent_name && s.assigned_agent_name !== 'Unassigned') {
+                setAssignedAgentName(s.assigned_agent_name);
+              }
+              if (s.assigned_agent_avatar) {
+                setAssignedAgentAvatar(s.assigned_agent_avatar);
               }
             })
             .subscribe();
@@ -479,8 +515,8 @@ export default function LiveChatSupportPage() {
           <div className="relative">
             <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-gradient-to-br from-[#5a32fa] via-[#7c3aed] to-[#ff2a5f] p-0.5 shadow-md shadow-purple-500/20">
               <img 
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop" 
-                alt="Sarah Jenkins" 
+                src={assignedAgentAvatar} 
+                alt={assignedAgentName} 
                 className="h-full w-full rounded-[14px] object-cover" 
               />
             </div>
@@ -498,7 +534,7 @@ export default function LiveChatSupportPage() {
               </span>
             </div>
             <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate flex items-center gap-1.5">
-              <span>Sarah Jenkins (Senior Member Specialist)</span>
+              <span>{assignedAgentName}</span>
               <span className="text-slate-300 dark:text-slate-600">•</span>
               <span className="text-emerald-600 dark:text-emerald-400 font-medium">Avg. response &lt; 1 min</span>
             </p>
