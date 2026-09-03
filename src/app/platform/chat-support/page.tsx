@@ -1,0 +1,1262 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { 
+  Headphones, 
+  Send, 
+  Paperclip, 
+  Sparkles, 
+  CheckCheck, 
+  Clock, 
+  Phone, 
+  Mail, 
+  HelpCircle, 
+  ExternalLink, 
+  ChevronRight, 
+  ChevronDown, 
+  RefreshCw, 
+  X, 
+  Check, 
+  Copy, 
+  Volume2, 
+  VolumeX, 
+  ShieldCheck, 
+  User, 
+  MessageSquare, 
+  ArrowRight,
+  Info,
+  Calendar,
+  CreditCard,
+  GraduationCap,
+  Building2,
+  Bug,
+  Smile,
+  FileText,
+  AlertCircle
+} from 'lucide-react';
+import { useAppStore } from '@/store/useAppStore';
+import { supabase } from '@/lib/supabase';
+
+interface ChatMessage {
+  id: string;
+  sender: 'user' | 'agent' | 'system';
+  agentName?: string;
+  agentAvatar?: string;
+  agentRole?: string;
+  text: string;
+  timestamp: string;
+  attachment?: {
+    name: string;
+    size: string;
+    type: 'image' | 'file';
+    url?: string;
+  };
+  actions?: {
+    label: string;
+    href: string;
+  }[];
+}
+
+const FAQ_ITEMS = [
+  {
+    q: 'How do I sync WIPA events with my Google Calendar?',
+    a: 'Go to Calendar in the left navigation, click "Sync Google Calendar", and grant authorization. Any upcoming webinar or panel you RSVP to will automatically sync with notifications.',
+    category: 'Events',
+    link: '/platform/calendar'
+  },
+  {
+    q: 'How do I upgrade or manage my membership subscription?',
+    a: 'You can view all tiers, upgrade to Executive or Corporate, and download VAT/Tax receipts directly from the Membership & Billing portal.',
+    category: 'Billing',
+    link: '/pricing'
+  },
+  {
+    q: 'How does the WIPA Mentorship matching work?',
+    a: 'Our mentorship program pairs senior IP counsel with emerging attorneys and students based on mutual practice areas and industry sectors. Applications are reviewed quarterly.',
+    category: 'Mentorship',
+    link: '/platform/mentorship'
+  },
+  {
+    q: 'Can I publish articles or legal insights in the WIPA Library?',
+    a: 'Yes! Verified members can submit legal briefs, patent reviews, and thought-leadership articles to the editorial board via the Resource Library submission portal.',
+    category: 'Resources',
+    link: '/platform/resources'
+  },
+  {
+    q: 'How do I create a verified business or law firm profile?',
+    a: 'Navigate to "Business" in the left sidebar and click "Create Business Profile". Once submitted, our team verifies firm credentials within 24-48 hours.',
+    category: 'Directory',
+    link: '/platform/business'
+  },
+  {
+    q: 'Where can I claim CLE (Continuing Legal Education) credits?',
+    a: 'CLE certificates are automatically generated in your Profile > Certificates tab after attending at least 50 minutes of accredited live webinars.',
+    category: 'Events',
+    link: '/platform/profile'
+  }
+];
+
+const PROMPT_SUGGESTIONS = [
+  {
+    id: 'billing',
+    icon: CreditCard,
+    label: 'Membership & Billing',
+    text: 'I have a question regarding my membership tier and billing receipt.'
+  },
+  {
+    id: 'calendar',
+    icon: Calendar,
+    label: 'Google Calendar Sync',
+    text: 'How do I connect my Google Calendar for upcoming WIPA webinars?'
+  },
+  {
+    id: 'mentorship',
+    icon: GraduationCap,
+    label: 'Mentorship Program',
+    text: 'I would like to know how to apply as a mentor or mentee.'
+  },
+  {
+    id: 'firm',
+    icon: Building2,
+    label: 'Firm Business Profile',
+    text: 'How do I set up a verified law firm profile for my practice?'
+  },
+  {
+    id: 'bug',
+    icon: Bug,
+    label: 'Report an Issue',
+    text: 'I noticed an issue with a page loading or button and want to report it.'
+  },
+  {
+    id: 'human',
+    icon: User,
+    label: 'Speak to a Specialist',
+    text: 'Please connect me with a live member support specialist.'
+  }
+];
+
+export default function LiveChatSupportPage() {
+  const user = useAppStore((state) => state.user);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [inputMessage, setInputMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [selectedAttachment, setSelectedAttachment] = useState<{ name: string; size: string; type: 'image' | 'file'; preview?: string } | null>(null);
+  const [showHubMobile, setShowHubMobile] = useState(false);
+  const [faqSearch, setFaqSearch] = useState('');
+  const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(0);
+  
+  // Modals state
+  const [isCallBackModalOpen, setIsCallBackModalOpen] = useState(false);
+  const [callBackForm, setCallBackForm] = useState({ phone: '', timeSlot: 'Morning (9am - 12pm EST)', note: '' });
+  const [callBackSuccess, setCallBackSuccess] = useState(false);
+
+  const [isTranscriptModalOpen, setIsTranscriptModalOpen] = useState(false);
+  const [transcriptEmail, setTranscriptEmail] = useState(user?.email || '');
+  const [transcriptSent, setTranscriptSent] = useState(false);
+  const [copiedTicket, setCopiedTicket] = useState(false);
+  const [ticketNumber, setTicketNumber] = useState('WIP-8942');
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  // Initialize messages
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [
+    {
+      id: 'msg-1',
+      sender: 'agent',
+      agentName: 'Sarah Jenkins',
+      agentAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+      agentRole: 'Senior Member Support Specialist',
+      text: `Hello ${user?.name ? user.name.split(' ')[0] : 'there'}! 👋 Welcome to WIPA Live Support. I'm Sarah from the Member Experience team.\n\nWhether you need assistance with event registrations, Google Calendar sync, membership tiers, or navigating platform tools, I'm here to help in real-time. How can we assist you today?`,
+      timestamp: 'Just now',
+      actions: [
+        { label: 'Sync Calendar', href: '/platform/calendar' },
+        { label: 'View Tiers', href: '/pricing' },
+        { label: 'Mentorship', href: '/platform/mentorship' }
+      ]
+    }
+  ]);
+
+  // Audio chime effect using Web Audio API
+  const playNotificationSound = () => {
+    if (!soundEnabled || typeof window === 'undefined') return;
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.3);
+    } catch {
+      // Audio fallback
+    }
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  useEffect(() => {
+    if (user?.email && !transcriptEmail) {
+      setTranscriptEmail(user.email);
+    }
+  }, [user?.email, transcriptEmail]);
+
+  // Connect to live Supabase support session & realtime channel
+  useEffect(() => {
+    let activeChannel: any = null;
+
+    const initSupabaseSession = async () => {
+      try {
+        const uId = user?.id || null;
+        const uName = user?.name || 'WIPA Member';
+        const uEmail = user?.email || null;
+        const uAvatar = user?.avatar_url || null;
+        const uTier = user?.membership_tier || 'Verified Member';
+
+        let sess: any = null;
+
+        if (uId) {
+          const { data: existing } = await supabase
+            .from('support_sessions')
+            .select('*')
+            .eq('user_id', uId)
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+          if (existing && existing.length > 0) {
+            sess = existing[0];
+          }
+        }
+
+        if (!sess) {
+          const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+          const tNum = `WIP-${randomSuffix}`;
+          const { data: created, error } = await supabase
+            .from('support_sessions')
+            .insert({
+              ticket_number: tNum,
+              user_id: uId,
+              user_name: uName,
+              user_email: uEmail,
+              user_avatar: uAvatar,
+              user_tier: uTier,
+              status: 'active',
+              priority: 'high',
+              category: 'General',
+              last_message: 'Session initiated',
+              last_message_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+
+          if (!error && created) {
+            sess = created;
+          }
+        }
+
+        if (sess) {
+          setSessionId(sess.id);
+          setTicketNumber(sess.ticket_number);
+
+          // Fetch previous messages for this session
+          const { data: dbMsgs } = await supabase
+            .from('support_messages')
+            .select('*')
+            .eq('session_id', sess.id)
+            .order('created_at', { ascending: true });
+
+          if (dbMsgs && dbMsgs.length > 0) {
+            const mapped: ChatMessage[] = dbMsgs
+              .filter((m: any) => !m.content?.startsWith('[INTERNAL NOTE]'))
+              .map((m: any) => ({
+                id: m.id,
+                sender: m.sender_type as any,
+                agentName: m.sender_type === 'agent' ? m.sender_name : undefined,
+                agentAvatar: m.sender_avatar,
+                text: m.content,
+                timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              }));
+            setMessages(prev => [prev[0], ...mapped]);
+          }
+
+          // Realtime websocket listener for live agent replies from support-wipa
+          activeChannel = supabase.channel(`member-session-${sess.id}`)
+            .on('postgres_changes', {
+              event: 'INSERT',
+              schema: 'public',
+              table: 'support_messages',
+              filter: `session_id=eq.${sess.id}`
+            }, (payload: any) => {
+              const m = payload.new;
+              if (m.sender_type === 'agent') {
+                if (m.content?.startsWith('[INTERNAL NOTE]')) return;
+                setMessages(prev => {
+                  if (prev.some(e => e.id === m.id)) return prev;
+                  return [
+                    ...prev,
+                    {
+                      id: m.id,
+                      sender: 'agent',
+                      agentName: m.sender_name || 'Sarah Jenkins',
+                      agentAvatar: m.sender_avatar,
+                      agentRole: 'Senior Member Support Specialist',
+                      text: m.content,
+                      timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    }
+                  ];
+                });
+                playNotificationSound();
+              }
+            })
+            .subscribe();
+        }
+      } catch (err) {
+        console.warn('Supabase realtime init fallback:', err);
+      }
+    };
+
+    initSupabaseSession();
+
+    return () => {
+      if (activeChannel) supabase.removeChannel(activeChannel);
+    };
+  }, [user?.id]);
+
+  // Generate contextual AI/Support response
+  const generateAgentResponse = (userText: string) => {
+    setIsTyping(true);
+    const lower = userText.toLowerCase();
+
+    setTimeout(() => {
+      let reply = '';
+      let actions: { label: string; href: string }[] | undefined = undefined;
+
+      if (lower.includes('calendar') || lower.includes('google') || lower.includes('sync')) {
+        reply = `Great question! You can integrate your WIPA calendar with Google Calendar in just 2 clicks:\n\n1. Visit the **Calendar** page in your platform navigation.\n2. Click the **"Sync Google Calendar"** button on the top right.\n3. Approve the Google OAuth consent.\n\nAll your RSVP'd panels, keynote discussions, and regional networking sessions will immediately reflect with Google reminders!`;
+        actions = [
+          { label: 'Go to Calendar', href: '/platform/calendar' },
+          { label: 'Browse Events', href: '/platform/events' }
+        ];
+      } else if (lower.includes('bill') || lower.includes('tier') || lower.includes('upgrade') || lower.includes('invoice') || lower.includes('price')) {
+        reply = `We'd love to help with your membership! WIPA offers **Student/Associate**, **Professional**, and **Executive Corporate** tiers.\n\n• **Invoices & Receipts**: Available in your Settings > Billing history tab.\n• **Upgrades**: Unlock full IP Intelligence databases, verified attorney badges, and VIP roundtables.\n\nWould you like me to guide you through an upgrade or apply a corporate partner discount?`;
+        actions = [
+          { label: 'View Pricing & Tiers', href: '/pricing' },
+          { label: 'Billing Settings', href: '/platform/settings' }
+        ];
+      } else if (lower.includes('mentor') || lower.includes('mentee') || lower.includes('mentorship')) {
+        reply = `The **WIPA Global Mentorship Program** connects seasoned IP partners, patent examiners, and in-house counsel with emerging legal talents.\n\n• **Matches**: Computed based on your practice area (e.g. Biotech, AI Law, Patent Prosecution) and timezone.\n• **Cadence**: 1-hour monthly structured virtual sessions with shared resource toolkits.`;
+        actions = [
+          { label: 'Open Mentorship Hub', href: '/platform/mentorship' },
+          { label: 'Update Practice Areas', href: '/platform/settings' }
+        ];
+      } else if (lower.includes('firm') || lower.includes('business') || lower.includes('directory')) {
+        reply = `Creating a **Verified Law Firm / IP Business Profile** showcases your practice to our global network of over 12,000 IP leaders and corporate decision-makers.\n\nYou can add your firm's practice specialties, partner rosters, representative matters, and direct consultation booking links!`;
+        actions = [
+          { label: 'Create Business Profile', href: '/platform/business/create' },
+          { label: 'Explore Directory', href: '/platform/resources/ip-firms' }
+        ];
+      } else if (lower.includes('human') || lower.includes('person') || lower.includes('agent') || lower.includes('speak') || lower.includes('specialist')) {
+        reply = `You're currently connected directly with **Sarah Jenkins** (Senior Support Specialist) along with our automated concierge engine.\n\nI have flagged this conversation with **Tier 1 Member Priority**. You can also schedule an immediate 1:1 call using the "Request Call Back" button at the top!`;
+        actions = [
+          { label: 'Request Call Back', href: '#' }
+        ];
+      } else if (lower.includes('bug') || lower.includes('issue') || lower.includes('error') || lower.includes('problem')) {
+        reply = `Thank you for reporting this. Our engineering and platform team investigates every bug immediately.\n\n• Ticket has been tagged: **#WIP-8942-DEV**\n• If you have a screenshot of the error, please click the paperclip icon below to attach it.\n• We have logged your browser telemetry and session details.`;
+      } else {
+        reply = `Thanks for reaching out! I've noted: "${userText}".\n\nOur team is on standby to assist with any platform features, event registrations, or membership services. Is there a specific section of WIPA you'd like guidance on?`;
+        actions = [
+          { label: 'Platform Home', href: '/platform' },
+          { label: 'Explore Resources', href: '/platform/resources' }
+        ];
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `msg-${Date.now()}`,
+          sender: 'agent',
+          agentName: 'Sarah Jenkins',
+          agentAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+          agentRole: 'Senior Member Support Specialist',
+          text: reply,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          actions
+        }
+      ]);
+
+      setIsTyping(false);
+      playNotificationSound();
+    }, 1100);
+  };
+
+  const handleSendMessage = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const trimmed = inputMessage.trim();
+    if (!trimmed && !selectedAttachment) return;
+
+    const newMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: trimmed,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      attachment: selectedAttachment ? {
+        name: selectedAttachment.name,
+        size: selectedAttachment.size,
+        type: selectedAttachment.type,
+        url: selectedAttachment.preview
+      } : undefined
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
+    setInputMessage('');
+    setSelectedAttachment(null);
+
+    // Persist to Supabase if session exists
+    if (sessionId) {
+      supabase.from('support_messages').insert({
+        session_id: sessionId,
+        sender_type: 'user',
+        sender_name: user?.name || 'WIPA Member',
+        sender_avatar: user?.avatar_url,
+        sender_id: user?.id,
+        content: trimmed || 'Attached file for review',
+        attachment_name: selectedAttachment?.name,
+        attachment_size: selectedAttachment?.size,
+        attachment_type: selectedAttachment?.type
+      }).then(() => {});
+
+      supabase.from('support_sessions').update({
+        last_message: trimmed || 'Attached file for review',
+        last_message_at: new Date().toISOString(),
+        unread_agent_count: 1
+      }).eq('id', sessionId).then(() => {});
+    }
+
+    // Trigger concierge agent reply
+    generateAgentResponse(trimmed || 'Attached file for review');
+  };
+
+  const handlePromptClick = (text: string) => {
+    setInputMessage('');
+    const newMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
+    generateAgentResponse(text);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const isImg = file.type.startsWith('image/');
+    const sizeFormatted = file.size > 1024 * 1024 
+      ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` 
+      : `${Math.round(file.size / 1024)} KB`;
+
+    setSelectedAttachment({
+      name: file.name,
+      size: sizeFormatted,
+      type: isImg ? 'image' : 'file',
+      preview: isImg ? URL.createObjectURL(file) : undefined
+    });
+  };
+
+  const handleCopyTicket = () => {
+    navigator.clipboard.writeText(ticketNumber);
+    setCopiedTicket(true);
+    setTimeout(() => setCopiedTicket(false), 2000);
+  };
+
+  const handleClearChat = () => {
+    if (confirm('Start a fresh live support session? Current chat messages will be cleared.')) {
+      setMessages([
+        {
+          id: `msg-${Date.now()}`,
+          sender: 'agent',
+          agentName: 'Sarah Jenkins',
+          agentAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+          agentRole: 'Senior Member Support Specialist',
+          text: `Hello ${user?.name ? user.name.split(' ')[0] : 'there'}! Started a brand new session. How can we help you right now?`,
+          timestamp: 'Just now'
+        }
+      ]);
+    }
+  };
+
+  const filteredFaqs = FAQ_ITEMS.filter(item => 
+    item.q.toLowerCase().includes(faqSearch.toLowerCase()) || 
+    item.a.toLowerCase().includes(faqSearch.toLowerCase()) ||
+    item.category.toLowerCase().includes(faqSearch.toLowerCase())
+  );
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-77px)] w-full max-w-full bg-slate-50 dark:bg-[#070913] text-slate-900 dark:text-slate-100 overflow-hidden relative font-sans">
+      
+      {/* Background ambient lighting */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#5a32fa]/8 dark:bg-[#5a32fa]/15 rounded-full blur-3xl pointer-events-none -z-0" />
+      <div className="absolute bottom-10 left-10 w-80 h-80 bg-[#ff90e8]/8 dark:bg-[#a855f7]/10 rounded-full blur-3xl pointer-events-none -z-0" />
+
+      {/* TOP BAR: Support Live Header */}
+      <header className="shrink-0 z-20 border-b border-slate-200/80 bg-white/95 dark:border-white/10 dark:bg-[#0c1020]/95 backdrop-blur-xl px-4 sm:px-6 py-3.5 flex items-center justify-between shadow-2xs">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="relative">
+            <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-gradient-to-br from-[#5a32fa] via-[#7c3aed] to-[#ff2a5f] p-0.5 shadow-md shadow-purple-500/20">
+              <img 
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop" 
+                alt="Sarah Jenkins" 
+                className="h-full w-full rounded-[14px] object-cover" 
+              />
+            </div>
+            <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0c1020] animate-pulse" />
+          </div>
+
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                WIPA Live Support
+              </h1>
+              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/70 dark:border-emerald-800/50">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                Live Agent Active
+              </span>
+            </div>
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate flex items-center gap-1.5">
+              <span>Sarah Jenkins (Senior Member Specialist)</span>
+              <span className="text-slate-300 dark:text-slate-600">•</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium">Avg. response &lt; 1 min</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Header Right Actions */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Ticket ID badge */}
+          <button
+            type="button"
+            onClick={handleCopyTicket}
+            title="Click to copy support ticket ID"
+            className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-purple-400 transition-all cursor-pointer"
+          >
+            <span className="text-slate-400">Session:</span>
+            <span className="text-[#5a32fa] dark:text-purple-300 font-mono">#{ticketNumber}</span>
+            {copiedTicket ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} className="text-slate-400" />}
+          </button>
+
+          {/* Sound Toggle */}
+          <button
+            type="button"
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+            title={soundEnabled ? 'Mute notification sound' : 'Unmute notification sound'}
+          >
+            {soundEnabled ? <Volume2 size={17} /> : <VolumeX size={17} />}
+          </button>
+
+          {/* Request Call Back */}
+          <button
+            type="button"
+            onClick={() => setIsCallBackModalOpen(true)}
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#5a32fa] dark:text-purple-300 bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200/70 dark:border-purple-500/20 transition-all cursor-pointer"
+          >
+            <Phone size={13} />
+            <span>Call Back</span>
+          </button>
+
+          {/* Email Transcript */}
+          <button
+            type="button"
+            onClick={() => setIsTranscriptModalOpen(true)}
+            className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200/80 dark:border-white/10 transition-all cursor-pointer"
+          >
+            <Mail size={13} />
+            <span>Transcript</span>
+          </button>
+
+          {/* Clear / Reset */}
+          <button
+            type="button"
+            onClick={handleClearChat}
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+            title="Reset conversation"
+          >
+            <RefreshCw size={16} />
+          </button>
+
+          {/* Mobile Hub toggle */}
+          <button
+            type="button"
+            onClick={() => setShowHubMobile(!showHubMobile)}
+            className="lg:hidden p-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-[#5a32fa] dark:text-purple-300 border border-purple-200/60 dark:border-purple-500/20 cursor-pointer"
+            title="Toggle Help Hub"
+          >
+            <HelpCircle size={18} />
+          </button>
+        </div>
+      </header>
+
+      {/* MAIN CONTENT AREA: Split View (Chat on left, Hub on right) */}
+      <div className="flex-1 flex w-full h-full min-h-0 overflow-hidden relative">
+        
+        {/* CHAT SECTION */}
+        <section className="flex-1 flex flex-col h-full min-w-0 bg-transparent relative z-10">
+          
+          {/* Scrollable Messages Stream */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-4 no-scrollbar">
+            
+            {/* Live Security Guarantee Banner */}
+            <div className="mx-auto max-w-xl text-center mb-6">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 shadow-2xs backdrop-blur-md">
+                <ShieldCheck size={14} className="text-emerald-500 shrink-0" />
+                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                  End-to-End Encrypted Session • WIPA Member Priority Protocol
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Action Prompt Chips (Always available at top of chat) */}
+            <div className="mx-auto max-w-2xl mb-6">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 mb-2 px-1">
+                Frequently Asked Topics
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {PROMPT_SUGGESTIONS.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => handlePromptClick(item.text)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:border-[#5a32fa]/60 hover:text-[#5a32fa] dark:hover:border-purple-500/50 dark:hover:text-purple-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer group text-left"
+                    >
+                      <Icon size={13} className="text-slate-400 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Message Stream */}
+            <div className="max-w-3xl mx-auto space-y-4">
+              {messages.map((msg) => {
+                const isUser = msg.sender === 'user';
+
+                return (
+                  <div 
+                    key={msg.id}
+                    className={`flex items-start gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
+                  >
+                    {/* Avatar */}
+                    {!isUser ? (
+                      <div className="shrink-0 mt-0.5">
+                        <img 
+                          src={msg.agentAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop'} 
+                          alt={msg.agentName || 'Agent'} 
+                          className="h-8 w-8 rounded-xl object-cover ring-2 ring-purple-300 dark:ring-purple-900 shadow-xs" 
+                        />
+                      </div>
+                    ) : (
+                      <div className="shrink-0 mt-0.5">
+                        {user?.avatar_url ? (
+                          <img src={user.avatar_url} alt={user.name} className="h-8 w-8 rounded-xl object-cover ring-2 ring-purple-300 dark:ring-purple-900 shadow-xs" />
+                        ) : (
+                          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white text-xs font-bold shadow-xs">
+                            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Message Body */}
+                    <div className={`max-w-[85%] sm:max-w-[75%] flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+                      {!isUser && (
+                        <div className="flex items-center gap-2 mb-1 px-1">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">
+                            {msg.agentName}
+                          </span>
+                          <span className="text-[10px] font-medium text-slate-400">
+                            {msg.agentRole}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className={`rounded-2xl px-4 py-3 text-xs sm:text-[13px] leading-relaxed shadow-xs ${
+                        isUser 
+                          ? 'bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] text-white rounded-tr-xs' 
+                          : 'bg-white dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-white/10 rounded-tl-xs'
+                      }`}>
+                        {/* Text Content */}
+                        <div className="whitespace-pre-line">
+                          {msg.text}
+                        </div>
+
+                        {/* Attachment display */}
+                        {msg.attachment && (
+                          <div className="mt-2.5 pt-2.5 border-t border-white/20 dark:border-white/10">
+                            {msg.attachment.type === 'image' && msg.attachment.url ? (
+                              <img 
+                                src={msg.attachment.url} 
+                                alt={msg.attachment.name} 
+                                className="max-h-48 rounded-xl object-cover mb-1 border border-white/20" 
+                              />
+                            ) : null}
+                            <div className="flex items-center gap-2 text-[11px] opacity-90">
+                              <Paperclip size={12} />
+                              <span className="font-semibold truncate">{msg.attachment.name}</span>
+                              <span className="opacity-75">({msg.attachment.size})</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Action Buttons inside Agent messages */}
+                        {msg.actions && msg.actions.length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-slate-100 dark:border-white/10 flex flex-wrap gap-2">
+                            {msg.actions.map((act, i) => (
+                              act.href === '#' ? (
+                                <button
+                                  key={i}
+                                  type="button"
+                                  onClick={() => setIsCallBackModalOpen(true)}
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#5a32fa] text-white hover:bg-[#4b26dc] transition-colors shadow-xs cursor-pointer"
+                                >
+                                  <Phone size={11} /> {act.label}
+                                </button>
+                              ) : (
+                                <Link
+                                  key={i}
+                                  href={act.href}
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-50 hover:bg-purple-100 text-[#5a32fa] dark:bg-purple-950/60 dark:hover:bg-purple-900/80 dark:text-purple-300 border border-purple-200/60 dark:border-purple-500/30 transition-all shadow-xs cursor-pointer"
+                                >
+                                  {act.label}
+                                  <ArrowRight size={11} />
+                                </Link>
+                              )
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Timestamp & Status */}
+                      <div className="flex items-center gap-1.5 mt-1 px-1 text-[10px] text-slate-400">
+                        <span>{msg.timestamp}</span>
+                        {isUser && <CheckCheck size={13} className="text-[#5a32fa] dark:text-purple-400" />}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Typing Indicator */}
+              {isTyping && (
+                <div className="flex items-start gap-3">
+                  <img 
+                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop" 
+                    alt="Agent" 
+                    className="h-8 w-8 rounded-xl object-cover ring-2 ring-purple-300 dark:ring-purple-900 shrink-0 shadow-xs" 
+                  />
+                  <div className="bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-white/10 rounded-2xl rounded-tl-xs px-4 py-3 shadow-xs">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mr-1">
+                        Sarah is typing
+                      </span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#5a32fa] animate-bounce [animation-delay:-0.3s]" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#5a32fa] animate-bounce [animation-delay:-0.15s]" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#5a32fa] animate-bounce" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+
+          {/* INPUT BAR */}
+          <div className="shrink-0 border-t border-slate-200/80 bg-white/95 dark:border-white/10 dark:bg-[#0c1020]/95 backdrop-blur-xl px-4 sm:px-6 py-3.5">
+            <div className="max-w-3xl mx-auto">
+              
+              {/* Attachment Preview Chip if selected */}
+              {selectedAttachment && (
+                <div className="mb-2.5 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/70 dark:border-purple-500/30 text-xs text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Paperclip size={13} className="text-[#5a32fa] shrink-0" />
+                    <span className="font-semibold truncate">{selectedAttachment.name}</span>
+                    <span className="text-slate-400 text-[11px]">({selectedAttachment.size})</span>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => setSelectedAttachment(null)}
+                    className="p-1 rounded-lg hover:bg-purple-200/60 dark:hover:bg-purple-900/60 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer"
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+              )}
+
+              {/* Form container */}
+              <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileChange} 
+                  className="hidden" 
+                  accept="image/*,.pdf,.doc,.docx" 
+                />
+
+                {/* Attach file button */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-2.5 rounded-xl border border-slate-200/80 dark:border-white/10 text-slate-500 hover:text-[#5a32fa] hover:border-[#5a32fa]/40 hover:bg-purple-50 dark:text-slate-400 dark:hover:text-purple-300 dark:hover:bg-white/5 transition-all cursor-pointer shrink-0"
+                  title="Attach screenshot or file"
+                >
+                  <Paperclip size={18} />
+                </button>
+
+                {/* Text input */}
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    placeholder="Type your question or request assistance here... (Press Enter to send)"
+                    className="w-full rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 px-4 py-2.5 text-xs sm:text-[13px] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:border-[#5a32fa] focus:ring-2 focus:ring-[#5a32fa]/20 transition-all"
+                  />
+                </div>
+
+                {/* Send Button */}
+                <button
+                  type="submit"
+                  disabled={!inputMessage.trim() && !selectedAttachment}
+                  className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-[13px] text-white bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] hover:from-[#4b26dc] hover:to-[#6d28d9] shadow-md shadow-purple-500/25 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer shrink-0 flex items-center gap-1.5"
+                >
+                  <span className="hidden sm:inline">Send</span>
+                  <Send size={15} />
+                </button>
+              </form>
+
+              <div className="flex items-center justify-between mt-2 px-1 text-[11px] text-slate-400">
+                <span className="hidden sm:inline">
+                  ⚡ Powered by WIPA Intelligent Assistant + Live Human Specialists
+                </span>
+                <span className="ml-auto">
+                  Press <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 font-mono text-[10px]">Enter ↵</kbd>
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* RIGHT SIDEBAR / KNOWLEDGE HUB (Desktop always visible, Mobile overlay toggle) */}
+        <aside className={`
+          ${showHubMobile ? 'fixed inset-0 z-50 flex flex-col bg-white dark:bg-[#0c1020] p-6' : 'hidden'}
+          lg:flex lg:static lg:w-80 xl:w-96 shrink-0 h-full flex-col border-l border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#090d1a]/80 backdrop-blur-xl overflow-y-auto no-scrollbar
+        `}>
+          {/* Mobile close button */}
+          <div className="lg:hidden flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-4">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">Support &amp; FAQ Hub</h2>
+            <button 
+              type="button"
+              onClick={() => setShowHubMobile(false)}
+              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="p-4 sm:p-5 space-y-5">
+            
+            {/* Session Card */}
+            <div className="rounded-2xl border border-purple-200/70 dark:border-purple-500/20 bg-gradient-to-br from-purple-50/50 via-white to-pink-50/30 dark:from-purple-950/30 dark:via-slate-900/60 dark:to-indigo-950/20 p-4 shadow-xs">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400">
+                  Live Session Info
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/70 dark:border-emerald-800/50">
+                  Active
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-white/5">
+                  <span className="text-slate-500 dark:text-slate-400">Ticket ID</span>
+                  <span className="font-mono font-bold text-[#5a32fa] dark:text-purple-300">#WIP-8942</span>
+                </div>
+                <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-white/5">
+                  <span className="text-slate-500 dark:text-slate-400">Member Status</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {user?.membership_tier || 'Verified Member'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-white/5">
+                  <span className="text-slate-500 dark:text-slate-400">Priority Tier</span>
+                  <span className="font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                    <Sparkles size={11} /> Pro SLA (Fast)
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-slate-500 dark:text-slate-400">Assigned Agent</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">Sarah Jenkins</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions Card */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setIsCallBackModalOpen(true)}
+                className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 hover:border-[#5a32fa]/40 hover:text-[#5a32fa] dark:hover:text-purple-300 transition-all cursor-pointer group shadow-2xs"
+              >
+                <Phone size={16} className="text-[#5a32fa] dark:text-purple-400 group-hover:scale-110 transition-transform" />
+                <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">Request Call</span>
+                <span className="text-[9px] text-slate-400">Within 30 mins</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsTranscriptModalOpen(true)}
+                className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 hover:border-[#5a32fa]/40 hover:text-[#5a32fa] dark:hover:text-purple-300 transition-all cursor-pointer group shadow-2xs"
+              >
+                <Mail size={16} className="text-emerald-500 group-hover:scale-110 transition-transform" />
+                <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">Email Chat</span>
+                <span className="text-[9px] text-slate-400">Instant PDF copy</span>
+              </button>
+            </div>
+
+            {/* Instant Answers / Searchable FAQs */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <HelpCircle size={14} className="text-[#5a32fa]" />
+                  Instant Knowledge Base
+                </h3>
+                <span className="text-[10px] text-slate-400">{filteredFaqs.length} articles</span>
+              </div>
+
+              {/* FAQ search */}
+              <input
+                type="text"
+                value={faqSearch}
+                onChange={(e) => setFaqSearch(e.target.value)}
+                placeholder="Search common questions..."
+                className="w-full rounded-xl bg-white dark:bg-white/5 border border-slate-200/80 dark:border-white/10 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:border-[#5a32fa] transition-all"
+              />
+
+              {/* FAQ items */}
+              <div className="space-y-2">
+                {filteredFaqs.map((faq, index) => {
+                  const isExpanded = expandedFaqIndex === index;
+                  return (
+                    <div 
+                      key={index} 
+                      className="rounded-xl border border-slate-200/70 dark:border-white/10 bg-white dark:bg-slate-900/60 overflow-hidden transition-all shadow-2xs"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setExpandedFaqIndex(isExpanded ? null : index)}
+                        className="w-full text-left p-3 flex items-start justify-between gap-2 cursor-pointer group hover:bg-purple-50/40 dark:hover:bg-white/5 transition-colors"
+                      >
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-bold text-[#5a32fa] dark:text-purple-400 uppercase tracking-wider">
+                            {faq.category}
+                          </span>
+                          <p className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#5a32fa] dark:group-hover:text-purple-300 transition-colors">
+                            {faq.q}
+                          </p>
+                        </div>
+                        <ChevronDown 
+                          size={14} 
+                          className={`text-slate-400 shrink-0 mt-1 transition-transform ${isExpanded ? 'rotate-180 text-[#5a32fa]' : ''}`} 
+                        />
+                      </button>
+
+                      {isExpanded && (
+                        <div className="px-3 pb-3 text-[11px] leading-relaxed text-slate-600 dark:text-slate-300 border-t border-slate-100 dark:border-white/5 pt-2.5 bg-slate-50/50 dark:bg-black/20">
+                          <p className="mb-2">{faq.a}</p>
+                          <div className="flex items-center justify-between pt-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handlePromptClick(faq.q);
+                                if (showHubMobile) setShowHubMobile(false);
+                              }}
+                              className="text-[10px] font-bold text-[#5a32fa] dark:text-purple-300 hover:underline cursor-pointer flex items-center gap-1"
+                            >
+                              <MessageSquare size={10} /> Ask in chat
+                            </button>
+                            <Link 
+                              href={faq.link}
+                              className="text-[10px] font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-1 cursor-pointer"
+                            >
+                              Open page <ExternalLink size={10} />
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Direct Escalation Channels */}
+            <div className="rounded-2xl p-4 bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 space-y-3">
+              <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Alternative Contact Channels
+              </h4>
+              
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                    <Mail size={13} className="text-[#5a32fa]" /> Priority Email
+                  </span>
+                  <a 
+                    href="mailto:support@wipa.org" 
+                    className="font-bold text-[#5a32fa] dark:text-purple-300 hover:underline"
+                  >
+                    support@wipa.org
+                  </a>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                    <Phone size={13} className="text-emerald-500" /> Member Hotline
+                  </span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    +1 (800) 555-WIPA
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </aside>
+      </div>
+
+      {/* MODAL 1: Request Call Back */}
+      {isCallBackModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#0f1426] border border-slate-200 dark:border-white/10 p-6 shadow-2xl relative">
+            <button
+              type="button"
+              onClick={() => { setIsCallBackModalOpen(false); setCallBackSuccess(false); }}
+              className="absolute top-5 right-5 p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+
+            {callBackSuccess ? (
+              <div className="text-center py-6 space-y-3">
+                <div className="h-12 w-12 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
+                  <Check size={24} />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Call Back Requested!</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs mx-auto">
+                  Sarah Jenkins will reach out to you at <strong className="text-slate-900 dark:text-white">{callBackForm.phone}</strong> during the requested window: <strong className="text-slate-900 dark:text-white">{callBackForm.timeSlot}</strong>.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => { setIsCallBackModalOpen(false); setCallBackSuccess(false); }}
+                  className="mt-4 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] text-white text-xs font-bold shadow-md cursor-pointer"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!callBackForm.phone) return;
+                  setCallBackSuccess(true);
+                }} 
+                className="space-y-4"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-10 w-10 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-[#5a32fa] dark:text-purple-300 flex items-center justify-center">
+                    <Phone size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Request Phone Call</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Speak with our senior member support lead</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Phone Number (with Country Code)
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={callBackForm.phone}
+                    onChange={(e) => setCallBackForm({ ...callBackForm, phone: e.target.value })}
+                    placeholder="+1 (555) 019-2834"
+                    className="w-full rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-[#5a32fa]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Preferred Time Window
+                  </label>
+                  <select
+                    value={callBackForm.timeSlot}
+                    onChange={(e) => setCallBackForm({ ...callBackForm, timeSlot: e.target.value })}
+                    className="w-full rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-[#5a32fa]"
+                  >
+                    <option value="Immediately (Next 15 mins)" className="dark:bg-slate-900">Immediately (Next 15 mins)</option>
+                    <option value="Morning (9am - 12pm EST)" className="dark:bg-slate-900">Morning (9am - 12pm EST)</option>
+                    <option value="Afternoon (1pm - 5pm EST)" className="dark:bg-slate-900">Afternoon (1pm - 5pm EST)</option>
+                    <option value="Evening (6pm - 8pm EST)" className="dark:bg-slate-900">Evening (6pm - 8pm EST)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Short Brief / Topic (Optional)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={callBackForm.note}
+                    onChange={(e) => setCallBackForm({ ...callBackForm, note: e.target.value })}
+                    placeholder="e.g., Corporate membership upgrade consultation..."
+                    className="w-full rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-[#5a32fa] resize-none"
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCallBackModalOpen(false)}
+                    className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] text-white text-xs font-bold shadow-md hover:from-[#4b26dc] hover:to-[#6d28d9] cursor-pointer"
+                  >
+                    Confirm Call Back
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: Email Transcript */}
+      {isTranscriptModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#0f1426] border border-slate-200 dark:border-white/10 p-6 shadow-2xl relative">
+            <button
+              type="button"
+              onClick={() => { setIsTranscriptModalOpen(false); setTranscriptSent(false); }}
+              className="absolute top-5 right-5 p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+
+            {transcriptSent ? (
+              <div className="text-center py-6 space-y-3">
+                <div className="h-12 w-12 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
+                  <Check size={24} />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Transcript Sent!</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs mx-auto">
+                  A copy of ticket <strong className="text-slate-900 dark:text-white">#WIP-8942</strong> and this complete chat transcript has been emailed to <strong className="text-slate-900 dark:text-white">{transcriptEmail}</strong>.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => { setIsTranscriptModalOpen(false); setTranscriptSent(false); }}
+                  className="mt-4 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] text-white text-xs font-bold shadow-md cursor-pointer"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!transcriptEmail) return;
+                  setTranscriptSent(true);
+                }} 
+                className="space-y-4"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <Mail size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">Email Chat Transcript</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Receive a complete record of this conversation</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Your Email Address
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={transcriptEmail}
+                    onChange={(e) => setTranscriptEmail(e.target.value)}
+                    placeholder="name@firm.com"
+                    className="w-full rounded-xl bg-slate-100/90 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-[#5a32fa]"
+                  />
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+                  <p className="font-semibold text-slate-700 dark:text-slate-300">Transcript details included:</p>
+                  <p>• Full timestamped message log with Sarah Jenkins</p>
+                  <p>• Attached file references &amp; action links</p>
+                  <p>• Support ticket reference #WIP-8942</p>
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsTranscriptModalOpen(false)}
+                    className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] text-white text-xs font-bold shadow-md hover:from-[#4b26dc] hover:to-[#6d28d9] cursor-pointer"
+                  >
+                    Send Transcript
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}

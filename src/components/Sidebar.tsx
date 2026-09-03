@@ -40,7 +40,8 @@ import {
   Settings,
   HelpCircle,
   ExternalLink,
-  Zap
+  Zap,
+  MessageSquare
 } from 'lucide-react';
 
 type SidebarProps = {
@@ -210,6 +211,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
     { label: 'My Network', path: '/platform/network', Icon: Globe },
     { label: 'Members', path: '/platform/members', Icon: Users },
     { label: 'Messages', path: '/platform/messages', Icon: Mail },
+    { label: 'Live Support', path: '/platform/chat-support', Icon: Headphones },
     { label: 'Groups', path: '/platform/groups', Icon: Users },
     { label: 'Forums', path: '/platform/forums', Icon: MessageCircle },
     { label: 'Resource Library', path: '/platform/resources', Icon: BookOpen },
@@ -519,23 +521,44 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
             </div>
           )}
 
-          {/* Section: Help Card Widget */}
+          {/* Section: Live Chat Support Card Widget */}
           <div className="px-3.5 mb-5 mt-auto">
-            <div className="relative overflow-hidden rounded-2xl border border-purple-200/70 bg-gradient-to-br from-purple-50/70 via-white to-pink-50/40 p-4 shadow-xs dark:border-purple-500/20 dark:from-purple-950/40 dark:via-slate-900/60 dark:to-indigo-950/30">
-              <div className="flex items-center gap-2 mb-1.5">
-                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white shadow-xs">
-                  <HelpCircle size={13} />
+            <div className={`relative overflow-hidden rounded-2xl border p-4 shadow-xs transition-all duration-300 ${
+              pathname === '/platform/chat-support'
+                ? 'border-purple-400/80 bg-gradient-to-br from-purple-100/90 via-purple-50/70 to-white shadow-purple-500/10 ring-2 ring-purple-400/40 dark:border-purple-500/50 dark:from-purple-950/60 dark:via-purple-900/40 dark:to-slate-900/80'
+                : 'border-purple-200/70 bg-gradient-to-br from-purple-50/70 via-white to-pink-50/40 hover:border-purple-300/80 dark:border-purple-500/20 dark:from-purple-950/40 dark:via-slate-900/60 dark:to-indigo-950/30'
+            }`}>
+              {/* Background luminous accent */}
+              <div className="absolute -right-6 -bottom-6 w-20 h-20 bg-gradient-to-br from-[#5a32fa]/10 to-[#ff90e8]/15 rounded-full blur-xl pointer-events-none" />
+
+              <div className="flex items-center justify-between gap-2 mb-1.5 relative z-10">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white shadow-xs">
+                    <Headphones size={13} />
+                  </div>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">Live Chat Support</span>
                 </div>
-                <span className="text-xs font-bold text-slate-900 dark:text-white">Need Help?</span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/70 dark:border-emerald-800/50 shrink-0">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  Online
+                </span>
               </div>
-              <p className="text-[11px] font-medium leading-relaxed text-slate-500 dark:text-slate-400 mb-3">
-                Reach out to the WIPA team for assistance.
+              <p className="text-[11px] font-medium leading-relaxed text-slate-500 dark:text-slate-400 mb-3 relative z-10">
+                Connect instantly with our support team &amp; AI concierge.
               </p>
               <Link 
-                href="/contact" 
-                className="inline-flex items-center justify-center gap-1.5 w-full py-2 rounded-xl bg-white border border-slate-200/80 text-[11px] font-bold text-slate-800 shadow-2xs hover:border-[#5a32fa]/40 hover:text-[#5a32fa] transition-all dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-purple-500/30 dark:hover:text-purple-300 cursor-pointer"
+                href="/platform/chat-support" 
+                className={`inline-flex items-center justify-center gap-1.5 w-full py-2 rounded-xl text-[11px] font-bold shadow-2xs transition-all cursor-pointer group relative z-10 ${
+                  pathname === '/platform/chat-support'
+                    ? 'bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] text-white shadow-purple-500/25 ring-1 ring-white/20'
+                    : 'bg-white border border-slate-200/80 text-slate-800 hover:border-[#5a32fa]/40 hover:text-[#5a32fa] dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-purple-500/30 dark:hover:text-purple-300'
+                }`}
               >
-                <Mail size={12} /> Contact WIPA
+                <MessageSquare size={12} className={pathname === '/platform/chat-support' ? 'text-white' : 'text-[#5a32fa] dark:text-purple-400 group-hover:scale-110 transition-transform'} />
+                Start Live Chat
               </Link>
             </div>
           </div>

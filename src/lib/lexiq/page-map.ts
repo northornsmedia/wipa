@@ -108,5 +108,10 @@ export const PAGE_MAP: Record<string, { name: string; aliases: string[]; descrip
     name: 'Budding Minds · Whole-Person Wellbeing for Women',
     aliases: ['budding minds', 'jel', 'nutritional therapist', 'gut health', 'hormone health', 'polyvagal', 'wellness retreats', 'somatic', '1:1 nutrition', 'jel budding minds'],
     description: 'Specialised gut and hormone health, nervous system regulation, 1:1 support, corporate workshops, and international retreats with Jel.'
+  },
+  '/platform/chat-support': {
+    name: 'Live Chat Support',
+    aliases: ['live chat', 'chat support', 'support chat', 'help desk', 'customer support', 'talk to agent', 'help with wipa', 'contact support'],
+    description: 'Real-time live chat support with WIPA Member Experience specialists and instant knowledge base.'
   }
 };
