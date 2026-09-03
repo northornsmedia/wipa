@@ -1,76 +1,110 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { usePathname } from 'next/navigation';
 
 export default function VoiceGreeting() {
   const user = useAppStore((state) => state.user);
   const pathname = usePathname();
+  const hasAttemptedRef = useRef(false);
 
   useEffect(() => {
-    // Only speak on the platform home page, once per session
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    if (pathname !== '/platform' || !user?.name) return;
+    if (!pathname?.startsWith('/platform')) return;
 
-    const ttsPlayed = sessionStorage.getItem('wipa_tts_played');
-    if (ttsPlayed) return;
+    // Check session storage to avoid repeating every page navigation
+    const alreadyPlayed = sessionStorage.getItem('wipa_tts_played_session');
+    if (alreadyPlayed || hasAttemptedRef.current) return;
 
-    sessionStorage.setItem('wipa_tts_played', 'true');
+    // Wait until user profile name is available
+    const firstName = user?.name?.trim().split(/\s+/)[0];
+    if (!firstName) return;
 
-    const timer = setTimeout(() => {
+    hasAttemptedRef.current = true;
+    let hasSpoken = false;
+
+    const speakNow = () => {
+      if (hasSpoken) return;
+
       try {
+        window.speechSynthesis.resume();
         window.speechSynthesis.cancel();
-        let hasSpoken = false;
-        let voiceFallbackTimer: ReturnType<typeof setTimeout> | undefined;
 
-        const playGreeting = () => {
-          if (hasSpoken) return;
+        const utterance = new SpeechSynthesisUtterance(
+          `Hi, ${firstName}. Welcome back to WIPA. It's lovely to have you here.`
+        );
+        (window as any)._wipaUtterance = utterance;
+        utterance.rate = 0.85;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+
+        const voices = window.speechSynthesis.getVoices();
+        const femaleVoice = voices.find(v => 
+          v.name.includes('Aria') ||
+          v.name.includes('Jenny') ||
+          v.name.includes('Google UK English Female') ||
+          v.name.includes('Google US English') ||
+          v.name.includes('Samantha') ||
+          v.name.includes('Zira') ||
+          v.name.includes('Female') || 
+          v.name.includes('Susan') || 
+          v.name.includes('Victoria')
+        );
+
+        if (femaleVoice) utterance.voice = femaleVoice;
+
+        utterance.onstart = () => {
           hasSpoken = true;
-          if (voiceFallbackTimer) clearTimeout(voiceFallbackTimer);
-
-          const firstName = user.name.trim().split(/\s+/)[0] || 'there';
-          const utterance = new SpeechSynthesisUtterance(
-            `Hi, ${firstName}. Welcome back to WIPA. It's lovely to have you here.`
-          );
-          (window as any)._wipaUtterance = utterance;
-          utterance.rate = 0.84;
-          utterance.pitch = 0.98;
-          utterance.volume = 0.9;
-
-          const voices = window.speechSynthesis.getVoices();
-          // Prefer warm, natural English female voices
-          const femaleVoice = voices.find(v => 
-            v.name.includes('Aria') ||
-            v.name.includes('Jenny') ||
-            v.name.includes('Google UK English Female') ||
-            v.name.includes('Google US English') ||
-            v.name.includes('Samantha') ||
-            v.name.includes('Zira') ||
-            v.name.includes('Female') || 
-            v.name.includes('Susan') || 
-            v.name.includes('Victoria')
-          );
-
-          if (femaleVoice) utterance.voice = femaleVoice;
-          window.speechSynthesis.speak(utterance);
+          sessionStorage.setItem('wipa_tts_played_session', 'true');
+          console.log('[WIPA Voice Greeting]: Speaking greeting for', firstName);
         };
 
-        if (window.speechSynthesis.getVoices().length === 0) {
-          window.speechSynthesis.onvoiceschanged = () => {
-            playGreeting();
-            window.speechSynthesis.onvoiceschanged = null;
-          };
-          voiceFallbackTimer = setTimeout(playGreeting, 1500);
-        } else {
-          playGreeting();
-        }
+        utterance.onerror = (e) => {
+          console.warn('[WIPA Voice Greeting]: Speech error or blocked by browser policy:', e);
+        };
+
+        window.speechSynthesis.speak(utterance);
       } catch (err) {
-        console.warn('Voice greeting error:', err);
+        console.warn('[WIPA Voice Greeting] error:', err);
       }
+    };
+
+    // 1. If voices are not yet loaded, wait for voiceschanged
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        speakNow();
+      };
+    }
+
+    // 2. Try speaking automatically after a short delay
+    const autoTimer = setTimeout(() => {
+      speakNow();
     }, 600);
 
-    return () => clearTimeout(timer);
+    // 3. Browser Autoplay policy fallback: If the browser blocks speech until a user interaction,
+    // the very first click or keypress on the platform will immediately trigger it!
+    const handleUserInteraction = () => {
+      if (!hasSpoken) {
+        speakNow();
+      }
+      cleanup();
+    };
+
+    const cleanup = () => {
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
+      window.removeEventListener('touchstart', handleUserInteraction);
+    };
+
+    window.addEventListener('click', handleUserInteraction, { once: true, passive: true });
+    window.addEventListener('keydown', handleUserInteraction, { once: true, passive: true });
+    window.addEventListener('touchstart', handleUserInteraction, { once: true, passive: true });
+
+    return () => {
+      clearTimeout(autoTimer);
+      cleanup();
+    };
   }, [user?.name, pathname]);
 
   return null;
