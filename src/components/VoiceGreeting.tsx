@@ -14,7 +14,7 @@ export default function VoiceGreeting() {
     if (!pathname?.startsWith('/platform')) return;
 
     // Check session storage to avoid playing on every single tab navigation
-    const sessionKey = 'wipa_voice_greeted_v2';
+    const sessionKey = 'wipa_voice_greeted_v3';
     if (sessionStorage.getItem(sessionKey) || hasTriggeredRef.current) return;
 
     const firstName = user?.name?.trim().split(/\s+/)[0];

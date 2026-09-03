@@ -4,7 +4,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const name = searchParams.get('name') || 'there';
 
-  const text = `Hello ${name}, welcome back to the Women's IP Alliance. It's wonderful to have you here.`;
+  const text = `Hello ${name}, welcome back to W. I. P. A. It's wonderful to have you here.`;
   const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en-US&client=tw-ob&q=${encodeURIComponent(text)}`;
 
   try {
