@@ -40,121 +40,123 @@ const icons = [BookOpenText, Globe2, Cpu];
 export default function PublicationsPage() {
   return (
     <div className="min-h-screen bg-slate-50 pb-20 text-slate-950 dark:bg-[#0f172a] dark:text-white">
-      <main className="mx-auto max-w-[1320px] px-5 py-8 md:px-8 md:py-12">
-        {/* ULTRA-COOL HERO BANNER */}
-        <section className="relative overflow-hidden rounded-[2.25rem] md:rounded-[2.75rem] border border-slate-200/90 dark:border-white/10 bg-gradient-to-br from-white via-slate-50/90 to-purple-50/40 dark:from-[#131b2e] dark:via-[#111728] dark:to-[#1e1533] p-6 sm:p-8 md:p-12 shadow-xl shadow-purple-500/5 transition-all">
+      
+      {/* ULTRA-COOL FULL-WIDTH HERO BANNER */}
+      <section className="w-full relative overflow-hidden border-b border-slate-200/90 dark:border-white/10 bg-gradient-to-br from-white via-slate-50/95 to-purple-50/50 dark:from-[#131b2e] dark:via-[#111728] dark:to-[#1e1533] shadow-xs">
+        
+        {/* Full-Bleed Ambient Lighting & Blueprint Grid */}
+        <div className="pointer-events-none absolute -right-32 -top-32 h-[560px] w-[560px] rounded-full bg-gradient-to-br from-[#5a32fa]/20 via-[#7c3aed]/15 to-transparent blur-3xl animate-pulse" />
+        <div className="pointer-events-none absolute -left-28 -bottom-28 h-[480px] w-[480px] rounded-full bg-gradient-to-tr from-[#ff2a5f]/15 via-purple-500/10 to-transparent blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#5a32fa_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.035] dark:opacity-[0.07]" />
+
+        <div className="mx-auto max-w-7xl 2xl:max-w-[1600px] px-5 sm:px-8 lg:px-12 py-12 md:py-16 lg:py-20 relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10 lg:gap-14">
           
-          {/* Ambient Lighting & Blueprint Grid */}
-          <div className="pointer-events-none absolute -right-24 -top-24 h-[420px] w-[420px] rounded-full bg-gradient-to-br from-[#5a32fa]/20 via-[#7c3aed]/15 to-transparent blur-3xl animate-pulse" />
-          <div className="pointer-events-none absolute -left-20 -bottom-20 h-[360px] w-[360px] rounded-full bg-gradient-to-tr from-[#ff2a5f]/15 via-purple-500/10 to-transparent blur-3xl" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#5a32fa_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.035] dark:opacity-[0.07]" />
-
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8 lg:gap-12">
+          {/* Left Content Area */}
+          <div className="flex-1 max-w-2xl 2xl:max-w-3xl space-y-6">
             
-            {/* Left Content Area */}
-            <div className="flex-1 max-w-2xl space-y-5">
-              
-              {/* Top Pill Badges */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#5a32fa]/25 bg-gradient-to-r from-[#5a32fa]/15 via-purple-500/10 to-transparent px-3.5 py-1 text-xs font-black uppercase tracking-[0.2em] text-[#5a32fa] dark:text-violet-300 shadow-2xs backdrop-blur-md">
-                  <Sparkles size={13} className="text-[#5a32fa] animate-spin [animation-duration:8s]" /> 
-                  Member Opportunities
-                </span>
+            {/* Top Pill Badges */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#5a32fa]/25 bg-gradient-to-r from-[#5a32fa]/15 via-purple-500/10 to-transparent px-3.5 py-1 text-xs font-black uppercase tracking-[0.2em] text-[#5a32fa] dark:text-violet-300 shadow-2xs backdrop-blur-md">
+                <Sparkles size={13} className="text-[#5a32fa] animate-spin [animation-duration:8s]" /> 
+                Member Opportunities
+              </span>
 
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  2026 Editions Now Open
-                </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 px-3 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                2026 Editions Now Open
+              </span>
+            </div>
+
+            {/* High-Impact Headline */}
+            <h1 className="text-3xl font-black leading-[1.05] tracking-[-0.035em] sm:text-4xl md:text-5xl lg:text-6xl text-slate-900 dark:text-white">
+              Publications that make your expertise{' '}
+              <span className="relative inline-block bg-gradient-to-r from-[#5a32fa] via-[#9055ff] to-[#ff2a5f] bg-clip-text text-transparent">
+                visible.
+              </span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-sm sm:text-base md:text-lg font-normal leading-relaxed text-slate-600 dark:text-slate-300 max-w-2xl">
+              Explore three specialist IP publications where Alliance members can publish insight, showcase achievements, and strengthen organizational authority with an exclusive <strong className="text-slate-900 dark:text-white font-bold">35% member saving</strong>.
+            </p>
+
+            {/* Value Props Chips */}
+            <div className="pt-1 flex flex-wrap gap-2.5">
+              <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <BadgePercent size={15} className="text-[#5a32fa]" />
+                <span>35% WIPA Member Rate</span>
               </div>
-
-              {/* High-Impact Headline */}
-              <h1 className="text-3xl font-black leading-[1.05] tracking-[-0.035em] sm:text-4xl md:text-5xl lg:text-[3.25rem] text-slate-900 dark:text-white">
-                Publications that make your expertise{' '}
-                <span className="relative inline-block bg-gradient-to-r from-[#5a32fa] via-[#9055ff] to-[#ff2a5f] bg-clip-text text-transparent">
-                  visible.
-                </span>
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-sm sm:text-base md:text-lg font-normal leading-relaxed text-slate-600 dark:text-slate-300">
-                Explore three specialist IP publications where Alliance members can publish insight, showcase achievements, and strengthen organizational authority with an exclusive <strong className="text-slate-900 dark:text-white font-bold">35% member saving</strong>.
-              </p>
-
-              {/* Value Props Chips */}
-              <div className="pt-1 flex flex-wrap gap-2 sm:gap-2.5">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
-                  <BadgePercent size={14} className="text-[#5a32fa]" />
-                  <span>35% WIPA Member Rate</span>
-                </div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
-                  <Globe2 size={14} className="text-cyan-500" />
-                  <span>Global IP Distribution</span>
-                </div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
-                  <BookOpenText size={14} className="text-purple-500" />
-                  <span>Annual Print &amp; Digital</span>
-                </div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <Globe2 size={15} className="text-cyan-500" />
+                <span>Global IP Distribution</span>
               </div>
-
-              {/* Interactive CTA Buttons */}
-              <div className="pt-2 flex flex-wrap items-center gap-3">
-                <a
-                  href="#publications-grid"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-[#5a32fa] via-[#7c3aed] to-[#ff2a5f] hover:opacity-95 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 hover:-translate-y-0.5 transition-all cursor-pointer group"
-                >
-                  <span>Explore Publications</span>
-                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-                </a>
-
-                <Link
-                  href="/pricing"
-                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl font-bold text-sm text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/15 border border-slate-200/90 dark:border-white/10 transition-all cursor-pointer shadow-2xs"
-                >
-                  <span>Member Rates &amp; Tiers</span>
-                </Link>
+              <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <BookOpenText size={15} className="text-purple-500" />
+                <span>Annual Print &amp; Digital</span>
               </div>
             </div>
 
-            {/* Right Visual Area with 3D Depth & Floating Glass Badges */}
-            <div className="relative flex items-center justify-center lg:justify-end shrink-0 mt-4 lg:mt-0">
-              
-              {/* Dynamic Glow Halo behind covers */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#5a32fa]/30 via-[#ff90e8]/25 to-cyan-400/20 blur-3xl rounded-full scale-110 pointer-events-none" />
+            {/* Interactive CTA Buttons */}
+            <div className="pt-2 flex flex-wrap items-center gap-3.5">
+              <a
+                href="#publications-grid"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-[#5a32fa] via-[#7c3aed] to-[#ff2a5f] hover:opacity-95 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 hover:-translate-y-0.5 transition-all cursor-pointer group"
+              >
+                <span>Explore Publications</span>
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              </a>
 
-              {/* Floating Glass Badge: Top Right */}
-              <div className="absolute -top-3 right-2 sm:right-6 z-20 hidden sm:flex items-center gap-2 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-purple-200/80 dark:border-purple-500/30 px-3.5 py-2 shadow-lg shadow-purple-500/10 animate-bounce [animation-duration:4s]">
-                <BadgePercent size={16} className="text-[#5a32fa]" />
-                <div>
-                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider leading-none">Alliance Advantage</p>
-                  <p className="text-xs font-black text-slate-900 dark:text-white">Save 35% on Ad &amp; Articles</p>
-                </div>
-              </div>
-
-              {/* Main Magazine Cover Composite Image */}
-              <div className="relative z-10 transition-transform duration-500 hover:scale-[1.03] group">
-                <img
-                  src="/images/publications-hero.png"
-                  alt="WIPA IP Publications"
-                  className="w-80 sm:w-96 md:w-[460px] lg:w-[500px] xl:w-[540px] max-h-[440px] h-auto object-contain drop-shadow-[0_20px_40px_rgba(90,50,250,0.22)] select-none"
-                />
-              </div>
-
-              {/* Floating Glass Badge: Bottom Left */}
-              <div className="absolute -bottom-2 -left-2 sm:left-4 z-20 flex items-center gap-2.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-white/10 px-4 py-2.5 shadow-xl shadow-slate-900/5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white shadow-xs">
-                  <BookOpenText size={18} />
-                </div>
-                <div>
-                  <p className="text-xs font-black text-slate-900 dark:text-white">3 Flagship Titles</p>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Print + Digital + Global Reach</p>
-                </div>
-              </div>
-
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/15 border border-slate-200/90 dark:border-white/10 transition-all cursor-pointer shadow-2xs"
+              >
+                <span>Member Rates &amp; Tiers</span>
+              </Link>
             </div>
           </div>
-        </section>
 
-        <section id="publications-grid" className="mt-10 scroll-mt-8">
+          {/* Right Visual Area with 3D Depth & Floating Glass Badges */}
+          <div className="relative flex items-center justify-center lg:justify-end shrink-0 mt-6 lg:mt-0">
+            
+            {/* Dynamic Glow Halo behind covers */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#5a32fa]/30 via-[#ff90e8]/25 to-cyan-400/20 blur-3xl rounded-full scale-110 pointer-events-none" />
+
+            {/* Floating Glass Badge: Top Right */}
+            <div className="absolute -top-4 right-2 sm:right-6 z-20 hidden sm:flex items-center gap-2 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-purple-200/80 dark:border-purple-500/30 px-4 py-2.5 shadow-lg shadow-purple-500/10 animate-bounce [animation-duration:4s]">
+              <BadgePercent size={18} className="text-[#5a32fa]" />
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider leading-none">Alliance Advantage</p>
+                <p className="text-xs font-black text-slate-900 dark:text-white">Save 35% on Ad &amp; Articles</p>
+              </div>
+            </div>
+
+            {/* Main Magazine Cover Composite Image */}
+            <div className="relative z-10 transition-transform duration-500 hover:scale-[1.03] group">
+              <img
+                src="/images/publications-hero.png"
+                alt="WIPA IP Publications"
+                className="w-84 sm:w-[420px] md:w-[480px] lg:w-[540px] xl:w-[600px] 2xl:w-[650px] max-h-[460px] md:max-h-[500px] h-auto object-contain drop-shadow-[0_25px_50px_rgba(90,50,250,0.25)] select-none"
+              />
+            </div>
+
+            {/* Floating Glass Badge: Bottom Left */}
+            <div className="absolute -bottom-3 -left-2 sm:left-4 z-20 flex items-center gap-3 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-white/10 px-4 py-2.5 shadow-xl shadow-slate-900/5">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white shadow-xs">
+                <BookOpenText size={20} />
+              </div>
+              <div>
+                <p className="text-xs font-black text-slate-900 dark:text-white">3 Flagship Titles</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">Print + Digital + Global Reach</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content Area */}
+      <main className="mx-auto max-w-7xl 2xl:max-w-[1600px] px-5 sm:px-8 lg:px-12 py-12 md:py-16">
+        <section id="publications-grid" className="scroll-mt-8">
           <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.2em] text-[#5a32fa]">Choose a publication</p>
