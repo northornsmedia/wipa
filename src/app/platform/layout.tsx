@@ -8,6 +8,7 @@ import AuthGuard from "@/components/AuthGuard";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import Sidebar from "@/components/Sidebar";
 import ThemeWrapper from "@/components/ThemeWrapper";
+import VoiceGreeting from "@/components/VoiceGreeting";
 import { PushNotificationPrompt } from "@/components/chat/PushNotificationPrompt";
 
 export default function PlatformLayout({
@@ -28,6 +29,8 @@ export default function PlatformLayout({
     <ThemeWrapper>
       <div style={shellStyle} className="font-sans flex flex-col flex-1 min-h-screen w-full max-w-full min-w-0 overflow-x-hidden box-border">
         <AuthGuard>
+          {/* Audio Voice Greeting (No modal/popup, purely spoken audio) */}
+          <VoiceGreeting />
           {/* Push Notification Opt-in Modal */}
           <PushNotificationPrompt />
           {/* Desktop Header */}
