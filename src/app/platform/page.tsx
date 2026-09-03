@@ -17,6 +17,7 @@ import { supabase } from '@/lib/supabase';
 import AdSlot from '@/components/AdSlot';
 import FeedStoriesCarousel from '@/components/FeedStoriesCarousel';
 import MobileCommentDrawer from '@/components/MobileCommentDrawer';
+import PostLikesDrawer from '@/components/PostLikesDrawer';
 import ProgressiveFeedImage from '@/components/ProgressiveFeedImage';
 import FeedShareSheet from '@/components/FeedShareSheet';
 import FeedQuickComposer from '@/components/FeedQuickComposer';
@@ -58,6 +59,9 @@ export default function PlatformPage() {
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [postComments, setPostComments] = useState<Record<string, any[]>>({});
   const [activeMenuPostId, setActiveMenuPostId] = useState<string | null>(null);
+  const [isLikesDrawerOpen, setIsLikesDrawerOpen] = useState(false);
+  const [likesUsers, setLikesUsers] = useState<any[]>([]);
+  const [isLoadingLikesUsers, setIsLoadingLikesUsers] = useState(false);
   const [editingPost, setEditingPost] = useState<any | null>(null);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
@@ -525,6 +529,63 @@ export default function PlatformPage() {
       await supabase.from('feed_likes').delete().match({ post_id: postId, user_id: user.id });
     } else {
       await supabase.from('feed_likes').insert({ post_id: postId, user_id: user.id });
+    }
+  };
+
+  const openPostLikes = async (postId: string) => {
+    setIsLikesDrawerOpen(true);
+    setIsLoadingLikesUsers(true);
+    setLikesUsers([]);
+
+    try {
+      const { data, error } = await supabase
+        .from('feed_likes')
+        .select(`
+          user_id,
+          created_at,
+          user:profiles(
+            id,
+            full_name,
+            avatar_url,
+            practice_area,
+            is_wipa_recommended
+          )
+        `)
+        .eq('post_id', postId)
+        .order('created_at', { ascending: false });
+
+      if (data && data.length > 0) {
+        setLikesUsers(
+          data
+            .map((item: any) => ({
+              ...(item.user || { id: item.user_id, full_name: 'Member' }),
+              liked_at: item.created_at
+            }))
+            .filter(Boolean)
+        );
+      } else {
+        // If query returned 0 rows but local user liked or post has likes count
+        if (user && dbLikedPostIds.has(postId)) {
+          setLikesUsers([{
+            id: user.id,
+            full_name: user.name || 'You',
+            avatar_url: user.avatar_url,
+            practice_area: user.practice_area || 'Member'
+          }]);
+        }
+      }
+    } catch (err) {
+      console.error("Error loading likes users:", err);
+      if (user && dbLikedPostIds.has(postId)) {
+        setLikesUsers([{
+          id: user.id,
+          full_name: user.name || 'You',
+          avatar_url: user.avatar_url,
+          practice_area: user.practice_area || 'Member'
+        }]);
+      }
+    } finally {
+      setIsLoadingLikesUsers(false);
     }
   };
 
@@ -1127,10 +1188,14 @@ export default function PlatformPage() {
                         {((post.likes_count ?? 0) > 0 || isLiked || (post.comments_count ?? 0) > 0) && (
                           <div className="flex items-center gap-3 mt-2 text-[12px] font-bold text-gray-800 dark:text-gray-200">
                             {((post.likes_count ?? 0) > 0 || isLiked) && (
-                              <span>
+                              <button
+                                type="button"
+                                onClick={() => openPostLikes(post.id)}
+                                className="hover:underline cursor-pointer transition-opacity active:opacity-70 text-left font-bold"
+                              >
                                 {Math.max(1, (post.likes_count ?? 0) + (isLiked && !(post.likes_count > 0) ? 1 : 0))}{' '}
                                 {((post.likes_count ?? 0) + (isLiked && !(post.likes_count > 0) ? 1 : 0)) === 1 ? 'like' : 'likes'}
-                              </span>
+                              </button>
                             )}
                             {((post.comments_count ?? 0) > 0) && (
                               <button
@@ -1457,6 +1522,15 @@ export default function PlatformPage() {
           error={commentError}
         />
       )}
+
+      {/* Post Likes Bottom Drawer Modal */}
+      <PostLikesDrawer
+        isOpen={isLikesDrawerOpen}
+        onClose={() => setIsLikesDrawerOpen(false)}
+        users={likesUsers}
+        isLoading={isLoadingLikesUsers}
+        currentUserId={user?.id}
+      />
 
       <FeedShareSheet
         open={Boolean(sharePost)}
