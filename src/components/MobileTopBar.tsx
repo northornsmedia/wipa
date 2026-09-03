@@ -137,15 +137,15 @@ export default function MobileTopBar() {
               </h1>
             </div>
 
-            {/* Right: Pill [Bell 3] and Circle [Search] */}
+            {/* Right: Round Bell (with small top badge) and Round Search */}
             <div className="flex items-center gap-2">
               <Link
                 href="/platform/notifications"
                 aria-label="Notifications"
-                className="h-10 px-3.5 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center gap-1.5 shadow-sm border border-slate-100 dark:border-white/10 active:scale-95 transition-transform backdrop-blur-md"
+                className="relative w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
               >
                 <Bell size={18} strokeWidth={2.2} />
-                <span className="text-sm font-black text-slate-900 dark:text-white">
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#ff2a5f] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs ring-2 ring-white dark:ring-[#0b0f19] leading-none">
                   {unreadNotificationsCount > 0 ? unreadNotificationsCount : 3}
                 </span>
               </Link>
