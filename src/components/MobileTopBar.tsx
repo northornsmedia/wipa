@@ -118,14 +118,14 @@ export default function MobileTopBar() {
     <>
       {/* FEED PAGE CUSTOM MOBILE TOP BAR (Matches user screenshot) */}
       {pathname === '/platform' ? (
-        <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-gradient-to-b from-[#7ec8f8]/35 to-[#90cbfd]/20 dark:from-[#1e3a8a]/30 dark:to-[#1e3a8a]/18 pt-safe px-3.5 pb-0 transition-all w-full max-w-full box-border border-0 shadow-none">
+        <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-gradient-to-b from-[#7ec8f8]/35 to-[#90cbfd]/20 dark:from-transparent dark:to-transparent dark:bg-[#070b14]/70 dark:backdrop-blur-xl pt-safe px-3.5 pb-0 transition-all w-full max-w-full box-border border-0 shadow-none">
           <div className="h-14 flex items-center justify-between w-full">
             {/* Left: Menu button + Home title */}
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsDrawerOpen(true)}
                 aria-label="Open Navigation Menu"
-                className="w-10 h-10 rounded-full bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform"
+                className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
               >
                 <Menu size={20} strokeWidth={2.4} />
               </button>
@@ -142,7 +142,7 @@ export default function MobileTopBar() {
               <Link
                 href="/platform/notifications"
                 aria-label="Notifications"
-                className="h-10 px-3.5 rounded-full bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex items-center gap-1.5 shadow-sm border border-slate-100 dark:border-white/10 active:scale-95 transition-transform"
+                className="h-10 px-3.5 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center gap-1.5 shadow-sm border border-slate-100 dark:border-white/10 active:scale-95 transition-transform backdrop-blur-md"
               >
                 <Bell size={18} strokeWidth={2.2} />
                 <span className="text-sm font-black text-slate-900 dark:text-white">
@@ -153,7 +153,7 @@ export default function MobileTopBar() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Search WIPA"
-                className="w-10 h-10 rounded-full bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform"
+                className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
               >
                 <Search size={18} strokeWidth={2.2} />
               </button>

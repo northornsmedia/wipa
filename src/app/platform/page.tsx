@@ -692,7 +692,7 @@ export default function PlatformPage() {
               <div className="w-full max-w-full sm:max-w-4xl min-w-0 space-y-0 sm:space-y-6 box-border">
 
               {/* MOBILE INSTAGRAM-STYLE STORIES & SUB-HEADER (MOBILE ONLY) */}
-              <div className="md:hidden w-full max-w-full bg-gradient-to-b from-[#90cbfd]/20 to-transparent dark:from-[#1e3a8a]/18 dark:to-transparent pt-1 pb-2 border-0 border-none shadow-none">
+              <div className="md:hidden w-full max-w-full bg-gradient-to-b from-[#90cbfd]/20 to-transparent dark:from-transparent dark:to-transparent dark:bg-transparent pt-1 pb-2 border-0 border-none shadow-none">
                 {/* 1. Stories Carousel */}
                 <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
               </div>

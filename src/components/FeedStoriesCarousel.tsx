@@ -73,7 +73,7 @@ export default function FeedStoriesCarousel({ onOpenCreatePost }: { onOpenCreate
         {/* 1. Share / Your Story Tile */}
         <Link
           href="/platform/create-post"
-          className="w-[96px] h-[138px] sm:w-28 sm:h-38 md:w-36 md:h-28 rounded-2xl shrink-0 border border-slate-200/80 dark:border-white/10 bg-white dark:bg-slate-900 md:bg-gray-50/80 md:dark:bg-white/[0.04] hover:bg-gray-50 dark:hover:bg-white/[0.08] flex flex-col items-center justify-center p-2 transition-all group active:scale-95 text-center relative overflow-hidden shadow-xs"
+          className="w-[96px] h-[138px] sm:w-28 sm:h-38 md:w-36 md:h-28 rounded-2xl shrink-0 border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/[0.05] md:bg-gray-50/80 md:dark:bg-white/[0.04] hover:bg-gray-50 dark:hover:bg-white/[0.08] flex flex-col items-center justify-center p-2 transition-all group active:scale-95 text-center relative overflow-hidden shadow-xs backdrop-blur-md"
         >
           {/* Mobile Layout (Your Story) */}
           <div className="flex flex-col items-center md:hidden">
