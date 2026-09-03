@@ -685,20 +685,14 @@ export default function PlatformPage() {
         <div className="flex flex-1 w-full max-w-full min-w-0">
           
           {/* MAIN CONTENT AREA */}
-          <main className="flex-1 w-full max-w-full min-w-0 bg-[#f8f9fa] dark:bg-[#0b0f19] md:bg-slate-50/50 md:dark:bg-[#0b1120] p-0 sm:p-6 md:p-8 flex flex-col xl:flex-row gap-0 xl:gap-8 items-start relative">
+          <main className="flex-1 w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] md:bg-slate-50/50 md:dark:bg-[#0b1120] p-0 sm:p-6 md:p-8 flex flex-col xl:flex-row gap-0 xl:gap-8 items-start relative">
             
             {/* LEFT COLUMN */}
             <div className="flex-1 w-full max-w-full min-w-0 flex justify-center pb-36 sm:pb-24 md:pb-20 box-border relative">
               <div className="w-full max-w-full sm:max-w-4xl min-w-0 space-y-0 sm:space-y-6 box-border">
 
-              {/* SINGLE CONTINUOUS AMBIENT SKY GLOW (LIGHT MODE ONLY) */}
-              <div 
-                aria-hidden="true" 
-                className="md:hidden dark:hidden pointer-events-none absolute -top-16 left-0 right-0 h-[260px] bg-gradient-to-b from-[#7ec8f8]/35 via-[#b6e0fe]/15 to-transparent -z-10" 
-              />
-
               {/* MOBILE INSTAGRAM-STYLE STORIES & SUB-HEADER (MOBILE ONLY) */}
-              <div className="md:hidden w-full max-w-full bg-transparent pt-1 pb-2 border-0 border-none shadow-none">
+              <div className="md:hidden w-full max-w-full bg-white dark:bg-[#0b0f19] pt-1 pb-2 border-0 border-none shadow-none">
                 {/* 1. Stories Carousel */}
                 <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
               </div>
