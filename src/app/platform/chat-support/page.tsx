@@ -268,10 +268,90 @@ export default function LiveChatSupportPage() {
             timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }));
         setMessages([welcomeMessage, ...mapped]);
+
+        // Check if ticket is still unassigned and needs bot fallback
+        const isUnassigned = !sess.assigned_agent_name || sess.assigned_agent_name === 'Unassigned';
+        const hasAgentReplied = dbMsgs.some((m: any) => m.sender_type === 'agent' && m.sender_name !== 'WIPA Support Assistant' && m.sender_name !== 'WIPA Member Support');
+        const hasBotReplied = dbMsgs.some((m: any) => m.sender_name === 'WIPA Support Assistant');
+
+        if (sess.status === 'active' && isUnassigned && !hasAgentReplied && !hasBotReplied) {
+          const lastUserMsg = [...dbMsgs].reverse().find((m: any) => m.sender_type === 'user');
+          if (lastUserMsg) {
+            checkAndScheduleBotFallback(sess.id, sess.ticket_number, lastUserMsg.created_at);
+          }
+        }
       } else {
         setMessages([welcomeMessage]);
       }
     } catch {}
+  };
+
+  const dispatchBotFallback = async (sId: string, tNum: string) => {
+    try {
+      const { data: latestMsgs } = await supabase
+        .from('support_messages')
+        .select('*')
+        .eq('session_id', sId)
+        .order('created_at', { ascending: true });
+
+      const hasAgentReplied = latestMsgs?.some((m: any) => m.sender_type === 'agent' && m.sender_name !== 'WIPA Support Assistant' && m.sender_name !== 'WIPA Member Support');
+      const hasBotReplied = latestMsgs?.some((m: any) => m.sender_name === 'WIPA Support Assistant');
+
+      if (hasAgentReplied || hasBotReplied) return;
+
+      const botMsgId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `bot-${Date.now()}`;
+      const botText = `All our specialists are currently assisting other members. Thank you for your patience! We have your ticket (#${tNum}) prioritized at the top of our queue and the next available agent will join shortly.\n\nIf you need immediate assistance or are on a tight schedule, you can also click 'Call Back' above to schedule a direct phone consultation.`;
+
+      await supabase.from('support_messages').insert({
+        id: botMsgId,
+        session_id: sId,
+        sender_type: 'agent',
+        sender_name: 'WIPA Support Assistant',
+        sender_avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop',
+        content: botText,
+        is_read: false
+      });
+
+      await supabase.from('support_sessions').update({
+        last_message: 'All our specialists are currently assisting other members. Thank you for your patience!',
+        last_message_at: new Date().toISOString()
+      }).eq('id', sId);
+
+      setMessages(prev => {
+        if (prev.some(m => m.id === botMsgId || m.text.includes('All our specialists are currently assisting'))) return prev;
+        return [
+          ...prev,
+          {
+            id: botMsgId,
+            sender: 'agent',
+            agentName: 'WIPA Support Assistant',
+            agentAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop',
+            agentRole: 'Queue Dispatcher',
+            text: botText,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }
+        ];
+      });
+    } catch (err) {
+      console.warn('Bot fallback error:', err);
+    }
+  };
+
+  const checkAndScheduleBotFallback = (sId: string, tNum: string, sentAtISO?: string) => {
+    if (waitingTimerRef.current) clearTimeout(waitingTimerRef.current);
+    const sentTime = sentAtISO ? new Date(sentAtISO).getTime() : Date.now();
+    const elapsed = Date.now() - sentTime;
+    const FIVE_MIN = 5 * 60 * 1000;
+
+    if (elapsed >= FIVE_MIN) {
+      // 5 minutes already elapsed! Fire immediately
+      dispatchBotFallback(sId, tNum);
+    } else {
+      const remaining = FIVE_MIN - elapsed;
+      waitingTimerRef.current = setTimeout(() => {
+        dispatchBotFallback(sId, tNum);
+      }, remaining);
+    }
   };
 
   const handleStartNewTicket = () => {
@@ -500,26 +580,8 @@ export default function LiveChatSupportPage() {
             }
           ]);
 
-          // Set 5-minute timeout for bot fallback if no agent replies
-          if (waitingTimerRef.current) clearTimeout(waitingTimerRef.current);
-          waitingTimerRef.current = setTimeout(() => {
-            setMessages(prev => {
-              const hasHumanReplied = prev.some(m => m.sender === 'agent' && m.agentName !== 'WIPA Member Support');
-              if (hasHumanReplied) return prev;
-              return [
-                ...prev,
-                {
-                  id: `bot-delay-${Date.now()}`,
-                  sender: 'agent',
-                  agentName: 'WIPA Support Assistant',
-                  agentAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop',
-                  agentRole: 'Queue Dispatcher',
-                  text: `All our specialists are currently assisting other members. Thank you for your patience! We have your ticket (#${created.ticket_number}) prioritized at the top of our queue and the next available agent will join shortly.\n\nIf you need immediate assistance or are on a tight schedule, you can also click 'Call Back' above to schedule a direct phone consultation.`,
-                  timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                }
-              ];
-            });
-          }, 300000); // 5 minutes
+          // Schedule persistent 5-minute fallback bot
+          checkAndScheduleBotFallback(created.id, created.ticket_number, new Date().toISOString());
 
           // Subscribe to live replies from agent
           supabase.channel(`member-session-${created.id}`)
@@ -549,7 +611,7 @@ export default function LiveChatSupportPage() {
               if (m.sender_type === 'agent') {
                 if (m.content?.startsWith('[INTERNAL NOTE]')) return;
                 if (waitingTimerRef.current) clearTimeout(waitingTimerRef.current);
-                if (m.sender_name) {
+                if (m.sender_name && m.sender_name !== 'WIPA Support Assistant') {
                   setAssignedAgentName(m.sender_name);
                   if (m.sender_avatar) setAssignedAgentAvatar(m.sender_avatar);
                 }
@@ -562,7 +624,7 @@ export default function LiveChatSupportPage() {
                       sender: 'agent',
                       agentName: m.sender_name || 'Member Specialist',
                       agentAvatar: m.sender_avatar,
-                      agentRole: 'Senior Member Support Specialist',
+                      agentRole: m.sender_name === 'WIPA Support Assistant' ? 'Queue Dispatcher' : 'Senior Member Support Specialist',
                       text: m.content,
                       timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     }
@@ -600,6 +662,11 @@ export default function LiveChatSupportPage() {
           last_message_at: new Date().toISOString(),
           unread_agent_count: 1
         }).eq('id', activeSessId);
+
+        // Also schedule 5-min bot fallback if ticket is still unassigned!
+        if (!assignedAgentName || assignedAgentName === 'Unassigned') {
+          checkAndScheduleBotFallback(activeSessId, ticketNumber, new Date().toISOString());
+        }
       }
 
       if (activeSessId) {
