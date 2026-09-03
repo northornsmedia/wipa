@@ -1060,65 +1060,91 @@ export default function PlatformPage() {
                         </div>
                       )}
 
-                        {/* Executive Clean 4-Column Control Bar */}
-                        <div className="w-full grid grid-cols-4 gap-1 pt-2.5 mt-2.5 border-t border-gray-100/60 dark:border-white/[0.06] text-xs font-semibold">
-                          {/* Applaud */}
-                          <button
-                            onClick={() => handleLikePost(post.id)}
-                            className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition-colors active:scale-95 ${
-                              isLiked
-                                ? 'text-rose-500 font-bold bg-rose-500/10'
-                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-white/[0.05]'
-                            }`}
-                            aria-label="Applaud post"
-                          >
-                            <ThumbsUp size={15} className={isLiked ? "fill-rose-500 text-rose-500" : ""} />
-                            <span className="text-[12px]">{post.likes_count ? post.likes_count : ''} Applaud</span>
-                          </button>
+                        {/* Clean Instagram-Style Interaction Bar (Heart, Circle Comment, Paper Share on left, Save on right) */}
+                        <div className="w-full flex items-center justify-between pt-3 mt-1 border-t border-gray-100/60 dark:border-white/[0.06]">
+                          {/* Left: Like (Heart), Comment (Circle), Share (Flying Paper Airplane) */}
+                          <div className="flex items-center gap-4 sm:gap-5">
+                            {/* Heart (Like) - No text */}
+                            <button
+                              onClick={() => handleLikePost(post.id)}
+                              className="text-gray-700 dark:text-gray-200 hover:text-rose-500 dark:hover:text-rose-400 active:scale-75 transition-all p-1 -ml-1 cursor-pointer"
+                              aria-label="Like post"
+                            >
+                              <Heart
+                                size={22}
+                                className={`transition-all duration-200 ${
+                                  isLiked
+                                    ? 'fill-rose-500 text-rose-500 scale-110'
+                                    : 'hover:scale-110'
+                                }`}
+                              />
+                            </button>
 
-                          {/* Discuss */}
-                          <button
-                            onClick={() => {
-                              if (post.comments_disabled) return;
-                              setActiveCommentPost(post);
-                              fetchComments(post.id);
-                            }}
-                            disabled={post.comments_disabled}
-                            className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition-colors active:scale-95 ${
-                              post.comments_disabled
-                                ? 'opacity-30 cursor-not-allowed text-gray-600'
-                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-white/[0.05]'
-                            }`}
-                            aria-label="Comment on post"
-                          >
-                            <MessageSquare size={15} />
-                            <span className="text-[12px]">{post.comments_count ? post.comments_count : ''} Discuss</span>
-                          </button>
+                            {/* Circle Comment - No text */}
+                            <button
+                              onClick={() => {
+                                if (post.comments_disabled) return;
+                                setActiveCommentPost(post);
+                                fetchComments(post.id);
+                              }}
+                              disabled={post.comments_disabled}
+                              className={`text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] dark:hover:text-violet-400 active:scale-75 transition-all p-1 cursor-pointer ${
+                                post.comments_disabled ? 'opacity-30 cursor-not-allowed' : ''
+                              }`}
+                              aria-label="Comment on post"
+                            >
+                              <MessageCircle size={22} className="hover:scale-110 transition-transform" />
+                            </button>
 
-                          {/* Share */}
-                          <button
-                            onClick={() => setSharePost(post)}
-                            className="flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-white/[0.05] transition-colors active:scale-95"
-                            aria-label="Share post"
-                          >
-                            <Share2 size={15} />
-                            <span className="text-[12px]">Share</span>
-                          </button>
+                            {/* Flying Paper Airplane (Share) - No text */}
+                            <button
+                              onClick={() => setSharePost(post)}
+                              className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] dark:hover:text-violet-400 active:scale-75 transition-all p-1 -rotate-12 hover:rotate-0 cursor-pointer"
+                              aria-label="Share post"
+                            >
+                              <Send size={21} className="hover:scale-110 transition-transform" />
+                            </button>
+                          </div>
 
-                          {/* Save */}
+                          {/* Right: Save (Bookmark) - No text */}
                           <button
                             onClick={() => void handleToggleSavePost(post.id)}
-                            className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition-colors active:scale-95 ${
-                              savedPostIds.has(String(post.id))
-                                ? 'text-amber-500 font-bold bg-amber-500/10'
-                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/50 dark:hover:bg-white/[0.05]'
-                            }`}
+                            className="text-gray-700 dark:text-gray-200 hover:text-amber-500 dark:hover:text-amber-400 active:scale-75 transition-all p-1 -mr-1 cursor-pointer"
                             aria-label={savedPostIds.has(String(post.id)) ? 'Remove saved post' : 'Save post'}
                           >
-                            <Bookmark size={15} className={savedPostIds.has(String(post.id)) ? 'fill-amber-500 text-amber-500' : ''} />
-                            <span className="text-[12px]">{savedPostIds.has(String(post.id)) ? 'Saved' : 'Save'}</span>
+                            <Bookmark
+                              size={22}
+                              className={`transition-all duration-200 ${
+                                savedPostIds.has(String(post.id))
+                                  ? 'fill-amber-500 text-amber-500 scale-105'
+                                  : 'hover:scale-110'
+                              }`}
+                            />
                           </button>
                         </div>
+
+                        {/* Likes & Comments Count summary */}
+                        {((post.likes_count ?? 0) > 0 || isLiked || (post.comments_count ?? 0) > 0) && (
+                          <div className="flex items-center gap-3 mt-2 text-[12px] font-bold text-gray-800 dark:text-gray-200">
+                            {((post.likes_count ?? 0) > 0 || isLiked) && (
+                              <span>
+                                {Math.max(1, (post.likes_count ?? 0) + (isLiked && !(post.likes_count > 0) ? 1 : 0))}{' '}
+                                {((post.likes_count ?? 0) + (isLiked && !(post.likes_count > 0) ? 1 : 0)) === 1 ? 'like' : 'likes'}
+                              </span>
+                            )}
+                            {((post.comments_count ?? 0) > 0) && (
+                              <button
+                                onClick={() => {
+                                  setActiveCommentPost(post);
+                                  fetchComments(post.id);
+                                }}
+                                className="text-gray-500 dark:text-gray-400 font-medium hover:underline cursor-pointer"
+                              >
+                                {post.comments_count} {post.comments_count === 1 ? 'comment' : 'comments'}
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     {/* Dynamic Sponsored Native Content Placement after every 4 posts */}
                     {(index + 1) % 4 === 0 && (
