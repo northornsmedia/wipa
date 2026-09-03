@@ -13,7 +13,7 @@ export default function VoiceGreeting() {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     if (!pathname?.startsWith('/platform')) return;
 
-    // Check session storage to avoid repeating every page navigation
+    // Check session storage to avoid repeating every navigation
     const alreadyPlayed = sessionStorage.getItem('wipa_tts_played_session');
     if (alreadyPlayed || hasAttemptedRef.current) return;
 
@@ -24,6 +24,69 @@ export default function VoiceGreeting() {
     hasAttemptedRef.current = true;
     let hasSpoken = false;
 
+    const selectMostHumanVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
+      if (!voices || voices.length === 0) return null;
+
+      // STRICT BLACKLIST: Filter out notorious robotic desktop legacy voices
+      const nonRobotic = voices.filter(v => {
+        const n = v.name.toLowerCase();
+        return !n.includes('desktop') && 
+               !n.includes('zira') && 
+               !n.includes('david') && 
+               !n.includes('mark') && 
+               !n.includes('sapi') &&
+               !n.includes('espeak');
+      });
+
+      const pool = nonRobotic.length > 0 ? nonRobotic : voices;
+
+      // Tier 1: Microsoft Natural Online Voices (Aria, Jenny, Sonia, Libby - sound like real human speakers)
+      const tier1 = pool.find(v => {
+        const n = v.name.toLowerCase();
+        const l = v.lang.toLowerCase();
+        return l.startsWith('en') && (n.includes('natural') || n.includes('neural')) && 
+          (n.includes('aria') || n.includes('jenny') || n.includes('sonia') || n.includes('libby') || n.includes('ava') || n.includes('michelle'));
+      });
+      if (tier1) return tier1;
+
+      // Tier 2: Any Microsoft / Edge Natural Online voice
+      const tier2 = pool.find(v => {
+        const n = v.name.toLowerCase();
+        const l = v.lang.toLowerCase();
+        return l.startsWith('en') && (n.includes('natural') || n.includes('neural'));
+      });
+      if (tier2) return tier2;
+
+      // Tier 3: Google UK English Female / Google US English (High quality Chrome neural voice)
+      const tier3 = pool.find(v => {
+        const n = v.name.toLowerCase();
+        return n.includes('google') && (n.includes('uk english female') || n.includes('us english') || n.includes('female'));
+      });
+      if (tier3) return tier3;
+
+      // Tier 4: Apple Siri / Enhanced / Premium voices (macOS / iOS)
+      const tier4 = pool.find(v => {
+        const n = v.name.toLowerCase();
+        const l = v.lang.toLowerCase();
+        return l.startsWith('en') && (n.includes('siri') || n.includes('samantha') || n.includes('karen') || n.includes('victoria') || n.includes('serena'));
+      });
+      if (tier4) return tier4;
+
+      // Tier 5: Any English female voice that is not a desktop robot
+      const tier5 = pool.find(v => {
+        const n = v.name.toLowerCase();
+        const l = v.lang.toLowerCase();
+        return l.startsWith('en') && (n.includes('female') || n.includes('woman'));
+      });
+      if (tier5) return tier5;
+
+      // Tier 6: Any English voice
+      const tier6 = pool.find(v => v.lang.toLowerCase().startsWith('en'));
+      if (tier6) return tier6;
+
+      return pool[0] || null;
+    };
+
     const speakNow = () => {
       if (hasSpoken) return;
 
@@ -31,37 +94,32 @@ export default function VoiceGreeting() {
         window.speechSynthesis.resume();
         window.speechSynthesis.cancel();
 
-        const utterance = new SpeechSynthesisUtterance(
-          `Hi, ${firstName}. Welcome back to WIPA. It's lovely to have you here.`
-        );
+        // Natural, friendly human phrasing with conversational intonation
+        const greetingText = `Hi, ${firstName}! Welcome back to the Women's IP Alliance. It's lovely to have you here today.`;
+        
+        const utterance = new SpeechSynthesisUtterance(greetingText);
         (window as any)._wipaUtterance = utterance;
-        utterance.rate = 0.85;
-        utterance.pitch = 1.0;
+        
+        // Human conversational cadence
+        utterance.rate = 0.92;
+        utterance.pitch = 1.02;
         utterance.volume = 1.0;
 
         const voices = window.speechSynthesis.getVoices();
-        const femaleVoice = voices.find(v => 
-          v.name.includes('Aria') ||
-          v.name.includes('Jenny') ||
-          v.name.includes('Google UK English Female') ||
-          v.name.includes('Google US English') ||
-          v.name.includes('Samantha') ||
-          v.name.includes('Zira') ||
-          v.name.includes('Female') || 
-          v.name.includes('Susan') || 
-          v.name.includes('Victoria')
-        );
+        const humanVoice = selectMostHumanVoice(voices);
 
-        if (femaleVoice) utterance.voice = femaleVoice;
+        if (humanVoice) {
+          utterance.voice = humanVoice;
+          console.log('[WIPA Voice Greeting]: Using high-definition voice:', humanVoice.name);
+        }
 
         utterance.onstart = () => {
           hasSpoken = true;
           sessionStorage.setItem('wipa_tts_played_session', 'true');
-          console.log('[WIPA Voice Greeting]: Speaking greeting for', firstName);
         };
 
         utterance.onerror = (e) => {
-          console.warn('[WIPA Voice Greeting]: Speech error or blocked by browser policy:', e);
+          console.warn('[WIPA Voice Greeting]: Speech error or blocked:', e);
         };
 
         window.speechSynthesis.speak(utterance);
@@ -77,13 +135,12 @@ export default function VoiceGreeting() {
       };
     }
 
-    // 2. Try speaking automatically after a short delay
+    // 2. Try speaking automatically after brief hydration delay
     const autoTimer = setTimeout(() => {
       speakNow();
     }, 600);
 
-    // 3. Browser Autoplay policy fallback: If the browser blocks speech until a user interaction,
-    // the very first click or keypress on the platform will immediately trigger it!
+    // 3. User interaction gesture fallback (to unlock audio if browser autoplay blocked it)
     const handleUserInteraction = () => {
       if (!hasSpoken) {
         speakNow();
