@@ -7,58 +7,99 @@ import { usePathname } from 'next/navigation';
 export default function VoiceGreeting() {
   const user = useAppStore((state) => state.user);
   const pathname = usePathname();
-  const hasTriggeredRef = useRef(false);
+  const lastGreetedUserRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    // Reset when user logs out so they are greeted again on next login
+    if (!user) {
+      lastGreetedUserRef.current = null;
+      return;
+    }
+
     if (!pathname?.startsWith('/platform')) return;
 
-    // Check session storage to avoid playing on every single tab navigation
-    const sessionKey = 'wipa_voice_greeted_v3';
-    if (sessionStorage.getItem(sessionKey) || hasTriggeredRef.current) return;
+    // If this user was already greeted in this active session, don't repeat on every subpage
+    if (lastGreetedUserRef.current === user.id) return;
 
-    const firstName = user?.name?.trim().split(/\s+/)[0];
-    if (!firstName) return;
+    const firstName = user.name?.trim().split(/\s+/)[0] || 'there';
+    lastGreetedUserRef.current = user.id;
 
-    hasTriggeredRef.current = true;
-    let audioPlayed = false;
+    let hasPlayed = false;
 
+    // Method A: Studio MP3 Audio Stream
     const audioUrl = `/api/voice-greeting?name=${encodeURIComponent(firstName)}`;
     const audio = new Audio(audioUrl);
     audio.volume = 1.0;
 
-    const tryPlayAudio = () => {
-      if (audioPlayed) return;
+    // Method B: Browser Speech Synthesis Fallback (explicitly saying W. I. P. A.)
+    const playSpeechFallback = () => {
+      if (hasPlayed || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+      try {
+        window.speechSynthesis.resume();
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(
+          `Hello ${firstName}, welcome back to W. I. P. A. It's wonderful to have you here.`
+        );
+        (window as any)._wipaUtterance = utterance;
+        utterance.rate = 0.92;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+
+        const voices = window.speechSynthesis.getVoices();
+        const v = voices.find(v => 
+          v.name.includes('Google US English') ||
+          v.name.includes('Google UK English Female') ||
+          v.name.includes('Jenny') ||
+          v.name.includes('Aria') ||
+          v.name.includes('Samantha') ||
+          v.name.includes('Zira') ||
+          v.name.includes('Female')
+        );
+        if (v) utterance.voice = v;
+
+        utterance.onstart = () => {
+          hasPlayed = true;
+          console.log('[WIPA Voice Greeting]: Speech synthesis playing for', firstName);
+        };
+
+        window.speechSynthesis.speak(utterance);
+      } catch (e) {
+        console.warn('Speech synthesis fallback error:', e);
+      }
+    };
+
+    const triggerPlay = () => {
+      if (hasPlayed) return;
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            audioPlayed = true;
-            sessionStorage.setItem(sessionKey, 'true');
-            console.log('[WIPA Voice Greeting]: Natural audio greeting playing for', firstName);
+            hasPlayed = true;
+            console.log('[WIPA Voice Greeting]: Studio audio greeting playing for', firstName);
           })
           .catch((err) => {
-            // Autoplay policy prevented immediate playback without user interaction
-            console.log('[WIPA Voice Greeting]: Waiting for first user click/touch to play audio:', err.message);
+            console.log('[WIPA Voice Greeting]: Autoplay blocked, trying speech synthesis fallback:', err.message);
+            playSpeechFallback();
           });
+      } else {
+        playSpeechFallback();
       }
     };
 
-    // 1. Try playing right away after brief component hydration
+    // 1. Attempt playback immediately after component hydration
     const timer = setTimeout(() => {
-      tryPlayAudio();
+      triggerPlay();
     }, 400);
 
-    // 2. Unlocking on first user gesture: If Chrome/Edge blocks background autoplay,
-    // the very first interaction (click, key, touch) on the page instantly plays the voice!
+    // 2. Immediate gesture unlock: If browser blocked autoplay on redirect,
+    // the very first interaction (click anywhere, keydown, touch) immediately triggers the voice!
     const handleGesture = () => {
-      if (!audioPlayed) {
-        audio.play().then(() => {
-          audioPlayed = true;
-          sessionStorage.setItem(sessionKey, 'true');
-          console.log('[WIPA Voice Greeting]: Audio unlocked by gesture for', firstName);
-        }).catch(() => {});
+      if (!hasPlayed) {
+        triggerPlay();
       }
       cleanup();
     };
@@ -79,7 +120,7 @@ export default function VoiceGreeting() {
       clearTimeout(timer);
       cleanup();
     };
-  }, [user?.name, pathname]);
+  }, [user, pathname]);
 
   return null;
 }

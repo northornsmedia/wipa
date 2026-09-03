@@ -120,6 +120,13 @@ export default function LoginPage() {
         member_id: profile?.member_id || undefined,
       });
 
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('wipa_voice_greeted_v3');
+        sessionStorage.removeItem('wipa_voice_greeted_v2');
+        sessionStorage.removeItem('wipa_tts_played_session');
+        sessionStorage.removeItem('wipa_tts_played');
+      }
+
       try {
         const { getDeviceId } = await import('@/lib/device');
         const deviceId = getDeviceId();
