@@ -33,7 +33,9 @@ import {
   Bug,
   Smile,
   FileText,
-  AlertCircle
+  AlertCircle,
+  History,
+  CheckCircle2
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
@@ -160,8 +162,10 @@ export default function LiveChatSupportPage() {
   const [copiedTicket, setCopiedTicket] = useState(false);
   const [ticketNumber, setTicketNumber] = useState('Pending');
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [currentSessionStatus, setCurrentSessionStatus] = useState<'active' | 'pending' | 'resolved' | 'closed' | 'new'>('new');
   const [assignedAgentName, setAssignedAgentName] = useState<string>('Sarah Jenkins');
   const [assignedAgentAvatar, setAssignedAgentAvatar] = useState<string>('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop');
+  const [pastSessions, setPastSessions] = useState<any[]>([]);
 
   // Initialize messages
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
@@ -218,62 +222,136 @@ export default function LiveChatSupportPage() {
     }
   }, [user?.email, transcriptEmail]);
 
-  // Check for any existing active session that already has messages
+  const loadSessionIntoView = async (sess: any) => {
+    if (!sess) return;
+    setSessionId(sess.id);
+    setCurrentSessionStatus(sess.status || 'active');
+    if (sess.ticket_number) setTicketNumber(sess.ticket_number);
+    if (sess.assigned_agent_name && sess.assigned_agent_name !== 'Unassigned') {
+      setAssignedAgentName(sess.assigned_agent_name);
+    } else {
+      setAssignedAgentName('Sarah Jenkins');
+    }
+    if (sess.assigned_agent_avatar) {
+      setAssignedAgentAvatar(sess.assigned_agent_avatar);
+    }
+
+    // Fetch previous messages for this session
+    try {
+      const { data: dbMsgs } = await supabase
+        .from('support_messages')
+        .select('*')
+        .eq('session_id', sess.id)
+        .order('created_at', { ascending: true });
+
+      const welcomeMessage: ChatMessage = {
+        id: 'msg-welcome',
+        sender: 'agent',
+        agentName: sess.assigned_agent_name && sess.assigned_agent_name !== 'Unassigned' ? sess.assigned_agent_name : 'Sarah Jenkins',
+        agentAvatar: sess.assigned_agent_avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+        agentRole: 'Senior Member Support Specialist',
+        text: `Welcome to WIPA Live Support. Ticket #${sess.ticket_number || 'Pending'} — ${sess.status === 'resolved' ? 'Archived Ticket' : 'Active Conversation'}.`,
+        timestamp: 'Session Started'
+      };
+
+      if (dbMsgs && dbMsgs.length > 0) {
+        const mapped: ChatMessage[] = dbMsgs
+          .filter((m: any) => !m.content?.startsWith('[INTERNAL NOTE]'))
+          .map((m: any) => ({
+            id: m.id,
+            sender: m.sender_type as any,
+            agentName: m.sender_type === 'agent' ? m.sender_name : undefined,
+            agentAvatar: m.sender_avatar,
+            text: m.content,
+            timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }));
+        setMessages([welcomeMessage, ...mapped]);
+      } else {
+        setMessages([welcomeMessage]);
+      }
+    } catch {}
+  };
+
+  const handleStartNewTicket = () => {
+    setSessionId(null);
+    setTicketNumber('Pending');
+    setCurrentSessionStatus('new');
+    setAssignedAgentName('Sarah Jenkins');
+    setMessages([
+      {
+        id: 'msg-1',
+        sender: 'agent',
+        agentName: 'Sarah Jenkins',
+        agentAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
+        agentRole: 'Senior Member Support Specialist',
+        text: `Hello ${user?.name ? user.name.split(' ')[0] : 'there'}! 👋 Ready to start a new support ticket. What can we help you with today?`,
+        timestamp: 'Just now',
+        actions: [
+          { label: 'Sync Calendar', href: '/platform/calendar' },
+          { label: 'View Tiers', href: '/pricing' },
+          { label: 'Mentorship', href: '/platform/mentorship' }
+        ]
+      }
+    ]);
+  };
+
+  const handleReopenTicket = async () => {
+    if (!sessionId) return;
+    setCurrentSessionStatus('active');
+    setPastSessions(prev => prev.map(s => s.id === sessionId ? { ...s, status: 'active' } : s));
+
+    try {
+      await supabase.from('support_sessions').update({ status: 'active' }).eq('id', sessionId);
+      const sysMsgId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `sys-${Date.now()}`;
+      await supabase.from('support_messages').insert({
+        id: sysMsgId,
+        session_id: sessionId,
+        sender_type: 'system',
+        sender_name: 'System',
+        content: `Member reopened ticket #${ticketNumber}.`
+      });
+    } catch {}
+  };
+
+  // Check for any existing sessions for this member
   useEffect(() => {
     let activeChannel: any = null;
 
     const checkExistingSession = async () => {
       try {
         const uId = user?.id || null;
-        if (!uId) return;
+        const uEmail = user?.email || null;
+        if (!uId && !uEmail) return;
 
-        const { data: existing } = await supabase
-          .from('support_sessions')
-          .select('*')
-          .eq('user_id', uId)
-          .eq('status', 'active')
-          .order('created_at', { ascending: false })
-          .limit(1);
+        let query = supabase.from('support_sessions').select('*');
+        if (uId && uEmail) {
+          query = query.or(`user_id.eq.${uId},user_email.eq.${uEmail}`);
+        } else if (uId) {
+          query = query.eq('user_id', uId);
+        } else if (uEmail) {
+          query = query.eq('user_email', uEmail);
+        }
 
-        if (existing && existing.length > 0) {
-          const sess = existing[0];
-          setSessionId(sess.id);
-          if (sess.ticket_number) setTicketNumber(sess.ticket_number);
-          if (sess.assigned_agent_name && sess.assigned_agent_name !== 'Unassigned') {
-            setAssignedAgentName(sess.assigned_agent_name);
-          }
-          if (sess.assigned_agent_avatar) {
-            setAssignedAgentAvatar(sess.assigned_agent_avatar);
-          }
+        const { data: allUserSessions } = await query
+          .neq('last_message', 'Session initiated')
+          .order('created_at', { ascending: false });
 
-          // Fetch previous messages for this session
-          const { data: dbMsgs } = await supabase
-            .from('support_messages')
-            .select('*')
-            .eq('session_id', sess.id)
-            .order('created_at', { ascending: true });
+        if (allUserSessions && allUserSessions.length > 0) {
+          setPastSessions(allUserSessions);
 
-          if (dbMsgs && dbMsgs.length > 0) {
-            const mapped: ChatMessage[] = dbMsgs
-              .filter((m: any) => !m.content?.startsWith('[INTERNAL NOTE]'))
-              .map((m: any) => ({
-                id: m.id,
-                sender: m.sender_type as any,
-                agentName: m.sender_type === 'agent' ? m.sender_name : undefined,
-                agentAvatar: m.sender_avatar,
-                text: m.content,
-                timestamp: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-              }));
-            setMessages(prev => [prev[0], ...mapped]);
-          }
+          // Find active session first; otherwise load the most recent session
+          const activeSess = allUserSessions.find(s => s.status === 'active');
+          const targetSess = activeSess || allUserSessions[0];
 
-          // Realtime websocket listener for live agent replies from support-wipa
-          activeChannel = supabase.channel(`member-session-${sess.id}`)
+          loadSessionIntoView(targetSess);
+
+          // Realtime websocket listener for live updates
+          activeChannel = supabase.channel(`member-session-${targetSess.id}`)
             .on('postgres_changes', {
               event: 'INSERT',
               schema: 'public',
               table: 'support_messages',
-              filter: `session_id=eq.${sess.id}`
+              filter: `session_id=eq.${targetSess.id}`
             }, (payload: any) => {
               const m = payload.new;
               if (m.sender_type === 'agent') {
@@ -300,16 +378,18 @@ export default function LiveChatSupportPage() {
               event: 'UPDATE',
               schema: 'public',
               table: 'support_sessions',
-              filter: `id=eq.${sess.id}`
+              filter: `id=eq.${targetSess.id}`
             }, (payload: any) => {
               const s = payload.new;
               if (s.ticket_number) setTicketNumber(s.ticket_number);
+              if (s.status) setCurrentSessionStatus(s.status);
               if (s.assigned_agent_name && s.assigned_agent_name !== 'Unassigned') {
                 setAssignedAgentName(s.assigned_agent_name);
               }
               if (s.assigned_agent_avatar) {
                 setAssignedAgentAvatar(s.assigned_agent_avatar);
               }
+              setPastSessions(prev => prev.map(item => item.id === s.id ? { ...item, ...s } : item));
             })
             .subscribe();
         }
@@ -323,7 +403,7 @@ export default function LiveChatSupportPage() {
     return () => {
       if (activeChannel) supabase.removeChannel(activeChannel);
     };
-  }, [user?.id]);
+  }, [user?.id, user?.email]);
 
   const submitUserMessage = async (text: string, attachmentObj?: any) => {
     const textToSend = text.trim() || (attachmentObj ? 'Attached file for review' : '');
@@ -374,7 +454,9 @@ export default function LiveChatSupportPage() {
         if (created) {
           activeSessId = created.id;
           setSessionId(created.id);
+          setCurrentSessionStatus('active');
           if (created.ticket_number) setTicketNumber(created.ticket_number);
+          setPastSessions(prev => [created, ...prev.filter(s => s.id !== created.id)]);
 
           // Subscribe to live replies from agent
           supabase.channel(`member-session-${created.id}`)
@@ -413,17 +495,24 @@ export default function LiveChatSupportPage() {
             }, (payload: any) => {
               const s = payload.new;
               if (s.ticket_number) setTicketNumber(s.ticket_number);
+              if (s.status) setCurrentSessionStatus(s.status);
               if (s.assigned_agent_name && s.assigned_agent_name !== 'Unassigned') {
                 setAssignedAgentName(s.assigned_agent_name);
               }
               if (s.assigned_agent_avatar) {
                 setAssignedAgentAvatar(s.assigned_agent_avatar);
               }
+              setPastSessions(prev => prev.map(item => item.id === s.id ? { ...item, ...s } : item));
             })
             .subscribe();
         }
       } else {
+        // Automatically reopen if replying to an archived/resolved session
+        setCurrentSessionStatus('active');
+        setPastSessions(prev => prev.map(s => s.id === activeSessId ? { ...s, status: 'active', last_message: textToSend } : s));
+
         await supabase.from('support_sessions').update({
+          status: 'active',
           last_message: textToSend,
           last_message_at: new Date().toISOString(),
           unread_agent_count: 1
@@ -784,10 +873,43 @@ export default function LiveChatSupportPage() {
             </div>
           </div>
 
-          {/* INPUT BAR */}
-          <div className="shrink-0 border-t border-slate-200/80 bg-white/95 dark:border-white/10 dark:bg-[#0c1020]/95 backdrop-blur-xl px-4 sm:px-6 py-3.5">
+          {/* Input Form Bar with Resolved/Closed Banner */}
+          <div className="shrink-0 p-4 sm:p-6 bg-white/95 dark:bg-[#0c1020]/95 border-t border-slate-200/80 dark:border-white/10 backdrop-blur-xl z-20">
             <div className="max-w-3xl mx-auto">
               
+              {/* Resolved Ticket Banner */}
+              {(currentSessionStatus === 'resolved' || currentSessionStatus === 'closed') && (
+                <div className="mb-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
+                    <div className="text-xs min-w-0">
+                      <p className="font-bold text-emerald-900 dark:text-emerald-200">
+                        Ticket #{ticketNumber} is Marked Resolved
+                      </p>
+                      <p className="text-emerald-700/80 dark:text-emerald-300/70 text-[11px] truncate">
+                        You are viewing the archived chat history with {assignedAgentName}.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleReopenTicket}
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-200 bg-white dark:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-800 transition-all cursor-pointer shadow-2xs"
+                    >
+                      Reopen Ticket
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleStartNewTicket}
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#5a32fa] hover:bg-[#4b26dc] transition-all cursor-pointer shadow-xs"
+                    >
+                      + New Ticket
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Attachment Preview Chip if selected */}
               {selectedAttachment && (
                 <div className="mb-2.5 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/70 dark:border-purple-500/30 text-xs text-slate-700 dark:text-slate-300">
@@ -885,15 +1007,19 @@ export default function LiveChatSupportPage() {
                 <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-400">
                   Live Session Info
                 </span>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/70 dark:border-emerald-800/50">
-                  Active
+                <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                  currentSessionStatus === 'resolved' ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200/70 dark:border-emerald-800/50' :
+                  currentSessionStatus === 'closed' ? 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700' :
+                  'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 border-purple-200/70 dark:border-purple-800/50'
+                }`}>
+                  {currentSessionStatus === 'resolved' ? 'Resolved' : currentSessionStatus === 'closed' ? 'Closed' : currentSessionStatus === 'new' ? 'New' : 'Active'}
                 </span>
               </div>
 
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-white/5">
                   <span className="text-slate-500 dark:text-slate-400">Ticket ID</span>
-                  <span className="font-mono font-bold text-[#5a32fa] dark:text-purple-300">#WIP-8942</span>
+                  <span className="font-mono font-bold text-[#5a32fa] dark:text-purple-300">#{ticketNumber}</span>
                 </div>
                 <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-white/5">
                   <span className="text-slate-500 dark:text-slate-400">Member Status</span>
@@ -909,9 +1035,71 @@ export default function LiveChatSupportPage() {
                 </div>
                 <div className="flex justify-between items-center py-1">
                   <span className="text-slate-500 dark:text-slate-400">Assigned Agent</span>
-                  <span className="font-bold text-slate-800 dark:text-slate-200">Sarah Jenkins</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">{assignedAgentName}</span>
                 </div>
               </div>
+            </div>
+
+            {/* Support Ticket History Card */}
+            <div className="rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-white/5 p-4 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <History size={13} className="text-[#5a32fa] dark:text-purple-400" />
+                  <span>Your Tickets ({pastSessions.length})</span>
+                </h3>
+                <button
+                  type="button"
+                  onClick={handleStartNewTicket}
+                  className="text-[11px] font-bold text-[#5a32fa] dark:text-purple-300 hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>+ New Ticket</span>
+                </button>
+              </div>
+
+              {pastSessions.length === 0 ? (
+                <p className="text-[11px] text-slate-400 py-1">No previous tickets found.</p>
+              ) : (
+                <div className="space-y-2 max-h-56 overflow-y-auto no-scrollbar">
+                  {pastSessions.map((sess) => {
+                    const isSelected = sess.id === sessionId;
+                    const isResolved = sess.status === 'resolved' || sess.status === 'closed';
+
+                    return (
+                      <div
+                        key={sess.id}
+                        onClick={() => loadSessionIntoView(sess)}
+                        className={`p-2.5 rounded-xl border transition-all cursor-pointer text-left ${
+                          isSelected
+                            ? 'bg-purple-50 dark:bg-purple-950/60 border-purple-300 dark:border-purple-600/50 shadow-xs'
+                            : 'bg-slate-50 dark:bg-white/5 border-slate-200/70 dark:border-white/5 hover:border-purple-300/60'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-mono text-xs font-bold text-[#5a32fa] dark:text-purple-300">
+                            #{sess.ticket_number}
+                          </span>
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider ${
+                            isResolved
+                              ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800/60'
+                              : 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700/60'
+                          }`}>
+                            {sess.status}
+                          </span>
+                        </div>
+
+                        <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-1 mb-1 font-medium">
+                          {sess.last_message || 'No message'}
+                        </p>
+
+                        <div className="flex items-center justify-between text-[10px] text-slate-400">
+                          <span>Agent: {sess.assigned_agent_name || 'Sarah Jenkins'}</span>
+                          <span>{new Date(sess.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Quick Actions Card */}
