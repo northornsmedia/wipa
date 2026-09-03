@@ -10,7 +10,11 @@ export function useIdleTimeout(timeoutMs: number = 15 * 60 * 1000) {
 
   const handleIdle = useCallback(async () => {
     // Log the user out due to inactivity
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      // Ignore
+    }
     setUser(null);
     router.push('/login?message=You have been logged out due to inactivity.');
   }, [router, setUser]);

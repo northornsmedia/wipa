@@ -7,23 +7,18 @@ interface AnimatedWaveLineProps {
 }
 
 export default function AnimatedWaveLine({ className = '' }: AnimatedWaveLineProps) {
-  const pathKeyframes = [
-    "M-20,30 Q80,130 200,60 T440,80 T550,20",
-    "M-20,50 Q105,30 225,85 T430,35 T550,50",
-    "M-20,25 Q70,110 190,40 T455,95 T550,25",
-    "M-20,45 Q115,125 210,75 T420,50 T550,40",
-    "M-20,30 Q80,130 200,60 T440,80 T550,20"
-  ];
+  const wavePath = "M-20,30 Q80,130 200,60 T440,80 T550,20";
 
   return (
     <div className={`absolute top-16 sm:top-20 left-0 right-0 w-full overflow-hidden pointer-events-none opacity-90 z-0 select-none ${className}`}>
       <motion.div
         animate={{
-          y: [-2, 3, -3, 2, -2],
+          y: [-3, 4, -4, 3, -3],
+          scaleY: [1, 1.08, 0.94, 1.05, 1],
           opacity: [0.85, 1, 0.9, 1, 0.85]
         }}
         transition={{
-          duration: 8,
+          duration: 9,
           repeat: Infinity,
           ease: "easeInOut"
         }}
@@ -42,16 +37,8 @@ export default function AnimatedWaveLine({ className = '' }: AnimatedWaveLinePro
               <stop offset="100%" stopColor="#8b5cf6" />
             </linearGradient>
           </defs>
-          <motion.path
-            d={pathKeyframes[0]}
-            animate={{
-              d: pathKeyframes
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
+          <path
+            d={wavePath}
             fill="none"
             stroke="url(#waveGlowGradient)"
             strokeWidth="7"
@@ -72,16 +59,8 @@ export default function AnimatedWaveLine({ className = '' }: AnimatedWaveLinePro
               <stop offset="100%" stopColor="#8b5cf6" />
             </linearGradient>
           </defs>
-          <motion.path
-            d={pathKeyframes[0]}
-            animate={{
-              d: pathKeyframes
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
+          <path
+            d={wavePath}
             fill="none"
             stroke="url(#waveSharpGradient)"
             strokeWidth="3.5"

@@ -63,7 +63,11 @@ export default function PlatformHeader() {
   }, []);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      // Ignore local/global scope errors
+    }
     useAppStore.getState().setUser(null);
     router.push('/login');
   };
