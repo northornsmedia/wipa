@@ -8,7 +8,6 @@ import AuthGuard from "@/components/AuthGuard";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import Sidebar from "@/components/Sidebar";
 import ThemeWrapper from "@/components/ThemeWrapper";
-import WelcomeBackSplash from "@/components/WelcomeBackSplash";
 import { PushNotificationPrompt } from "@/components/chat/PushNotificationPrompt";
 
 export default function PlatformLayout({
@@ -57,7 +56,6 @@ export default function PlatformLayout({
             </div>
           </div>
         </AuthGuard>
-        <WelcomeBackSplash />
       </div>
     </ThemeWrapper>
   );
