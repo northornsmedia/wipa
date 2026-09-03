@@ -1,16 +1,15 @@
 // @ts-nocheck
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Home, Plus, BookOpen, User, MessageSquare } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import MobileCreationSheet from './MobileCreationSheet';
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
-  const router = useRouter();
   const user = useAppStore((state) => state.user);
   const [isCreationOpen, setIsCreationOpen] = useState(false);
 
@@ -26,35 +25,35 @@ export default function MobileBottomNav() {
   return (
     <>
       {/* Sleek Floating Glassmorphic Capsule Nav */}
-      <nav className="md:hidden fixed bottom-3 left-3 right-3 z-50 max-w-md mx-auto bg-[#090d16]/90 dark:bg-[#090d16]/90 backdrop-blur-2xl border border-white/10 dark:border-white/15 rounded-full px-3 py-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.5)] transition-all box-border">
-        <div className="h-13 w-full flex items-center justify-between">
-          {/* 1. Feed / Home */}
+      <nav className="md:hidden fixed bottom-3 left-3 right-3 z-50 max-w-md mx-auto bg-[#090d16]/90 dark:bg-[#090d16]/90 backdrop-blur-2xl border border-white/10 dark:border-white/15 rounded-full px-2.5 py-1 shadow-[0_12px_36px_rgba(0,0,0,0.5)] transition-all box-border">
+        <div className="h-12 w-full flex items-center justify-between px-1">
+          {/* 1. Feed / Home (No text) */}
           <Link
             href="/platform"
-            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
+            aria-label="Home"
+            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation ${
               isActive('/platform')
-                ? 'bg-white/10 text-white font-bold'
+                ? 'bg-white/15 text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Home size={19} strokeWidth={isActive('/platform') ? 2.5 : 1.8} />
-            <span className="text-[9.5px] font-medium mt-0.5 leading-none">Home</span>
+            <Home size={21} strokeWidth={isActive('/platform') ? 2.4 : 1.9} />
           </Link>
 
-          {/* 2. Chat */}
+          {/* 2. Chat (No text) */}
           <Link
             href="/platform/messages"
-            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
+            aria-label="Chat"
+            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation ${
               isActive('/platform/messages')
-                ? 'bg-white/10 text-white font-bold'
+                ? 'bg-white/15 text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <MessageSquare size={19} strokeWidth={isActive('/platform/messages') ? 2.5 : 1.8} />
-            <span className="text-[9.5px] font-medium mt-0.5 leading-none">Chat</span>
+            <MessageSquare size={21} strokeWidth={isActive('/platform/messages') ? 2.4 : 1.9} />
           </Link>
 
-          {/* 3. Executive Pill Action Button */}
+          {/* 3. Executive Pill Action Button (+ Post - Left as is) */}
           <Link
             href="/platform/create-post"
             aria-label="Create Post"
@@ -64,36 +63,36 @@ export default function MobileBottomNav() {
             <span>Post</span>
           </Link>
 
-          {/* 4. Resources */}
+          {/* 4. Resources / Library (No text) */}
           <Link
             href="/platform/resources"
-            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
+            aria-label="Library"
+            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation ${
               isActive('/platform/resources')
-                ? 'bg-white/10 text-white font-bold'
+                ? 'bg-white/15 text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <BookOpen size={19} strokeWidth={isActive('/platform/resources') ? 2.5 : 1.8} />
-            <span className="text-[9.5px] font-medium mt-0.5 leading-none">Library</span>
+            <BookOpen size={21} strokeWidth={isActive('/platform/resources') ? 2.4 : 1.9} />
           </Link>
 
-          {/* 5. Profile */}
+          {/* 5. Profile (No text) */}
           <Link
             href="/platform/profile"
-            className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all active:scale-95 touch-manipulation ${
+            aria-label="Profile"
+            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation ${
               isActive('/platform/profile')
-                ? 'bg-white/10 text-white font-bold'
+                ? 'bg-white/15 text-white'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
             {user?.avatar_url ? (
-              <div className={`w-5 h-5 rounded-full overflow-hidden ring-1.5 ${isActive('/platform/profile') ? 'ring-white' : 'ring-gray-400/40'}`}>
+              <div className={`w-6 h-6 rounded-full overflow-hidden ring-1.5 ${isActive('/platform/profile') ? 'ring-white' : 'ring-gray-400/40'}`}>
                 <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
               </div>
             ) : (
-              <User size={19} strokeWidth={isActive('/platform/profile') ? 2.5 : 1.8} />
+              <User size={21} strokeWidth={isActive('/platform/profile') ? 2.4 : 1.9} />
             )}
-            <span className="text-[9.5px] font-medium mt-0.5 leading-none">Profile</span>
           </Link>
         </div>
       </nav>
@@ -103,4 +102,3 @@ export default function MobileBottomNav() {
     </>
   );
 }
-
