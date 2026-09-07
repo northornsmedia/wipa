@@ -117,7 +117,7 @@ export default function MobileTopBar() {
   };
 
   // Hide on full-screen standalone pages that have their own custom top header
-  const isFullScreenModalPage = pathname === '/platform/create-post' || pathname.startsWith('/platform/messages');
+  const isFullScreenModalPage = pathname === '/platform/create-post' || pathname.startsWith('/platform/messages') || pathname === '/platform/more';
   if (isFullScreenModalPage) {
     return null;
   }
@@ -128,15 +128,15 @@ export default function MobileTopBar() {
       {pathname === '/platform' ? (
         <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-white dark:bg-[#0b0f19] pt-safe px-3.5 pb-0 transition-all w-full max-w-full box-border border-0 shadow-none">
           <div className="h-14 flex items-center justify-between w-full">
-            {/* Left: Drawer Menu button (SquaresPlus) + Home title */}
+            {/* Left: More Menu button (SquaresPlus) + Home title */}
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsDrawerOpen(true)}
-                aria-label="Open Navigation Menu"
+              <Link
+                href="/platform/more"
+                aria-label="More Menu"
                 className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
               >
                 <SquaresPlusIcon size={20} strokeWidth={1.8} />
-              </button>
+              </Link>
               <h1 
                 onClick={handleLogoTap} 
                 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight select-none cursor-pointer"
@@ -172,15 +172,15 @@ export default function MobileTopBar() {
         /* STANDARD MOBILE TOP BAR FOR ALL OTHER PAGES */
         <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-all w-full max-w-full box-border">
           <div className="h-14 flex items-center justify-between w-full">
-            {/* Left Zone: Drawer Menu (SquaresPlus) + Brand Zone */}
+            {/* Left Zone: More Menu (SquaresPlus) + Brand Zone */}
             <div className="flex items-center gap-2.5">
-              <button
-                onClick={() => setIsDrawerOpen(true)}
-                aria-label="Open Navigation Menu"
+              <Link
+                href="/platform/more"
+                aria-label="More Menu"
                 className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90 overflow-hidden ring-1 ring-gray-200 dark:ring-white/10"
               >
                 <SquaresPlusIcon size={18} strokeWidth={1.8} />
-              </button>
+              </Link>
 
               <Link 
                 href="/platform" 
