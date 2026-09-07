@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { Home09Icon } from '@/components/icons/Home09Icon';
 import { SentIcon } from '@/components/icons/SentIcon';
 import { SearchAiLineIcon } from '@/components/icons/SearchAiLineIcon';
@@ -63,9 +63,8 @@ export default function MobileBottomNav() {
           <Link
             href="/platform/resources"
             aria-label="Resources"
-            className="flex items-center gap-1.5 bg-gradient-to-r from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] text-white px-3.5 py-2 rounded-full font-bold text-xs shadow-lg shadow-[#5a32fa]/30 active:scale-90 transition-transform touch-manipulation cursor-pointer"
+            className="flex items-center justify-center bg-gradient-to-r from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] text-white px-4 py-2 rounded-full font-bold text-xs shadow-lg shadow-[#5a32fa]/30 active:scale-90 transition-transform touch-manipulation cursor-pointer"
           >
-            <BookOpen size={16} strokeWidth={2.4} />
             <span>Resources</span>
           </Link>
 
