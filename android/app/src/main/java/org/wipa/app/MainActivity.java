@@ -32,8 +32,8 @@ public class MainActivity extends BridgeActivity {
             WebView webView = bridge.getWebView();
             webView.setBackgroundColor(android.graphics.Color.WHITE);
             
-            // Enforce GPU hardware layer composition and disable Android overscroll rubber-banding
-            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            // Native Chromium hardware acceleration with zero intermediate layer invalidation flicker
+            webView.setLayerType(View.LAYER_TYPE_NONE, null);
             webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
             webView.setVerticalScrollBarEnabled(false);
             webView.setHorizontalScrollBarEnabled(false);

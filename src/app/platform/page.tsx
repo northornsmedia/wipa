@@ -737,7 +737,7 @@ export default function PlatformPage() {
 
   return (
     <div
-      className="relative w-full max-w-full font-sans flex flex-col min-h-screen overflow-x-clip overscroll-y-contain"
+      className="relative w-full max-w-full font-sans flex flex-col min-h-screen overflow-x-clip overscroll-none"
       onTouchStart={handlePullStart}
       onTouchMove={handlePullMove}
       onTouchEnd={handlePullEnd}
@@ -754,7 +754,7 @@ export default function PlatformPage() {
         <div className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white shadow-[0_4px_16px_rgba(0,0,0,0.18)] dark:border-white/10 dark:bg-slate-900">
           <Loader2
             size={20}
-            className={`text-[#6600FF] ${isPullRefreshing ? 'animate-spin' : ''}`}
+            className={`text-slate-800 dark:text-white ${isPullRefreshing ? 'animate-spin' : ''}`}
           />
         </div>
       </div>
@@ -771,7 +771,7 @@ export default function PlatformPage() {
               <div className="w-full max-w-full sm:max-w-4xl min-w-0 space-y-0 sm:space-y-6 box-border">
 
               {/* MOBILE INSTAGRAM-STYLE STORIES & SUB-HEADER (MOBILE ONLY) */}
-              <div className="md:hidden w-full max-w-full bg-white dark:bg-[#0b0f19] pt-1 pb-2 border-0 border-none shadow-none">
+              <div className="md:hidden w-full max-w-full bg-white dark:bg-[#0b0f19] pt-1 pb-2 border-0 border-none shadow-none isolate">
                 {/* 1. Stories Carousel */}
                 <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
               </div>
