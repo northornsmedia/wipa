@@ -76,38 +76,59 @@ export default function FirmProfilePage({ params }: { params: { slug: string } }
     <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white pb-24">
       
       {/* Cover & Header */}
-      <div className="bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-white/10">
-        <div className="h-64 md:h-80 w-full relative bg-slate-200 dark:bg-slate-800">
-          {firm.cover_image_url ? (
-            <img src={firm.cover_image_url} alt="Cover" className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-r from-[#5a32fa] to-purple-600 opacity-80"></div>
-          )}
-          <div className="absolute top-6 left-6 z-10">
-            <Link href="/platform/resources/ip-firms" className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white p-2 rounded-full inline-flex transition-colors">
-              <ArrowLeft size={20} />
+      <div className="bg-white dark:bg-[#0f172a] border-b border-slate-200/80 dark:border-white/10">
+        <div className="h-48 sm:h-64 md:h-80 w-full relative bg-slate-900 overflow-hidden">
+          <img 
+            src={firm.cover_image_url || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80'} 
+            alt={`${firm.name} cover`} 
+            className="w-full h-full object-cover brightness-[0.88]" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 pointer-events-none" />
+          <div className="absolute top-4 left-4 z-10">
+            <Link 
+              href="/platform/resources/ip-firms" 
+              className="bg-black/40 hover:bg-black/60 backdrop-blur-md text-white p-2.5 rounded-full inline-flex transition-colors border border-white/20 active:scale-95"
+            >
+              <ArrowLeft size={18} />
             </Link>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative pb-8">
-          <div className="flex flex-col md:flex-row md:items-end gap-6 md:gap-8 -mt-20 relative z-10 mb-8">
-            <div className="w-40 h-40 bg-white dark:bg-slate-900 rounded-3xl shadow-xl border-4 border-white dark:border-slate-900 flex items-center justify-center overflow-hidden shrink-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative pb-6 sm:pb-8">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-6 md:gap-8 -mt-12 sm:-mt-16 relative z-10 mb-6 sm:mb-8">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl ring-4 ring-white dark:ring-[#0f172a] flex items-center justify-center overflow-hidden shrink-0">
               {firm.logo_url ? (
-                <img src={firm.logo_url} alt={firm.name} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-5xl font-black text-slate-300">{firm.name.charAt(0)}</span>
-              )}
+                <img 
+                  src={firm.logo_url} 
+                  alt={firm.name} 
+                  className="w-full h-full object-cover" 
+                  onError={(e: any) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div 
+                className="w-full h-full bg-gradient-to-br from-[#5a32fa] to-purple-600 text-white font-black text-3xl sm:text-4xl flex items-center justify-center"
+                style={{ display: firm.logo_url ? 'none' : 'flex' }}
+              >
+                {firm.name.charAt(0)}
+              </div>
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">{firm.name}</h1>
-                {firm.is_verified && <CheckCircle2 size={24} className="text-blue-500" />}
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">{firm.name}</h1>
+                {firm.is_verified && <CheckCircle2 size={20} className="text-blue-500 shrink-0 fill-blue-500/20" />}
+                {firm.is_featured && (
+                  <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1">
+                    <Star size={10} className="fill-white" /> Featured
+                  </span>
+                )}
               </div>
-              <div className="flex flex-wrap items-center gap-4 text-slate-600 dark:text-slate-400 font-bold text-sm">
-                {firm.headquarters && <div className="flex items-center gap-1"><MapPin size={16} /> {firm.headquarters}</div>}
-                {firm.founded_year && <div className="flex items-center gap-1"><Building2 size={16} /> Est. {firm.founded_year}</div>}
-                {firm.size_range && <div>{firm.size_range} Employees</div>}
+              <div className="flex flex-wrap items-center gap-3 text-slate-600 dark:text-slate-400 font-bold text-xs sm:text-sm">
+                {firm.headquarters && <div className="flex items-center gap-1"><MapPin size={14} className="text-rose-500" /> {firm.headquarters}</div>}
+                {firm.founded_year && <div className="flex items-center gap-1"><Building2 size={14} className="text-indigo-500" /> Est. {firm.founded_year}</div>}
+                {firm.size_range && <div>• {firm.size_range} Attorneys</div>}
               </div>
             </div>
           </div>
