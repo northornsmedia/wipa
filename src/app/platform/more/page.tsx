@@ -11,7 +11,7 @@ export default function MoreMenuPage() {
   const setIsLexIQOpen = useAppStore((state) => state.setIsLexIQOpen);
 
   return (
-    <div className="w-full max-w-full min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-white pb-32 sm:pb-24">
+    <div className="w-full max-w-full bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-white pb-2 sm:pb-4">
       {/* Top Header: Just "More" centered, no extra icons */}
       <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#070b14]/90 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 px-4 pt-safe">
         <div className="max-w-4xl mx-auto flex items-center justify-center h-14">
@@ -25,7 +25,7 @@ export default function MoreMenuPage() {
       </header>
 
       {/* Main Bento Grid */}
-      <main className="max-w-4xl mx-auto px-3.5 sm:px-4 pt-4 sm:pt-6">
+      <div className="max-w-4xl mx-auto px-3.5 sm:px-4 pt-4 sm:pt-6">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3.5">
           
           {/* 1. Sally 4.1 Pro AI - Big Hero Box (Spans 2 cols, prominent) */}
@@ -346,7 +346,7 @@ export default function MoreMenuPage() {
           </Link>
 
         </div>
-      </main>
+      </div>
     </div>
   );
 }
