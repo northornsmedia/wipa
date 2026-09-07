@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'capacitor-web',
   backgroundColor: '#6600FF',
   server: {
-    url: 'https://platform.womensipalliance.com',
+    url: 'https://platform.womensipalliance.com/platform',
     cleartext: false,
   },
   android: {

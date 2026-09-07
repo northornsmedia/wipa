@@ -89,12 +89,14 @@ export default function Home() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetStatus, setResetStatus] = useState<{ success?: boolean; text?: string } | null>(null);
 
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   // Fast-track mobile logged-in user straight to the feed page
   useEffect(() => {
     if (isRedirectingMobile) {
-      router.replace('/platform');
+      window.location.replace('/platform');
     }
-  }, [isRedirectingMobile, router]);
+  }, [isRedirectingMobile]);
 
   // Check active session on mount and coordinate splash timer
   useEffect(() => {
@@ -122,7 +124,8 @@ export default function Home() {
 
           // ONLY FOR MOBILE: logged in user lands directly on the feed page!
           if (isMobile) {
-            router.replace('/platform');
+            setIsRedirecting(true);
+            window.location.replace('/platform');
             return;
           }
 
@@ -276,7 +279,7 @@ export default function Home() {
   };
 
   // Mobile logged-in users bypass the landing page entirely and go directly to the feed
-  if (isRedirectingMobile) {
+  if (isRedirectingMobile || isRedirecting) {
     return (
       <div className="fixed inset-0 z-[99999] bg-[#6600FF]">
         <AppLaunchSplash />

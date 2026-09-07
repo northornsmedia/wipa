@@ -105,10 +105,6 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // Only show minimal subtle spinner if no user is cached and initial session check is running
-  if (!mounted || isChecking) {
-    return <AppLaunchSplash message="Opening your platform…" />;
-  }
-
-  return <>{children}</>;
+  // If unauthenticated or session check in progress, show splash while redirecting to /login
+  return <AppLaunchSplash message="Opening your platform…" />;
 }
