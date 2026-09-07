@@ -11,6 +11,7 @@ import {
   User, TrendingUp, X, MapPin, Briefcase, Building2, Zap
 } from 'lucide-react';
 import Link from 'next/link';
+import { getGlobalLeaderboardAction } from '@/app/actions/leaderboard';
 
 export default function LeaderboardPage() {
   const { user } = useAppStore();
@@ -29,35 +30,40 @@ export default function LeaderboardPage() {
       setLoading(true);
       
       try {
-        // Fetch Member XP joined with full Profile details
-        const { data: leaderData, error: leaderError } = await supabase
-          .from('member_xp')
-          .select(`
-            *,
-            profile:profiles!member_xp_user_id_fkey (
-              id,
-              full_name,
-              avatar_url,
-              role,
-              company,
-              country,
-              practice_area,
-              membership_tier,
-              verification_status
-            )
-          `)
-          .order('total_xp', { ascending: false })
-          .limit(100);
+        // 1. Try Server Action
+        const res = await getGlobalLeaderboardAction();
+        let validLeaders: any[] = [];
 
-        if (leaderError) {
-          console.error('Error loading leaderboard:', leaderError);
-        } else if (leaderData) {
-          // Filter out rows where profile doesn't exist
-          const validLeaders = leaderData.filter(l => l.profile && l.profile.full_name);
-          setLeaders(validLeaders);
+        if (res && res.success && res.data && res.data.length > 0) {
+          validLeaders = res.data;
+        } else {
+          // Client-side fallback
+          const { data: leaderData } = await supabase
+            .from('member_xp')
+            .select(`
+              *,
+              profile:profiles (
+                id,
+                full_name,
+                avatar_url,
+                role,
+                company,
+                country,
+                practice_area,
+                membership_tier,
+                verification_status
+              )
+            `)
+            .order('total_xp', { ascending: false })
+            .limit(100);
 
-          // Determine current logged-in user's rank
-          if (user?.id) {
+          validLeaders = (leaderData || []).filter(l => l.profile && l.profile.full_name);
+        }
+
+        setLeaders(validLeaders);
+
+        // Determine current logged-in user's rank
+        if (user?.id && validLeaders.length > 0) {
             const userIndex = validLeaders.findIndex(l => l.user_id === user.id);
             if (userIndex !== -1) {
               setCurrentUserRank({ ...validLeaders[userIndex], rank: userIndex + 1 });
@@ -78,7 +84,6 @@ export default function LeaderboardPage() {
               }
             }
           }
-        }
 
         // Fetch Achievements
         const { data: achData } = await supabase
