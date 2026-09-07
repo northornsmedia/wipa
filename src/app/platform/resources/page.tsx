@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Building2, Mic, MonitorPlay, FileCheck, Presentation } from 'lucide-react';
+import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Building2, Mic, MonitorPlay, FileCheck, Presentation, Sparkles, ChevronRight, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -11,118 +11,29 @@ const MOCK_CATEGORIES = [
   {
     id: 1,
     title: "Webinars & Learning",
+    badge: "Live & Masterclass",
     icon: MonitorPlay,
     color: "#ff90e8",
-    description: "Interactive sessions and educational courses on intellectual property.",
+    image: "/resource3.jpg",
+    path: "/platform/resources/webinars",
+    isWide: true,
+    actionText: "Watch ↗",
+    description: "Interactive sessions and educational masterclasses on intellectual property.",
     latestItems: [
       { title: "AI in Patent Law", type: "New Webinar", time: "1 day ago" },
       { title: "Mastering IP Litigation", type: "Masterclass", time: "3 days ago" }
     ]
   },
   {
-    id: 3,
-    title: "Education & Professional Development",
-    icon: BookOpen,
-    color: "#5a32fa",
-    description: "Resources for advancing your IP career and knowledge.",
-    latestItems: [
-      { title: "Global IP Strategies 2026", type: "New PDF", time: "2 hours ago" },
-      { title: "Patent Law Fundamentals", type: "New Course", time: "1 day ago" }
-    ]
-  },
-  {
-    id: 4,
-    title: "Publications",
-    icon: Globe,
-    color: "#e84393",
-    description: "Explore official partner publications, annual issues, and global editorial visibility for women in IP.",
-    latestItems: [
-      { title: "Women's IP World Annual", type: "Annual Issue", time: "Available" },
-      { title: "Global IP Magazine", type: "Magazine", time: "Available" }
-    ]
-  },
-  {
-    id: 5,
-    title: "Articles & Insights",
-    icon: FileText,
-    color: "#0984e3",
-    description: "In-depth articles, opinion pieces, and thought leadership.",
-    latestItems: [
-      { title: "The Future of Copyright", type: "Insight", time: "1 hour ago" },
-      { title: "Trademarks in the Metaverse", type: "Article", time: "1 day ago" }
-    ]
-  },
-  {
-    id: 6,
-    title: "IP News & Legal Updates",
-    icon: Newspaper,
-    color: "#d63031",
-    description: "The latest developments in patent, trademark, and copyright law.",
-    latestItems: [
-      { title: "Supreme Court IP Ruling", type: "Breaking", time: "30 mins ago" },
-      { title: "New EPO Guidelines", type: "Update", time: "5 hours ago" }
-    ]
-  },
-  {
-    id: 7,
-    title: "Research & Reports",
-    icon: FileCheck,
-    color: "#6c5ce7",
-    description: "Data-driven insights and comprehensive industry reports.",
-    latestItems: [
-      { title: "2026 IP Filing Statistics", type: "Data", time: "1 day ago" },
-      { title: "Global Innovation Index", type: "Report", time: "1 week ago" }
-    ]
-  },
-  {
-    id: 8,
-    title: "Guides & Toolkits",
-    icon: BookOpen,
-    color: "#00b894",
-    description: "Practical guides and toolkits for daily IP operations.",
-    latestItems: [
-      { title: "Prior Art Search Guide", type: "PDF Guide", time: "2 days ago" },
-      { title: "IP Due Diligence Checklist", type: "Toolkit", time: "5 days ago" }
-    ]
-  },
-  {
-    id: 9,
-    title: "Career & Leadership",
-    icon: Briefcase,
-    color: "#fdcb6e",
-    description: "Advice on career progression and leadership skills in law.",
-    latestItems: [
-      { title: "Negotiating Partner Track", type: "Video", time: "3 days ago" },
-      { title: "Mentorship in IP Law", type: "Article", time: "1 week ago" }
-    ]
-  },
-  {
-    id: 10,
-    title: "In-House Counsel Resources",
-    icon: Building,
-    color: "#e17055",
-    description: "Tools and strategies specifically for corporate IP counsel.",
-    latestItems: [
-      { title: "Managing Outside Counsel", type: "Webinar", time: "4 days ago" },
-      { title: "IP Budgeting Templates", type: "Toolkit", time: "1 week ago" }
-    ]
-  },
-  {
-    id: 11,
-    title: "Podcasts & Conversations",
-    icon: Mic,
-    color: "#00cec9",
-    description: "Interviews and discussions with leading IP professionals.",
-    latestItems: [
-      { title: "Interview with USPTO Director", type: "New Episode", time: "1 day ago" },
-      { title: "The IP Innovators Series", type: "Podcast", time: "4 days ago" }
-    ]
-  },
-  {
     id: 2,
     title: "Wellness & Wellbeing",
+    badge: "Mind & Focus",
     icon: Headphones,
     color: "#00d26a",
+    image: "/wellbeing.jpg",
+    path: "/platform/resources/wellness",
+    isWide: false,
+    actionText: "Listen 🎧",
     description: "Resources focused on mental health and work-life balance.",
     latestItems: [
       { title: "Work-Life Balance for Lawyers", type: "New Webinar", time: "5 hours ago" },
@@ -130,10 +41,80 @@ const MOCK_CATEGORIES = [
     ]
   },
   {
+    id: 11,
+    title: "Podcasts & Audio",
+    badge: "Audio Series",
+    icon: Mic,
+    color: "#00cec9",
+    image: "https://coruzant.com/wp-content/uploads/2022/05/podcast-conversation.jpg",
+    path: "/platform/resources/podcasts-conversations",
+    isWide: false,
+    actionText: "Tune In 🎙️",
+    description: "Interviews and discussions with leading IP professionals.",
+    latestItems: [
+      { title: "Interview with USPTO Director", type: "New Episode", time: "1 day ago" },
+      { title: "The IP Innovators Series", type: "Podcast", time: "4 days ago" }
+    ]
+  },
+  {
+    id: 4,
+    title: "Publications",
+    badge: "Official Issue",
+    icon: Globe,
+    color: "#e84393",
+    image: "/images/publications-card-banner.png",
+    path: "/platform/publications",
+    isWide: true,
+    actionText: "Read Issue ↗",
+    description: "Official partner publications, annual issues, and global editorial visibility for women in IP.",
+    latestItems: [
+      { title: "Women's IP World Annual", type: "Annual Issue", time: "Available" },
+      { title: "Global IP Magazine", type: "Magazine", time: "Available" }
+    ]
+  },
+  {
+    id: 6,
+    title: "IP News & Updates",
+    badge: "Breaking",
+    icon: Newspaper,
+    color: "#d63031",
+    image: "https://www.bennett.edu.in/wp-content/uploads/2025/02/Advanced-Intellectual-Property-Law-Types-Core-Modules-and-Career-Avenues.webp",
+    path: "/platform/resources/ip-news",
+    isWide: false,
+    actionText: "Read 📰",
+    description: "The latest developments in patent, trademark, and copyright law.",
+    latestItems: [
+      { title: "Supreme Court IP Ruling", type: "Breaking", time: "30 mins ago" },
+      { title: "New EPO Guidelines", type: "Update", time: "5 hours ago" }
+    ]
+  },
+  {
+    id: 5,
+    title: "Articles & Insights",
+    badge: "Analysis",
+    icon: FileText,
+    color: "#0984e3",
+    image: "https://media.licdn.com/dms/image/v2/D4D12AQGPvWYs0hREpQ/article-cover_image-shrink_720_1280/B4DZUeerAVGkAI-/0/1739973132208?e=2147483647&v=beta&t=jDj9Iy2LLXJfKsScgkaNMKyXRrgy34PP3nZFglw-Rt0",
+    path: "/platform/resources/articles-insights",
+    isWide: false,
+    actionText: "Explore 📄",
+    description: "In-depth articles, opinion pieces, and thought leadership.",
+    latestItems: [
+      { title: "The Future of Copyright", type: "Insight", time: "1 hour ago" },
+      { title: "Trademarks in the Metaverse", type: "Article", time: "1 day ago" }
+    ]
+  },
+  {
     id: 13,
-    title: "IP Firms",
+    title: "IP Law Firms",
+    badge: "Directory",
     icon: Building2,
     color: "#f59e0b",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+    path: "/platform/resources/ip-firms",
+    claimPath: "/platform/resources/ip-firms/claim",
+    isWide: false,
+    actionText: "Firms 🏢",
     description: "Search and connect with specialized IP law firms worldwide.",
     latestItems: [
       { title: "Browse Top Firms", type: "Directory", time: "Available" },
@@ -142,13 +123,99 @@ const MOCK_CATEGORIES = [
   },
   {
     id: 12,
-    title: "IP Services",
+    title: "IP Services & Tech",
+    badge: "Solutions",
     icon: Building,
     color: "#1dd1a1",
+    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
+    path: "/platform/resources/ip-services",
+    listPath: "/platform/resources/ip-services/list",
+    isWide: false,
+    actionText: "Solutions ⚡",
     description: "Specialized IP consulting, docketing, portfolio management, and technology solutions.",
     latestItems: [
       { title: "Tech Operations (PSS)", type: "Service", time: "Available" },
       { title: "Genie AI Legal Intelligence", type: "AI Tool", time: "Available" }
+    ]
+  },
+  {
+    id: 3,
+    title: "Education & Prep",
+    badge: "Academy",
+    icon: BookOpen,
+    color: "#5a32fa",
+    image: "/resourceimg1.jpg",
+    path: "/platform/resources/education",
+    isWide: false,
+    actionText: "Courses 🎓",
+    description: "Resources for advancing your IP career and patent knowledge.",
+    latestItems: [
+      { title: "Global IP Strategies 2026", type: "New PDF", time: "2 hours ago" },
+      { title: "Patent Law Fundamentals", type: "New Course", time: "1 day ago" }
+    ]
+  },
+  {
+    id: 8,
+    title: "Guides & Toolkits",
+    badge: "Templates",
+    icon: BookOpen,
+    color: "#00b894",
+    image: "https://media.licdn.com/dms/image/v2/D5610AQG43vrwkaPiSQ/image-shrink_800/image-shrink_800/0/1707177003680?e=2147483647&v=beta&t=sq45ZJZYH8htsCpG76UiVa0yDDkZUsddD_Axx5yFKKY",
+    path: "/platform/resources/guides-toolkits",
+    isWide: false,
+    actionText: "Toolkits 📥",
+    description: "Practical guides, due diligence checklists, and toolkits for daily IP operations.",
+    latestItems: [
+      { title: "Prior Art Search Guide", type: "PDF Guide", time: "2 days ago" },
+      { title: "IP Due Diligence Checklist", type: "Toolkit", time: "5 days ago" }
+    ]
+  },
+  {
+    id: 7,
+    title: "Research & Reports",
+    badge: "Data & Stats",
+    icon: FileCheck,
+    color: "#6c5ce7",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxBiK_KFYr8IEt7R9niEFVTTjmFYgcMU7mSy4MLHc1dlrjzLndY55xWRBF&s=10",
+    path: "/platform/resources/research-reports",
+    isWide: false,
+    actionText: "Reports 📊",
+    description: "Data-driven insights and comprehensive industry reports.",
+    latestItems: [
+      { title: "2026 IP Filing Statistics", type: "Data", time: "1 day ago" },
+      { title: "Global Innovation Index", type: "Report", time: "1 week ago" }
+    ]
+  },
+  {
+    id: 9,
+    title: "Career & Leadership",
+    badge: "Career Hub",
+    icon: Briefcase,
+    color: "#fdcb6e",
+    image: "https://media.licdn.com/dms/image/v2/D4E12AQEEtjLt4_x96g/article-cover_image-shrink_600_2000/B4EZt2WvkFGYAQ-/0/1767217232568?e=2147483647&v=beta&t=uf-9-XxWoJeKHz6j0AFDlc2l0-RX9BbUZ6lNULQjs1o",
+    path: "/platform/resources/career-leadership",
+    isWide: false,
+    actionText: "Career 💼",
+    description: "Advice on career progression and leadership skills in law.",
+    latestItems: [
+      { title: "Negotiating Partner Track", type: "Video", time: "3 days ago" },
+      { title: "Mentorship in IP Law", type: "Article", time: "1 week ago" }
+    ]
+  },
+  {
+    id: 10,
+    title: "In-House Counsel Suite",
+    badge: "Corporate Specialty",
+    icon: Building,
+    color: "#e17055",
+    image: "https://cdn.prod.website-files.com/696a195e77c16374d6beeb51/698ee7bbc05af6693c7a57eb_63c5782cf0ee732be3f43836_614a0f782b14afae42c142df_InHouse%252520Counsel%252520Empowered%252520by%252520Tech.png",
+    path: "/platform/resources/in-house-counsel",
+    isWide: true,
+    actionText: "Corporate Suite 🏢",
+    description: "Tools and outside counsel management strategies specifically for corporate IP counsel.",
+    latestItems: [
+      { title: "Managing Outside Counsel", type: "Webinar", time: "4 days ago" },
+      { title: "IP Budgeting Templates", type: "Toolkit", time: "1 week ago" }
     ]
   }
 ];
@@ -205,12 +272,18 @@ export default function ResourcesPage() {
   }, []);
 
   const filteredResources = resources.filter(r => {
-    const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          r.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch = !q || 
+      r.title.toLowerCase().includes(q) || 
+      r.description.toLowerCase().includes(q) ||
+      (r.badge && r.badge.toLowerCase().includes(q)) ||
+      (r.latestItems && r.latestItems.some((item: any) => item.title?.toLowerCase().includes(q)));
     
     let matchesTab = true;
     if (activeTab === 'Latest Resources') {
       matchesTab = r.id === 1;
+    } else if (activeTab !== 'All Resources') {
+      matchesTab = r.title.toLowerCase().includes(activeTab.toLowerCase());
     }
 
     return matchesSearch && matchesTab;
@@ -409,19 +482,35 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
-      {/* Main Content */}
-      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 sm:p-6 lg:p-8 pt-4 sm:pt-6 md:pt-8">
+      {/* Main Content: Edge-to-edge on mobile with px-2, container on desktop */}
+      <div className="flex-1 w-full max-w-none sm:max-w-[1400px] mx-auto px-2 sm:px-6 lg:px-8 py-2.5 sm:py-6 md:py-8">
         
         {/* Header Section */}
-        <div className="mb-4 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="mb-3 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div className="w-full sm:w-auto">
-            <div className="flex items-center justify-center sm:justify-start gap-3">
-              <div className="hidden sm:flex w-10 h-10 sm:w-12 sm:h-12 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 p-2 sm:p-2.5 rounded-2xl items-center justify-center shrink-0 shadow-sm">
-                <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-[#5a32fa] dark:text-[#ff90e8]" />
+            <div className="flex items-center justify-between sm:justify-start gap-3">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-9 h-9 sm:w-12 sm:h-12 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-xs">
+                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-[#5a32fa] dark:text-[#ff90e8]" />
+                </div>
+                <div>
+                  <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+                    Resource Library
+                  </h1>
+                  <p className="text-[11px] sm:hidden text-gray-500 dark:text-gray-400 font-medium">
+                    11 IP verticals, webinars & directories
+                  </p>
+                </div>
               </div>
-              <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight text-center sm:text-left">
-                Resource Library
-              </h1>
+
+              {/* Mobile Quick Upload Action */}
+              <Link
+                href="/platform/resources/ip-services/list"
+                className="sm:hidden inline-flex items-center gap-1 bg-[#5a32fa] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-xs active:scale-95 transition-all shrink-0"
+              >
+                <Plus size={13} strokeWidth={2.6} />
+                <span>Upload</span>
+              </Link>
             </div>
             <p className="hidden sm:block text-gray-500 dark:text-gray-400 font-medium mt-2 text-xs sm:text-sm md:text-base max-w-xl text-center sm:text-left">
               Access exclusive guides, templates, webinars, and reports.
@@ -429,150 +518,421 @@ export default function ResourcesPage() {
           </div>
 
           <div className="hidden sm:flex items-center">
-            <button className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#5a32fa] to-[#ff2a5f] text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold shadow-md shadow-[#5a32fa]/20 hover:shadow-lg hover:shadow-[#5a32fa]/30 active:scale-95 transition-all overflow-hidden">
+            <Link
+              href="/platform/resources/ip-services/list"
+              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#5a32fa] to-[#ff2a5f] text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold shadow-md shadow-[#5a32fa]/20 hover:shadow-lg hover:shadow-[#5a32fa]/30 active:scale-95 transition-all overflow-hidden"
+            >
               <Plus size={16} strokeWidth={2.8} className="relative z-10 group-hover:rotate-90 transition-transform duration-300" />
               <span className="relative z-10">Upload Resource</span>
-            </button>
+            </Link>
           </div>
         </div>
 
-        {/* Swipeable 11-Vertical Category Carousel for Fast Mobile Navigation */}
-        <div className="mb-6 sm:hidden">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            {[
-              { title: 'Wellness & Wellbeing', path: '/platform/resources/wellness', color: 'bg-emerald-500/10 text-[#00d26a] border-emerald-500/20' },
-              { title: 'Webinars', path: '/platform/resources/webinars', color: 'bg-rose-500/10 text-rose-500 border-rose-500/20' },
-              { title: 'Education', path: '/platform/resources/education', color: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' },
-              { title: 'Articles & Insights', path: '/platform/resources/articles-insights', color: 'bg-sky-500/10 text-sky-500 border-sky-500/20' },
-              { title: 'IP Law News', path: '/platform/resources/ip-news', color: 'bg-red-500/10 text-red-500 border-red-500/20' },
-              { title: 'IP Firms', path: '/platform/resources/ip-firms', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
-              { title: 'IP Services', path: '/platform/resources/ip-services', color: 'bg-teal-500/10 text-teal-600 border-teal-500/20' },
-              { title: 'Podcasts', path: '/platform/resources/podcasts-conversations', color: 'bg-purple-500/10 text-purple-500 border-purple-500/20' },
-              { title: 'Research & Reports', path: '/platform/resources/research-reports', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
-              { title: "Publications", path: '/platform/publications', color: 'bg-pink-500/10 text-pink-500 border-pink-500/20' },
-              { title: 'Guides & Toolkits', path: '/platform/resources/guides-toolkits', color: 'bg-teal-500/10 text-teal-500 border-teal-500/20' },
-              { title: 'In-House Counsel', path: '/platform/resources/in-house-counsel', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
-              { title: 'Career & Leadership', path: '/platform/resources/career-leadership', color: 'bg-orange-500/10 text-orange-500 border-orange-500/20' }
-            ].map((vert, vIdx) => (
-              <Link
-                key={vIdx}
-                href={vert.path}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap active:scale-90 flex items-center gap-1.5 shrink-0 ${vert.color}`}
+        {/* Mobile Real-Time Interactive Search Bar */}
+        <div className="sm:hidden mb-2.5">
+          <div className="relative flex items-center w-full bg-white dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 shadow-2xs">
+            <Search size={14} className="text-slate-400 mr-2 shrink-0" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search 11+ IP verticals, webinars, guides..."
+              className="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-none"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-white"
               >
-                <span>{vert.title}</span>
-              </Link>
-            ))}
+                <X size={14} />
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Mobile Splash Sponsored Banner */}
-        <div className="mb-8 p-4 sm:p-6 rounded-2xl md:rounded-3xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#ff2a5f] text-white shadow-lg relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="relative z-10">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-white/20 text-white backdrop-blur-md mb-2 inline-block border border-white/20">
-              ⭐ Featured Global IP Partner
-            </span>
-            <h3 className="text-base sm:text-xl font-black">Ennoble IP · Global Patent Prosecution</h3>
-            <p className="text-xs text-white/80 max-w-xl mt-1">Accelerate your cross-border patent applications with 24/7 AI-assisted analytics and expert drafting.</p>
+        {/* Edge-to-Edge Swipeable Category Chips for Mobile Navigation */}
+        <div className="mb-3 sm:hidden -mx-2 px-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex items-center gap-1.5 w-max py-0.5">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('All Resources');
+                setSearchQuery("");
+              }}
+              className={`px-3 py-1 rounded-full text-xs font-bold border transition-all whitespace-nowrap active:scale-95 shrink-0 ${
+                activeTab === 'All Resources'
+                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-transparent shadow-xs'
+                  : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10'
+              }`}
+            >
+              All Verticals
+            </button>
+            {[
+              { title: 'Webinars', key: 'Webinars' },
+              { title: 'Publications', key: 'Publications' },
+              { title: 'Wellness', key: 'Wellness' },
+              { title: 'Podcasts', key: 'Podcasts' },
+              { title: 'Articles', key: 'Articles' },
+              { title: 'IP News', key: 'News' },
+              { title: 'IP Firms', key: 'Firms' },
+              { title: 'IP Services', key: 'Services' },
+              { title: 'Education', key: 'Education' },
+              { title: 'Toolkits', key: 'Guides' },
+              { title: 'Research', key: 'Research' },
+              { title: 'Career', key: 'Career' },
+              { title: 'In-House', key: 'In-House' },
+            ].map((tab, tIdx) => {
+              const isActive = activeTab === tab.key;
+              return (
+                <button
+                  key={tIdx}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(isActive ? 'All Resources' : tab.key);
+                  }}
+                  className={`px-3 py-1 rounded-full text-xs font-bold border transition-all whitespace-nowrap active:scale-95 shrink-0 ${
+                    isActive
+                      ? 'bg-[#5a32fa] text-white border-transparent shadow-xs'
+                      : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10'
+                  }`}
+                >
+                  {tab.title}
+                </button>
+              );
+            })}
           </div>
-          <Link
-            href="/platform/resources/ip-firms"
-            className="relative z-10 px-4 py-2 rounded-xl bg-white text-gray-900 text-xs font-bold shadow-md hover:bg-white/90 active:scale-95 transition-all shrink-0"
-          >
-            Explore Firm
-          </Link>
         </div>
 
-        {/* Resources Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredResources.map((resource) => {
+        {/* 1. MOBILE-ONLY BENTO GRID (Edge-to-edge, Asymmetric 2-column layout) */}
+        <div className="grid grid-cols-2 gap-2 sm:hidden">
+          {filteredResources.map((resource, idx) => {
             const Icon = resource.icon;
-            const categoryHref = resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/publications` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : resource.id === 12 ? `/platform/resources/ip-services` : resource.id === 13 ? `/platform/resources/ip-firms` : resource.id === 14 ? `/platform/resources/wellness-v2` : `/platform/resources/wellness/${resource.id}`;
+            const categoryHref = resource.path || (
+              resource.id === 1 ? `/platform/resources/webinars` :
+              resource.id === 2 ? `/platform/resources/wellness` :
+              resource.id === 3 ? `/platform/resources/education` :
+              resource.id === 4 ? `/platform/publications` :
+              resource.id === 5 ? `/platform/resources/articles-insights` :
+              resource.id === 6 ? `/platform/resources/ip-news` :
+              resource.id === 7 ? `/platform/resources/research-reports` :
+              resource.id === 8 ? `/platform/resources/guides-toolkits` :
+              resource.id === 9 ? `/platform/resources/career-leadership` :
+              resource.id === 10 ? `/platform/resources/in-house-counsel` :
+              resource.id === 11 ? `/platform/resources/podcasts-conversations` :
+              resource.id === 12 ? `/platform/resources/ip-services` :
+              resource.id === 13 ? `/platform/resources/ip-firms` : `/platform/resources/wellness`
+            );
+
             const listingHref = resource.id === 12
               ? '/platform/resources/ip-services/list'
               : resource.id === 13
                 ? '/platform/resources/ip-firms/claim'
                 : null;
+
+            // Wide hero card on mobile when configured or if filtered to a single result
+            const isWide = filteredResources.length === 1 || Boolean(resource.isWide);
+
+            if (isWide) {
+              return (
+                <div
+                  key={resource.id}
+                  onClick={() => router.push(categoryHref)}
+                  className="col-span-2 relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/10 bg-slate-900 text-white shadow-xs active:scale-[0.98] transition-all duration-200 cursor-pointer min-h-[160px] flex flex-col justify-between p-3.5 group"
+                >
+                  {/* Background Image with Dark Cinematic Gradient Overlay */}
+                  <div className="absolute inset-0 z-0">
+                    <img
+                      src={resource.image || `/resourceimg1.jpg`}
+                      alt={resource.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
+                  </div>
+
+                  {/* Top Row: Category Badge & Action Chip */}
+                  <div className="relative z-10 flex items-center justify-between">
+                    <span
+                      className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider text-white border border-white/20 backdrop-blur-md"
+                      style={{ backgroundColor: `${resource.color}40` }}
+                    >
+                      {resource.badge || 'FEATURED'}
+                    </span>
+                    <span className="text-[11px] font-bold text-white/95 bg-black/40 px-2.5 py-0.5 rounded-full backdrop-blur-md flex items-center gap-1 border border-white/10">
+                      {resource.actionText || 'Explore ↗'}
+                    </span>
+                  </div>
+
+                  {/* Bottom Row: Title, Subtitle & Latest Item Tag */}
+                  <div className="relative z-10 mt-3">
+                    <h3 className="text-base font-black text-white leading-tight">
+                      {resource.title}
+                    </h3>
+                    <p className="text-[11px] text-white/80 line-clamp-1 mt-0.5">
+                      {resource.description}
+                    </p>
+
+                    <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-white/10">
+                      {resource.latestItems && resource.latestItems.length > 0 ? (
+                        <div className="flex items-center gap-1.5 text-[10px] text-white/90 font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          <span className="truncate max-w-[200px]">{resource.latestItems[0].title}</span>
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-white/70">Explore full vertical</span>
+                      )}
+
+                      {listingHref && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            router.push(listingHref);
+                          }}
+                          className="px-2 py-0.5 rounded-full bg-[#5a32fa] text-[10px] font-bold text-white shadow-xs active:scale-95"
+                        >
+                          + {resource.id === 12 ? 'List Service' : 'List Firm'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
+            // Compact 1-column Tile
             return (
               <div
                 key={resource.id}
                 onClick={() => router.push(categoryHref)}
-                className="relative bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.15)] active:scale-[0.98] transition-all duration-300 group overflow-hidden z-10 cursor-pointer"
+                className="col-span-1 relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/[0.04] shadow-xs active:scale-[0.98] transition-all duration-200 cursor-pointer min-h-[148px] flex flex-col justify-between p-3 group"
               >
-                {/* Full-Card Click Link: Highest z-index covering entire card area */}
-                <Link
-                  href={categoryHref}
-                  aria-label={`Explore ${resource.title}`}
-                  className="absolute inset-0 z-30 cursor-pointer"
+                {/* Ambient Soft Glow in Corner */}
+                <div
+                  className="absolute -top-6 -right-6 w-16 h-16 rounded-full blur-xl opacity-20 pointer-events-none"
+                  style={{ backgroundColor: resource.color }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/5 to-[#ff90e8]/5 dark:from-[#5a32fa]/10 dark:to-[#ff90e8]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
-                
-                <div className="h-52 w-full relative shrink-0 overflow-hidden z-10 pointer-events-none">
-                  <img 
-                    src={resource.id === 1 ? `/resource3.jpg` : resource.id === 2 ? `/wellbeing.jpg` : resource.id === 4 ? `/images/publications-card-banner.png` : resource.id === 5 ? `https://media.licdn.com/dms/image/v2/D4D12AQGPvWYs0hREpQ/article-cover_image-shrink_720_1280/B4DZUeerAVGkAI-/0/1739973132208?e=2147483647&v=beta&t=jDj9Iy2LLXJfKsScgkaNMKyXRrgy34PP3nZFglw-Rt0` : resource.id === 6 ? `https://www.bennett.edu.in/wp-content/uploads/2025/02/Advanced-Intellectual-Property-Law-Types-Core-Modules-and-Career-Avenues.webp` : resource.id === 7 ? `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxBiK_KFYr8IEt7R9niEFVTTjmFYgcMU7mSy4MLHc1dlrjzLndY55xWRBF&s=10` : resource.id === 8 ? `https://media.licdn.com/dms/image/v2/D5610AQG43vrwkaPiSQ/image-shrink_800/image-shrink_800/0/1707177003680?e=2147483647&v=beta&t=sq45ZJZYH8htsCpG76UiVa0yDDkZUsddD_Axx5yFKKY` : resource.id === 9 ? `https://media.licdn.com/dms/image/v2/D4E12AQEEtjLt4_x96g/article-cover_image-shrink_600_2000/B4EZt2WvkFGYAQ-/0/1767217232568?e=2147483647&v=beta&t=uf-9-XxWoJeKHz6j0AFDlc2l0-RX9BbUZ6lNULQjs1o` : resource.id === 10 ? `https://cdn.prod.website-files.com/696a195e77c16374d6beeb51/698ee7bbc05af6693c7a57eb_63c5782cf0ee732be3f43836_614a0f782b14afae42c142df_InHouse%252520Counsel%252520Empowered%252520by%252520Tech.png` : resource.id === 11 ? `https://coruzant.com/wp-content/uploads/2022/05/podcast-conversation.jpg` : resource.id === 12 ? `https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80` : resource.id === 13 ? `https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80` : `/resourceimg${resource.id % 2 === 0 ? 2 : 1}.jpg`} 
-                    alt={resource.title} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#0f172a] via-transparent to-transparent opacity-100 transition-opacity duration-500" />
-                  <div className="absolute inset-0 bg-[#5a32fa]/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-                
-                <div className="p-6 pt-2 flex flex-col flex-1 relative z-10 pointer-events-none">
 
-                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 line-clamp-2 text-center group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[#5a32fa] group-hover:to-[#ff90e8] transition-all duration-300">{resource.title}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-6 flex-1 text-center leading-relaxed">{resource.description}</p>
-                
-                {resource.latestItems && (
-                  <div className="mt-2 mb-4 flex flex-col gap-2">
-                    {resource.latestItems.map((item, idx) => (
-                      <div key={idx} className="p-2.5 rounded-lg border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5 animate-pulse flex items-center gap-3">
-                        <div className="relative flex h-2 w-2 shrink-0">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                        </div>
-                        <div className="flex-1 flex items-center justify-between min-w-0 gap-2">
-                          <p className="text-sm font-bold text-gray-800 dark:text-gray-100 truncate">{item.title}</p>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded whitespace-nowrap" style={{ color: resource.color, backgroundColor: `${resource.color}15` }}>
-                              {item.type}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                {/* Top Row: Icon in Rounded Box + Tag */}
+                <div className="flex items-start justify-between relative z-10">
+                  <div
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
+                    style={{ backgroundColor: `${resource.color}18`, color: resource.color }}
+                  >
+                    <Icon size={18} strokeWidth={2.2} />
                   </div>
-                )}
-                
-                <div className={`flex items-center ${listingHref ? 'justify-between' : 'justify-end'} gap-3 mt-auto border-t border-gray-100 dark:border-white/5 pt-5 relative z-20`}>
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#5a32fa]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  {listingHref && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        router.push(listingHref);
-                      }}
-                      className="pointer-events-auto relative z-40 inline-flex items-center gap-1.5 rounded-full bg-[#5a32fa] px-3.5 py-2 text-xs font-black text-white shadow-md transition hover:bg-[#4a24db] active:scale-95 cursor-pointer"
-                    >
-                      <Plus size={14} /> {resource.id === 12 ? 'List Your Service' : 'List Your Firm'}
-                    </button>
-                  )}
-                  <span className="font-bold text-sm flex items-center gap-2 group-hover:translate-x-1 transition-all duration-300 text-gray-400 group-hover:text-[#5a32fa]">
-                    Explore Category <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+                  <span
+                    className="text-[8.5px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded"
+                    style={{ color: resource.color, backgroundColor: `${resource.color}15` }}
+                  >
+                    {resource.badge || 'VERTICAL'}
                   </span>
                 </div>
+
+                {/* Bottom Row: Title, Action Teaser */}
+                <div className="relative z-10 mt-2">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-[#5a32fa] transition-colors">
+                    {resource.title}
+                  </h3>
+
+                  <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-100 dark:border-white/5">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold truncate max-w-[95px]">
+                      {resource.actionText || 'Explore'}
+                    </span>
+                    {listingHref ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push(listingHref);
+                        }}
+                        className="text-[9.5px] font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:underline"
+                      >
+                        +List
+                      </button>
+                    ) : (
+                      <span className="text-xs text-slate-400 group-hover:text-[#5a32fa] group-hover:translate-x-0.5 transition-all">
+                        ↗
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             );
           })}
 
+          {/* Featured Global IP Partner Spotlight Banner (Mobile Bento Hero) */}
+          <div
+            onClick={() => router.push('/platform/resources/ip-firms')}
+            className="col-span-2 p-3.5 sm:p-5 rounded-2xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#ff2a5f] text-white shadow-md relative overflow-hidden flex flex-col justify-between min-h-[118px] active:scale-[0.99] transition-all cursor-pointer"
+          >
+            <div className="relative z-10 flex items-start justify-between">
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/20 text-white backdrop-blur-md border border-white/20">
+                ⭐ Featured Global IP Partner
+              </span>
+              <span className="text-xs font-bold bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md">
+                Explore ↗
+              </span>
+            </div>
+            <div className="relative z-10 mt-2">
+              <h3 className="text-sm sm:text-base font-black">
+                Ennoble IP · Global Patent Prosecution
+              </h3>
+              <p className="text-[11px] text-white/80 line-clamp-1 mt-0.5">
+                Accelerate cross-border patent applications with 24/7 AI-assisted analytics.
+              </p>
+            </div>
+          </div>
+
           {filteredResources.length === 0 && (
-            <div className="col-span-full py-20 text-center bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-200 dark:border-white/20 border-dashed">
-              <BookOpen size={48} className="mx-auto text-gray-300 mb-4" />
-              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">No resources found</h3>
-              <p className="text-gray-500 dark:text-gray-400 font-medium">Try adjusting your search filters to find what you're looking for.</p>
+            <div className="col-span-2 py-12 text-center bg-white dark:bg-white/[0.04] rounded-2xl border border-dashed border-gray-200 dark:border-white/10 p-4">
+              <BookOpen size={36} className="mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+              <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200">No resources found</h3>
+              <p className="text-xs text-gray-400 mt-1">Try clearing your search query or filter chip.</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setActiveTab("All Resources");
+                }}
+                className="mt-3 px-3 py-1 rounded-full bg-[#5a32fa] text-xs font-bold text-white shadow-xs"
+              >
+                Reset Filters
+              </button>
             </div>
           )}
+        </div>
+
+        {/* 2. DESKTOP / TABLET GRID (Preserved 3-column layout) */}
+        <div className="hidden sm:block">
+          {/* Desktop Splash Sponsored Banner */}
+          <div className="mb-8 p-6 rounded-3xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#ff2a5f] text-white shadow-lg relative overflow-hidden flex flex-row items-center justify-between gap-4">
+            <div className="relative z-10">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-white/20 text-white backdrop-blur-md mb-2 inline-block border border-white/20">
+                ⭐ Featured Global IP Partner
+              </span>
+              <h3 className="text-xl font-black">Ennoble IP · Global Patent Prosecution</h3>
+              <p className="text-xs text-white/80 max-w-xl mt-1">Accelerate your cross-border patent applications with 24/7 AI-assisted analytics and expert drafting.</p>
+            </div>
+            <Link
+              href="/platform/resources/ip-firms"
+              className="relative z-10 px-4 py-2 rounded-xl bg-white text-gray-900 text-xs font-bold shadow-md hover:bg-white/90 active:scale-95 transition-all shrink-0"
+            >
+              Explore Firm
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredResources.map((resource) => {
+              const Icon = resource.icon;
+              const categoryHref = resource.path || (
+                resource.id === 1 ? `/platform/resources/webinars` :
+                resource.id === 2 ? `/platform/resources/wellness` :
+                resource.id === 3 ? `/platform/resources/education` :
+                resource.id === 4 ? `/platform/publications` :
+                resource.id === 5 ? `/platform/resources/articles-insights` :
+                resource.id === 6 ? `/platform/resources/ip-news` :
+                resource.id === 7 ? `/platform/resources/research-reports` :
+                resource.id === 8 ? `/platform/resources/guides-toolkits` :
+                resource.id === 9 ? `/platform/resources/career-leadership` :
+                resource.id === 10 ? `/platform/resources/in-house-counsel` :
+                resource.id === 11 ? `/platform/resources/podcasts-conversations` :
+                resource.id === 12 ? `/platform/resources/ip-services` :
+                resource.id === 13 ? `/platform/resources/ip-firms` : `/platform/resources/wellness`
+              );
+
+              const listingHref = resource.id === 12
+                ? '/platform/resources/ip-services/list'
+                : resource.id === 13
+                  ? '/platform/resources/ip-firms/claim'
+                  : null;
+
+              return (
+                <div
+                  key={resource.id}
+                  onClick={() => router.push(categoryHref)}
+                  className="relative bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.15)] active:scale-[0.98] transition-all duration-300 group overflow-hidden z-10 cursor-pointer"
+                >
+                  <Link
+                    href={categoryHref}
+                    aria-label={`Explore ${resource.title}`}
+                    className="absolute inset-0 z-30 cursor-pointer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/5 to-[#ff90e8]/5 dark:from-[#5a32fa]/10 dark:to-[#ff90e8]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
+                  
+                  <div className="h-52 w-full relative shrink-0 overflow-hidden z-10 pointer-events-none">
+                    <img 
+                      src={resource.image || `/resourceimg${resource.id % 2 === 0 ? 2 : 1}.jpg`} 
+                      alt={resource.title} 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#0f172a] via-transparent to-transparent opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-[#5a32fa]/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  </div>
+                  
+                  <div className="p-6 pt-2 flex flex-col flex-1 relative z-10 pointer-events-none">
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 line-clamp-2 text-center group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[#5a32fa] group-hover:to-[#ff90e8] transition-all duration-300">
+                      {resource.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-6 flex-1 text-center leading-relaxed">
+                      {resource.description}
+                    </p>
+                    
+                    {resource.latestItems && (
+                      <div className="mt-2 mb-4 flex flex-col gap-2">
+                        {resource.latestItems.map((item, idx) => (
+                          <div key={idx} className="p-2.5 rounded-lg border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5 animate-pulse flex items-center gap-3">
+                            <div className="relative flex h-2 w-2 shrink-0">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                            </div>
+                            <div className="flex-1 flex items-center justify-between min-w-0 gap-2">
+                              <p className="text-sm font-bold text-gray-800 dark:text-gray-100 truncate">{item.title}</p>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded whitespace-nowrap" style={{ color: resource.color, backgroundColor: `${resource.color}15` }}>
+                                  {item.type}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <div className={`flex items-center ${listingHref ? 'justify-between' : 'justify-end'} gap-3 mt-auto border-t border-gray-100 dark:border-white/5 pt-5 relative z-20`}>
+                      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#5a32fa]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      {listingHref && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            router.push(listingHref);
+                          }}
+                          className="pointer-events-auto relative z-40 inline-flex items-center gap-1.5 rounded-full bg-[#5a32fa] px-3.5 py-2 text-xs font-black text-white shadow-md transition hover:bg-[#4a24db] active:scale-95 cursor-pointer"
+                        >
+                          <Plus size={14} /> {resource.id === 12 ? 'List Your Service' : 'List Your Firm'}
+                        </button>
+                      )}
+                      <span className="font-bold text-sm flex items-center gap-2 group-hover:translate-x-1 transition-all duration-300 text-gray-400 group-hover:text-[#5a32fa]">
+                        Explore Category <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {filteredResources.length === 0 && (
+              <div className="col-span-full py-20 text-center bg-white dark:bg-[#0f172a] rounded-[2rem] border border-gray-200 dark:border-white/20 border-dashed">
+                <BookOpen size={48} className="mx-auto text-gray-300 mb-4" />
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">No resources found</h3>
+                <p className="text-gray-500 dark:text-gray-400 font-medium">Try adjusting your search filters to find what you're looking for.</p>
+              </div>
+            )}
+          </div>
         </div>
 
       </div>
