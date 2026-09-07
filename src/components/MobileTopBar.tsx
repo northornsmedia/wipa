@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, MessageSquare, Menu, X, Sparkles, User, ArrowRight, Globe, Plus } from 'lucide-react';
+import { NotificationIcon } from '@/components/icons/NotificationIcon';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
@@ -150,8 +151,8 @@ export default function MobileTopBar() {
                 aria-label="Notifications"
                 className="relative w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
               >
-                <Bell size={18} strokeWidth={2.2} />
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#ff2a5f] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs ring-2 ring-white dark:ring-[#0b0f19] leading-none">
+                <NotificationIcon size={19} />
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#ff2a5f] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs ring-2 ring-white dark:ring-[#0b0f19] leading-none pointer-events-none">
                   {unreadNotificationsCount > 0 ? unreadNotificationsCount : 3}
                 </span>
               </Link>
@@ -202,9 +203,9 @@ export default function MobileTopBar() {
                 aria-label="Notifications"
                 className="relative w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90"
               >
-                <Bell size={18} />
+                <NotificationIcon size={18} />
                 {unreadNotificationsCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#ff2a5f] rounded-full ring-2 ring-white dark:ring-[#0b0f19]" />
+                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#ff2a5f] rounded-full ring-2 ring-white dark:ring-[#0b0f19] pointer-events-none" />
                 )}
               </Link>
 
