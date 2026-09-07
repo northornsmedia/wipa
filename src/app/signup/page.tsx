@@ -89,7 +89,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#060608] text-slate-900 dark:text-white flex flex-col justify-between items-center p-6 relative overflow-hidden font-sans selection:bg-pink-500 selection:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-[#060608] text-slate-900 dark:text-white flex flex-col justify-between items-center p-6 pt-safe pb-safe relative overflow-hidden font-sans selection:bg-pink-500 selection:text-white transition-colors duration-300">
       {/* Animated Glowing Wavy Line Gradient */}
       <AnimatedWaveLine />
 

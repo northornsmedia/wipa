@@ -370,20 +370,22 @@ export default function CreatePostPage() {
       />
 
       {/* TOP APP BAR (Instagram Style) */}
-      <header className="shrink-0 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800/80 px-4 h-14 flex items-center justify-between pt-safe z-10">
-        <button
-          onClick={handleCloseComposer}
-          className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-200 flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
-          aria-label="Cancel and close"
-        >
-          <X size={20} />
-        </button>
+      <header className="shrink-0 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800/80 px-4 pt-safe z-10">
+        <div className="h-14 flex items-center justify-between w-full">
+          <button
+            onClick={handleCloseComposer}
+            className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-200 flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
+            aria-label="Cancel and close"
+          >
+            <X size={20} />
+          </button>
 
-        <h1 className="text-base font-black tracking-tight text-gray-900 dark:text-white">
-          New post
-        </h1>
+          <h1 className="text-base font-black tracking-tight text-gray-900 dark:text-white">
+            New post
+          </h1>
 
-        <div className="w-9 h-9" />
+          <div className="w-9 h-9" />
+        </div>
       </header>
 
       {/* MAIN CONTENT AREA */}

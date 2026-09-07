@@ -88,7 +88,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = React.memo(({
       <div className={`w-full md:w-[380px] lg:w-[420px] bg-white dark:bg-[#0f172a] rounded-none border-0 md:border-r border-gray-200 dark:border-white/10 flex-col overflow-hidden shrink-0 h-full min-h-0 ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
         
         {/* Top Bar with Back Button to Platform */}
-        <div className="p-4 sm:p-5 pt-[max(env(safe-area-inset-top,0px),1rem)] md:pt-5 border-b border-gray-100 dark:border-white/10 space-y-3">
+        <div className="p-4 sm:p-5 pt-safe md:pt-5 border-b border-gray-100 dark:border-white/10 space-y-3">
           <div className="relative flex items-center justify-between h-10">
             <Link 
               href="/platform" 

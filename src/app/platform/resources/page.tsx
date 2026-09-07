@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Building2, Mic, MonitorPlay, FileCheck, Presentation } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 const MOCK_CATEGORIES = [
@@ -152,15 +153,14 @@ const MOCK_CATEGORIES = [
 ];
 
 export default function ResourcesPage() {
+  const router = useRouter();
   const [resources, setResources] = useState<any[]>(MOCK_CATEGORIES.map(c => ({...c, latestItems: []})));
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<string>('All Resources');
-  const [isGenerating, setIsGenerating] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsGenerating(true);
-      
       const { data: allResources } = await supabase
         .from('resources')
         .select('*')
@@ -198,11 +198,6 @@ export default function ResourcesPage() {
       });
 
       setResources(updatedCategories);
-      
-      const timer = setTimeout(() => {
-        setIsGenerating(false);
-      }, 1000);
-      return () => clearTimeout(timer);
     };
     
     fetchData();
@@ -498,12 +493,18 @@ export default function ResourcesPage() {
             return (
               <div
                 key={resource.id}
-                className="relative bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.15)] transition-all duration-500 group overflow-hidden z-10"
+                onClick={() => router.push(categoryHref)}
+                className="relative bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.15)] active:scale-[0.98] transition-all duration-300 group overflow-hidden z-10 cursor-pointer"
               >
-                <Link href={categoryHref} aria-label={`Explore ${resource.title}`} className="absolute inset-0 z-10" />
+                {/* Full-Card Click Link: Highest z-index covering entire card area */}
+                <Link
+                  href={categoryHref}
+                  aria-label={`Explore ${resource.title}`}
+                  className="absolute inset-0 z-30 cursor-pointer"
+                />
                 <div className="absolute inset-0 bg-gradient-to-br from-[#5a32fa]/5 to-[#ff90e8]/5 dark:from-[#5a32fa]/10 dark:to-[#ff90e8]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
                 
-                <div className="h-52 w-full relative shrink-0 overflow-hidden z-10">
+                <div className="h-52 w-full relative shrink-0 overflow-hidden z-10 pointer-events-none">
                   <img 
                     src={resource.id === 1 ? `/resource3.jpg` : resource.id === 2 ? `/wellbeing.jpg` : resource.id === 4 ? `/Womens-IP-World-Award.webp` : resource.id === 5 ? `https://media.licdn.com/dms/image/v2/D4D12AQGPvWYs0hREpQ/article-cover_image-shrink_720_1280/B4DZUeerAVGkAI-/0/1739973132208?e=2147483647&v=beta&t=jDj9Iy2LLXJfKsScgkaNMKyXRrgy34PP3nZFglw-Rt0` : resource.id === 6 ? `https://www.bennett.edu.in/wp-content/uploads/2025/02/Advanced-Intellectual-Property-Law-Types-Core-Modules-and-Career-Avenues.webp` : resource.id === 7 ? `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxBiK_KFYr8IEt7R9niEFVTTjmFYgcMU7mSy4MLHc1dlrjzLndY55xWRBF&s=10` : resource.id === 8 ? `https://media.licdn.com/dms/image/v2/D5610AQG43vrwkaPiSQ/image-shrink_800/image-shrink_800/0/1707177003680?e=2147483647&v=beta&t=sq45ZJZYH8htsCpG76UiVa0yDDkZUsddD_Axx5yFKKY` : resource.id === 9 ? `https://media.licdn.com/dms/image/v2/D4E12AQEEtjLt4_x96g/article-cover_image-shrink_600_2000/B4EZt2WvkFGYAQ-/0/1767217232568?e=2147483647&v=beta&t=uf-9-XxWoJeKHz6j0AFDlc2l0-RX9BbUZ6lNULQjs1o` : resource.id === 10 ? `https://cdn.prod.website-files.com/696a195e77c16374d6beeb51/698ee7bbc05af6693c7a57eb_63c5782cf0ee732be3f43836_614a0f782b14afae42c142df_InHouse%252520Counsel%252520Empowered%252520by%252520Tech.png` : resource.id === 11 ? `https://coruzant.com/wp-content/uploads/2022/05/podcast-conversation.jpg` : `/resourceimg${resource.id % 2 === 0 ? 2 : 1}.jpg`} 
                     alt={resource.title} 
@@ -513,7 +514,7 @@ export default function ResourcesPage() {
                   <div className="absolute inset-0 bg-[#5a32fa]/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
                 
-                <div className="p-6 pt-2 flex flex-col flex-1 relative z-10">
+                <div className="p-6 pt-2 flex flex-col flex-1 relative z-10 pointer-events-none">
 
                 <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 line-clamp-2 text-center group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[#5a32fa] group-hover:to-[#ff90e8] transition-all duration-300">{resource.title}</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-6 flex-1 text-center leading-relaxed">{resource.description}</p>
@@ -539,12 +540,20 @@ export default function ResourcesPage() {
                   </div>
                 )}
                 
-                <div className={`flex items-center ${listingHref ? 'justify-between' : 'justify-end'} gap-3 mt-auto border-t border-gray-100 dark:border-white/5 pt-5 relative z-20 pointer-events-none`}>
+                <div className={`flex items-center ${listingHref ? 'justify-between' : 'justify-end'} gap-3 mt-auto border-t border-gray-100 dark:border-white/5 pt-5 relative z-20`}>
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#5a32fa]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   {listingHref && (
-                    <Link href={listingHref} className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-[#5a32fa] px-3.5 py-2 text-xs font-black text-white shadow-md transition hover:bg-[#4a24db] active:scale-95">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(listingHref);
+                      }}
+                      className="pointer-events-auto relative z-40 inline-flex items-center gap-1.5 rounded-full bg-[#5a32fa] px-3.5 py-2 text-xs font-black text-white shadow-md transition hover:bg-[#4a24db] active:scale-95 cursor-pointer"
+                    >
                       <Plus size={14} /> {resource.id === 12 ? 'List Your Service' : 'List Your Firm'}
-                    </Link>
+                    </button>
                   )}
                   <span className="font-bold text-sm flex items-center gap-2 group-hover:translate-x-1 transition-all duration-300 text-gray-400 group-hover:text-[#5a32fa]">
                     Explore Category <span className="group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>

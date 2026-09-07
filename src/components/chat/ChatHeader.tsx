@@ -42,7 +42,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({
   const [showSearchInput, setShowSearchInput] = useState(false);
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-30 px-4 sm:px-6 py-3 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-white/90 dark:bg-[#0f172a]/90 backdrop-blur-xl shrink-0 select-none w-full max-w-full box-border shadow-xs">
+    <header className="sticky top-0 left-0 right-0 z-30 px-4 sm:px-6 pt-safe pb-3 border-b border-gray-100 dark:border-white/10 flex items-center justify-between bg-white/90 dark:bg-[#0f172a]/90 backdrop-blur-xl shrink-0 select-none w-full max-w-full box-border shadow-xs">
       
       {showSearchInput ? (
         /* In-Chat Search Bar Mode */

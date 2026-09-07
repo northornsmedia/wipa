@@ -5,6 +5,9 @@ import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 import com.getcapacitor.BridgeActivity;
 
@@ -26,18 +29,59 @@ public class MainActivity extends BridgeActivity {
         openPushDestination(getIntent());
 
         if (bridge != null && bridge.getWebView() != null) {
-            android.webkit.WebView webView = bridge.getWebView();
+            WebView webView = bridge.getWebView();
             webView.setBackgroundColor(android.graphics.Color.parseColor("#6600FF"));
-            webView.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null);
-            webView.setOverScrollMode(android.view.View.OVER_SCROLL_NEVER);
+            
+            // Enforce GPU hardware layer composition and disable Android overscroll rubber-banding
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            webView.setVerticalScrollBarEnabled(false);
+            webView.setHorizontalScrollBarEnabled(false);
+            webView.setFadingEdgeLength(0);
 
-            android.webkit.WebSettings settings = webView.getSettings();
+            WebSettings settings = webView.getSettings();
             if (settings != null) {
                 settings.setOffscreenPreRaster(true);
                 settings.setDomStorageEnabled(true);
                 settings.setDatabaseEnabled(true);
-                settings.setCacheMode(android.webkit.WebSettings.LOAD_DEFAULT);
+                settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+                settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+                settings.setEnableSmoothTransition(true);
             }
+
+            // Calculate physical status bar height in dp and inject into CSS variable
+            int statusBarHeight = 0;
+            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+            }
+            float density = getResources().getDisplayMetrics().density;
+            final int statusBarHeightDp = Math.max((int) (statusBarHeight / density), 38);
+
+            webView.post(() -> {
+                String js = "document.documentElement.style.setProperty('--android-status-bar-height', '" + statusBarHeightDp + "px');";
+                webView.evaluateJavascript(js, null);
+            });
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (bridge != null && bridge.getWebView() != null) {
+            int statusBarHeight = 0;
+            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+            }
+            float density = getResources().getDisplayMetrics().density;
+            final int statusBarHeightDp = Math.max((int) (statusBarHeight / density), 38);
+
+            WebView webView = bridge.getWebView();
+            webView.post(() -> {
+                String js = "document.documentElement.style.setProperty('--android-status-bar-height', '" + statusBarHeightDp + "px');";
+                webView.evaluateJavascript(js, null);
+            });
         }
     }
 
