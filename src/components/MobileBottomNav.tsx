@@ -1,10 +1,10 @@
-// @ts-nocheck
 'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, User, MessageSquare, Search } from 'lucide-react';
+import { BookOpen, User, MessageSquare, Search } from 'lucide-react';
+import { Home09Icon } from '@/components/icons/Home09Icon';
 import { useAppStore } from '@/store/useAppStore';
 import MobileCreationSheet from './MobileCreationSheet';
 
@@ -41,7 +41,7 @@ export default function MobileBottomNav() {
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Home size={21} strokeWidth={isActive('/platform') ? 2.4 : 1.9} />
+            <Home09Icon size={21} />
           </Link>
 
           {/* 2. Chat (No text) */}

@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { MessageSquare, Users, Home, MessageCircle, Briefcase } from 'lucide-react';
+import { MessageSquare, Users, MessageCircle, Briefcase } from 'lucide-react';
+import { Home09Icon } from '@/components/icons/Home09Icon';
 
 export default function MobileBottomBar() {
   return (
@@ -15,7 +16,7 @@ export default function MobileBottomBar() {
       
       {/* Center Home Button */}
       <Link href="/platform" className="relative -top-6 flex flex-col items-center justify-center w-14 h-14 bg-[#b892ff] text-[#131313] rounded-full border-[1.5px] border-black dark:border-white/20 shadow-[3px_3px_0px_0px_#131313] hover:shadow-[1px_1px_0px_0px_#131313] hover:translate-y-px transition-all">
-        <Home size={26} strokeWidth={2.5} />
+        <Home09Icon size={26} />
       </Link>
 
       <Link href="/platform/forums" className="flex flex-col items-center gap-1 text-[#1a1a1a] hover:opacity-70 transition-opacity">
