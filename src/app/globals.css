@@ -177,6 +177,8 @@ img {
   user-drag: none;
   user-select: none;
   -webkit-user-select: none;
+}
+
 /* Suppress Android WebView / Chromium default video poster and media overlays */
 video::-webkit-media-controls {
   display: none !important;
