@@ -78,26 +78,26 @@ export default function PostLikesDrawer({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center">
-          {/* Backdrop */}
+          {/* Backdrop (solid GPU-friendly fade, no blur shader penalty) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-black/65 dark:bg-black/80"
             aria-hidden="true"
           />
 
-          {/* Sheet Modal (Slides from Bottom) */}
+          {/* Sheet Modal (GPU-accelerated slide up with cubic-bezier ease) */}
           <motion.div
             initial={{ y: '100%' }}
-            animate={{
-              y: 0,
-              height: isExpanded ? '92dvh' : '390px'
-            }}
+            animate={{ y: 0 }}
             exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-            className="relative z-10 w-full sm:max-w-md bg-white dark:bg-[#111827] rounded-t-[2rem] sm:rounded-3xl border-t sm:border border-slate-200 dark:border-white/10 shadow-2xl flex flex-col overflow-hidden transition-[height] duration-300"
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            className={`relative z-10 w-full sm:max-w-md bg-white dark:bg-[#111827] rounded-t-[2rem] sm:rounded-3xl border-t sm:border border-slate-200 dark:border-white/10 shadow-2xl flex flex-col overflow-hidden will-change-transform transform-gpu transition-[height] duration-200 ease-out ${
+              isExpanded ? 'h-[90dvh]' : 'h-[390px]'
+            }`}
           >
             {/* Upper Drag Header Area: pulls upward to open full drawer */}
             <div

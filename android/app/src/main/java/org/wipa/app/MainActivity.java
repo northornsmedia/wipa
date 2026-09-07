@@ -26,7 +26,18 @@ public class MainActivity extends BridgeActivity {
         openPushDestination(getIntent());
 
         if (bridge != null && bridge.getWebView() != null) {
-            bridge.getWebView().setBackgroundColor(android.graphics.Color.parseColor("#6600FF"));
+            android.webkit.WebView webView = bridge.getWebView();
+            webView.setBackgroundColor(android.graphics.Color.parseColor("#6600FF"));
+            webView.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null);
+            webView.setOverScrollMode(android.view.View.OVER_SCROLL_NEVER);
+
+            android.webkit.WebSettings settings = webView.getSettings();
+            if (settings != null) {
+                settings.setOffscreenPreRaster(true);
+                settings.setDomStorageEnabled(true);
+                settings.setDatabaseEnabled(true);
+                settings.setCacheMode(android.webkit.WebSettings.LOAD_DEFAULT);
+            }
         }
     }
 

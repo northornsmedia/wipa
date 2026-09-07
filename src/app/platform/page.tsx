@@ -278,22 +278,21 @@ export default function PlatformPage() {
     ]);
 
     setIsPullRefreshing(false);
-    setPullDistance(0);
     pullDistanceRef.current = 0;
+    if (pullIndicatorRef.current) {
+      pullIndicatorRef.current.style.opacity = '0';
+      pullIndicatorRef.current.style.transform = 'translate3d(-50%, -52px, 0) scale(0.72)';
+      pullIndicatorRef.current.style.transition = 'transform 240ms cubic-bezier(.2,.8,.2,1), opacity 180ms ease';
+    }
   }, [fetchFeed, isPullRefreshing]);
+
+  const pullIndicatorRef = useRef<HTMLDivElement>(null);
 
   const handlePullStart = (event: React.TouchEvent<HTMLDivElement>) => {
     if (isPullRefreshing || isModalOpen || window.innerWidth >= 768) return;
     const target = event.target as HTMLElement;
-    if (target.closest('input, textarea, select, [contenteditable="true"]')) return;
-    let scrollParent: HTMLElement | null = target;
-    while (scrollParent && scrollParent !== document.body) {
-      const style = window.getComputedStyle(scrollParent);
-      const canScroll = /(auto|scroll)/.test(style.overflowY) && scrollParent.scrollHeight > scrollParent.clientHeight + 2;
-      if (canScroll && scrollParent.scrollTop > 1) return;
-      scrollParent = scrollParent.parentElement;
-    }
-    if (Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop) > 1) return;
+    if (target.closest('input, textarea, select, [contenteditable="true"], button, a')) return;
+    if ((window.scrollY || document.documentElement.scrollTop || 0) > 2) return;
     const touch = event.touches[0];
     pullStartRef.current = { x: touch.clientX, y: touch.clientY, active: true };
   };
@@ -304,27 +303,49 @@ export default function PlatformPage() {
     const deltaX = touch.clientX - pullStartRef.current.x;
     const deltaY = touch.clientY - pullStartRef.current.y;
 
-    if (deltaY <= 0 || Math.abs(deltaX) > deltaY || Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop) > 1) {
+    if (deltaY <= 0 || Math.abs(deltaX) > deltaY || (window.scrollY || document.documentElement.scrollTop || 0) > 2) {
       pullStartRef.current.active = false;
-      setPullDistance(0);
       pullDistanceRef.current = 0;
+      if (pullIndicatorRef.current) {
+        pullIndicatorRef.current.style.opacity = '0';
+        pullIndicatorRef.current.style.transform = 'translate3d(-50%, -52px, 0) scale(0.72)';
+      }
       return;
     }
 
     if (event.cancelable) event.preventDefault();
     const resistedDistance = Math.min(104, deltaY * 0.42);
     pullDistanceRef.current = resistedDistance;
-    setPullDistance(resistedDistance);
+
+    // Fast GPU transform via direct ref — avoids 60fps React component tree re-renders
+    if (pullIndicatorRef.current) {
+      const opacity = Math.min(1, resistedDistance / 34);
+      const translateY = Math.max(-52, resistedDistance - 52);
+      const scale = Math.min(1, 0.72 + resistedDistance / 240);
+      pullIndicatorRef.current.style.opacity = String(opacity);
+      pullIndicatorRef.current.style.transform = `translate3d(-50%, ${translateY}px, 0) scale(${scale})`;
+      pullIndicatorRef.current.style.transition = 'none';
+    }
   };
 
   const handlePullEnd = () => {
     if (!pullStartRef.current.active) return;
     pullStartRef.current.active = false;
-    if (pullDistanceRef.current >= 68) {
+    const distance = pullDistanceRef.current;
+    pullDistanceRef.current = 0;
+
+    if (distance >= 68) {
+      if (pullIndicatorRef.current) {
+        pullIndicatorRef.current.style.transform = 'translate3d(-50%, 14px, 0) scale(1)';
+        pullIndicatorRef.current.style.transition = 'transform 200ms ease';
+      }
       void refreshFeedFromPull();
     } else {
-      pullDistanceRef.current = 0;
-      setPullDistance(0);
+      if (pullIndicatorRef.current) {
+        pullIndicatorRef.current.style.opacity = '0';
+        pullIndicatorRef.current.style.transform = 'translate3d(-50%, -52px, 0) scale(0.72)';
+        pullIndicatorRef.current.style.transition = 'transform 240ms cubic-bezier(.2,.8,.2,1), opacity 180ms ease';
+      }
     }
   };
 
@@ -723,19 +744,17 @@ export default function PlatformPage() {
       onTouchCancel={handlePullEnd}
     >
       <div
-        aria-hidden={pullDistance === 0 && !isPullRefreshing}
-        className="pointer-events-none fixed left-1/2 top-[max(14px,env(safe-area-inset-top))] z-[70] md:hidden"
+        ref={pullIndicatorRef}
+        aria-hidden={!isPullRefreshing}
+        className="pointer-events-none fixed left-1/2 top-[max(14px,env(safe-area-inset-top))] z-[70] md:hidden opacity-0 will-change-transform transform-gpu"
         style={{
-          opacity: Math.min(1, pullDistance / 34),
-          transform: `translate3d(-50%, ${Math.max(-52, pullDistance - 52)}px, 0) scale(${Math.min(1, 0.72 + pullDistance / 240)})`,
-          transition: pullStartRef.current.active ? 'none' : 'transform 240ms cubic-bezier(.2,.8,.2,1), opacity 180ms ease',
+          transform: 'translate3d(-50%, -52px, 0) scale(0.72)',
         }}
       >
-        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-black/5 bg-white/95 shadow-[0_5px_20px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/95">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white shadow-[0_4px_16px_rgba(0,0,0,0.18)] dark:border-white/10 dark:bg-slate-900">
           <Loader2
             size={20}
             className={`text-[#6600FF] ${isPullRefreshing ? 'animate-spin' : ''}`}
-            style={!isPullRefreshing ? { transform: `rotate(${Math.min(300, pullDistance * 4)}deg)` } : undefined}
           />
         </div>
       </div>
@@ -904,7 +923,7 @@ export default function PlatformPage() {
                     <React.Fragment key={post.id}>
                     <div 
                       onClick={(event) => handlePostDoubleTap(post.id, event)}
-                      className="w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b first:border-t-0 sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-6 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] transition-all box-border relative overflow-hidden select-none"
+                      className="w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b first:border-t-0 sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-6 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] [content-visibility:auto] [contain-intrinsic-size:auto_480px] box-border relative overflow-hidden select-none"
                     >
                       {/* Sleek Minimal Double-Tap Heart Animation */}
                       {animatingHeartPostIds.has(post.id) && (

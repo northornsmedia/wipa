@@ -55,22 +55,23 @@ export default function MobileCommentDrawer({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-x-0 top-0 z-[110] flex flex-col justify-end md:hidden" style={{ height: viewport ? `${viewport.height}px` : '100dvh', transform: viewport?.top ? `translateY(${viewport.top}px)` : undefined }}>
-          {/* Backdrop */}
+          {/* Backdrop (solid GPU-friendly fade) */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/70"
           />
 
-          {/* Bottom Drawer Sheet */}
+          {/* Bottom Drawer Sheet (GPU-accelerated slide up) */}
           <motion.div
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            className="relative z-10 w-full max-w-lg mx-auto bg-white dark:bg-[#151c2c] rounded-t-[2rem] border-t border-gray-200 dark:border-gray-800 shadow-2xl flex flex-col overflow-hidden"
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-10 w-full max-w-lg mx-auto bg-white dark:bg-[#151c2c] rounded-t-[2rem] border-t border-gray-200 dark:border-gray-800 shadow-2xl flex flex-col overflow-hidden will-change-transform transform-gpu"
             style={{ maxHeight: viewport ? `${Math.min(viewport.height * 0.92, 760)}px` : '88dvh' }}
           >
             {/* Grab Handle & Header */}

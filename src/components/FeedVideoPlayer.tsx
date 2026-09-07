@@ -14,14 +14,41 @@ export default function FeedVideoPlayer({
   src,
   className = 'w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl block mx-auto',
   containerClassName = '',
-  preload = 'metadata',
+  preload = 'none',
 }: FeedVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isNearViewport, setIsNearViewport] = useState(false);
   const userPausedRef = useRef(false);
   const isIntersectingRef = useRef(false);
+
+  // Proximity observer: only attach and buffer video when approaching viewport (within 350px)
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const proximityObserver = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          setIsNearViewport(true);
+        } else {
+          // Free video decoding resources when scrolled far offscreen
+          setIsNearViewport(false);
+          if (videoRef.current) {
+            videoRef.current.pause();
+            setIsPlaying(false);
+          }
+        }
+      },
+      { rootMargin: '350px 0px 350px 0px' }
+    );
+
+    proximityObserver.observe(container);
+    return () => proximityObserver.disconnect();
+  }, []);
 
   // Synchronize muted state directly on the DOM element for mobile Safari/WebKit compatibility
   useEffect(() => {
@@ -147,11 +174,11 @@ export default function FeedVideoPlayer({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden flex items-center justify-center select-none ${containerClassName}`}
+      className={`relative w-full overflow-hidden flex items-center justify-center select-none transform-gpu ${containerClassName}`}
     >
       <video
         ref={videoRef}
-        src={src}
+        src={isNearViewport ? src : undefined}
         playsInline
         loop
         muted={isMuted}
@@ -168,19 +195,19 @@ export default function FeedVideoPlayer({
           type="button"
           onClick={togglePlay}
           aria-label="Play video"
-          className="absolute inset-0 m-auto flex h-14 w-14 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md shadow-2xl transition-all duration-200 hover:bg-black/80 hover:scale-110 active:scale-95 z-10 cursor-pointer border border-white/20"
+          className="absolute inset-0 m-auto flex h-14 w-14 items-center justify-center rounded-full bg-black/75 text-white shadow-2xl transition-all duration-200 hover:bg-black/90 hover:scale-110 active:scale-95 z-10 cursor-pointer border border-white/20"
         >
           <Play size={24} className="fill-white translate-x-0.5 text-white" />
         </button>
       )}
 
-      {/* Mute/Unmute button in bottom-right corner */}
+      {/* Mute/Unmute button in bottom-right corner (solid GPU-friendly button) */}
       <button
         type="button"
         onClick={toggleMute}
         aria-label={isMuted ? 'Unmute video sound' : 'Mute video sound'}
         title={isMuted ? 'Unmute' : 'Mute'}
-        className="absolute bottom-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/70 hover:bg-black/90 text-white backdrop-blur-md shadow-lg border border-white/20 transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer"
+        className="absolute bottom-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/75 hover:bg-black/95 text-white shadow-lg border border-white/20 transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer"
       >
         {isMuted ? (
           <VolumeX size={18} className="text-white" />
