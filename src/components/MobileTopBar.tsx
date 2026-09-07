@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, Bell, MessageSquare, Menu, X, Sparkles, User, ArrowRight, Globe, Plus } from 'lucide-react';
 import { NotificationIcon } from '@/components/icons/NotificationIcon';
 import { SquaresPlusIcon } from '@/components/icons/SquaresPlusIcon';
@@ -25,6 +25,59 @@ export default function MobileTopBar() {
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const lastScrollY = useRef(0);
+  const ticking = useRef(false);
+
+  // Auto-hide top bar on scroll down, reveal on scroll up
+  useEffect(() => {
+    const threshold = 6;
+
+    const handleScroll = () => {
+      if (!ticking.current) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+
+          // Always show when at or near the top
+          if (currentScrollY <= 20) {
+            setIsVisible(true);
+            setIsScrolled(false);
+            lastScrollY.current = currentScrollY;
+            ticking.current = false;
+            return;
+          }
+
+          setIsScrolled(true);
+          const delta = currentScrollY - lastScrollY.current;
+
+          if (Math.abs(delta) >= threshold) {
+            if (delta > 0) {
+              // Scrolling down -> hide
+              setIsVisible(false);
+            } else {
+              // Scrolling up -> reveal
+              setIsVisible(true);
+            }
+            lastScrollY.current = currentScrollY;
+          }
+
+          ticking.current = false;
+        });
+        ticking.current = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Reset to visible on route transition
+  useEffect(() => {
+    setIsVisible(true);
+    setIsScrolled(false);
+    lastScrollY.current = 0;
+  }, [pathname]);
 
   useEffect(() => {
     const handleOpenSearch = () => setIsSearchOpen(true);
@@ -126,7 +179,11 @@ export default function MobileTopBar() {
     <>
       {/* FEED PAGE CUSTOM MOBILE TOP BAR (Matches user screenshot) */}
       {pathname === '/platform' ? (
-        <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-white dark:bg-[#0b0f19] pt-safe px-3.5 pb-0 transition-all w-full max-w-full box-border border-0 shadow-none">
+        <header className={`md:hidden sticky top-0 left-0 right-0 z-40 bg-white dark:bg-[#0b0f19] pt-safe px-3.5 pb-0 transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
+          isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
+        } ${
+          isScrolled && isVisible ? 'border-b border-slate-200/80 dark:border-white/10 shadow-sm' : 'border-0 shadow-none'
+        }`}>
           <div className="h-14 flex items-center justify-between w-full">
             {/* Left: More Menu button (SquaresPlus with W gradient) + Home title */}
             <div className="flex items-center gap-3">
@@ -171,7 +228,9 @@ export default function MobileTopBar() {
         </header>
       ) : (
         /* STANDARD MOBILE TOP BAR FOR ALL OTHER PAGES */
-        <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-all w-full max-w-full box-border">
+        <header className={`md:hidden sticky top-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
+          isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
+        }`}>
           <div className="h-14 flex items-center justify-between w-full">
             {/* Left Zone: More Menu (SquaresPlus with W gradient) + Brand Zone */}
             <div className="flex items-center gap-2.5">
