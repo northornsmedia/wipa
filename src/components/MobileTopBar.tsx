@@ -28,22 +28,36 @@ export default function MobileTopBar() {
   const [isVisible, setIsVisible] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const lastScrollY = useRef(0);
+  const accumulatedDelta = useRef(0);
   const ticking = useRef(false);
+  const touchStartY = useRef<number | null>(null);
+  const lastTouchY = useRef<number | null>(null);
 
-  // Auto-hide top bar on scroll down, reveal on scroll up
+  // Auto-hide top bar on scroll down, reveal immediately on scroll up
   useEffect(() => {
-    const threshold = 6;
+    const SCROLL_UP_THRESHOLD = 8;     // fast reveal when scrolling up
+    const SCROLL_DOWN_THRESHOLD = 24;  // deliberate scroll down to hide (prevents bounce re-hide)
+    const TOP_REVEAL_OFFSET = 30;      // unconditionally visible at or near top
 
-    const handleScroll = () => {
+    const getScrollY = (e?: Event) => {
+      const target = e?.target as HTMLElement | Document | Window | null;
+      if (target && target instanceof HTMLElement && typeof target.scrollTop === 'number' && target.scrollTop > 0) {
+        return target.scrollTop;
+      }
+      return window.pageYOffset || window.scrollY || document.documentElement.scrollTop || document.body?.scrollTop || 0;
+    };
+
+    const handleScroll = (e?: Event) => {
       if (!ticking.current) {
         window.requestAnimationFrame(() => {
-          const currentScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+          const currentScrollY = getScrollY(e);
 
-          // Always show when at or near the top
-          if (currentScrollY <= 20) {
+          // Always show and remove shadow when at or near the top
+          if (currentScrollY <= TOP_REVEAL_OFFSET) {
             setIsVisible(true);
             setIsScrolled(false);
             lastScrollY.current = currentScrollY;
+            accumulatedDelta.current = 0;
             ticking.current = false;
             return;
           }
@@ -51,25 +65,78 @@ export default function MobileTopBar() {
           setIsScrolled(true);
           const delta = currentScrollY - lastScrollY.current;
 
-          if (Math.abs(delta) >= threshold) {
-            if (delta > 0) {
-              // Scrolling down -> hide
-              setIsVisible(false);
-            } else {
-              // Scrolling up -> reveal
-              setIsVisible(true);
-            }
-            lastScrollY.current = currentScrollY;
+          // If direction flipped, reset accumulated delta so transition starts fresh
+          if ((delta > 0 && accumulatedDelta.current < 0) || (delta < 0 && accumulatedDelta.current > 0)) {
+            accumulatedDelta.current = 0;
           }
 
+          accumulatedDelta.current += delta;
+
+          // Scrolling up (negative delta): reveal header quickly
+          if (accumulatedDelta.current <= -SCROLL_UP_THRESHOLD) {
+            setIsVisible(true);
+            accumulatedDelta.current = 0;
+          }
+          // Scrolling down (positive delta): hide header only after deliberate downward progress
+          else if (accumulatedDelta.current >= SCROLL_DOWN_THRESHOLD) {
+            setIsVisible(false);
+            accumulatedDelta.current = 0;
+          }
+
+          lastScrollY.current = currentScrollY;
           ticking.current = false;
         });
         ticking.current = true;
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Direct touch gesture detection: instant response while finger is moving
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches && e.touches.length > 0) {
+        touchStartY.current = e.touches[0].clientY;
+        lastTouchY.current = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (touchStartY.current === null || !e.touches || e.touches.length === 0) return;
+      const currentY = e.touches[0].clientY;
+      const totalDelta = currentY - touchStartY.current;
+      const curScroll = getScrollY();
+
+      // Finger swiping DOWN (totalDelta > 10) = User wants to scroll UP (reveal header immediately)
+      if (totalDelta > 10) {
+        setIsVisible(true);
+        accumulatedDelta.current = 0;
+      } 
+      // Finger swiping UP (totalDelta < -25) = User scrolling DOWN into feed (hide header)
+      else if (totalDelta < -25 && curScroll > TOP_REVEAL_OFFSET) {
+        setIsVisible(false);
+        accumulatedDelta.current = 0;
+      }
+    };
+
+    const handleTouchEnd = () => {
+      touchStartY.current = null;
+      lastTouchY.current = null;
+    };
+
+    // Use capturing listeners on window & document so no child scroll or WebView event is missed
+    window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
+    document.addEventListener('scroll', handleScroll, { passive: true, capture: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+      document.removeEventListener('scroll', handleScroll, true);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchEnd);
+    };
   }, []);
 
   // Reset to visible on route transition
@@ -180,7 +247,7 @@ export default function MobileTopBar() {
       {/* FEED PAGE CUSTOM MOBILE TOP BAR (Matches user screenshot) */}
       {pathname === '/platform' ? (
         <>
-          <header className={`md:hidden fixed top-0 left-0 right-0 z-40 bg-white dark:bg-[#0b0f19] pt-safe px-3.5 pb-0 transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
+          <header className={`md:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#0b0f19] pt-safe px-3.5 pb-0 transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
             isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
           } ${
             isScrolled && isVisible ? 'border-b border-slate-200/80 dark:border-white/10 shadow-sm' : 'border-0 shadow-none'
@@ -233,7 +300,7 @@ export default function MobileTopBar() {
       ) : (
         /* STANDARD MOBILE TOP BAR FOR ALL OTHER PAGES */
         <>
-          <header className={`md:hidden fixed top-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
+          <header className={`md:hidden fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
             isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
           }`}>
           <div className="h-14 flex items-center justify-between w-full">

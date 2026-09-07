@@ -29,7 +29,7 @@ export default function PlatformLayout({
 
   return (
     <ThemeWrapper>
-      <div style={shellStyle} className="font-sans flex flex-col flex-1 min-h-screen w-full max-w-full min-w-0 overflow-x-hidden box-border">
+      <div style={shellStyle} className="font-sans flex flex-col flex-1 min-h-screen w-full max-w-full min-w-0 overflow-x-clip box-border">
         <AuthGuard>
           {/* Audio Voice Greeting (No modal/popup, purely spoken audio) */}
           <VoiceGreeting />
@@ -48,10 +48,10 @@ export default function PlatformLayout({
                 onOpen={() => setIsSidebarOpen(true)}
               />
             )}
-            <div className={`flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-hidden box-border transition-[padding-left] duration-300 ease-out ${
+            <div className={`flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-clip box-border transition-[padding-left] duration-300 ease-out ${
               isMessagesPage ? 'pl-0' : 'lg:pl-[var(--desktop-sidebar-width)]'
             }`}>
-              <main className={`flex-1 w-full max-w-full min-w-0 overflow-x-hidden box-border ${
+              <main className={`flex-1 w-full max-w-full min-w-0 overflow-x-clip box-border ${
                 isMessagesPage ? (isInsideChat ? 'pb-0' : 'pb-20 md:pb-0') : 'pb-24 md:pb-0'
               }`}>
                 {children}
