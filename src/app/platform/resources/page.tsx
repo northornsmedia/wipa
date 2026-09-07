@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Building2, Mic, MonitorPlay, FileCheck, Presentation, Sparkles, ChevronRight, X } from 'lucide-react';
+import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Building2, Mic, MonitorPlay, FileCheck, Presentation, Sparkles, ChevronRight, X, Play, Flame, ArrowUpRight, CheckCircle2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -613,239 +613,495 @@ export default function ResourcesPage() {
           </div>
         </div>
 
-        {/* 1. MOBILE-ONLY BENTO GRID (Unified Luxury Aesthetic, No voids, Cohesive styling) */}
-        <div className="grid grid-cols-2 gap-2.5 sm:hidden">
-          {filteredResources.map((resource) => {
-            const Icon = resource.icon;
-            const categoryHref = resource.path || (
-              resource.id === 1 ? `/platform/resources/webinars` :
-              resource.id === 2 ? `/platform/resources/wellness` :
-              resource.id === 3 ? `/platform/resources/education` :
-              resource.id === 4 ? `/platform/publications` :
-              resource.id === 5 ? `/platform/resources/articles-insights` :
-              resource.id === 6 ? `/platform/resources/ip-news` :
-              resource.id === 7 ? `/platform/resources/research-reports` :
-              resource.id === 8 ? `/platform/resources/guides-toolkits` :
-              resource.id === 9 ? `/platform/resources/career-leadership` :
-              resource.id === 10 ? `/platform/resources/in-house-counsel` :
-              resource.id === 11 ? `/platform/resources/podcasts-conversations` :
-              resource.id === 12 ? `/platform/resources/ip-services` :
-              resource.id === 13 ? `/platform/resources/ip-firms` : `/platform/resources/wellness`
-            );
+        {/* 1. MOBILE-ONLY APP EXPERIENCE (Reels, Story Orbs, Interactive Feeds) */}
+        <div className="sm:hidden flex flex-col gap-6">
 
-            const listingHref = resource.id === 12
-              ? '/platform/resources/ip-services/list'
-              : resource.id === 13
-                ? '/platform/resources/ip-firms/claim'
-                : null;
-
-            const isWide = filteredResources.length === 1 || Boolean(resource.isWide);
-            const latestItem = resource.latestItems && resource.latestItems.length > 0 ? resource.latestItems[0] : null;
-
-            if (isWide) {
-              return (
-                <div
-                  key={resource.id}
-                  onClick={() => router.push(categoryHref)}
-                  className="col-span-2 relative rounded-3xl p-4 bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none active:scale-[0.98] transition-all duration-200 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[145px]"
-                >
-                  {/* Subtle ambient gradient overlay matching category tint */}
-                  <div
-                    className="absolute top-0 right-0 w-44 h-44 rounded-full blur-3xl opacity-15 pointer-events-none"
-                    style={{ backgroundColor: resource.color }}
-                  />
-
-                  {/* Top Row: Icon, Title & Badge */}
-                  <div className="relative z-10 flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div
-                        className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs"
-                        style={{ backgroundColor: `${resource.color}15`, color: resource.color }}
-                      >
-                        <Icon size={22} strokeWidth={2.2} />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span
-                            className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full"
-                            style={{ backgroundColor: `${resource.color}15`, color: resource.color }}
-                          >
-                            {resource.badge || 'FEATURED'}
-                          </span>
-                          {resource.id === 1 && (
-                            <span className="flex items-center gap-1 text-[9px] font-bold text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-full">
-                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-                              LIVE
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-[15px] font-bold text-slate-900 dark:text-white leading-tight mt-1 truncate">
-                          {resource.title}
-                        </h3>
-                      </div>
-                    </div>
-
-                    <span className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] bg-[#5a32fa]/10 dark:bg-white/10 px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">
-                      Explore ↗
-                    </span>
-                  </div>
-
-                  {/* Middle Description */}
-                  <p className="relative z-10 text-xs text-slate-500 dark:text-slate-400 mt-2.5 line-clamp-2 leading-relaxed">
-                    {resource.description}
-                  </p>
-
-                  {/* Bottom Preview Pill or Listing Action */}
-                  <div className="relative z-10 mt-3 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
-                    {latestItem ? (
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span
-                          className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0"
-                          style={{ backgroundColor: `${resource.color}15`, color: resource.color }}
-                        >
-                          {latestItem.type || 'NEW'}
-                        </span>
-                        <p className="text-[11px] font-medium text-slate-700 dark:text-slate-300 truncate">
-                          {latestItem.title}
-                        </p>
-                      </div>
-                    ) : (
-                      <span className="text-[11px] font-semibold text-slate-400">
-                        {resource.actionText || 'Explore vertical'}
-                      </span>
-                    )}
-
-                    {listingHref && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          router.push(listingHref);
-                        }}
-                        className="px-2.5 py-1 rounded-full bg-[#5a32fa] text-[10px] font-bold text-white shadow-xs active:scale-95 shrink-0 ml-2"
-                      >
-                        + {resource.id === 12 ? 'List Service' : 'List Firm'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            }
-
-            // Compact 1-column Tile (Uniform luxury card, no voids)
-            return (
-              <div
-                key={resource.id}
-                onClick={() => router.push(categoryHref)}
-                className="col-span-1 relative rounded-3xl p-3.5 bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none active:scale-[0.98] transition-all duration-200 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[160px]"
-              >
-                {/* Subtle ambient tint */}
-                <div
-                  className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl opacity-15 pointer-events-none"
-                  style={{ backgroundColor: resource.color }}
-                />
-
-                {/* Top Row: Squircle Icon + Tag Badge */}
-                <div className="flex items-start justify-between relative z-10 gap-2">
-                  <div
-                    className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs"
-                    style={{ backgroundColor: `${resource.color}15`, color: resource.color }}
-                  >
-                    <Icon size={19} strokeWidth={2.2} />
-                  </div>
-                  <span
-                    className="text-[8.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0"
-                    style={{ color: resource.color, backgroundColor: `${resource.color}15` }}
-                  >
-                    {resource.badge || 'HUB'}
-                  </span>
-                </div>
-
-                {/* Middle: Title & Informative Subtitle */}
-                <div className="relative z-10 mt-2.5">
-                  <h3 className="text-[13.5px] font-bold text-slate-900 dark:text-white leading-snug line-clamp-2">
-                    {resource.title}
-                  </h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
-                    {resource.description}
-                  </p>
-                </div>
-
-                {/* Bottom Row: Themed Action Button & Arrow */}
-                <div className="relative z-10 mt-3 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
-                  <span
-                    className="text-[10.5px] font-bold truncate max-w-[100px]"
-                    style={{ color: resource.color }}
-                  >
-                    {resource.actionText || 'Explore'}
-                  </span>
-
-                  {listingHref ? (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        router.push(listingHref);
-                      }}
-                      className="text-[10px] font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:underline"
-                    >
-                      +List
-                    </button>
-                  ) : (
-                    <span
-                      className="text-xs font-bold transition-transform group-hover:translate-x-0.5"
-                      style={{ color: resource.color }}
-                    >
-                      ↗
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Featured Global IP Partner Spotlight Banner (Mobile Bento Hero) */}
-          <div
-            onClick={() => router.push('/platform/resources/ip-firms')}
-            className="col-span-2 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#ff2a5f] text-white shadow-md relative overflow-hidden flex flex-col justify-between min-h-[125px] active:scale-[0.99] transition-all cursor-pointer"
-          >
-            <div className="relative z-10 flex items-start justify-between">
-              <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/20 text-white backdrop-blur-md border border-white/20">
-                ⭐ Featured Global IP Partner
+          {/* Story Orbs Horizontal Navigation Bar */}
+          <div>
+            <div className="flex items-center justify-between mb-2 px-0.5">
+              <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Browse Verticals
               </span>
-              <span className="text-xs font-bold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-md">
-                Explore ↗
+              <span className="text-[11px] font-semibold text-[#5a32fa] dark:text-[#ff90e8]">
+                11 Hubs
               </span>
             </div>
-            <div className="relative z-10 mt-3">
-              <h3 className="text-base font-black">
-                Ennoble IP · Global Patent Prosecution
-              </h3>
-              <p className="text-xs text-white/80 line-clamp-1 mt-0.5">
-                Accelerate cross-border patent applications with 24/7 AI-assisted analytics.
-              </p>
+            <div className="-mx-3.5 px-3.5 overflow-x-auto no-scrollbar flex items-center gap-3.5 pb-1">
+              {[
+                { title: 'Webinars', path: '/platform/resources/webinars', icon: MonitorPlay, color: 'from-[#ff90e8] to-[#5a32fa]' },
+                { title: 'Podcasts', path: '/platform/resources/podcasts-conversations', icon: Mic, color: 'from-[#00cec9] to-[#0984e3]' },
+                { title: 'Wellness', path: '/platform/resources/wellness', icon: Headphones, color: 'from-[#00d26a] to-[#00cec9]' },
+                { title: 'Publications', path: '/platform/publications', icon: Globe, color: 'from-[#e84393] to-[#ff2a5f]' },
+                { title: 'IP News', path: '/platform/resources/ip-news', icon: Newspaper, color: 'from-[#d63031] to-[#ff7675]' },
+                { title: 'IP Firms', path: '/platform/resources/ip-firms', icon: Building2, color: 'from-[#f59e0b] to-[#fdcb6e]' },
+                { title: 'IP Services', path: '/platform/resources/ip-services', icon: Building, color: 'from-[#1dd1a1] to-[#10ac84]' },
+                { title: 'Education', path: '/platform/resources/education', icon: BookOpen, color: 'from-[#5a32fa] to-[#a29bfe]' },
+                { title: 'Toolkits', path: '/platform/resources/guides-toolkits', icon: Download, color: 'from-[#00b894] to-[#55efc4]' },
+                { title: 'Research', path: '/platform/resources/research-reports', icon: FileCheck, color: 'from-[#6c5ce7] to-[#a29bfe]' },
+                { title: 'Career', path: '/platform/resources/career-leadership', icon: Briefcase, color: 'from-[#e17055] to-[#fab1a0]' },
+                { title: 'In-House', path: '/platform/resources/in-house-counsel', icon: Building, color: 'from-[#0984e3] to-[#74b9ff]' },
+              ].map((orb, oIdx) => {
+                const OrbIcon = orb.icon;
+                return (
+                  <Link
+                    key={oIdx}
+                    href={orb.path}
+                    className="flex flex-col items-center gap-1.5 shrink-0 group active:scale-95 transition-transform"
+                  >
+                    <div className={`w-14 h-14 rounded-2xl p-0.5 bg-gradient-to-tr ${orb.color} shadow-xs`}>
+                      <div className="w-full h-full rounded-[14px] bg-white dark:bg-[#111726] flex items-center justify-center text-slate-800 dark:text-white group-hover:bg-transparent group-hover:text-white transition-colors">
+                        <OrbIcon size={22} strokeWidth={2.2} />
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 max-w-[62px] truncate text-center">
+                      {orb.title}
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
 
-          {filteredResources.length === 0 && (
-            <div className="col-span-2 py-12 text-center bg-white dark:bg-white/[0.04] rounded-3xl border border-dashed border-gray-200 dark:border-white/10 p-4">
-              <BookOpen size={36} className="mx-auto text-gray-300 dark:text-gray-600 mb-2" />
-              <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200">No resources found</h3>
-              <p className="text-xs text-gray-400 mt-1">Try clearing your search query or filter chip.</p>
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery("");
-                  setActiveTab("All Resources");
-                }}
-                className="mt-3 px-3.5 py-1 rounded-full bg-[#5a32fa] text-xs font-bold text-white shadow-xs"
+          {/* Conditionally Render Filtered Search Stream OR Curated App Feeds */}
+          {searchQuery.trim() !== '' || activeTab !== 'All Resources' ? (
+            /* Search / Filter Active: Clean List Stream */
+            <div className="flex flex-col gap-2.5">
+              <div className="flex items-center justify-between px-0.5">
+                <span className="text-xs font-bold text-slate-500">
+                  {filteredResources.length} Results Found
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setActiveTab("All Resources");
+                  }}
+                  className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8]"
+                >
+                  Clear filter
+                </button>
+              </div>
+
+              {filteredResources.map((item) => {
+                const ItemIcon = item.icon;
+                const path = item.path || `/platform/resources/webinars`;
+                return (
+                  <Link
+                    key={item.id}
+                    href={path}
+                    className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-2xs active:scale-[0.98] transition-all"
+                  >
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
+                      style={{ backgroundColor: `${item.color}15`, color: item.color }}
+                    >
+                      <ItemIcon size={22} strokeWidth={2.2} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded"
+                          style={{ backgroundColor: `${item.color}15`, color: item.color }}
+                        >
+                          {item.badge || 'VERTICAL'}
+                        </span>
+                      </div>
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate mt-0.5">
+                        {item.title}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                        {item.description}
+                      </p>
+                    </div>
+                    <ChevronRight size={18} className="text-slate-400 shrink-0" />
+                  </Link>
+                );
+              })}
+
+              {filteredResources.length === 0 && (
+                <div className="py-12 text-center bg-white dark:bg-[#101626] rounded-2xl border border-dashed border-slate-200 dark:border-white/10 p-4">
+                  <BookOpen size={32} className="mx-auto text-slate-300 dark:text-slate-600 mb-2" />
+                  <p className="text-xs font-bold text-slate-600 dark:text-slate-400">No matching resources found</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setActiveTab("All Resources");
+                    }}
+                    className="mt-2 text-xs font-bold text-[#5a32fa]"
+                  >
+                    Reset Search
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Default Mode: Curated App Experience */
+            <div className="flex flex-col gap-6">
+
+              {/* 1. Hero Spotlight: Featured Masterclass */}
+              <div
+                onClick={() => router.push('/platform/resources/webinars')}
+                className="relative rounded-3xl overflow-hidden bg-slate-950 text-white p-5 min-h-[190px] flex flex-col justify-between shadow-lg cursor-pointer active:scale-[0.99] transition-all"
               >
-                Reset Filters
-              </button>
+                <div className="absolute inset-0 z-0">
+                  <img
+                    src="/resource3.jpg"
+                    alt="Featured Masterclass"
+                    className="w-full h-full object-cover opacity-45"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                </div>
+
+                <div className="relative z-10 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-rose-500 text-white shadow-xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                    LIVE MASTERCLASS
+                  </span>
+                  <span className="text-xs font-bold bg-white/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1">
+                    Watch ↗
+                  </span>
+                </div>
+
+                <div className="relative z-10 mt-6">
+                  <div className="flex items-center gap-2 mb-1.5 text-rose-400 text-xs font-semibold">
+                    <Flame size={14} />
+                    <span>Trending in Intellectual Property</span>
+                  </div>
+                  <h3 className="text-lg font-black leading-snug">
+                    AI in Patent Law & Cross-Border Prosecution
+                  </h3>
+                  <p className="text-xs text-slate-300 line-clamp-1 mt-1">
+                    BGLS Legal, Tech & AI Dubai 2026 Masterclass Series
+                  </p>
+                </div>
+              </div>
+
+              {/* 2. REEL: 🎥 Masterclasses & Video Sessions */}
+              <div>
+                <div className="flex items-center justify-between mb-2.5 px-0.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-pink-500/10 text-pink-600 flex items-center justify-center">
+                      <MonitorPlay size={14} strokeWidth={2.5} />
+                    </div>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                      Masterclasses & Webinars
+                    </h3>
+                  </div>
+                  <Link
+                    href="/platform/resources/webinars"
+                    className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] flex items-center gap-0.5"
+                  >
+                    <span>See all</span>
+                    <ChevronRight size={14} />
+                  </Link>
+                </div>
+
+                <div className="-mx-3.5 px-3.5 overflow-x-auto no-scrollbar flex gap-3 snap-x snap-mandatory">
+                  {[
+                    { title: 'AI in Patent Law & Generative Models', type: 'Live Webinar', time: '1 day ago', duration: '48m', image: '/resource3.jpg', path: '/platform/resources/webinars' },
+                    { title: 'Mastering IP Litigation in Federal Courts', type: 'Masterclass', time: '3 days ago', duration: '1h 15m', image: '/resourceimg1.jpg', path: '/platform/resources/webinars' },
+                    { title: 'Cross-Border Trademark Clearance', type: 'Panel', time: '1 week ago', duration: '55m', image: '/wellbeing.jpg', path: '/platform/resources/webinars' },
+                  ].map((vid, vIdx) => (
+                    <Link
+                      key={vIdx}
+                      href={vid.path}
+                      className="w-[230px] shrink-0 snap-start rounded-2xl overflow-hidden bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-2xs active:scale-95 transition-all group flex flex-col"
+                    >
+                      <div className="relative h-28 w-full bg-slate-900 overflow-hidden">
+                        <img src={vid.image} alt={vid.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-black/60 backdrop-blur-md text-white border border-white/10">
+                          {vid.type}
+                        </div>
+                        <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/70 text-white">
+                          {vid.duration}
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-9 h-9 rounded-full bg-white/90 text-slate-900 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Play size={15} className="fill-slate-900 translate-x-0.5" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 flex-1 flex flex-col justify-between">
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug">
+                          {vid.title}
+                        </h4>
+                        <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2">
+                          <span>{vid.time}</span>
+                          <span className="text-[#5a32fa] font-bold">Watch ↗</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* 3. REEL: 🎙️ Audio Lounge (Podcasts & Wellness) */}
+              <div>
+                <div className="flex items-center justify-between mb-2.5 px-0.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-cyan-500/10 text-cyan-600 flex items-center justify-center">
+                      <Mic size={14} strokeWidth={2.5} />
+                    </div>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                      The Audio Lounge & Wellbeing
+                    </h3>
+                  </div>
+                  <Link
+                    href="/platform/resources/podcasts-conversations"
+                    className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] flex items-center gap-0.5"
+                  >
+                    <span>Listen</span>
+                    <ChevronRight size={14} />
+                  </Link>
+                </div>
+
+                <div className="-mx-3.5 px-3.5 overflow-x-auto no-scrollbar flex gap-3 snap-x snap-mandatory">
+                  {[
+                    { title: 'Interview with USPTO Director on AI Filings', category: 'Podcast Episode', time: '28m', color: '#00cec9', path: '/platform/resources/podcasts-conversations' },
+                    { title: 'Stress Reduction & Mindfulness for Lawyers', category: 'Audio Guide', time: '14m', color: '#00d26a', path: '/platform/resources/wellness' },
+                    { title: 'The IP Innovators Series: Silicon Valley Founders', category: 'Series', time: '42m', color: '#0984e3', path: '/platform/resources/podcasts-conversations' },
+                    { title: 'Work-Life Balance on Partner Track', category: 'Meditation', time: '18m', color: '#ff7675', path: '/platform/resources/wellness' },
+                  ].map((audio, aIdx) => (
+                    <Link
+                      key={aIdx}
+                      href={audio.path}
+                      className="w-[210px] shrink-0 snap-start p-3.5 rounded-2xl bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-2xs active:scale-95 transition-all flex flex-col justify-between min-h-[135px]"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div
+                          className="w-8 h-8 rounded-xl flex items-center justify-center"
+                          style={{ backgroundColor: `${audio.color}18`, color: audio.color }}
+                        >
+                          <Headphones size={16} strokeWidth={2.5} />
+                        </div>
+                        <span
+                          className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full"
+                          style={{ backgroundColor: `${audio.color}15`, color: audio.color }}
+                        >
+                          {audio.category}
+                        </span>
+                      </div>
+                      <div className="mt-2">
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug">
+                          {audio.title}
+                        </h4>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 mt-2.5 pt-2 border-t border-slate-100 dark:border-white/5">
+                        <span>{audio.time} listen</span>
+                        <span style={{ color: audio.color }}>Tune in 🎙️</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. REEL: 📖 Publications & Editorial Wire */}
+              <div>
+                <div className="flex items-center justify-between mb-2.5 px-0.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-pink-500/10 text-pink-600 flex items-center justify-center">
+                      <Globe size={14} strokeWidth={2.5} />
+                    </div>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                      Publications & Legal Wire
+                    </h3>
+                  </div>
+                  <Link
+                    href="/platform/publications"
+                    className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] flex items-center gap-0.5"
+                  >
+                    <span>Explore</span>
+                    <ChevronRight size={14} />
+                  </Link>
+                </div>
+
+                <div className="-mx-3.5 px-3.5 overflow-x-auto no-scrollbar flex gap-3 snap-x snap-mandatory">
+                  {[
+                    { title: "Women's IP World Annual Hardcover", badge: 'Annual Issue', subtitle: 'Global editorial release & leadership roster', path: '/platform/publications', image: '/images/publications-card-banner.png' },
+                    { title: 'Supreme Court IP Ruling: Fair Use Analysis', badge: 'Breaking News', subtitle: '30 mins ago · Landmark decision for trademark holders', path: '/platform/resources/ip-news' },
+                    { title: 'The Future of Copyright in Generative Models', badge: 'Analysis', subtitle: '1 hour ago · Deep dive on IP attribution frameworks', path: '/platform/resources/articles-insights' },
+                  ].map((pub, pIdx) => (
+                    <Link
+                      key={pIdx}
+                      href={pub.path}
+                      className="w-[230px] shrink-0 snap-start p-3.5 rounded-2xl bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-2xs active:scale-95 transition-all flex flex-col justify-between min-h-[145px]"
+                    >
+                      <div>
+                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20">
+                          {pub.badge}
+                        </span>
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug mt-2">
+                          {pub.title}
+                        </h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">
+                          {pub.subtitle}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] mt-2 pt-2 border-t border-slate-100 dark:border-white/5">
+                        <span>Read Issue</span>
+                        <span>↗</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* 5. REEL: 🏢 Verified IP Firms & Tech Solutions */}
+              <div>
+                <div className="flex items-center justify-between mb-2.5 px-0.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                      <Building2 size={14} strokeWidth={2.5} />
+                    </div>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                      Firms & Tech Network
+                    </h3>
+                  </div>
+                  <Link
+                    href="/platform/resources/ip-firms"
+                    className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] flex items-center gap-0.5"
+                  >
+                    <span>Directory</span>
+                    <ChevronRight size={14} />
+                  </Link>
+                </div>
+
+                <div className="-mx-3.5 px-3.5 overflow-x-auto no-scrollbar flex gap-3 snap-x snap-mandatory">
+                  <div className="w-[230px] shrink-0 snap-start p-3.5 rounded-2xl bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-2xs flex flex-col justify-between min-h-[145px]">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600">
+                          GLOBAL ROSTER
+                        </span>
+                        <Link
+                          href="/platform/resources/ip-firms/claim"
+                          className="text-[10px] font-bold text-[#5a32fa] underline"
+                        >
+                          +List Firm
+                        </Link>
+                      </div>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white mt-2">
+                        IP Law Firms Directory
+                      </h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">
+                        Search top patent prosecution and IP litigation firms across 45+ jurisdictions.
+                      </p>
+                    </div>
+                    <Link
+                      href="/platform/resources/ip-firms"
+                      className="text-xs font-bold text-amber-600 dark:text-amber-400 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between"
+                    >
+                      <span>Browse Firms</span>
+                      <span>→</span>
+                    </Link>
+                  </div>
+
+                  <div className="w-[230px] shrink-0 snap-start p-3.5 rounded-2xl bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-2xs flex flex-col justify-between min-h-[145px]">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-600">
+                          SOLUTIONS
+                        </span>
+                        <Link
+                          href="/platform/resources/ip-services/list"
+                          className="text-[10px] font-bold text-[#5a32fa] underline"
+                        >
+                          +List Service
+                        </Link>
+                      </div>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white mt-2">
+                        IP Services & AI Tech
+                      </h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">
+                        Portfolio docketing, Genie AI legal intelligence and technical consulting.
+                      </p>
+                    </div>
+                    <Link
+                      href="/platform/resources/ip-services"
+                      className="text-xs font-bold text-teal-600 dark:text-teal-400 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between"
+                    >
+                      <span>Explore Services</span>
+                      <span>→</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* 6. REEL: 🛠️ Toolkits, Academy & Career */}
+              <div>
+                <div className="flex items-center justify-between mb-2.5 px-0.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
+                      <Download size={14} strokeWidth={2.5} />
+                    </div>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                      Toolkits, Academy & Career
+                    </h3>
+                  </div>
+                  <Link
+                    href="/platform/resources/guides-toolkits"
+                    className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] flex items-center gap-0.5"
+                  >
+                    <span>All Guides</span>
+                    <ChevronRight size={14} />
+                  </Link>
+                </div>
+
+                <div className="-mx-3.5 px-3.5 overflow-x-auto no-scrollbar flex gap-3 snap-x snap-mandatory">
+                  {[
+                    { title: 'IP Due Diligence Audit Checklist', type: 'PDF Toolkit', time: '5 days ago', path: '/platform/resources/guides-toolkits' },
+                    { title: 'Patent Law Fundamentals Course', type: 'Academy CLE', time: '1 day ago', path: '/platform/resources/education' },
+                    { title: 'Negotiating Partner Track in IP', type: 'Career Guide', time: '3 days ago', path: '/platform/resources/career-leadership' },
+                    { title: 'In-House Counsel Management Suite', type: 'Corporate Suite', time: 'Available', path: '/platform/resources/in-house-counsel' },
+                  ].map((guide, gIdx) => (
+                    <Link
+                      key={gIdx}
+                      href={guide.path}
+                      className="w-[200px] shrink-0 snap-start p-3.5 rounded-2xl bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-2xs active:scale-95 transition-all flex flex-col justify-between min-h-[135px]"
+                    >
+                      <div>
+                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600">
+                          {guide.type}
+                        </span>
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug mt-2">
+                          {guide.title}
+                        </h4>
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-100 dark:border-white/5">
+                        <span>{guide.time}</span>
+                        <span className="text-indigo-600 font-bold">Download 📥</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* 7. Featured Global IP Partner Banner */}
+              <div
+                onClick={() => router.push('/platform/resources/ip-firms')}
+                className="p-4 rounded-3xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#ff2a5f] text-white shadow-md cursor-pointer active:scale-[0.99] transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/20 text-white backdrop-blur-md">
+                    ⭐ Featured Global Partner
+                  </span>
+                  <span className="text-xs font-bold bg-white/20 px-2.5 py-0.5 rounded-full">
+                    Explore Firm ↗
+                  </span>
+                </div>
+                <h3 className="text-base font-black mt-2.5">
+                  Ennoble IP · Global Patent Prosecution
+                </h3>
+                <p className="text-xs text-white/80 line-clamp-2 mt-0.5 leading-relaxed">
+                  Accelerate cross-border patent applications with 24/7 AI-assisted analytics and expert drafting.
+                </p>
+              </div>
+
             </div>
           )}
+
         </div>
 
         {/* 2. DESKTOP / TABLET GRID (Preserved 3-column layout) */}
