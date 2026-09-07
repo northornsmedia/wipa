@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Volume2, VolumeX, Play } from 'lucide-react';
+import { useAppStore } from '@/store/useAppStore';
 
 interface FeedVideoPlayerProps {
   src: string;
@@ -22,7 +23,8 @@ export default function FeedVideoPlayer({
 }: FeedVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
+  const isVideoMuted = useAppStore((state) => state.isVideoMuted);
+  const setIsVideoMuted = useAppStore((state) => state.setIsVideoMuted);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const userPausedRef = useRef(false);
@@ -31,27 +33,26 @@ export default function FeedVideoPlayer({
   // Synchronize muted state directly on DOM element for WebKit/Android compatibility
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.muted = isMuted;
-      videoRef.current.defaultMuted = isMuted;
+      videoRef.current.muted = isVideoMuted;
+      videoRef.current.defaultMuted = isVideoMuted;
     }
-  }, [isMuted]);
+  }, [isVideoMuted]);
 
   const playVideo = useCallback(async () => {
     const video = videoRef.current;
     if (!video) return;
 
     try {
-      video.muted = isMuted;
+      video.muted = isVideoMuted;
       const playPromise = video.play();
       if (playPromise !== undefined) {
         await playPromise;
         setIsPlaying(true);
       }
     } catch {
-      // Autoplay safety: ensure muted and retry immediately
+      // Autoplay safety: if unmuted autoplay is blocked by browser, fallback to muted autoplay
       try {
         video.muted = true;
-        setIsMuted(true);
         const playPromise = video.play();
         if (playPromise !== undefined) {
           await playPromise;
@@ -61,7 +62,7 @@ export default function FeedVideoPlayer({
         setIsPlaying(false);
       }
     }
-  }, [isMuted]);
+  }, [isVideoMuted]);
 
   const pauseVideo = useCallback(() => {
     const video = videoRef.current;
@@ -159,17 +160,18 @@ export default function FeedVideoPlayer({
     };
   }, [playVideo, pauseVideo]);
 
-  // Toggle Mute / Unmute
+  // Toggle Mute / Unmute (Updates global user preference across all videos)
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
 
+    const nextMuted = !isVideoMuted;
+    setIsVideoMuted(nextMuted);
+
     const video = videoRef.current;
     if (!video) return;
 
-    const nextMuted = !isMuted;
     video.muted = nextMuted;
-    setIsMuted(nextMuted);
 
     if (video.paused) {
       userPausedRef.current = false;
@@ -232,9 +234,9 @@ export default function FeedVideoPlayer({
         webkit-playsinline="true"
         x5-playsinline="true"
         loop
-        muted={isMuted}
+        muted={isVideoMuted}
         // @ts-ignore
-        defaultMuted={true}
+        defaultMuted={isVideoMuted}
         preload={preload}
         onLoadedData={handleReadyToPlay}
         onCanPlay={handleReadyToPlay}
@@ -262,11 +264,11 @@ export default function FeedVideoPlayer({
         <button
           type="button"
           onClick={toggleMute}
-          aria-label={isMuted ? 'Unmute video sound' : 'Mute video sound'}
-          title={isMuted ? 'Unmute' : 'Mute'}
+          aria-label={isVideoMuted ? 'Unmute video sound' : 'Mute video sound'}
+          title={isVideoMuted ? 'Unmute' : 'Mute'}
           className="absolute bottom-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/75 hover:bg-black/95 text-white shadow-lg border border-white/20 transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer"
         >
-          {isMuted ? (
+          {isVideoMuted ? (
             <VolumeX size={18} className="text-white" />
           ) : (
             <Volume2 size={18} className="text-white" />

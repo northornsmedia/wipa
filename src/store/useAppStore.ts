@@ -163,6 +163,9 @@ interface AppState {
   toggleLike: (postId: number) => void;
   isInsideChat: boolean;
   setIsInsideChat: (isInsideChat: boolean) => void;
+  isVideoMuted: boolean;
+  setIsVideoMuted: (isMuted: boolean) => void;
+  toggleVideoMuted: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -182,6 +185,9 @@ export const useAppStore = create<AppState>()(
       setUser: (user) => set({ user }),
       isInsideChat: false,
       setIsInsideChat: (isInsideChat) => set({ isInsideChat }),
+      isVideoMuted: true,
+      setIsVideoMuted: (isVideoMuted) => set({ isVideoMuted }),
+      toggleVideoMuted: () => set((state) => ({ isVideoMuted: !state.isVideoMuted })),
       posts: DUMMY_POSTS,
       cachedFeedPosts: [],
       setCachedFeedPosts: (cachedFeedPosts) => set({ cachedFeedPosts }),
