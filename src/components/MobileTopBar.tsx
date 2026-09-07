@@ -179,58 +179,63 @@ export default function MobileTopBar() {
     <>
       {/* FEED PAGE CUSTOM MOBILE TOP BAR (Matches user screenshot) */}
       {pathname === '/platform' ? (
-        <header className={`md:hidden sticky top-0 left-0 right-0 z-40 bg-white dark:bg-[#0b0f19] pt-safe px-3.5 pb-0 transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
-          isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
-        } ${
-          isScrolled && isVisible ? 'border-b border-slate-200/80 dark:border-white/10 shadow-sm' : 'border-0 shadow-none'
-        }`}>
-          <div className="h-14 flex items-center justify-between w-full">
-            {/* Left: More Menu button (SquaresPlus with W gradient) + Home title */}
-            <div className="flex items-center gap-3">
-              <Link
-                href="/platform/more"
-                aria-label="More Menu"
-                className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] text-white flex items-center justify-center shadow-md shadow-[#5a32fa]/25 active:scale-90 transition-transform"
-              >
-                <SquaresPlusIcon size={20} strokeWidth={1.8} />
-              </Link>
-              <h1 
-                onClick={handleLogoTap} 
-                className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight select-none cursor-pointer font-instagram-headline"
-                style={{ fontFamily: "var(--font-instagram-headline), 'Instagram Sans Headline', sans-serif" }}
-              >
-                Alliance
-              </h1>
-            </div>
+        <>
+          <header className={`md:hidden fixed top-0 left-0 right-0 z-40 bg-white dark:bg-[#0b0f19] pt-safe px-3.5 pb-0 transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
+            isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
+          } ${
+            isScrolled && isVisible ? 'border-b border-slate-200/80 dark:border-white/10 shadow-sm' : 'border-0 shadow-none'
+          }`}>
+            <div className="h-14 flex items-center justify-between w-full">
+              {/* Left: More Menu button (SquaresPlus with W gradient) + Home title */}
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/platform/more"
+                  aria-label="More Menu"
+                  className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] text-white flex items-center justify-center shadow-md shadow-[#5a32fa]/25 active:scale-90 transition-transform"
+                >
+                  <SquaresPlusIcon size={20} strokeWidth={1.8} />
+                </Link>
+                <h1 
+                  onClick={handleLogoTap} 
+                  className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight select-none cursor-pointer font-instagram-headline"
+                  style={{ fontFamily: "var(--font-instagram-headline), 'Instagram Sans Headline', sans-serif" }}
+                >
+                  Alliance
+                </h1>
+              </div>
 
-            {/* Right: Round Bell (with small top badge) and Round + Post Button */}
-            <div className="flex items-center gap-2">
-              <Link
-                href="/platform/notifications"
-                aria-label="Notifications"
-                className="relative w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
-              >
-                <NotificationIcon size={19} />
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#ff2a5f] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs ring-2 ring-white dark:ring-[#0b0f19] leading-none pointer-events-none">
-                  {unreadNotificationsCount > 0 ? unreadNotificationsCount : 3}
-                </span>
-              </Link>
+              {/* Right: Round Bell (with small top badge) and Round + Post Button */}
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/platform/notifications"
+                  aria-label="Notifications"
+                  className="relative w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
+                >
+                  <NotificationIcon size={19} />
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#ff2a5f] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs ring-2 ring-white dark:ring-[#0b0f19] leading-none pointer-events-none">
+                    {unreadNotificationsCount > 0 ? unreadNotificationsCount : 3}
+                  </span>
+                </Link>
 
-              <Link
-                href="/platform/create-post"
-                aria-label="Create Post"
-                className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
-              >
-                <Plus size={20} strokeWidth={2.4} />
-              </Link>
+                <Link
+                  href="/platform/create-post"
+                  aria-label="Create Post"
+                  className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
+                >
+                  <Plus size={20} strokeWidth={2.4} />
+                </Link>
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
+          {/* Document flow spacer to preserve layout height under fixed header */}
+          <div className="md:hidden h-14 pt-safe shrink-0 pointer-events-none" aria-hidden="true" />
+        </>
       ) : (
         /* STANDARD MOBILE TOP BAR FOR ALL OTHER PAGES */
-        <header className={`md:hidden sticky top-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
-          isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
-        }`}>
+        <>
+          <header className={`md:hidden fixed top-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
+            isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
+          }`}>
           <div className="h-14 flex items-center justify-between w-full">
             {/* Left Zone: More Menu (SquaresPlus with W gradient) + Brand Zone */}
             <div className="flex items-center gap-2.5">
@@ -292,7 +297,10 @@ export default function MobileTopBar() {
             </div>
           </div>
         </header>
-      )}
+        {/* Document flow spacer to preserve layout height under fixed header */}
+        <div className="md:hidden h-14 pt-safe shrink-0 pointer-events-none" aria-hidden="true" />
+      </>
+    )}
 
       {/* Full-Screen Mobile Search Modal */}
       {isSearchOpen && (
