@@ -137,10 +137,7 @@ END:VCARD`;
       {/* Top Floating Glass App Bar */}
       <header className="sticky top-0 z-40 bg-[#0a0d14]/80 backdrop-blur-xl border-b border-white/10 px-4 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] flex items-center justify-center font-black text-white text-xs shadow-md shadow-purple-500/20">
-              W
-            </div>
+          <Link href="/" className="flex items-center group">
             <span className="font-black text-base tracking-wider bg-gradient-to-r from-white via-purple-100 to-[#ff90e8] bg-clip-text text-transparent">
               WIPA
             </span>

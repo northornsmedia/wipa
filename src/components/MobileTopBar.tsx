@@ -186,11 +186,8 @@ export default function MobileTopBar() {
                 href="/platform" 
                 onClick={handleLogoTap}
                 title="Double tap to toggle Light / Dark mode"
-                className="flex items-center gap-2 active:scale-95 transition-transform select-none cursor-pointer"
+                className="flex items-center active:scale-95 transition-transform select-none cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] flex items-center justify-center text-white font-black text-xs shadow-md shadow-[#5a32fa]/20">
-                  W
-                </div>
                 <span className="font-black text-base tracking-tight text-gray-900 dark:text-white flex items-center">
                   WIPA<span className="text-[#ff2a5f] text-xs ml-0.5 font-bold">●</span>
                 </span>
