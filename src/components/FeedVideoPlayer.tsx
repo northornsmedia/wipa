@@ -235,8 +235,6 @@ export default function FeedVideoPlayer({
         x5-playsinline="true"
         loop
         muted={isVideoMuted}
-        // @ts-ignore
-        defaultMuted={isVideoMuted}
         preload={preload}
         onLoadedData={handleReadyToPlay}
         onCanPlay={handleReadyToPlay}

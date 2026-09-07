@@ -6,7 +6,7 @@ import { useState, useEffect, use } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { 
-  BadgeCheck, MapPin, Link as LinkIcon, Users, Mail, MessageSquare, Briefcase, GraduationCap,
+  BadgeCheck, MapPin, Link as LinkIcon, Users, User, Mail, MessageSquare, Briefcase, GraduationCap,
   Hash, ThumbsUp, Share2, Send, UserPlus, X, PlayCircle, Star, Copy, Globe2,
   CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, FileText, ArrowUpRight, Heart, Bookmark, ShieldCheck, Check, MoreHorizontal, Eye,
   TrendingUp, Search, Image as ImageIcon, Video, Award, Gift, Sparkles, Folder,
