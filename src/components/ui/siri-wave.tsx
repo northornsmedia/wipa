@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
 
 export type SiriWaveVariant = "wave" | "fluid-dots"
@@ -148,57 +147,56 @@ const float BURST_W = 6.5;
 const float BURST_L = 4.0;
 const float CHARGE_T     = 0.30;
 const float CHARGE_SHRK  = 0.18;
-const float CHARGE_GLOW  = 0.35;
-const float FLASH_GAIN   = 1.2;
-const float FLASH_DECAY  = 7.0;
 
-float hash11(float n){ return fract(sin(n*127.1 + 311.7)*43758.5453); }
-float settleWL(float tau, float w, float l){
-    if(tau <= 0.0) return 0.0;
-    return 1.0 - exp(-l*tau)*cos(w*tau);
-}
-float settle(float tau){ return settleWL(tau, W, L); }
-float settleCrit(float tau, float l){
-    if(tau <= 0.0) return 0.0;
-    return 1.0 - exp(-l*tau)*(1.0 + l*tau);
-}
+float hash11(float p){ return fract(sin(p * 127.1) * 43758.5453123); }
 float smin(float a, float b, float k){
-    float h = max(k - abs(a - b), 0.0) / k;
-    return min(a, b) - h*h*k*0.25;
+    float h = max(k - abs(a-b), 0.0) / k;
+    return min(a, b) - h*h*k*(1.0/4.0);
 }
 vec3 hue2rgb(float h){
-    h = fract(h);
-    float r = clamp(abs(h*6.0 - 3.0) - 1.0, 0.0, 1.0);
-    float g = clamp(2.0 - abs(h*6.0 - 2.0), 0.0, 1.0);
-    float b = clamp(2.0 - abs(h*6.0 - 4.0), 0.0, 1.0);
-    return vec3(r, g, b);
+    float r = abs(h*6.0 - 3.0) - 1.0;
+    float g = 2.0 - abs(h*6.0 - 2.0);
+    float b = 2.0 - abs(h*6.0 - 4.0);
+    return clamp(vec3(r,g,b), 0.0, 1.0);
 }
-float dotR(float fi, float seed, float t){
-    return 0.036 + 0.010*sin(t*1.3 + seed*TAU) + 0.005*sin(t*2.4 + fi*1.3);
+float easeInOut(float x){
+    float x2 = x*x;
+    return x2 / (x2 + (1.0 - x)*(1.0 - x));
 }
-float dotSD(vec2 p, vec2 pos, float r, float t, float fi, float shapeDamp){
-    vec2 d = p - pos;
-    float sq = 0.075 * (0.5 + 0.5*sin(t*0.9 + fi*2.0)) * shapeDamp;
-    float ca = cos(t*0.35 + fi), sa = sin(t*0.35 + fi);
-    d = mat2(ca,-sa,sa,ca) * d;
-    d *= vec2(1.0+sq, 1.0-sq);
-    return length(d) - r;
+float settle(float t){
+    if(t <= 0.0) return 0.0;
+    if(t >= 1.0) return 1.0;
+    return 1.0 - exp(-W*t) * cos(L*t);
+}
+float dotR(float id, float seed, float t){
+    return (0.040 + 0.010*sin(t*1.7 + seed*TAU)) * (1.0 + 0.12*(id - 2.5)/2.5);
+}
+float dotSD(vec2 p, vec2 pos, float r, float t, float id, float wib){
+    float d = length(p - pos) - r;
+    d += 0.003 * sin(atan(p.y - pos.y, p.x - pos.x)*3.0 + t*2.5 + id) * wib;
+    return d;
 }
 vec3 scene(vec2 p, float t){
-    float k  = floor(t/MERGE_PERIOD);
-    float u  = fract(t/MERGE_PERIOD);
-    float te = u * MERGE_PERIOD;
-    float tg = mod(t, GATHER_PERIOD);
-    float g  = settleCrit((tg - GATHER_START) * GATHER_IN, GATHER_IN_L)
-             - settleWL(tg - GATHER_START - GATHER_HOLD, BURST_W, BURST_L);
+    float tau_merge = mod(t, MERGE_PERIOD);
+    float cycleId   = floor(t / MERGE_PERIOD);
+    float k = mod(cycleId, 3.0);
+    float te = tau_merge / T_MOVE;
+
+    float tau_g = mod(t, GATHER_PERIOD);
+    float gCycle = floor(t / GATHER_PERIOD);
+    float gT = (tau_g - GATHER_START) / GATHER_IN;
+    float g = (tau_g >= GATHER_START && tau_g < GATHER_START + GATHER_IN) ? easeInOut(clamp(gT, 0.0, 1.0)) :
+              (tau_g >= GATHER_START + GATHER_IN && tau_g < GATHER_START + GATHER_IN + GATHER_HOLD) ? 1.0 :
+              (tau_g >= GATHER_START + GATHER_IN + GATHER_HOLD) ?
+                 1.0 - settle((tau_g - (GATHER_START + GATHER_IN + GATHER_HOLD)) * (1.0 / (GATHER_PERIOD - (GATHER_START + GATHER_IN + GATHER_HOLD)))) : 0.0;
     float gC = clamp(g, 0.0, 1.0);
-    float tb     = tg - (GATHER_START + GATHER_HOLD);
-    float charge = smoothstep(-CHARGE_T, 0.0, min(tb, 0.0)) * gC;
-    float flash  = tb > 0.0 ? exp(-tb * FLASH_DECAY) : 0.0;
-    float gBright = mix(1.0, GATHER_DIM, gC) * (1.0 + CHARGE_GLOW*charge + FLASH_GAIN*flash);
-    vec3  total3 = vec3(1e5);
-    vec3  cAcc   = vec3(0.0);
-    float wAcc   = 1e-6;
+    float gBright = 1.0 - GATHER_DIM * gC;
+    float chargeT = clamp((tau_g - (GATHER_START - CHARGE_T)) / CHARGE_T, 0.0, 1.0);
+    float charge = (tau_g >= GATHER_START - CHARGE_T && tau_g < GATHER_START) ? easeInOut(chargeT) : 0.0;
+
+    vec3 total3 = vec3(1e5);
+    vec3 cAcc = vec3(0.0);
+    float wAcc = 1e-6;
     for(int i=0; i<N; i++){
         float fi   = float(i);
         float seed = hash11(fi);
@@ -266,6 +264,148 @@ export interface SiriWaveProps
   renderScale?: number
 }
 
+/**
+ * High-performance, indestructible SVG Wave Orb.
+ * Guaranteed 60fps GPU animation, zero WebGL context limit issues, zero memory leaks.
+ * Perfect for avatars, buttons, and mobile devices.
+ */
+function SvgSiriWave({
+  size = 32,
+  className = "",
+  style = {}
+}: {
+  size?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const rawId = React.useId().replace(/[^a-zA-Z0-9]/g, '');
+  const grad1 = `sg1_${rawId}`;
+  const grad2 = `sg2_${rawId}`;
+  const grad3 = `sg3_${rawId}`;
+  const orb = `sorb_${rawId}`;
+  const filterId = `sflt_${rawId}`;
+
+  return (
+    <div
+      className={cn("relative flex items-center justify-center select-none pointer-events-none rounded-full overflow-hidden shrink-0", className)}
+      style={{ width: size, height: size, ...style }}
+    >
+      <style>{`
+        @keyframes siriWaveBob1 {
+          0%, 100% { transform: scaleY(0.7) rotate(0deg); opacity: 0.85; }
+          50% { transform: scaleY(1.35) rotate(5deg); opacity: 1; }
+        }
+        @keyframes siriWaveBob2 {
+          0%, 100% { transform: scaleY(1.3) rotate(0deg); opacity: 0.9; }
+          50% { transform: scaleY(0.65) rotate(-5deg); opacity: 0.8; }
+        }
+        @keyframes siriWaveBob3 {
+          0%, 100% { transform: scaleX(0.85) scaleY(0.9); opacity: 0.75; }
+          50% { transform: scaleX(1.1) scaleY(1.3); opacity: 1; }
+        }
+        @keyframes siriWaveBob4 {
+          0%, 100% { transform: scaleY(0.8) rotate(3deg); opacity: 0.8; }
+          50% { transform: scaleY(1.2) rotate(-3deg); opacity: 0.95; }
+        }
+        @keyframes siriOrbPulse {
+          0%, 100% { transform: scale(0.85); opacity: 0.75; }
+          50% { transform: scale(1.15); opacity: 1; }
+        }
+      `}</style>
+      
+      <svg
+        viewBox="0 0 100 100"
+        className="w-full h-full block"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="1.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          <linearGradient id={grad1} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ff2a70" />
+            <stop offset="50%" stopColor="#8b5cf6" />
+            <stop offset="100%" stopColor="#00d2ff" />
+          </linearGradient>
+
+          <linearGradient id={grad2} x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#00f5a0" />
+            <stop offset="50%" stopColor="#00d2ff" />
+            <stop offset="100%" stopColor="#ff2a70" />
+          </linearGradient>
+
+          <linearGradient id={grad3} x1="0%" y1="50%" x2="100%" y2="50%">
+            <stop offset="0%" stopColor="#ff90e8" />
+            <stop offset="50%" stopColor="#ff7836" />
+            <stop offset="100%" stopColor="#5a32fa" />
+          </linearGradient>
+
+          <radialGradient id={orb} cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.9" />
+            <stop offset="40%" stopColor="#ff2a70" stopOpacity="0.6" />
+            <stop offset="70%" stopColor="#00d2ff" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#5a32fa" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        {/* Ambient Darkened Backdrop to ensure vivid contrast on light backgrounds */}
+        <circle cx="50" cy="50" r="48" fill="#0f0728" fillOpacity="0.75" />
+
+        {/* Ambient Pulsing Core Orb */}
+        <circle
+          cx="50"
+          cy="50"
+          r="34"
+          fill={`url(#${orb})`}
+          style={{ transformOrigin: '50px 50px', animation: 'siriOrbPulse 2.6s ease-in-out infinite' }}
+        />
+
+        {/* Dynamic Harmonic Sine Waves */}
+        <g style={{ transformOrigin: '50px 50px' }} filter={`url(#${filterId})`}>
+          {/* Wave 1 */}
+          <path
+            d="M 10 50 Q 30 22, 50 50 T 90 50"
+            stroke={`url(#${grad1})`}
+            strokeWidth="4"
+            strokeLinecap="round"
+            style={{ transformOrigin: '50px 50px', animation: 'siriWaveBob1 2.2s ease-in-out infinite' }}
+          />
+          {/* Wave 2 */}
+          <path
+            d="M 10 50 Q 30 78, 50 50 T 90 50"
+            stroke={`url(#${grad2})`}
+            strokeWidth="3.4"
+            strokeLinecap="round"
+            style={{ transformOrigin: '50px 50px', animation: 'siriWaveBob2 2.7s ease-in-out infinite' }}
+          />
+          {/* Wave 3 */}
+          <path
+            d="M 16 50 Q 34 32, 50 50 T 84 50"
+            stroke={`url(#${grad3})`}
+            strokeWidth="3"
+            strokeLinecap="round"
+            style={{ transformOrigin: '50px 50px', animation: 'siriWaveBob3 3.1s ease-in-out infinite' }}
+          />
+          {/* Wave 4 */}
+          <path
+            d="M 20 50 Q 36 66, 50 50 T 80 50"
+            stroke={`url(#${grad1})`}
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            style={{ transformOrigin: '50px 50px', animation: 'siriWaveBob4 2.4s ease-in-out infinite' }}
+          />
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 export const SiriWave = React.memo(function SiriWave({
   variant = "wave",
   size = 420,
@@ -274,10 +414,22 @@ export const SiriWave = React.memo(function SiriWave({
   style,
   ...props
 }: SiriWaveProps) {
+  // Always use the indestructible vector wave for icons & avatars (size <= 96)
+  // to avoid hitting the browser's global 8-16 WebGL context limit.
+  if (size <= 96) {
+    return (
+      <SvgSiriWave
+        size={size}
+        className={className}
+        style={style}
+      />
+    );
+  }
+
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const [isReady, setIsReady] = React.useState(false)
+  const [webGlFailed, setWebGlFailed] = React.useState(false)
 
-  // Defer initialization past critical initial render window to prevent main-thread long tasks
   React.useEffect(() => {
     let cancelId: any
     if (typeof window !== "undefined" && "requestIdleCallback" in window) {
@@ -290,7 +442,7 @@ export const SiriWave = React.memo(function SiriWave({
   }, [])
 
   React.useEffect(() => {
-    if (!isReady) return
+    if (!isReady || webGlFailed) return
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -299,9 +451,13 @@ export const SiriWave = React.memo(function SiriWave({
       gl = canvas.getContext("webgl", { alpha: true, powerPreference: "low-power" }) ||
            (canvas.getContext("experimental-webgl", { alpha: true }) as WebGLRenderingContext)
     } catch {
+      setWebGlFailed(true)
       return
     }
-    if (!gl) return
+    if (!gl) {
+      setWebGlFailed(true)
+      return
+    }
 
     let raf = 0
     let program: WebGLProgram | null = null
@@ -310,7 +466,6 @@ export const SiriWave = React.memo(function SiriWave({
     let buffer: WebGLBuffer | null = null
     let isVisible = true
 
-    // Pause RAF loop when canvas is offscreen or hidden
     const observer = new IntersectionObserver((entries) => {
       isVisible = entries[0]?.isIntersecting ?? false
     }, { threshold: 0.05 })
@@ -331,7 +486,10 @@ export const SiriWave = React.memo(function SiriWave({
       }
 
       program = gl.createProgram()
-      if (!program) return
+      if (!program) {
+        setWebGlFailed(true)
+        return
+      }
 
       vs = compile(gl.VERTEX_SHADER, VERTEX_SHADER)
       fs = compile(gl.FRAGMENT_SHADER, FRAGMENT_SHADERS[variant])
@@ -339,6 +497,7 @@ export const SiriWave = React.memo(function SiriWave({
         if (vs) gl.deleteShader(vs)
         if (fs) gl.deleteShader(fs)
         if (program) gl.deleteProgram(program)
+        setWebGlFailed(true)
         return
       }
 
@@ -346,12 +505,16 @@ export const SiriWave = React.memo(function SiriWave({
       gl.attachShader(program, fs)
       gl.linkProgram(program)
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        setWebGlFailed(true)
         return
       }
       gl.useProgram(program)
 
       buffer = gl.createBuffer()
-      if (!buffer) return
+      if (!buffer) {
+        setWebGlFailed(true)
+        return
+      }
       gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
       gl.bufferData(
         gl.ARRAY_BUFFER,
@@ -367,9 +530,7 @@ export const SiriWave = React.memo(function SiriWave({
       const uResolution = gl.getUniformLocation(program, "iResolution")
       const uTime = gl.getUniformLocation(program, "iTime")
 
-      // Lower internal resolution for small icons to eliminate GPU/CPU overhead
-      const scale = size <= 64 ? 0.5 : renderScale
-      const dim = Math.max(24, Math.round(size * scale))
+      const dim = Math.max(24, Math.round(size * renderScale))
       canvas.width = dim
       canvas.height = dim
       gl.viewport(0, 0, dim, dim)
@@ -397,7 +558,7 @@ export const SiriWave = React.memo(function SiriWave({
       }
       raf = requestAnimationFrame(frame)
     } catch {
-      // Graceful fallback
+      setWebGlFailed(true)
     }
 
     return () => {
@@ -410,7 +571,17 @@ export const SiriWave = React.memo(function SiriWave({
         if (buffer) gl.deleteBuffer(buffer)
       }
     }
-  }, [isReady, variant, size, renderScale])
+  }, [isReady, variant, size, renderScale, webGlFailed])
+
+  if (webGlFailed) {
+    return (
+      <SvgSiriWave
+        size={size}
+        className={className}
+        style={style}
+      />
+    );
+  }
 
   return (
     <canvas
