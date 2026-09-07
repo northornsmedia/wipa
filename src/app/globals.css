@@ -90,8 +90,6 @@ body {
   background: #f8f9fa;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: touch;
 }
 
 html::-webkit-scrollbar,

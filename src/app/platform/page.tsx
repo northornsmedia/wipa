@@ -737,7 +737,7 @@ export default function PlatformPage() {
 
   return (
     <div
-      className="relative w-full max-w-full font-sans flex flex-col min-h-screen overflow-x-clip overscroll-none"
+      className="relative w-full max-w-full font-sans flex flex-col min-h-screen overflow-x-clip"
       onTouchStart={handlePullStart}
       onTouchMove={handlePullMove}
       onTouchEnd={handlePullEnd}
