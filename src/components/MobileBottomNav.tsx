@@ -30,20 +30,20 @@ export default function MobileBottomNav() {
 
   return (
     <>
-      {/* Sleek Floating Glassmorphic Capsule Nav */}
-      <nav className="md:hidden fixed bottom-3 left-3 right-3 z-50 max-w-md mx-auto bg-[#090d16]/90 dark:bg-[#090d16]/90 backdrop-blur-2xl border border-white/10 dark:border-white/15 rounded-full px-2.5 py-1 shadow-[0_12px_36px_rgba(0,0,0,0.5)] transition-all box-border">
-        <div className="h-12 w-full flex items-center justify-between px-1">
+      {/* Instagram-style Full Bottom Navigation Bar (Edge-to-edge, flush to bottom with safe-area padding) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 w-full bg-white/95 dark:bg-[#090d16]/95 backdrop-blur-2xl border-t border-slate-200 dark:border-white/10 transition-all box-border pb-safe">
+        <div className="h-14 w-full max-w-lg mx-auto flex items-center justify-around px-2">
           {/* 1. Feed / Home (No text) */}
           <Link
             href="/platform"
             aria-label="Home"
             className={`w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation ${
               isActive('/platform')
-                ? 'bg-white/15 text-white'
-                : 'text-gray-400 hover:text-white'
+                ? 'text-slate-900 dark:text-white bg-slate-100 dark:bg-white/10'
+                : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Home09Icon size={21} />
+            <Home09Icon size={22} />
           </Link>
 
           {/* 2. Chat (No text) */}
@@ -52,18 +52,18 @@ export default function MobileBottomNav() {
             aria-label="Chat"
             className={`w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation ${
               isActive('/platform/messages')
-                ? 'bg-white/15 text-white'
-                : 'text-gray-400 hover:text-white'
+                ? 'text-slate-900 dark:text-white bg-slate-100 dark:bg-white/10'
+                : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <SentIcon size={21} />
+            <SentIcon size={22} />
           </Link>
 
           {/* 3. Executive Pill Action Button (Resources) */}
           <Link
             href="/platform/resources"
             aria-label="Resources"
-            className="flex items-center justify-center bg-gradient-to-r from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] text-white px-4 py-2 rounded-full font-bold text-xs shadow-lg shadow-[#5a32fa]/30 active:scale-90 transition-transform touch-manipulation cursor-pointer"
+            className="flex items-center justify-center bg-gradient-to-r from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] text-white px-4 py-2 rounded-full font-bold text-xs shadow-md shadow-[#5a32fa]/25 active:scale-90 transition-transform touch-manipulation cursor-pointer"
           >
             <span>Resources</span>
           </Link>
@@ -73,9 +73,9 @@ export default function MobileBottomNav() {
             type="button"
             onClick={handleOpenSearch}
             aria-label="Search"
-            className="w-11 h-11 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-all active:scale-90 touch-manipulation cursor-pointer"
+            className="w-11 h-11 rounded-full flex items-center justify-center text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-all active:scale-90 touch-manipulation cursor-pointer"
           >
-            <SearchAiLineIcon size={22} />
+            <SearchAiLineIcon size={23} />
           </button>
 
           {/* 5. Profile (No text) */}
@@ -84,16 +84,16 @@ export default function MobileBottomNav() {
             aria-label="Profile"
             className={`w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation ${
               isActive('/platform/profile')
-                ? 'bg-white/15 text-white'
-                : 'text-gray-400 hover:text-white'
+                ? 'text-slate-900 dark:text-white'
+                : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             {user?.avatar_url ? (
-              <div className={`w-6 h-6 rounded-full overflow-hidden ring-1.5 ${isActive('/platform/profile') ? 'ring-white' : 'ring-gray-400/40'}`}>
+              <div className={`w-7 h-7 rounded-full overflow-hidden ring-2 ${isActive('/platform/profile') ? 'ring-slate-900 dark:ring-white' : 'ring-transparent'}`}>
                 <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
               </div>
             ) : (
-              <User size={21} strokeWidth={isActive('/platform/profile') ? 2.4 : 1.9} />
+              <User size={22} strokeWidth={isActive('/platform/profile') ? 2.4 : 1.9} />
             )}
           </Link>
         </div>

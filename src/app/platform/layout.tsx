@@ -50,7 +50,7 @@ export default function PlatformLayout({
               isMessagesPage ? 'pl-0' : 'lg:pl-[var(--desktop-sidebar-width)]'
             }`}>
               <main className={`flex-1 w-full max-w-full min-w-0 overflow-x-hidden box-border ${
-                isMessagesPage ? 'pb-0' : 'pb-20 md:pb-0'
+                isMessagesPage ? 'pb-0' : 'pb-24 md:pb-0'
               }`}>
                 {children}
               </main>
