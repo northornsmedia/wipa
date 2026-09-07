@@ -125,41 +125,39 @@ export default function IPFirmsPage() {
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#070b14] text-slate-900 dark:text-white pb-32">
       
-      {/* Mobile-Native App Top Bar */}
-      <div className="sticky top-0 z-30 bg-white/80 dark:bg-[#0b101e]/85 backdrop-blur-xl border-b border-slate-200/70 dark:border-white/10 px-4 py-3 sm:px-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
+      {/* Mobile-Native IP Firms Top Bar */}
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#070b14]/95 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10 px-3.5 sm:px-6 pt-safe pb-2.5 transition-all w-full">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3 h-12 sm:h-14">
+          <div className="flex items-center gap-3">
             <Link 
               href="/platform/resources"
-              className="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-700 dark:text-slate-200 active:scale-95 transition-transform"
+              className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 flex items-center justify-center text-slate-700 dark:text-slate-200 active:scale-90 transition-all shrink-0 border border-slate-200/50 dark:border-white/10"
               title="Back to Resources"
             >
-              <ArrowLeft size={18} />
+              <ArrowLeft size={19} />
             </Link>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white">
-                  IP Law Firms
-                </h1>
-                <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-[#5a32fa] dark:text-purple-300">
-                  {filteredFirms.length}
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
-                Top intellectual property practices worldwide
-              </p>
+            <div className="flex items-center gap-2">
+              <h1 
+                className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white font-instagram-headline select-none cursor-default"
+                style={{ fontFamily: "var(--font-instagram-headline), 'Instagram Sans Headline', sans-serif" }}
+              >
+                IP Firms
+              </h1>
+              <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-[#5a32fa] dark:text-purple-300">
+                {filteredFirms.length}
+              </span>
             </div>
           </div>
 
           <Link
             href="/platform/resources/ip-firms/claim"
-            className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#5a32fa] to-[#7952fa] text-white text-xs font-black shadow-sm active:scale-95 transition-transform flex items-center gap-1.5 shrink-0"
+            className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-gradient-to-r from-[#5a32fa] via-[#7952fa] to-[#ff2a5f] text-white text-xs font-black shadow-md shadow-indigo-500/20 active:scale-95 transition-all flex items-center gap-1.5 shrink-0"
           >
             <Sparkles size={13} />
             <span>List Firm</span>
           </Link>
         </div>
-      </div>
+      </header>
 
       {/* Main Container */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 space-y-4 sm:space-y-6">

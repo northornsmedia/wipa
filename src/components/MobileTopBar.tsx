@@ -237,7 +237,11 @@ export default function MobileTopBar() {
   };
 
   // Hide on full-screen standalone pages that have their own custom top header
-  const isFullScreenModalPage = pathname === '/platform/create-post' || pathname.startsWith('/platform/messages') || pathname === '/platform/more';
+  const isFullScreenModalPage = 
+    pathname === '/platform/create-post' || 
+    pathname.startsWith('/platform/messages') || 
+    pathname === '/platform/more' ||
+    pathname.startsWith('/platform/resources/ip-firms');
   if (isFullScreenModalPage) {
     return null;
   }
