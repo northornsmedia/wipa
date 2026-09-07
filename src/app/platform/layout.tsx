@@ -52,7 +52,7 @@ export default function PlatformLayout({
               isMessagesPage ? 'pl-0' : 'lg:pl-[var(--desktop-sidebar-width)]'
             }`}>
               <main className={`flex-1 w-full max-w-full min-w-0 overflow-x-clip box-border ${
-                isMessagesPage ? (isInsideChat ? 'pb-0' : 'pb-[calc(58px+env(safe-area-inset-bottom,0px))] md:pb-0') : 'pb-[calc(58px+env(safe-area-inset-bottom,0px))] md:pb-0'
+                isMessagesPage ? (isInsideChat ? 'pb-0' : 'pb-[calc(63px+env(safe-area-inset-bottom,0px))] md:pb-0') : 'pb-[calc(63px+env(safe-area-inset-bottom,0px))] md:pb-0'
               }`}>
                 {children}
               </main>
