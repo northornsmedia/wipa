@@ -195,31 +195,31 @@ export default function FeedVideoPlayer({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden flex items-center justify-center select-none bg-slate-950 dark:bg-black rounded-xl min-h-[320px] sm:min-h-[440px] transform-gpu ${containerClassName}`}
+      className={`relative w-full overflow-hidden flex items-center justify-center select-none bg-black rounded-xl min-h-[320px] sm:min-h-[440px] ${containerClassName}`}
     >
       {/* 1. Ghost Screen Placeholder (active until video first frame loads) */}
-      {!isLoaded && (
-        <div
-          className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-[#131926] to-black overflow-hidden select-none"
-          aria-hidden="true"
-        >
-          {/* Subtle diagonal shimmer sweep */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent animate-[shimmer_2s_infinite] pointer-events-none" />
+      <div
+        className={`absolute inset-0 z-10 flex flex-col items-center justify-center bg-black transition-opacity duration-200 pointer-events-none ${
+          isLoaded ? 'opacity-0' : 'opacity-100'
+        }`}
+        aria-hidden="true"
+      >
+        {/* Subtle diagonal shimmer sweep */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent animate-[shimmer_2s_infinite] pointer-events-none" />
 
-          {/* Ghost Center Indicator Badge */}
-          <div className="relative flex flex-col items-center gap-3 p-4">
-            <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 dark:bg-white/5 border border-white/10 shadow-xl animate-pulse">
-              <Play size={22} className="fill-white/30 text-white/30 translate-x-0.5" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-violet-500 animate-pulse" />
-              <span className="text-[11px] font-semibold tracking-wider text-slate-300 uppercase">
-                Loading video...
-              </span>
-            </div>
+        {/* Ghost Center Indicator Badge */}
+        <div className="relative flex flex-col items-center gap-3 p-4">
+          <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 dark:bg-white/5 border border-white/10 shadow-xl animate-pulse">
+            <Play size={22} className="fill-white/30 text-white/30 translate-x-0.5" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-2 h-2 rounded-full bg-slate-400 animate-pulse" />
+            <span className="text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
+              Loading video...
+            </span>
           </div>
         </div>
-      )}
+      </div>
 
       {/* 2. Hardware-accelerated Video Element with direct autoPlay */}
       <video
@@ -242,9 +242,7 @@ export default function FeedVideoPlayer({
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onClick={togglePlay}
-        className={`${className} cursor-pointer transition-opacity duration-300 ${
-          isLoaded ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
+        className={`${className} cursor-pointer bg-black`}
       />
 
       {/* 3. Centered Play Button (only shown once loaded and paused) */}

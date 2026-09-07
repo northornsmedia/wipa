@@ -180,6 +180,12 @@ img {
 }
 
 /* Suppress Android WebView / Chromium default video poster and media overlays */
+video {
+  background-color: #000000 !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
 video::-webkit-media-controls {
   display: none !important;
 }

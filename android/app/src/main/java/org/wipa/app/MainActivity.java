@@ -32,8 +32,6 @@ public class MainActivity extends BridgeActivity {
             WebView webView = bridge.getWebView();
             webView.setBackgroundColor(android.graphics.Color.WHITE);
             
-            // Native Chromium hardware acceleration with zero intermediate layer invalidation flicker
-            webView.setLayerType(View.LAYER_TYPE_NONE, null);
             webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
             webView.setVerticalScrollBarEnabled(false);
             webView.setHorizontalScrollBarEnabled(false);
@@ -42,12 +40,9 @@ public class MainActivity extends BridgeActivity {
             WebSettings settings = webView.getSettings();
             if (settings != null) {
                 settings.setMediaPlaybackRequiresUserGesture(false);
-                settings.setOffscreenPreRaster(true);
                 settings.setDomStorageEnabled(true);
                 settings.setDatabaseEnabled(true);
                 settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-                settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
-                settings.setEnableSmoothTransition(true);
             }
 
             // Calculate physical status bar height in dp and inject into CSS variable
