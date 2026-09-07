@@ -15,7 +15,10 @@ export default function MoreMenuPage() {
       {/* Top Header: Just "More" centered, no extra icons */}
       <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#070b14]/90 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 px-4 pt-safe">
         <div className="max-w-4xl mx-auto flex items-center justify-center h-14">
-          <h1 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+          <h1 
+            className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-instagram-headline"
+            style={{ fontFamily: "'Instagram Sans Headline', 'Instagram Sans', sans-serif" }}
+          >
             More
           </h1>
         </div>
