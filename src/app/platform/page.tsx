@@ -771,103 +771,107 @@ export default function PlatformPage() {
               <div className="w-full max-w-full sm:max-w-4xl min-w-0 space-y-0 sm:space-y-6 box-border">
 
               {/* MOBILE INSTAGRAM-STYLE STORIES & SUB-HEADER (MOBILE ONLY) */}
-              <div className="md:hidden w-full max-w-full bg-white dark:bg-[#0b0f19] pt-1 pb-2 border-0 border-none shadow-none isolate">
+              <div className="md:hidden relative z-10 w-full max-w-full bg-white dark:bg-[#0b0f19] pt-1 pb-2 border-0 border-none shadow-none isolate">
                 {/* 1. Stories Carousel */}
                 <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
               </div>
               
-              {/* DESKTOP PREMIUM HERO BANNER (DESKTOP ONLY) */}
-              <div className="hidden md:block relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] dark:from-[#0a0a0f] dark:to-[#12121a] p-6 sm:p-8 shadow-[inset_0_1px_1px_rgba(255,255,255,1)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] border border-white/50 dark:border-white/5 group">
-                {/* Animated Mesh Background */}
-                <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-                   <div className="absolute -top-[50%] -right-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_20s_linear_infinite] transform-gpu"></div>
-                   <div className="absolute -bottom-[50%] -left-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#00d26a] to-[#00b8ff] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_25s_linear_infinite_reverse] transform-gpu"></div>
-                                   {/* Glassmorphic Grain Overlay */}
-                    <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-[url('/patterns/stardust.png')] z-0 mix-blend-overlay"></div>
-                 </div>
-                
-                {/* IP Wisdom Card - Top Right (9:16 Thumbnail) */}
-                <div 
-                  onClick={() => setIsIpWisdomModalOpen(true)}
-                  className="hidden sm:block absolute top-6 right-6 sm:top-8 sm:right-8 z-20 w-[120px] aspect-[9/16] rounded-[1.5rem] overflow-hidden cursor-pointer group shadow-[0_8px_20px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-white/40 dark:border-white/10 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.3)] hover:border-[#ff90e8]/50"
-                >
-                  {/* Thumbnail Image */}
-                  <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80&w=400&h=700" alt="IP Wisdom Insight" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                  
-                  {/* Sleek Gradient Overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-[#0a0a0a]/90"></div>
-                  <div className="absolute inset-0 bg-[#5a32fa]/10 mix-blend-overlay group-hover:bg-[#5a32fa]/0 transition-colors duration-500"></div>
-                  
-                  {/* Glowing Play Button */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-[0_4px_20px_rgba(0,0,0,0.2)] group-hover:bg-white/30 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] group-hover:scale-110 transition-all duration-300">
-                      <PlayCircle className="text-white relative z-10" size={26} strokeWidth={1.5} />
+              {/* DESKTOP-ONLY HERO & COMPOSER (Completely excluded from mobile DOM) */}
+              {isDesktopViewport && (
+                <>
+                  <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] dark:from-[#0a0a0f] dark:to-[#12121a] p-6 sm:p-8 shadow-[inset_0_1px_1px_rgba(255,255,255,1)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] border border-white/50 dark:border-white/5 group">
+                    {/* Animated Mesh Background */}
+                    <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+                       <div className="absolute -top-[50%] -right-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_20s_linear_infinite] transform-gpu"></div>
+                       <div className="absolute -bottom-[50%] -left-[20%] w-[80%] h-[200%] bg-gradient-to-br from-[#00d26a] to-[#00b8ff] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] opacity-20 dark:opacity-30 animate-[spin_25s_linear_infinite_reverse] transform-gpu"></div>
+                                       {/* Glassmorphic Grain Overlay */}
+                        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-[url('/patterns/stardust.png')] z-0 mix-blend-overlay"></div>
+                     </div>
+                    
+                    {/* IP Wisdom Card - Top Right (9:16 Thumbnail) */}
+                    <div 
+                      onClick={() => setIsIpWisdomModalOpen(true)}
+                      className="hidden sm:block absolute top-6 right-6 sm:top-8 sm:right-8 z-20 w-[120px] aspect-[9/16] rounded-[1.5rem] overflow-hidden cursor-pointer group shadow-[0_8px_20px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-white/40 dark:border-white/10 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.3)] hover:border-[#ff90e8]/50"
+                    >
+                      {/* Thumbnail Image */}
+                      <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80&w=400&h=700" alt="IP Wisdom Insight" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      
+                      {/* Sleek Gradient Overlays */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-[#0a0a0a]/90"></div>
+                      <div className="absolute inset-0 bg-[#5a32fa]/10 mix-blend-overlay group-hover:bg-[#5a32fa]/0 transition-colors duration-500"></div>
+                      
+                      {/* Glowing Play Button */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-[0_4px_20px_rgba(0,0,0,0.2)] group-hover:bg-white/30 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] group-hover:scale-110 transition-all duration-300">
+                          <PlayCircle className="text-white relative z-10" size={26} strokeWidth={1.5} />
+                        </div>
+                      </div>
+                      
+                      {/* Text Container at bottom */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 flex flex-col items-center">
+                        <span className="bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest mb-1.5 shadow-sm transform group-hover:-translate-y-0.5 transition-transform duration-300">
+                          IP Wisdom
+                        </span>
+                        <p className="text-[14px] font-black text-white leading-tight drop-shadow-md text-center group-hover:text-[#ff90e8] transition-colors">Daily Insight</p>
+                      </div>
+                    </div>
+                    
+                    <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start gap-4">
+                      <div className="lg:w-[70%]">
+                        <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tighter mb-2 leading-[1.1] transition-transform duration-500 group-hover:scale-[1.01] origin-left">
+                          Hello{user?.name ? ` ${user.name}` : ''},<br/>
+                          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#5a32fa] via-[#ff90e8] to-[#5a32fa] animate-gradient bg-[length:200%_auto]">Welcome to WIPA</span>
+                        </h1>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2 tracking-tight">Building the Future of Innovation Together</h2>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:w-5/6 font-medium">
+                          Connect with innovators, IP professionals, founders, researchers, and investors to share knowledge, collaborate, and turn ideas into impact.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Premium iOS-style Segmented Tabs & Search */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2 relative z-10">
+                      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar bg-black/5 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5 shadow-inner">
+                        {['Latest', 'Trending', 'Following', 'Saved'].map((tab) => (
+                          <button 
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            className={`relative px-6 py-2.5 text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap rounded-xl z-10 ${
+                              activeTab === tab 
+                                ? 'text-gray-900 dark:text-white' 
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                            }`}
+                          >
+                            {activeTab === tab && (
+                              <div className="absolute inset-0 bg-white dark:bg-[#1e293b] rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.4)] border border-black/5 dark:border-white/5 -z-10 animate-in zoom-in-95 duration-200" />
+                            )}
+                            {tab}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="relative shrink-0 group/search">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] rounded-2xl blur opacity-0 group-hover/search:opacity-20 transition-opacity duration-500"></div>
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
+                        <input 
+                          type="text" 
+                          placeholder="Search feeds..." 
+                          value={feedSearchQuery}
+                          onChange={(event) => setFeedSearchQuery(event.target.value)}
+                          className="relative z-10 pl-11 pr-5 py-3 bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/50 focus:border-transparent transition-all shadow-sm font-medium placeholder:text-gray-400" 
+                        />
+                      </div>
                     </div>
                   </div>
-                  
-                  {/* Text Container at bottom */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 flex flex-col items-center">
-                    <span className="bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest mb-1.5 shadow-sm transform group-hover:-translate-y-0.5 transition-transform duration-300">
-                      IP Wisdom
-                    </span>
-                    <p className="text-[14px] font-black text-white leading-tight drop-shadow-md text-center group-hover:text-[#ff90e8] transition-colors">Daily Insight</p>
-                  </div>
-                </div>
-                
-                <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start gap-4">
-                  <div className="lg:w-[70%]">
-                    <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tighter mb-2 leading-[1.1] transition-transform duration-500 group-hover:scale-[1.01] origin-left">
-                      Hello{user?.name ? ` ${user.name}` : ''},<br/>
-                      <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#5a32fa] via-[#ff90e8] to-[#5a32fa] animate-gradient bg-[length:200%_auto]">Welcome to WIPA</span>
-                    </h1>
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2 tracking-tight">Building the Future of Innovation Together</h2>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:w-5/6 font-medium">
-                      Connect with innovators, IP professionals, founders, researchers, and investors to share knowledge, collaborate, and turn ideas into impact.
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Premium iOS-style Segmented Tabs & Search */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2 relative z-10">
-                  <div className="flex items-center gap-1 overflow-x-auto no-scrollbar bg-black/5 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5 shadow-inner">
-                    {['Latest', 'Trending', 'Following', 'Saved'].map((tab) => (
-                      <button 
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`relative px-6 py-2.5 text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap rounded-xl z-10 ${
-                          activeTab === tab 
-                            ? 'text-gray-900 dark:text-white' 
-                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                        }`}
-                      >
-                        {activeTab === tab && (
-                          <div className="absolute inset-0 bg-white dark:bg-[#1e293b] rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.4)] border border-black/5 dark:border-white/5 -z-10 animate-in zoom-in-95 duration-200" />
-                        )}
-                        {tab}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="relative shrink-0 group/search">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] rounded-2xl blur opacity-0 group-hover/search:opacity-20 transition-opacity duration-500"></div>
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
-                    <input 
-                      type="text" 
-                      placeholder="Search feeds..." 
-                      value={feedSearchQuery}
-                      onChange={(event) => setFeedSearchQuery(event.target.value)}
-                      className="relative z-10 pl-11 pr-5 py-3 bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/50 focus:border-transparent transition-all shadow-sm font-medium placeholder:text-gray-400" 
-                    />
-                  </div>
-                </div>
-              </div>
 
-              {/* DESKTOP ENHANCED COMPOSER */}
-              <FeedQuickComposer user={user} />
+                  {/* DESKTOP ENHANCED COMPOSER */}
+                  <FeedQuickComposer user={user} />
 
-              {/* DESKTOP STORIES (DESKTOP ONLY) */}
-              <div className="hidden md:block">
-                <FeedStoriesCarousel onOpenCreatePost={() => router.push('/platform/create-post')} />
-              </div>
+                  {/* DESKTOP STORIES (DESKTOP ONLY) */}
+                  <div>
+                    <FeedStoriesCarousel onOpenCreatePost={() => router.push('/platform/create-post')} />
+                  </div>
+                </>
+              )}
 
               {/* FEED */}
               <div className="space-y-0 sm:space-y-4">

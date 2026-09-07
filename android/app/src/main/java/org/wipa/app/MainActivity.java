@@ -34,7 +34,7 @@ public class MainActivity extends BridgeActivity {
             
             // Native Chromium hardware acceleration with zero intermediate layer invalidation flicker
             webView.setLayerType(View.LAYER_TYPE_NONE, null);
-            webView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+            webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
             webView.setVerticalScrollBarEnabled(false);
             webView.setHorizontalScrollBarEnabled(false);
             webView.setFadingEdgeLength(0);
