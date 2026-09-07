@@ -295,7 +295,9 @@ export default function MobileTopBar() {
             </div>
           </header>
           {/* Document flow spacer to preserve layout height under fixed header */}
-          <div className="md:hidden h-14 pt-safe shrink-0 pointer-events-none" aria-hidden="true" />
+          <div className="md:hidden shrink-0 pointer-events-none pt-safe" aria-hidden="true">
+            <div className="h-14" />
+          </div>
         </>
       ) : (
         /* STANDARD MOBILE TOP BAR FOR ALL OTHER PAGES */
@@ -365,7 +367,9 @@ export default function MobileTopBar() {
           </div>
         </header>
         {/* Document flow spacer to preserve layout height under fixed header */}
-        <div className="md:hidden h-14 pt-safe shrink-0 pointer-events-none" aria-hidden="true" />
+        <div className="md:hidden shrink-0 pointer-events-none pt-safe" aria-hidden="true">
+          <div className="h-14" />
+        </div>
       </>
     )}
 
