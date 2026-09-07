@@ -565,7 +565,7 @@ export default function PlatformPage() {
           .filter(Boolean);
       }
 
-      // If user liked locally, ensure user is included
+      // If current user liked in this active session and isn't yet returned from query, include them
       if (user && dbLikedPostIds.has(postId) && !list.some((u: any) => u.id === user.id)) {
         list.unshift({
           id: user.id,
@@ -575,23 +575,9 @@ export default function PlatformPage() {
         });
       }
 
-      // Ensure at least 4-6 profiles are present so user can scroll and test
-      if (list.length < 4) {
-        const existingIds = new Set(list.map((u: any) => u.id).filter(Boolean));
-        const { data: moreProfiles } = await supabase
-          .from('profiles')
-          .select('id, full_name, avatar_url, practice_area, is_wipa_recommended')
-          .limit(8);
-
-        if (moreProfiles) {
-          for (const p of moreProfiles) {
-            if (!existingIds.has(p.id)) {
-              list.push(p);
-              existingIds.add(p.id);
-              if (list.length >= 6) break;
-            }
-          }
-        }
+      // If user unliked in this session, ensure they are excluded
+      if (user && !dbLikedPostIds.has(postId)) {
+        list = list.filter((u: any) => u.id !== user.id);
       }
 
       setLikesUsers(list);
