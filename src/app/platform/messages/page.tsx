@@ -15,6 +15,7 @@ import { MessageBubble, ChatMessage, MediaType } from '@/components/chat/Message
 import { ChatHeader } from '@/components/chat/ChatHeader';
 import { ChatSidebar, SidebarChat } from '@/components/chat/ChatSidebar';
 import { encryptMessage, decryptMessage, isEncrypted } from '@/lib/e2ee';
+import { SentIcon } from '@/components/icons/SentIcon';
 
 export type Chat = SidebarChat & {
   messages: ChatMessage[];
@@ -1569,7 +1570,7 @@ function MessagesContent() {
                         className="w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-md shrink-0 active:scale-95 transition-transform"
                         title="Send voice note"
                       >
-                        {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                        {isUploading ? <Loader2 size={16} className="animate-spin" /> : <SentIcon size={17} />}
                       </button>
                     </div>
                   ) : (
@@ -1671,7 +1672,7 @@ function MessagesContent() {
                           aria-label="Send message"
                           className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#5a32fa] hover:bg-[#6c47ff] text-white transition-all shadow-md shadow-[#5a32fa]/30 shrink-0 active:scale-95"
                         >
-                          <Send size={16} />
+                          <SentIcon size={18} />
                         </button>
                       ) : (
                         <button 
