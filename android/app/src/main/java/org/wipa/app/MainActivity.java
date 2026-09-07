@@ -30,7 +30,7 @@ public class MainActivity extends BridgeActivity {
 
         if (bridge != null && bridge.getWebView() != null) {
             WebView webView = bridge.getWebView();
-            webView.setBackgroundColor(android.graphics.Color.parseColor("#6600FF"));
+            webView.setBackgroundColor(android.graphics.Color.WHITE);
             
             // Enforce GPU hardware layer composition and disable Android overscroll rubber-banding
             webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);

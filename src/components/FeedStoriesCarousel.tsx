@@ -67,7 +67,7 @@ export default function FeedStoriesCarousel({ onOpenCreatePost }: { onOpenCreate
   const user = useAppStore((state) => state.user);
 
   return (
-    <div className="w-full max-w-full min-w-0 bg-transparent py-1 sm:py-2 mb-3 box-border border-0 border-none">
+    <div className="w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] py-1 sm:py-2 mb-3 box-border border-0 border-none">
       <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto pb-1 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full max-w-full min-w-0 box-border px-3.5 sm:px-4">
         
         {/* 1. Share / Your Story Tile */}
