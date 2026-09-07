@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, MessageSquare, Menu, X, Sparkles, User, ArrowRight, Globe, Plus } from 'lucide-react';
 import { NotificationIcon } from '@/components/icons/NotificationIcon';
+import { SquaresPlusIcon } from '@/components/icons/SquaresPlusIcon';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
@@ -127,15 +128,8 @@ export default function MobileTopBar() {
       {pathname === '/platform' ? (
         <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-white dark:bg-[#0b0f19] pt-safe px-3.5 pb-0 transition-all w-full max-w-full box-border border-0 shadow-none">
           <div className="h-14 flex items-center justify-between w-full">
-            {/* Left: Menu button + Home title */}
+            {/* Left: Home title */}
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsDrawerOpen(true)}
-                aria-label="Open Navigation Menu"
-                className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
-              >
-                <Menu size={20} strokeWidth={2.4} />
-              </button>
               <h1 
                 onClick={handleLogoTap} 
                 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight select-none cursor-pointer"
@@ -144,7 +138,7 @@ export default function MobileTopBar() {
               </h1>
             </div>
 
-            {/* Right: Round Bell (with small top badge) and Round + Post Button */}
+            {/* Right: Round Bell, Round + Post Button, and Round Menu (SquaresPlus) */}
             <div className="flex items-center gap-2">
               <Link
                 href="/platform/notifications"
@@ -164,6 +158,14 @@ export default function MobileTopBar() {
               >
                 <Plus size={20} strokeWidth={2.4} />
               </Link>
+
+              <button
+                onClick={() => setIsDrawerOpen(true)}
+                aria-label="Open Navigation Menu"
+                className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
+              >
+                <SquaresPlusIcon size={20} strokeWidth={1.8} />
+              </button>
             </div>
           </div>
         </header>
@@ -228,11 +230,7 @@ export default function MobileTopBar() {
                 aria-label="Open Navigation Menu"
                 className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90 ml-0.5 overflow-hidden ring-1 ring-gray-200 dark:ring-white/10"
               >
-                {user?.avatar_url ? (
-                  <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
-                ) : (
-                  <Menu size={18} />
-                )}
+                <SquaresPlusIcon size={18} strokeWidth={1.8} />
               </button>
             </div>
           </div>
