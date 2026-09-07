@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, User, Search } from 'lucide-react';
+import { BookOpen, User } from 'lucide-react';
 import { Home09Icon } from '@/components/icons/Home09Icon';
 import { SentIcon } from '@/components/icons/SentIcon';
+import { SearchAiLineIcon } from '@/components/icons/SearchAiLineIcon';
 import { useAppStore } from '@/store/useAppStore';
 import MobileCreationSheet from './MobileCreationSheet';
 
@@ -75,7 +76,7 @@ export default function MobileBottomNav() {
             aria-label="Search"
             className="w-11 h-11 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-all active:scale-90 touch-manipulation cursor-pointer"
           >
-            <Search size={21} strokeWidth={1.9} />
+            <SearchAiLineIcon size={22} />
           </button>
 
           {/* 5. Profile (No text) */}
