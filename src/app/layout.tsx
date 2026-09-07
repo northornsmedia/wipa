@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "@/lib/query-provider";
 import ThemeSynchronizer from "@/components/ThemeSynchronizer";
@@ -12,6 +13,11 @@ import NativeBackHandler from '@/components/NativeBackHandler';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+const instagramSansHeadline = localFont({
+  src: "../fonts/InstagramSans-Headline.otf",
+  variable: "--font-instagram-headline",
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   themeColor: "#5a32fa",
@@ -80,7 +86,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="WIPA" />
         <meta name="application-name" content="WIPA" />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} font-sans`}>
+      <body className={`${inter.variable} ${playfair.variable} ${instagramSansHeadline.variable} font-sans`}>
         <ImageProtection />
         <Suspense fallback={null}>
           <TelemetryTracker />

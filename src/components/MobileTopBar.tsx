@@ -10,14 +10,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import { searchGlobal } from '@/app/actions/profiles';
-import localFont from 'next/font/local';
 import MobileDrawerMenu from './MobileDrawerMenu';
-
-const instagramSansHeadline = localFont({
-  src: '../fonts/InstagramSans-Headline.otf',
-  display: 'swap',
-  weight: '700',
-});
 
 export default function MobileTopBar() {
   const router = useRouter();
@@ -146,8 +139,8 @@ export default function MobileTopBar() {
               </Link>
               <h1 
                 onClick={handleLogoTap} 
-                className={`text-2xl font-bold text-slate-900 dark:text-white tracking-tight select-none cursor-pointer font-instagram-headline ${instagramSansHeadline.className}`}
-                style={{ fontFamily: "'Instagram Sans Headline', 'Instagram Sans', sans-serif" }}
+                className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight select-none cursor-pointer font-instagram-headline"
+                style={{ fontFamily: "var(--font-instagram-headline), 'Instagram Sans Headline', sans-serif" }}
               >
                 Alliance
               </h1>

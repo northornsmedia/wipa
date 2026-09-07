@@ -648,13 +648,40 @@ img, video, [data-protected-media], .protected-media {
   font-family: 'Instagram Sans Headline';
   src: url('/fonts/InstagramSans-Headline.otf') format('opentype'),
        url('/fonts/Instagram%20Sans%20Headline.otf') format('opentype');
-  font-weight: 400 900;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instagram Sans Headline';
+  src: url('/fonts/InstagramSans-Headline.otf') format('opentype'),
+       url('/fonts/Instagram%20Sans%20Headline.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instagram Sans Headline';
+  src: url('/fonts/InstagramSans-Headline.otf') format('opentype'),
+       url('/fonts/Instagram%20Sans%20Headline.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instagram Sans Headline';
+  src: url('/fonts/InstagramSans-Headline.otf') format('opentype'),
+       url('/fonts/Instagram%20Sans%20Headline.otf') format('opentype');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
 
 .font-instagram-headline {
-  font-family: 'Instagram Sans Headline', 'Instagram Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family: var(--font-instagram-headline), 'Instagram Sans Headline', 'Instagram Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 .font-instagram-sans {
