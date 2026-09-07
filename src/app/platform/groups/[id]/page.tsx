@@ -38,6 +38,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { compressPostMedia } from '@/lib/imageCompressor';
+import FeedVideoPlayer from '@/components/FeedVideoPlayer';
 import OptimizedImage from '@/components/ui/OptimizedImage';
 
 interface GroupData {
@@ -1071,13 +1072,23 @@ export default function GroupDetailPage({ params }: { params: Promise<{ id: stri
 
                         {/* Attached Media */}
                         {post.media_urls && post.media_urls.length > 0 && post.media_urls[0] && (
-                          <div className="relative max-h-[420px] w-full bg-black/5 dark:bg-black/40 overflow-hidden">
-                            <img 
-                              src={post.media_urls[0]} 
-                              alt="Post attachment" 
-                              className="w-full h-full object-contain max-h-[420px]" 
-                            />
-                          </div>
+                          post.media_type === 'video' || post.media_urls[0].match(/\.(mp4|webm|mov|ogg)$/i) ? (
+                            <div className="relative max-h-[420px] w-full bg-black overflow-hidden flex items-center justify-center">
+                              <FeedVideoPlayer
+                                src={post.media_urls[0]}
+                                preload="metadata"
+                                className="w-full max-w-full h-auto max-h-[420px] object-contain rounded-xl block mx-auto"
+                              />
+                            </div>
+                          ) : (
+                            <div className="relative max-h-[420px] w-full bg-black/5 dark:bg-black/40 overflow-hidden">
+                              <img 
+                                src={post.media_urls[0]} 
+                                alt="Post attachment" 
+                                className="w-full h-full object-contain max-h-[420px]" 
+                              />
+                            </div>
+                          )
                         )}
 
                         {/* Post Footer (Likes & Comments count) */}

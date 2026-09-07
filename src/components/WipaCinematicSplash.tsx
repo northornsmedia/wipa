@@ -42,6 +42,15 @@ export default function WipaCinematicSplash({ preview = false }: { preview?: boo
         initial={{ left: '-25%' }} animate={{ left: '120%' }} transition={{ delay: 1.8, duration: 1.1, ease: 'easeInOut' }}
       />
 
+      <motion.p
+        className="absolute bottom-16 sm:bottom-20 z-10 text-xs sm:text-sm font-semibold tracking-[0.25em] text-white/80 uppercase"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.5, duration: 0.8, ease }}
+      >
+        Women&apos;s IP Alliance
+      </motion.p>
+
       {preview && (
         <div className="absolute bottom-5 z-20 rounded-full border border-white/10 bg-black/10 px-4 py-2 text-[10px] uppercase tracking-widest text-white/45 backdrop-blur-md">
           Reference-inspired code preview

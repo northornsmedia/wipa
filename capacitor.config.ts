@@ -4,12 +4,14 @@ const config: CapacitorConfig = {
   appId: 'org.wipa.app',
   appName: 'WIPA',
   webDir: 'capacitor-web',
+  backgroundColor: '#6600FF',
   server: {
     url: 'https://platform.womensipalliance.com',
     cleartext: false,
   },
   android: {
     allowMixedContent: false,
+    backgroundColor: '#6600FF',
   },
 };
 

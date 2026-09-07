@@ -21,6 +21,7 @@ import PostLikesDrawer from '@/components/PostLikesDrawer';
 import ProgressiveFeedImage from '@/components/ProgressiveFeedImage';
 import FeedShareSheet from '@/components/FeedShareSheet';
 import FeedQuickComposer from '@/components/FeedQuickComposer';
+import FeedVideoPlayer from '@/components/FeedVideoPlayer';
 import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
 import { optimizeFeedUpload, readCachedFeed, writeCachedFeed } from '@/lib/feedPerformance';
 import { recordPostImpressions } from '@/lib/analytics';
@@ -1081,12 +1082,10 @@ export default function PlatformPage() {
                             if (isVideo) {
                               return (
                                 <div key={mIdx} className="w-full max-w-full rounded-2xl overflow-hidden bg-black flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-sm p-0.5 min-w-0">
-                                  <video 
-                                    src={url} 
-                                    controls 
-                                    playsInline 
+                                  <FeedVideoPlayer
+                                    src={url}
                                     preload={index === 0 ? 'metadata' : 'none'}
-                                    className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl block mx-auto" 
+                                    className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-xl block mx-auto"
                                   />
                                 </div>
                               );

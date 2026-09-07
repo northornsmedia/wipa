@@ -26,10 +26,54 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import ConstellationGrid from '@/components/ui/constellation-grid';
+import AppLaunchSplash from '@/components/AppLaunchSplash';
+
+const checkIsMobile = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    window.innerWidth < 1024 ||
+    Boolean((window as any).Capacitor?.isNativePlatform?.())
+  );
+};
+
+const checkHasPersistedUser = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  try {
+    const raw = localStorage.getItem('wipa-storage');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed?.state?.user?.id) return true;
+    }
+    return Object.keys(localStorage).some(
+      (k) => (k.includes('auth-token') || k.startsWith('sb-')) && Boolean(localStorage.getItem(k)?.includes('access_token'))
+    );
+  } catch {
+    return false;
+  }
+};
 
 export default function Home() {
   const router = useRouter();
   const { user, setUser, isDarkMode, toggleDarkMode } = useAppStore();
+
+  // If mobile and already logged in, immediately redirect to /platform without showing landing page
+  const [isRedirectingMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return checkIsMobile() && checkHasPersistedUser();
+    }
+    return false;
+  });
+
+  // Code-based animated launch splash state
+  const [showSplash, setShowSplash] = useState(() => {
+    if (typeof window !== 'undefined') {
+      // Don't show splash on desktop web
+      if (!checkIsMobile()) return false;
+      return sessionStorage.getItem('wipa_splash_seen') !== '1';
+    }
+    return true;
+  });
 
   // Auth form states
   const [email, setEmail] = useState('');
@@ -45,8 +89,18 @@ export default function Home() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetStatus, setResetStatus] = useState<{ success?: boolean; text?: string } | null>(null);
 
-  // Check active session on mount
+  // Fast-track mobile logged-in user straight to the feed page
   useEffect(() => {
+    if (isRedirectingMobile) {
+      router.replace('/platform');
+    }
+  }, [isRedirectingMobile, router]);
+
+  // Check active session on mount and coordinate splash timer
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    const isMobile = checkIsMobile();
+
     const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -65,13 +119,33 @@ export default function Home() {
             cover_url: profile?.cover_url || undefined,
             member_id: profile?.member_id || undefined,
           });
+
+          // ONLY FOR MOBILE: logged in user lands directly on the feed page!
+          if (isMobile) {
+            router.replace('/platform');
+            return;
+          }
+
+          // Desktop: stay on this page with the desktop portal
+          setShowSplash(false);
+          return;
         }
       } catch (err) {
         console.error('Session check failed', err);
       }
+
+      // Not logged in: fade out splash after animation completes
+      timer = setTimeout(() => {
+        setShowSplash(false);
+        try {
+          sessionStorage.setItem('wipa_splash_seen', '1');
+        } catch (_) {}
+      }, isMobile ? 2200 : 0);
     };
+
     checkSession();
-  }, [setUser]);
+    return () => clearTimeout(timer);
+  }, [setUser, router]);
 
   // Dark/Light theme toggle
   const handleToggleTheme = () => {
@@ -201,8 +275,33 @@ export default function Home() {
     });
   };
 
+  // Mobile logged-in users bypass the landing page entirely and go directly to the feed
+  if (isRedirectingMobile) {
+    return (
+      <div className="fixed inset-0 z-[99999] bg-[#6600FF]">
+        <AppLaunchSplash />
+      </div>
+    );
+  }
+
   return (
-    <div className="h-[100dvh] w-screen overflow-hidden bg-[#fafafa] dark:bg-[#07070a] text-slate-900 dark:text-white flex flex-col justify-between select-none relative transition-colors duration-500 font-sans">
+    <>
+      {/* Code-Based Cinematic App Launch Splash Overlay */}
+      <AnimatePresence mode="wait">
+        {showSplash && (
+          <motion.div
+            key="wipa-launch-splash"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: 'easeInOut' }}
+            className="fixed inset-0 z-[99999] pointer-events-auto bg-[#6600FF]"
+          >
+            <AppLaunchSplash />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="min-h-[100dvh] h-auto lg:h-[100dvh] w-screen overflow-x-hidden overflow-y-auto lg:overflow-hidden bg-[#fafafa] dark:bg-[#07070a] text-slate-900 dark:text-white flex flex-col justify-between select-none relative transition-colors duration-500 font-sans pt-[max(env(safe-area-inset-top,0px),52px)] sm:pt-[max(env(safe-area-inset-top,0px),28px)] lg:pt-0">
       <ConstellationGrid
         decorative
         fill
@@ -223,13 +322,13 @@ export default function Home() {
       </div>
 
       {/* Main Split Body Container */}
-      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-center w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 gap-6 lg:gap-14 xl:gap-20 overflow-hidden">
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row items-center justify-start lg:justify-center w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 gap-4 lg:gap-14 xl:gap-20 overflow-visible lg:overflow-hidden">
         
         {/* LEFT COLUMN: Instagram-Style Visual Showcase with Tilted Mockups */}
-        <div className="flex-1 flex flex-col items-center lg:items-start justify-center max-w-lg lg:max-w-xl w-full h-full text-center lg:text-left pt-2 lg:pt-0">
+        <div className="flex-1 flex flex-col items-center lg:items-start justify-center max-w-lg lg:max-w-xl w-full text-center lg:text-left pt-1 lg:pt-0">
           
           {/* Brand Header */}
-          <div className="flex items-center gap-3 mb-2 sm:mb-4">
+          <div className="flex items-center gap-2.5 sm:gap-3 mb-2 sm:mb-4">
             <div className="relative group cursor-pointer">
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#d946ef] via-[#ff2a70] to-[#f97316] opacity-70 blur-xs group-hover:opacity-100 transition-opacity" />
               <div className="relative h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-white dark:bg-[#111116] p-2 flex items-center justify-center border border-slate-200/80 dark:border-white/15 shadow-md">
@@ -254,7 +353,7 @@ export default function Home() {
           </div>
 
           {/* Punchy Instagram-Style Headline */}
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.65rem] font-extrabold tracking-tight leading-[1.18] text-slate-900 dark:text-white mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-3xl lg:text-4xl xl:text-[2.65rem] font-extrabold tracking-tight leading-[1.2] text-slate-900 dark:text-white mb-3 sm:mb-6">
             See everyday breakthroughs from{' '}
             <span className="inline-block bg-gradient-to-r from-[#ff2a70] via-[#d946ef] to-[#f97316] bg-clip-text text-transparent drop-shadow-xs">
               your global IP network.
@@ -262,7 +361,7 @@ export default function Home() {
           </h1>
 
           {/* 3D Tilted Layered Phone & Story Showcase */}
-          <div className="relative w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[460px] h-[240px] sm:h-[290px] lg:h-[320px] flex items-center justify-center mt-1 sm:mt-2">
+          <div className="hidden lg:flex relative w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[460px] h-[240px] sm:h-[290px] lg:h-[320px] items-center justify-center mt-1 sm:mt-2">
             
             {/* Back Left Card: LexIQ AI Patent Intelligence (Tilted -12deg) */}
             <motion.div
@@ -733,7 +832,7 @@ export default function Home() {
       </div>
 
       {/* BOTTOM COMPACT FOOTER (Instagram Style, Single Row) */}
-      <footer className="relative z-10 w-full border-t border-slate-200/80 dark:border-white/5 bg-white/70 dark:bg-[#07070a]/70 backdrop-blur-md py-2 sm:py-2.5 px-4 sm:px-6">
+      <footer className="relative z-10 w-full border-t border-slate-200/80 dark:border-white/5 bg-white/70 dark:bg-[#07070a]/70 backdrop-blur-md py-2 sm:py-2.5 px-4 sm:px-6 pb-[max(env(safe-area-inset-bottom,0px),0.75rem)]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] sm:text-[11px] text-slate-500 dark:text-zinc-500">
           
           {/* Quick Navigation Links */}
@@ -834,5 +933,6 @@ export default function Home() {
       </AnimatePresence>
 
     </div>
+    </>
   );
 }

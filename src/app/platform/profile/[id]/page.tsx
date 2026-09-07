@@ -21,6 +21,7 @@ const DEFAULT_MOCK_VIDEO = 'https://media.w3.org/2010/05/sintel/trailer.mp4';
 import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
 import { recordProfileView } from '@/lib/analytics';
 import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
+import FeedVideoPlayer from '@/components/FeedVideoPlayer';
 
 export default function PublicProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
@@ -685,12 +686,10 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                           if (isVideo) {
                             return (
                               <div key={mIdx} className="mb-4 rounded-2xl overflow-hidden bg-black shadow-sm flex items-center justify-center border border-gray-100 dark:border-white/5 p-0.5">
-                                <video 
-                                  src={url} 
-                                  controls 
-                                  playsInline 
+                                <FeedVideoPlayer
+                                  src={url}
                                   preload="metadata"
-                                  className="max-h-[290px] sm:max-h-[440px] w-auto max-w-full h-auto object-contain rounded-xl mx-auto block" 
+                                  className="max-h-[290px] sm:max-h-[440px] w-auto max-w-full h-auto object-contain rounded-xl mx-auto block"
                                 />
                               </div>
                             );

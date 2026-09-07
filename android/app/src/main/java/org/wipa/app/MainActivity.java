@@ -24,6 +24,10 @@ public class MainActivity extends BridgeActivity {
         }
 
         openPushDestination(getIntent());
+
+        if (bridge != null && bridge.getWebView() != null) {
+            bridge.getWebView().setBackgroundColor(android.graphics.Color.parseColor("#6600FF"));
+        }
     }
 
     @Override

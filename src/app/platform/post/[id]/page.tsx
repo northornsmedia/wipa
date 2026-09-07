@@ -6,6 +6,7 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';
 import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import ProgressiveFeedImage from '@/components/ProgressiveFeedImage';
+import FeedVideoPlayer from '@/components/FeedVideoPlayer';
 import FormattedPostText from '@/components/FormattedPostText';
 import { supabase } from '@/lib/supabase';
 import { recordPostImpressions } from '@/lib/analytics';
@@ -65,7 +66,13 @@ export default function SharedPostPage() {
             </div>
           )}
           {post.media_urls?.map((url: string, index: number) => post.media_type === 'video' ? (
-            <video key={url} src={url} controls playsInline preload="metadata" className="mb-3 w-full rounded-2xl bg-black" />
+            <div key={url} className="mb-3 w-full rounded-2xl overflow-hidden bg-black flex items-center justify-center">
+              <FeedVideoPlayer
+                src={url}
+                preload="metadata"
+                className="w-full max-w-full h-auto max-h-[75vh] sm:max-h-[560px] object-contain rounded-2xl block mx-auto"
+              />
+            </div>
           ) : (
             <div key={url} className="mb-3"><ProgressiveFeedImage src={url} alt={`Post image ${index + 1}`} eager={index === 0} /></div>
           ))}
