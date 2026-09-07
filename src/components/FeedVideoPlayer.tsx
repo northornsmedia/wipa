@@ -25,41 +25,14 @@ export default function FeedVideoPlayer({
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isNearViewport, setIsNearViewport] = useState(false);
   const userPausedRef = useRef(false);
   const isIntersectingRef = useRef(false);
-
-  // Proactive Lookahead Observer: preloads video ~2 screens ahead (1200px margin)
-  // This guarantees the video is already buffered in memory before the user scrolls to it!
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const proximityObserver = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry.isIntersecting) {
-          setIsNearViewport(true);
-        } else {
-          // Scrolled far away: pause video to free decoders and save battery
-          setIsNearViewport(false);
-          if (videoRef.current) {
-            videoRef.current.pause();
-            setIsPlaying(false);
-          }
-        }
-      },
-      { rootMargin: '1200px 0px 1200px 0px' }
-    );
-
-    proximityObserver.observe(container);
-    return () => proximityObserver.disconnect();
-  }, []);
 
   // Synchronize muted state directly on DOM element for WebKit/Android compatibility
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = isMuted;
+      videoRef.current.defaultMuted = isMuted;
     }
   }, [isMuted]);
 
@@ -68,24 +41,27 @@ export default function FeedVideoPlayer({
     if (!video) return;
 
     try {
-      await video.play();
-      setIsPlaying(true);
+      video.muted = isMuted;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        await playPromise;
+        setIsPlaying(true);
+      }
     } catch {
-      // Autoplay safety: ensure muted and retry
-      if (!video.muted) {
+      // Autoplay safety: ensure muted and retry immediately
+      try {
         video.muted = true;
         setIsMuted(true);
-        try {
-          await video.play();
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          await playPromise;
           setIsPlaying(true);
-        } catch {
-          setIsPlaying(false);
         }
-      } else {
+      } catch {
         setIsPlaying(false);
       }
     }
-  }, []);
+  }, [isMuted]);
 
   const pauseVideo = useCallback(() => {
     const video = videoRef.current;
@@ -94,36 +70,80 @@ export default function FeedVideoPlayer({
     setIsPlaying(false);
   }, []);
 
-  // Viewport IntersectionObserver: autoplays when visible in view (>= 35%), pauses when scrolled away (< 20%)
+  // When video data is loaded or can play, immediately start if in view
+  const handleReadyToPlay = useCallback(() => {
+    setIsLoaded(true);
+    if (isIntersectingRef.current && !userPausedRef.current) {
+      playVideo();
+    }
+  }, [playVideo]);
+
+  // Viewport IntersectionObserver: autoplays when visible in view (>= 15%), pauses when scrolled away (< 10%)
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    // Check visibility immediately on mount so the first video plays directly when opening
+    const checkImmediateVisibility = () => {
+      const rect = container.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const isVisible = rect.top < vh * 0.9 && rect.bottom > vh * 0.1;
+      if (isVisible) {
+        isIntersectingRef.current = true;
+        userPausedRef.current = false;
+        playVideo();
+      }
+    };
+
+    checkImmediateVisibility();
+    // Also re-check slightly after layout settles
+    const timer = setTimeout(checkImmediateVisibility, 150);
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.15) {
             isIntersectingRef.current = true;
             if (!userPausedRef.current) {
               playVideo();
             }
-          } else if (!entry.isIntersecting || entry.intersectionRatio < 0.2) {
+          } else if (!entry.isIntersecting || entry.intersectionRatio < 0.1) {
             isIntersectingRef.current = false;
             pauseVideo();
+            // Reset manual pause state when scrolling away so it auto-plays next time user returns
             userPausedRef.current = false;
           }
         });
       },
       {
-        threshold: [0.2, 0.35],
+        threshold: [0, 0.1, 0.15, 0.35, 0.6],
       }
     );
 
     observer.observe(container);
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
   }, [playVideo, pauseVideo]);
 
-  // Tab switch handling
+  // User scroll / touch awakening: ensure video plays as user scrolls down the feed
+  useEffect(() => {
+    const onScrollOrTouch = () => {
+      if (isIntersectingRef.current && videoRef.current && videoRef.current.paused && !userPausedRef.current) {
+        playVideo();
+      }
+    };
+
+    window.addEventListener('scroll', onScrollOrTouch, { passive: true });
+    window.addEventListener('touchmove', onScrollOrTouch, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScrollOrTouch);
+      window.removeEventListener('touchmove', onScrollOrTouch);
+    };
+  }, [playVideo]);
+
+  // Tab switch handling: pause when tab hidden, resume when visible
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -138,11 +158,6 @@ export default function FeedVideoPlayer({
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [playVideo, pauseVideo]);
-
-  // Check if video is already ready when component mounts or updates
-  const handleLoadedData = () => {
-    setIsLoaded(true);
-  };
 
   // Toggle Mute / Unmute
   const toggleMute = (e: React.MouseEvent) => {
@@ -162,7 +177,7 @@ export default function FeedVideoPlayer({
     }
   };
 
-  // Toggle Play / Pause
+  // Toggle Play / Pause on user click
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
     const video = videoRef.current;
@@ -206,20 +221,24 @@ export default function FeedVideoPlayer({
         </div>
       )}
 
-      {/* 2. Hardware-accelerated Video Element */}
+      {/* 2. Hardware-accelerated Video Element with direct autoPlay */}
       <video
         ref={videoRef}
-        src={isNearViewport ? src : undefined}
+        src={src}
         poster={TRANSPARENT_POSTER}
+        autoPlay
         playsInline
         // @ts-ignore
         webkit-playsinline="true"
         x5-playsinline="true"
         loop
         muted={isMuted}
-        preload={isNearViewport ? 'auto' : preload}
-        onLoadedData={handleLoadedData}
-        onCanPlay={handleLoadedData}
+        // @ts-ignore
+        defaultMuted={true}
+        preload={preload}
+        onLoadedData={handleReadyToPlay}
+        onCanPlay={handleReadyToPlay}
+        onCanPlayThrough={handleReadyToPlay}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onClick={togglePlay}
