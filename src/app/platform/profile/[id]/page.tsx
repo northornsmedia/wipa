@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { 
   BadgeCheck, MapPin, Link as LinkIcon, Users, User, Mail, MessageSquare, Briefcase, GraduationCap,
-  Hash, ThumbsUp, Share2, Send, UserPlus, X, PlayCircle, Star, Copy, Globe2,
+  Hash, ThumbsUp, Share2, Send, UserPlus, X, PlayCircle, Star, Copy, Globe2, Plus,
   CheckCircle2, Clock, MessageCircle, Repeat2, UserCheck, Play, FileText, ArrowUpRight, Heart, Bookmark, ShieldCheck, Check, MoreHorizontal, Eye,
   TrendingUp, Search, Image as ImageIcon, Video, Award, Gift, Sparkles, Folder,
   Lightbulb, HelpCircle, Headphones, Calendar, Building2
