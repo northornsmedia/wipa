@@ -482,45 +482,54 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
-      {/* Main Content: Edge-to-edge on mobile with px-2, container on desktop */}
-      <div className="flex-1 w-full max-w-none sm:max-w-[1400px] mx-auto px-2 sm:px-6 lg:px-8 py-2.5 sm:py-6 md:py-8">
+      {/* Main Content: Edge-to-edge on mobile with px-3.5, container on desktop */}
+      <div className="flex-1 w-full max-w-none sm:max-w-[1400px] mx-auto px-3.5 sm:px-6 lg:px-8 py-3 sm:py-6 md:py-8">
         
-        {/* Header Section */}
-        <div className="mb-3 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-          <div className="w-full sm:w-auto">
-            <div className="flex items-center justify-between sm:justify-start gap-3">
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="w-9 h-9 sm:w-12 sm:h-12 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-xs">
-                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-[#5a32fa] dark:text-[#ff90e8]" />
-                </div>
-                <div>
-                  <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
-                    Resource Library
-                  </h1>
-                  <p className="text-[11px] sm:hidden text-gray-500 dark:text-gray-400 font-medium">
-                    11 IP verticals, webinars & directories
-                  </p>
-                </div>
-              </div>
-
-              {/* Mobile Quick Upload Action */}
-              <Link
-                href="/platform/resources/ip-services/list"
-                className="sm:hidden inline-flex items-center gap-1 bg-[#5a32fa] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-xs active:scale-95 transition-all shrink-0"
-              >
-                <Plus size={13} strokeWidth={2.6} />
-                <span>Upload</span>
-              </Link>
+        {/* Mobile Modern Header */}
+        <div className="sm:hidden mb-3.5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                Resource Library
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                11 IP verticals, webinars & directories
+              </p>
             </div>
-            <p className="hidden sm:block text-gray-500 dark:text-gray-400 font-medium mt-2 text-xs sm:text-sm md:text-base max-w-xl text-center sm:text-left">
-              Access exclusive guides, templates, webinars, and reports.
-            </p>
-          </div>
 
-          <div className="hidden sm:flex items-center">
+            {/* Mobile Quick Upload Action */}
             <Link
               href="/platform/resources/ip-services/list"
-              className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#5a32fa] to-[#ff2a5f] text-white px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold shadow-md shadow-[#5a32fa]/20 hover:shadow-lg hover:shadow-[#5a32fa]/30 active:scale-95 transition-all overflow-hidden"
+              className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#5a32fa] to-[#ff2a5f] text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-xs active:scale-95 transition-all shrink-0"
+            >
+              <Plus size={13} strokeWidth={2.8} />
+              <span>Upload</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Desktop Header */}
+        <div className="hidden sm:flex mb-8 flex-row items-center justify-between gap-4">
+          <div className="w-auto">
+            <div className="flex items-center justify-start gap-3">
+              <div className="w-12 h-12 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 p-2.5 rounded-2xl flex items-center justify-center shrink-0 shadow-xs">
+                <BookOpen className="w-6 h-6 text-[#5a32fa] dark:text-[#ff90e8]" />
+              </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight text-left">
+                  Resource Library
+                </h1>
+                <p className="text-gray-500 dark:text-gray-400 font-medium mt-1 text-sm md:text-base text-left">
+                  Access exclusive guides, templates, webinars, and reports across 11 verticals.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center">
+            <Link
+              href="/platform/resources/ip-services/list"
+              className="group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#5a32fa] to-[#ff2a5f] text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-md shadow-[#5a32fa]/20 hover:shadow-lg hover:shadow-[#5a32fa]/30 active:scale-95 transition-all overflow-hidden"
             >
               <Plus size={16} strokeWidth={2.8} className="relative z-10 group-hover:rotate-90 transition-transform duration-300" />
               <span className="relative z-10">Upload Resource</span>
@@ -530,8 +539,8 @@ export default function ResourcesPage() {
 
         {/* Mobile Real-Time Interactive Search Bar */}
         <div className="sm:hidden mb-2.5">
-          <div className="relative flex items-center w-full bg-white dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 shadow-2xs">
-            <Search size={14} className="text-slate-400 mr-2 shrink-0" />
+          <div className="relative flex items-center w-full bg-slate-100 dark:bg-white/[0.06] border border-transparent focus-within:border-[#5a32fa]/40 rounded-2xl px-3.5 py-2.5 transition-colors">
+            <Search size={15} className="text-slate-400 mr-2 shrink-0" />
             <input
               type="text"
               value={searchQuery}
@@ -543,7 +552,7 @@ export default function ResourcesPage() {
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white"
               >
                 <X size={14} />
               </button>
@@ -552,7 +561,7 @@ export default function ResourcesPage() {
         </div>
 
         {/* Edge-to-Edge Swipeable Category Chips for Mobile Navigation */}
-        <div className="mb-3 sm:hidden -mx-2 px-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mb-3.5 sm:hidden -mx-3.5 px-3.5 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex items-center gap-1.5 w-max py-0.5">
             <button
               type="button"
@@ -560,10 +569,10 @@ export default function ResourcesPage() {
                 setActiveTab('All Resources');
                 setSearchQuery("");
               }}
-              className={`px-3 py-1 rounded-full text-xs font-bold border transition-all whitespace-nowrap active:scale-95 shrink-0 ${
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap active:scale-95 shrink-0 ${
                 activeTab === 'All Resources'
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-transparent shadow-xs'
-                  : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10'
+                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs'
+                  : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-white/10'
               }`}
             >
               All Verticals
@@ -591,10 +600,10 @@ export default function ResourcesPage() {
                   onClick={() => {
                     setActiveTab(isActive ? 'All Resources' : tab.key);
                   }}
-                  className={`px-3 py-1 rounded-full text-xs font-bold border transition-all whitespace-nowrap active:scale-95 shrink-0 ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap active:scale-95 shrink-0 ${
                     isActive
-                      ? 'bg-[#5a32fa] text-white border-transparent shadow-xs'
-                      : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10'
+                      ? 'bg-[#5a32fa] text-white shadow-xs'
+                      : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-white/10'
                   }`}
                 >
                   {tab.title}
@@ -604,9 +613,9 @@ export default function ResourcesPage() {
           </div>
         </div>
 
-        {/* 1. MOBILE-ONLY BENTO GRID (Edge-to-edge, Asymmetric 2-column layout) */}
-        <div className="grid grid-cols-2 gap-2 sm:hidden">
-          {filteredResources.map((resource, idx) => {
+        {/* 1. MOBILE-ONLY BENTO GRID (Unified Luxury Aesthetic, No voids, Cohesive styling) */}
+        <div className="grid grid-cols-2 gap-2.5 sm:hidden">
+          {filteredResources.map((resource) => {
             const Icon = resource.icon;
             const categoryHref = resource.path || (
               resource.id === 1 ? `/platform/resources/webinars` :
@@ -630,117 +639,83 @@ export default function ResourcesPage() {
                 ? '/platform/resources/ip-firms/claim'
                 : null;
 
-            // Wide hero card on mobile when configured or if filtered to a single result
             const isWide = filteredResources.length === 1 || Boolean(resource.isWide);
+            const latestItem = resource.latestItems && resource.latestItems.length > 0 ? resource.latestItems[0] : null;
 
             if (isWide) {
               return (
                 <div
                   key={resource.id}
                   onClick={() => router.push(categoryHref)}
-                  className="col-span-2 relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/10 bg-slate-900 text-white shadow-xs active:scale-[0.98] transition-all duration-200 cursor-pointer min-h-[160px] flex flex-col justify-between p-3.5 group"
+                  className="col-span-2 relative rounded-3xl p-4 bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none active:scale-[0.98] transition-all duration-200 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[145px]"
                 >
-                  {/* Background Image with Dark Cinematic Gradient Overlay */}
-                  <div className="absolute inset-0 z-0">
-                    <img
-                      src={resource.image || `/resourceimg1.jpg`}
-                      alt={resource.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30" />
-                  </div>
-
-                  {/* Top Row: Category Badge & Action Chip */}
-                  <div className="relative z-10 flex items-center justify-between">
-                    <span
-                      className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider text-white border border-white/20 backdrop-blur-md"
-                      style={{ backgroundColor: `${resource.color}40` }}
-                    >
-                      {resource.badge || 'FEATURED'}
-                    </span>
-                    <span className="text-[11px] font-bold text-white/95 bg-black/40 px-2.5 py-0.5 rounded-full backdrop-blur-md flex items-center gap-1 border border-white/10">
-                      {resource.actionText || 'Explore ↗'}
-                    </span>
-                  </div>
-
-                  {/* Bottom Row: Title, Subtitle & Latest Item Tag */}
-                  <div className="relative z-10 mt-3">
-                    <h3 className="text-base font-black text-white leading-tight">
-                      {resource.title}
-                    </h3>
-                    <p className="text-[11px] text-white/80 line-clamp-1 mt-0.5">
-                      {resource.description}
-                    </p>
-
-                    <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-white/10">
-                      {resource.latestItems && resource.latestItems.length > 0 ? (
-                        <div className="flex items-center gap-1.5 text-[10px] text-white/90 font-medium">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          <span className="truncate max-w-[200px]">{resource.latestItems[0].title}</span>
-                        </div>
-                      ) : (
-                        <span className="text-[10px] text-white/70">Explore full vertical</span>
-                      )}
-
-                      {listingHref && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            router.push(listingHref);
-                          }}
-                          className="px-2 py-0.5 rounded-full bg-[#5a32fa] text-[10px] font-bold text-white shadow-xs active:scale-95"
-                        >
-                          + {resource.id === 12 ? 'List Service' : 'List Firm'}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-
-            // Compact 1-column Tile
-            return (
-              <div
-                key={resource.id}
-                onClick={() => router.push(categoryHref)}
-                className="col-span-1 relative rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/[0.04] shadow-xs active:scale-[0.98] transition-all duration-200 cursor-pointer min-h-[148px] flex flex-col justify-between p-3 group"
-              >
-                {/* Ambient Soft Glow in Corner */}
-                <div
-                  className="absolute -top-6 -right-6 w-16 h-16 rounded-full blur-xl opacity-20 pointer-events-none"
-                  style={{ backgroundColor: resource.color }}
-                />
-
-                {/* Top Row: Icon in Rounded Box + Tag */}
-                <div className="flex items-start justify-between relative z-10">
+                  {/* Subtle ambient gradient overlay matching category tint */}
                   <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
-                    style={{ backgroundColor: `${resource.color}18`, color: resource.color }}
-                  >
-                    <Icon size={18} strokeWidth={2.2} />
-                  </div>
-                  <span
-                    className="text-[8.5px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded"
-                    style={{ color: resource.color, backgroundColor: `${resource.color}15` }}
-                  >
-                    {resource.badge || 'VERTICAL'}
-                  </span>
-                </div>
+                    className="absolute top-0 right-0 w-44 h-44 rounded-full blur-3xl opacity-15 pointer-events-none"
+                    style={{ backgroundColor: resource.color }}
+                  />
 
-                {/* Bottom Row: Title, Action Teaser */}
-                <div className="relative z-10 mt-2">
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-[#5a32fa] transition-colors">
-                    {resource.title}
-                  </h3>
+                  {/* Top Row: Icon, Title & Badge */}
+                  <div className="relative z-10 flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs"
+                        style={{ backgroundColor: `${resource.color}15`, color: resource.color }}
+                      >
+                        <Icon size={22} strokeWidth={2.2} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span
+                            className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full"
+                            style={{ backgroundColor: `${resource.color}15`, color: resource.color }}
+                          >
+                            {resource.badge || 'FEATURED'}
+                          </span>
+                          {resource.id === 1 && (
+                            <span className="flex items-center gap-1 text-[9px] font-bold text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-full">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                              LIVE
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-[15px] font-bold text-slate-900 dark:text-white leading-tight mt-1 truncate">
+                          {resource.title}
+                        </h3>
+                      </div>
+                    </div>
 
-                  <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-100 dark:border-white/5">
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold truncate max-w-[95px]">
-                      {resource.actionText || 'Explore'}
+                    <span className="text-xs font-bold text-[#5a32fa] dark:text-[#ff90e8] bg-[#5a32fa]/10 dark:bg-white/10 px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">
+                      Explore ↗
                     </span>
-                    {listingHref ? (
+                  </div>
+
+                  {/* Middle Description */}
+                  <p className="relative z-10 text-xs text-slate-500 dark:text-slate-400 mt-2.5 line-clamp-2 leading-relaxed">
+                    {resource.description}
+                  </p>
+
+                  {/* Bottom Preview Pill or Listing Action */}
+                  <div className="relative z-10 mt-3 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+                    {latestItem ? (
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span
+                          className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0"
+                          style={{ backgroundColor: `${resource.color}15`, color: resource.color }}
+                        >
+                          {latestItem.type || 'NEW'}
+                        </span>
+                        <p className="text-[11px] font-medium text-slate-700 dark:text-slate-300 truncate">
+                          {latestItem.title}
+                        </p>
+                      </div>
+                    ) : (
+                      <span className="text-[11px] font-semibold text-slate-400">
+                        {resource.actionText || 'Explore vertical'}
+                      </span>
+                    )}
+
+                    {listingHref && (
                       <button
                         type="button"
                         onClick={(e) => {
@@ -748,16 +723,84 @@ export default function ResourcesPage() {
                           e.stopPropagation();
                           router.push(listingHref);
                         }}
-                        className="text-[9.5px] font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:underline"
+                        className="px-2.5 py-1 rounded-full bg-[#5a32fa] text-[10px] font-bold text-white shadow-xs active:scale-95 shrink-0 ml-2"
                       >
-                        +List
+                        + {resource.id === 12 ? 'List Service' : 'List Firm'}
                       </button>
-                    ) : (
-                      <span className="text-xs text-slate-400 group-hover:text-[#5a32fa] group-hover:translate-x-0.5 transition-all">
-                        ↗
-                      </span>
                     )}
                   </div>
+                </div>
+              );
+            }
+
+            // Compact 1-column Tile (Uniform luxury card, no voids)
+            return (
+              <div
+                key={resource.id}
+                onClick={() => router.push(categoryHref)}
+                className="col-span-1 relative rounded-3xl p-3.5 bg-white dark:bg-[#101626] border border-slate-200/80 dark:border-white/10 shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-none active:scale-[0.98] transition-all duration-200 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[160px]"
+              >
+                {/* Subtle ambient tint */}
+                <div
+                  className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl opacity-15 pointer-events-none"
+                  style={{ backgroundColor: resource.color }}
+                />
+
+                {/* Top Row: Squircle Icon + Tag Badge */}
+                <div className="flex items-start justify-between relative z-10 gap-2">
+                  <div
+                    className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs"
+                    style={{ backgroundColor: `${resource.color}15`, color: resource.color }}
+                  >
+                    <Icon size={19} strokeWidth={2.2} />
+                  </div>
+                  <span
+                    className="text-[8.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0"
+                    style={{ color: resource.color, backgroundColor: `${resource.color}15` }}
+                  >
+                    {resource.badge || 'HUB'}
+                  </span>
+                </div>
+
+                {/* Middle: Title & Informative Subtitle */}
+                <div className="relative z-10 mt-2.5">
+                  <h3 className="text-[13.5px] font-bold text-slate-900 dark:text-white leading-snug line-clamp-2">
+                    {resource.title}
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                    {resource.description}
+                  </p>
+                </div>
+
+                {/* Bottom Row: Themed Action Button & Arrow */}
+                <div className="relative z-10 mt-3 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+                  <span
+                    className="text-[10.5px] font-bold truncate max-w-[100px]"
+                    style={{ color: resource.color }}
+                  >
+                    {resource.actionText || 'Explore'}
+                  </span>
+
+                  {listingHref ? (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(listingHref);
+                      }}
+                      className="text-[10px] font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:underline"
+                    >
+                      +List
+                    </button>
+                  ) : (
+                    <span
+                      className="text-xs font-bold transition-transform group-hover:translate-x-0.5"
+                      style={{ color: resource.color }}
+                    >
+                      ↗
+                    </span>
+                  )}
                 </div>
               </div>
             );
@@ -766,28 +809,28 @@ export default function ResourcesPage() {
           {/* Featured Global IP Partner Spotlight Banner (Mobile Bento Hero) */}
           <div
             onClick={() => router.push('/platform/resources/ip-firms')}
-            className="col-span-2 p-3.5 sm:p-5 rounded-2xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#ff2a5f] text-white shadow-md relative overflow-hidden flex flex-col justify-between min-h-[118px] active:scale-[0.99] transition-all cursor-pointer"
+            className="col-span-2 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#ff2a5f] text-white shadow-md relative overflow-hidden flex flex-col justify-between min-h-[125px] active:scale-[0.99] transition-all cursor-pointer"
           >
             <div className="relative z-10 flex items-start justify-between">
-              <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/20 text-white backdrop-blur-md border border-white/20">
+              <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/20 text-white backdrop-blur-md border border-white/20">
                 ⭐ Featured Global IP Partner
               </span>
-              <span className="text-xs font-bold bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md">
+              <span className="text-xs font-bold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-md">
                 Explore ↗
               </span>
             </div>
-            <div className="relative z-10 mt-2">
-              <h3 className="text-sm sm:text-base font-black">
+            <div className="relative z-10 mt-3">
+              <h3 className="text-base font-black">
                 Ennoble IP · Global Patent Prosecution
               </h3>
-              <p className="text-[11px] text-white/80 line-clamp-1 mt-0.5">
+              <p className="text-xs text-white/80 line-clamp-1 mt-0.5">
                 Accelerate cross-border patent applications with 24/7 AI-assisted analytics.
               </p>
             </div>
           </div>
 
           {filteredResources.length === 0 && (
-            <div className="col-span-2 py-12 text-center bg-white dark:bg-white/[0.04] rounded-2xl border border-dashed border-gray-200 dark:border-white/10 p-4">
+            <div className="col-span-2 py-12 text-center bg-white dark:bg-white/[0.04] rounded-3xl border border-dashed border-gray-200 dark:border-white/10 p-4">
               <BookOpen size={36} className="mx-auto text-gray-300 dark:text-gray-600 mb-2" />
               <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200">No resources found</h3>
               <p className="text-xs text-gray-400 mt-1">Try clearing your search query or filter chip.</p>
@@ -797,7 +840,7 @@ export default function ResourcesPage() {
                   setSearchQuery("");
                   setActiveTab("All Resources");
                 }}
-                className="mt-3 px-3 py-1 rounded-full bg-[#5a32fa] text-xs font-bold text-white shadow-xs"
+                className="mt-3 px-3.5 py-1 rounded-full bg-[#5a32fa] text-xs font-bold text-white shadow-xs"
               >
                 Reset Filters
               </button>
