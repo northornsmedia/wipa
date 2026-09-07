@@ -126,35 +126,35 @@ export default function IPFirmsPage() {
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#070b14] text-slate-900 dark:text-white pb-32">
       
       {/* Mobile-Native IP Firms Top Bar */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#070b14]/95 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10 px-3.5 sm:px-6 pt-safe pb-2.5 transition-all w-full">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3 h-12 sm:h-14">
-          <div className="flex items-center gap-3">
-            <Link 
-              href="/platform/resources"
-              className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 flex items-center justify-center text-slate-700 dark:text-slate-200 active:scale-90 transition-all shrink-0 border border-slate-200/50 dark:border-white/10"
-              title="Back to Resources"
+      <header className="sticky top-0 md:top-[var(--platform-header-height,0px)] z-40 bg-[#f8fafc]/95 dark:bg-[#070b14]/95 backdrop-blur-xl border-b border-slate-200/60 dark:border-white/10 px-4 pt-safe sm:pt-4 pb-3 sm:px-6 w-full transition-all">
+        <div className="max-w-6xl mx-auto flex items-center gap-3">
+          <Link
+            href="/platform/resources"
+            aria-label="Back to resources"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-[#272535] shadow-[0_5px_18px_rgba(32,25,63,0.07)] border border-slate-100 dark:border-white/10 active:scale-95 transition-transform dark:bg-white/10 dark:text-white"
+          >
+            <ArrowLeft size={19} />
+          </Link>
+          
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7c3aed] dark:text-[#c4b5fd]">
+              Resource space
+            </p>
+            <h1 
+              className="truncate text-[22px] sm:text-[26px] font-bold leading-tight tracking-tight text-slate-900 dark:text-white font-instagram-headline"
+              style={{ fontFamily: "var(--font-instagram-headline), 'Instagram Sans Headline', sans-serif" }}
             >
-              <ArrowLeft size={19} />
-            </Link>
-            <div className="flex items-center gap-2">
-              <h1 
-                className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white font-instagram-headline select-none cursor-default"
-                style={{ fontFamily: "var(--font-instagram-headline), 'Instagram Sans Headline', sans-serif" }}
-              >
-                IP Firms
-              </h1>
-              <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-[#5a32fa] dark:text-purple-300">
-                {filteredFirms.length}
-              </span>
-            </div>
+              IP Firms
+            </h1>
           </div>
 
           <Link
             href="/platform/resources/ip-firms/claim"
-            className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-gradient-to-r from-[#5a32fa] via-[#7952fa] to-[#ff2a5f] text-white text-xs font-black shadow-md shadow-indigo-500/20 active:scale-95 transition-all flex items-center gap-1.5 shrink-0"
+            aria-label="Showcase or list firm"
+            title="List or Claim Your Firm"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#eeeafd] text-[#7248da] dark:bg-[#7c3aed]/20 dark:text-[#c4b5fd] active:scale-95 transition-transform shadow-xs"
           >
-            <Sparkles size={13} />
-            <span>List Firm</span>
+            <Sparkles size={18} />
           </Link>
         </div>
       </header>
