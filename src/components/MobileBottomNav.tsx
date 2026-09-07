@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Plus, BookOpen, User, MessageSquare } from 'lucide-react';
+import { Home, BookOpen, User, MessageSquare, Search } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import MobileCreationSheet from './MobileCreationSheet';
 
@@ -21,6 +21,10 @@ export default function MobileBottomNav() {
   if (pathname === '/platform/create-post' || pathname.startsWith('/platform/messages')) {
     return null;
   }
+
+  const handleOpenSearch = () => {
+    window.dispatchEvent(new CustomEvent('open-mobile-search'));
+  };
 
   return (
     <>
@@ -53,28 +57,25 @@ export default function MobileBottomNav() {
             <MessageSquare size={21} strokeWidth={isActive('/platform/messages') ? 2.4 : 1.9} />
           </Link>
 
-          {/* 3. Executive Pill Action Button (+ Post - Left as is) */}
-          <Link
-            href="/platform/create-post"
-            aria-label="Create Post"
-            className="flex items-center gap-1.5 bg-gradient-to-r from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] text-white px-3.5 py-2 rounded-full font-bold text-xs shadow-lg shadow-[#5a32fa]/30 active:scale-90 transition-transform touch-manipulation cursor-pointer"
-          >
-            <Plus size={16} strokeWidth={3} />
-            <span>Post</span>
-          </Link>
-
-          {/* 4. Resources / Library (No text) */}
+          {/* 3. Executive Pill Action Button (Resources) */}
           <Link
             href="/platform/resources"
-            aria-label="Library"
-            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-90 touch-manipulation ${
-              isActive('/platform/resources')
-                ? 'bg-white/15 text-white'
-                : 'text-gray-400 hover:text-white'
-            }`}
+            aria-label="Resources"
+            className="flex items-center gap-1.5 bg-gradient-to-r from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] text-white px-3.5 py-2 rounded-full font-bold text-xs shadow-lg shadow-[#5a32fa]/30 active:scale-90 transition-transform touch-manipulation cursor-pointer"
           >
-            <BookOpen size={21} strokeWidth={isActive('/platform/resources') ? 2.4 : 1.9} />
+            <BookOpen size={16} strokeWidth={2.4} />
+            <span>Resources</span>
           </Link>
+
+          {/* 4. Search Button */}
+          <button
+            type="button"
+            onClick={handleOpenSearch}
+            aria-label="Search"
+            className="w-11 h-11 rounded-full flex items-center justify-center text-gray-400 hover:text-white transition-all active:scale-90 touch-manipulation cursor-pointer"
+          >
+            <Search size={21} strokeWidth={1.9} />
+          </button>
 
           {/* 5. Profile (No text) */}
           <Link

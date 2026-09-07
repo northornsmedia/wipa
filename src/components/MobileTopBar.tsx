@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, MessageSquare, Menu, X, Sparkles, User, ArrowRight, Globe } from 'lucide-react';
+import { Search, Bell, MessageSquare, Menu, X, Sparkles, User, ArrowRight, Globe, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
@@ -23,6 +23,12 @@ export default function MobileTopBar() {
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleOpenSearch = () => setIsSearchOpen(true);
+    window.addEventListener('open-mobile-search', handleOpenSearch);
+    return () => window.removeEventListener('open-mobile-search', handleOpenSearch);
+  }, []);
 
   useEffect(() => {
     const checkViewport = () => setIsMobile(window.innerWidth < 768);
@@ -137,7 +143,7 @@ export default function MobileTopBar() {
               </h1>
             </div>
 
-            {/* Right: Round Bell (with small top badge) and Round Search */}
+            {/* Right: Round Bell (with small top badge) and Round + Post Button */}
             <div className="flex items-center gap-2">
               <Link
                 href="/platform/notifications"
@@ -150,13 +156,13 @@ export default function MobileTopBar() {
                 </span>
               </Link>
 
-              <button
-                onClick={() => setIsSearchOpen(true)}
-                aria-label="Search WIPA"
+              <Link
+                href="/platform/create-post"
+                aria-label="Create Post"
                 className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
               >
-                <Search size={18} strokeWidth={2.2} />
-              </button>
+                <Plus size={20} strokeWidth={2.4} />
+              </Link>
             </div>
           </div>
         </header>
@@ -181,14 +187,14 @@ export default function MobileTopBar() {
 
             {/* Right Action Hub */}
             <div className="flex items-center gap-1.5">
-              {/* Global Search Button */}
-              <button
-                onClick={() => setIsSearchOpen(true)}
-                aria-label="Search WIPA"
+              {/* Create Post Button (+) */}
+              <Link
+                href="/platform/create-post"
+                aria-label="Create Post"
                 className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90"
               >
-                <Search size={18} />
-              </button>
+                <Plus size={18} strokeWidth={2.4} />
+              </Link>
 
               {/* Notifications Bell */}
               <Link
