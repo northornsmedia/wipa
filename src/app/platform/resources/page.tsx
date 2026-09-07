@@ -32,13 +32,13 @@ const MOCK_CATEGORIES = [
   },
   {
     id: 4,
-    title: "Women's IP World",
+    title: "Publications",
     icon: Globe,
     color: "#e84393",
-    description: "Spotlighting achievements and topics relevant to women in IP.",
+    description: "Explore official partner publications, annual issues, and global editorial visibility for women in IP.",
     latestItems: [
-      { title: "Top 50 Women in IP 2026", type: "Report", time: "4 hours ago" },
-      { title: "Diversity in IP", type: "Episode", time: "5 days ago" }
+      { title: "Women's IP World Annual", type: "Annual Issue", time: "Available" },
+      { title: "Global IP Magazine", type: "Magazine", time: "Available" }
     ]
   },
   {
@@ -449,7 +449,7 @@ export default function ResourcesPage() {
               { title: 'IP Services', path: '/platform/resources/ip-services', color: 'bg-teal-500/10 text-teal-600 border-teal-500/20' },
               { title: 'Podcasts', path: '/platform/resources/podcasts-conversations', color: 'bg-purple-500/10 text-purple-500 border-purple-500/20' },
               { title: 'Research & Reports', path: '/platform/resources/research-reports', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
-              { title: "Women's IP World", path: '/platform/resources/womens-ip-world', color: 'bg-pink-500/10 text-pink-500 border-pink-500/20' },
+              { title: "Publications", path: '/platform/publications', color: 'bg-pink-500/10 text-pink-500 border-pink-500/20' },
               { title: 'Guides & Toolkits', path: '/platform/resources/guides-toolkits', color: 'bg-teal-500/10 text-teal-500 border-teal-500/20' },
               { title: 'In-House Counsel', path: '/platform/resources/in-house-counsel', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
               { title: 'Career & Leadership', path: '/platform/resources/career-leadership', color: 'bg-orange-500/10 text-orange-500 border-orange-500/20' }
@@ -486,7 +486,7 @@ export default function ResourcesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredResources.map((resource) => {
             const Icon = resource.icon;
-            const categoryHref = resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/resources/womens-ip-world` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : resource.id === 12 ? `/platform/resources/ip-services` : resource.id === 13 ? `/platform/resources/ip-firms` : resource.id === 14 ? `/platform/resources/wellness-v2` : `/platform/resources/wellness/${resource.id}`;
+            const categoryHref = resource.id === 1 ? `/platform/resources/webinars` : resource.id === 2 ? `/platform/resources/wellness` : resource.id === 3 ? `/platform/resources/education` : resource.id === 4 ? `/platform/publications` : resource.id === 5 ? `/platform/resources/articles-insights` : resource.id === 6 ? `/platform/resources/ip-news` : resource.id === 7 ? `/platform/resources/research-reports` : resource.id === 8 ? `/platform/resources/guides-toolkits` : resource.id === 9 ? `/platform/resources/career-leadership` : resource.id === 10 ? `/platform/resources/in-house-counsel` : resource.id === 11 ? `/platform/resources/podcasts-conversations` : resource.id === 12 ? `/platform/resources/ip-services` : resource.id === 13 ? `/platform/resources/ip-firms` : resource.id === 14 ? `/platform/resources/wellness-v2` : `/platform/resources/wellness/${resource.id}`;
             const listingHref = resource.id === 12
               ? '/platform/resources/ip-services/list'
               : resource.id === 13
