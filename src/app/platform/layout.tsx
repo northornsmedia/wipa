@@ -10,6 +10,7 @@ import Sidebar from "@/components/Sidebar";
 import ThemeWrapper from "@/components/ThemeWrapper";
 import VoiceGreeting from "@/components/VoiceGreeting";
 import { PushNotificationPrompt } from "@/components/chat/PushNotificationPrompt";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function PlatformLayout({
   children,
@@ -18,6 +19,7 @@ export default function PlatformLayout({
 }) {
   const pathname = usePathname();
   const isMessagesPage = pathname?.startsWith('/platform/messages');
+  const isInsideChat = useAppStore((state) => state.isInsideChat);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const shellStyle = {
@@ -50,12 +52,12 @@ export default function PlatformLayout({
               isMessagesPage ? 'pl-0' : 'lg:pl-[var(--desktop-sidebar-width)]'
             }`}>
               <main className={`flex-1 w-full max-w-full min-w-0 overflow-x-hidden box-border ${
-                isMessagesPage ? 'pb-0' : 'pb-24 md:pb-0'
+                isMessagesPage ? (isInsideChat ? 'pb-0' : 'pb-20 md:pb-0') : 'pb-24 md:pb-0'
               }`}>
                 {children}
               </main>
-              {/* Mobile 5-Tab Bottom Navigation Bar (Hidden on messages page to give 100% full screen chat) */}
-              {!isMessagesPage && <MobileBottomNav />}
+              {/* Mobile 5-Tab Bottom Navigation Bar (Hidden inside active chat window) */}
+              {!isInsideChat && <MobileBottomNav />}
             </div>
           </div>
         </AuthGuard>

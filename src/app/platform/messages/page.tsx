@@ -61,7 +61,7 @@ function getDateDivider(dateStr?: string): string {
 
 function MessagesContent() {
   const router = useRouter();
-  const { user, cachedConversations, setCachedConversations } = useAppStore();
+  const { user, cachedConversations, setCachedConversations, setIsInsideChat } = useAppStore();
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get('userId');
   const targetConversationId = searchParams.get('chatId');
@@ -70,6 +70,13 @@ function MessagesContent() {
   const [activeChatId, setActiveChatId] = useState<string | null>(() => targetConversationId || (cachedConversations && cachedConversations.length > 0 ? String(cachedConversations[0].id) : null));
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
+
+  useEffect(() => {
+    setIsInsideChat(showMobileChat);
+    return () => {
+      setIsInsideChat(false);
+    };
+  }, [showMobileChat, setIsInsideChat]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobileView(window.innerWidth < 768);

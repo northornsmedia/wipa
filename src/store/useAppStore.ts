@@ -161,6 +161,8 @@ interface AppState {
   setCachedConversations: (convs: any[]) => void;
   likedPostIds: number[];
   toggleLike: (postId: number) => void;
+  isInsideChat: boolean;
+  setIsInsideChat: (isInsideChat: boolean) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -178,6 +180,8 @@ export const useAppStore = create<AppState>()(
       setLexiqMessages: (lexiqMessages) => set({ lexiqMessages }),
       user: null,
       setUser: (user) => set({ user }),
+      isInsideChat: false,
+      setIsInsideChat: (isInsideChat) => set({ isInsideChat }),
       posts: DUMMY_POSTS,
       cachedFeedPosts: [],
       setCachedFeedPosts: (cachedFeedPosts) => set({ cachedFeedPosts }),
@@ -216,7 +220,7 @@ export const useAppStore = create<AppState>()(
         }))
       }),
       partialize: (state) => {
-        const { cachedFeedPosts: _cachedFeedPosts, ...persistedState } = state;
+        const { cachedFeedPosts: _cachedFeedPosts, isInsideChat: _isInsideChat, ...persistedState } = state;
         return persistedState;
       },
     }

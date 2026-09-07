@@ -13,6 +13,7 @@ import MobileCreationSheet from './MobileCreationSheet';
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const user = useAppStore((state) => state.user);
+  const isInsideChat = useAppStore((state) => state.isInsideChat);
   const [isCreationOpen, setIsCreationOpen] = useState(false);
 
   const isActive = (path: string) => {
@@ -20,7 +21,7 @@ export default function MobileBottomNav() {
     return pathname.startsWith(path);
   };
 
-  if (pathname === '/platform/create-post' || pathname.startsWith('/platform/messages')) {
+  if (pathname === '/platform/create-post' || (pathname.startsWith('/platform/messages') && isInsideChat)) {
     return null;
   }
 

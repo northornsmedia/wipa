@@ -147,7 +147,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = React.memo(({
         </div>
 
         {/* Conversations List */}
-        <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-gray-50 dark:divide-white/5 select-none">
+        <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-gray-50 dark:divide-white/5 select-none pb-24 md:pb-0">
           {filteredConversations.map(chat => (
             <div 
               key={chat.id}
