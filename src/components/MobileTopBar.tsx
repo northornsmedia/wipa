@@ -128,8 +128,15 @@ export default function MobileTopBar() {
       {pathname === '/platform' ? (
         <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-white dark:bg-[#0b0f19] pt-safe px-3.5 pb-0 transition-all w-full max-w-full box-border border-0 shadow-none">
           <div className="h-14 flex items-center justify-between w-full">
-            {/* Left: Home title */}
+            {/* Left: Drawer Menu button (SquaresPlus) + Home title */}
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsDrawerOpen(true)}
+                aria-label="Open Navigation Menu"
+                className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
+              >
+                <SquaresPlusIcon size={20} strokeWidth={1.8} />
+              </button>
               <h1 
                 onClick={handleLogoTap} 
                 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight select-none cursor-pointer"
@@ -138,7 +145,7 @@ export default function MobileTopBar() {
               </h1>
             </div>
 
-            {/* Right: Round Bell, Round + Post Button, and Round Menu (SquaresPlus) */}
+            {/* Right: Round Bell (with small top badge) and Round + Post Button */}
             <div className="flex items-center gap-2">
               <Link
                 href="/platform/notifications"
@@ -158,14 +165,6 @@ export default function MobileTopBar() {
               >
                 <Plus size={20} strokeWidth={2.4} />
               </Link>
-
-              <button
-                onClick={() => setIsDrawerOpen(true)}
-                aria-label="Open Navigation Menu"
-                className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
-              >
-                <SquaresPlusIcon size={20} strokeWidth={1.8} />
-              </button>
             </div>
           </div>
         </header>
@@ -173,20 +172,30 @@ export default function MobileTopBar() {
         /* STANDARD MOBILE TOP BAR FOR ALL OTHER PAGES */
         <header className="md:hidden sticky top-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-all w-full max-w-full box-border">
           <div className="h-14 flex items-center justify-between w-full">
-            {/* Left Brand Zone (Double-tap / double-click toggles Light/Dark theme) */}
-            <Link 
-              href="/platform" 
-              onClick={handleLogoTap}
-              title="Double tap to toggle Light / Dark mode"
-              className="flex items-center gap-2 active:scale-95 transition-transform select-none cursor-pointer"
-            >
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] flex items-center justify-center text-white font-black text-xs shadow-md shadow-[#5a32fa]/20">
-                W
-              </div>
-              <span className="font-black text-base tracking-tight text-gray-900 dark:text-white flex items-center">
-                WIPA<span className="text-[#ff2a5f] text-xs ml-0.5 font-bold">●</span>
-              </span>
-            </Link>
+            {/* Left Zone: Drawer Menu (SquaresPlus) + Brand Zone */}
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={() => setIsDrawerOpen(true)}
+                aria-label="Open Navigation Menu"
+                className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90 overflow-hidden ring-1 ring-gray-200 dark:ring-white/10"
+              >
+                <SquaresPlusIcon size={18} strokeWidth={1.8} />
+              </button>
+
+              <Link 
+                href="/platform" 
+                onClick={handleLogoTap}
+                title="Double tap to toggle Light / Dark mode"
+                className="flex items-center gap-2 active:scale-95 transition-transform select-none cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] via-[#ff2a5f] to-[#ff90e8] flex items-center justify-center text-white font-black text-xs shadow-md shadow-[#5a32fa]/20">
+                  W
+                </div>
+                <span className="font-black text-base tracking-tight text-gray-900 dark:text-white flex items-center">
+                  WIPA<span className="text-[#ff2a5f] text-xs ml-0.5 font-bold">●</span>
+                </span>
+              </Link>
+            </div>
 
             {/* Right Action Hub */}
             <div className="flex items-center gap-1.5">
@@ -223,15 +232,6 @@ export default function MobileTopBar() {
               >
                 <Globe size={18} />
               </Link>
-
-              {/* Drawer Menu Trigger */}
-              <button
-                onClick={() => setIsDrawerOpen(true)}
-                aria-label="Open Navigation Menu"
-                className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90 ml-0.5 overflow-hidden ring-1 ring-gray-200 dark:ring-white/10"
-              >
-                <SquaresPlusIcon size={18} strokeWidth={1.8} />
-              </button>
             </div>
           </div>
         </header>
