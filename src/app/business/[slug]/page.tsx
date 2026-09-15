@@ -24,7 +24,9 @@ const TYPE_LABELS: Record<string, string> = {
   other: 'Other'
 };
 
-export default function PublicBusinessProfilePage({ params }: { params: { slug: string } }) {
+export default function PublicBusinessProfilePage({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
+  const resolvedParams = React.use(params as any) as { slug: string };
+  const slug = resolvedParams?.slug;
   const { user } = useAppStore();
   const [business, setBusiness] = useState<any>(null);
   const [team, setTeam] = useState<any[]>([]);
@@ -32,9 +34,10 @@ export default function PublicBusinessProfilePage({ params }: { params: { slug: 
   const [activeTab, setActiveTab] = useState('about');
 
   useEffect(() => {
+    if (!slug) return;
     const fetchBusiness = async () => {
       setLoading(true);
-      const { data } = await supabase.from('business_profiles').select('*').eq('slug', params.slug).single();
+      const { data } = await supabase.from('business_profiles').select('*').eq('slug', slug).maybeSingle();
       
       if (data) {
         setBusiness(data);
@@ -53,7 +56,7 @@ export default function PublicBusinessProfilePage({ params }: { params: { slug: 
     };
     
     fetchBusiness();
-  }, [params.slug]);
+  }, [slug]);
 
   if (loading) {
     return <ThemeWrapper><div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#020617]"><DotmCircular7 size={40} className="text-[#6600FF]" /></div></ThemeWrapper>;

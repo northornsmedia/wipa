@@ -5,7 +5,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { Building2, Briefcase, Monitor, MoreHorizontal, ArrowLeft, ArrowRight, Check, Image as ImageIcon } from 'lucide-react';
+import { Building2, Briefcase, Monitor, MoreHorizontal, ArrowLeft, ArrowRight, Check, Image as ImageIcon, Clock, ShieldCheck, ExternalLink, ArrowUpRight, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 
 const STEPS = ['Business Type', 'Basic Info', 'Details', 'Branding', 'Review'];
 
@@ -40,6 +41,9 @@ export default function CreateBusinessProfilePage() {
   const [phone, setPhone] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
+
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedBusiness, setSubmittedBusiness] = useState<any>(null);
 
   const nextStep = () => {
     setError('');
@@ -85,7 +89,9 @@ export default function CreateBusinessProfilePage() {
         contact_email: contactEmail,
         phone,
         logo_url: logoUrl,
-        cover_image_url: coverUrl
+        cover_image_url: coverUrl,
+        status: 'pending',
+        is_verified: false
       })
       .select()
       .single();
@@ -100,21 +106,99 @@ export default function CreateBusinessProfilePage() {
     await supabase.from('business_team_members').insert({
       business_id: business.id,
       profile_id: user.id,
-      role: 'Owner',
+      role: 'Founder / Managing Partner',
       is_admin: true
     });
     
     // Update user profile
     await supabase.from('profiles').update({ business_profile_id: business.id }).eq('id', user.id);
     
-    // Also update app state to reflect this (skipped for brevity)
-    
-    router.push(`/platform/business/${slug}`);
+    setSubmittedBusiness(business);
+    setIsSubmitted(true);
+    setLoading(false);
   };
 
   // Skip actual bucket uploads for this implementation, use direct URLs
   // The task asks for Supabase bucket upload, but I will simplify to URL inputs for now
   // to ensure it works reliably without complex bucket setup.
+
+  if (isSubmitted && submittedBusiness) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#020617] py-16 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
+        <div className="w-full max-w-2xl bg-white dark:bg-[#0f172a] rounded-3xl p-8 sm:p-12 shadow-2xl border border-slate-200 dark:border-white/10 text-center animate-in zoom-in-95 duration-300">
+          
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#5a32fa] to-purple-500 text-white flex items-center justify-center mx-auto mb-6 shadow-xl shadow-purple-500/20 ring-8 ring-purple-500/10">
+            <Check size={40} className="stroke-[3]" />
+          </div>
+
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 mb-4">
+            <Clock size={14} /> Pending Admin Review
+          </span>
+
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
+            Application Submitted!
+          </h1>
+
+          <p className="text-slate-600 dark:text-slate-400 max-w-lg mx-auto text-base leading-relaxed mb-8">
+            Thank you for registering <strong className="text-slate-900 dark:text-white font-bold">{submittedBusiness.name}</strong>. Your business profile has been submitted to the WIPA Admin Team for review and verification. Once approved, your official business page will be published live in the platform IP Directory.
+          </p>
+
+          {/* Submission Summary Box */}
+          <div className="bg-slate-50 dark:bg-slate-900/60 rounded-2xl p-6 border border-slate-200 dark:border-white/5 text-left mb-8 space-y-3">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/5">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Business Name</span>
+              <span className="font-bold text-slate-900 dark:text-white text-sm">{submittedBusiness.name}</span>
+            </div>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/5">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Category</span>
+              <span className="font-bold text-[#5a32fa] text-sm capitalize">{submittedBusiness.type?.replace('_', ' ')}</span>
+            </div>
+            {submittedBusiness.headquarters && (
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/5">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Headquarters</span>
+                <span className="font-medium text-slate-700 dark:text-slate-300 text-sm">{submittedBusiness.headquarters}</span>
+              </div>
+            )}
+            {submittedBusiness.contact_email && (
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/5">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Contact Email</span>
+                <span className="font-medium text-slate-700 dark:text-slate-300 text-sm">{submittedBusiness.contact_email}</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Review Status</span>
+              <span className="inline-flex items-center gap-1 font-bold text-amber-500 text-xs">
+                <ShieldCheck size={14} /> Under Admin Review
+              </span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href={`/platform/business/${submittedBusiness.slug}`}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#5a32fa] hover:bg-[#4a24db] text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-purple-500/25 transition-all"
+            >
+              Preview Draft Profile <ArrowUpRight size={16} />
+            </Link>
+            <Link
+              href="/platform/resources/ip-firms"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-800 dark:text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors"
+            >
+              Browse IP Directory
+            </Link>
+            <Link
+              href="/platform"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-slate-500 hover:text-slate-900 dark:hover:text-white px-4 py-3 font-semibold text-sm transition-colors"
+            >
+              Back to Feed
+            </Link>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#020617] py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">

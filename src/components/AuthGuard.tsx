@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import AppLaunchSplash from '@/components/AppLaunchSplash';
@@ -10,7 +10,20 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, setUser } = useAppStore();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [isChecking, setIsChecking] = useState(() => !user?.id);
+  const [isChecking, setIsChecking] = useState(true);
+  const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
+  const [splashFinished, setSplashFinished] = useState(false);
+  const splashFinishedRef = useRef(splashFinished);
+  splashFinishedRef.current = splashFinished;
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('splash') === 'done') {
+        setSplashFinished(true);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -25,7 +38,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         
         if (!session?.user) {
           setUser(null);
-          router.push('/login');
+          // Queue redirect to /login so splash completes mandatory 4.2s without being cut off
+          setPendingRedirect('/login?splash=done');
           return;
         }
 
@@ -59,13 +73,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           if (pendingTier && (profile.membership_tier === 'free' || !profile.membership_tier)) {
             const isReturningFromStripe = window.location.search.includes('success=true') || window.location.search.includes('canceled=true');
             if (!isReturningFromStripe) {
-              window.location.href = `/api/checkout?tier=${pendingTier}&userId=${userId}`;
+              setPendingRedirect(`/api/checkout?tier=${pendingTier}&userId=${userId}`);
               return;
             }
           }
 
           if (!profile.onboarding_completed && window.location.pathname !== '/onboarding') {
-            router.push('/onboarding');
+            setPendingRedirect('/onboarding?splash=done');
             return;
           }
         }
@@ -82,9 +96,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
       const { supabase } = await import('@/lib/supabase');
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
-          if (event === 'SIGNED_OUT' || !session) {
+          if (event === 'SIGNED_OUT') {
             setUser(null);
-            router.push('/login');
+            if (splashFinishedRef.current) {
+              router.push('/login?splash=done');
+            } else {
+              setPendingRedirect('/login?splash=done');
+            }
           } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
             checkAuthAndOnboarding();
           }
@@ -98,13 +116,30 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return () => {
       if (authListener) authListener.unsubscribe();
     };
-  }, []);
+  }, [router, setUser]);
 
-  // If user is already loaded from persisted storage, render content IMMEDIATELY with zero splash delay!
-  if (user?.id) {
-    return <>{children}</>;
-  }
+  // Underlying platform is ready when mounted and initial auth check is complete
+  const isPlatformReady = mounted && !isChecking;
 
-  // If unauthenticated or session check in progress, show splash while redirecting to /login
-  return <AppLaunchSplash message="Opening your platform…" />;
+  return (
+    <>
+      {/* 1. Underlying Platform Content (Preloads and renders in background behind the splash) */}
+      {children}
+
+      {/* 2. Mandatory 4.2-Second Aperture Iris Splash Overlay */}
+      {!splashFinished && (
+        <AppLaunchSplash
+          isReady={isPlatformReady}
+          minDurationMs={4200}
+          message={isChecking ? 'Verifying secure session…' : 'Launching WIPA Platform…'}
+          onComplete={() => {
+            setSplashFinished(true);
+            if (pendingRedirect) {
+              router.replace(pendingRedirect);
+            }
+          }}
+        />
+      )}
+    </>
+  );
 }

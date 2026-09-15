@@ -353,32 +353,31 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
                   <Link 
                     prefetch={true} 
                     href="/platform/resources" 
-                    className={`group/res relative flex flex-1 items-center justify-between px-3.5 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 pr-10 ${
+                    className={`group/res relative flex flex-1 items-center justify-between px-3.5 py-2.5 rounded-xl text-[13px] transition-all duration-200 pr-10 ${
                       isActive('/platform/resources') || isPublicationRoute
-                        ? 'bg-gradient-to-r from-purple-500/12 via-purple-500/5 to-transparent text-[#5a32fa] dark:from-purple-500/25 dark:via-purple-900/10 dark:to-transparent dark:text-purple-300 font-bold' 
-                        : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white'
+                        ? 'bg-gradient-to-r from-purple-500/20 via-purple-500/12 to-indigo-500/10 text-[#5a32fa] dark:from-purple-500/35 dark:via-purple-900/25 dark:to-transparent dark:text-purple-300 font-black shadow-xs border border-purple-300/60 dark:border-purple-500/40' 
+                        : 'bg-purple-50/80 dark:bg-purple-950/30 text-purple-950 dark:text-purple-200 border border-purple-200/70 dark:border-purple-500/25 hover:bg-gradient-to-r hover:from-purple-100 hover:to-indigo-50 dark:hover:bg-purple-900/40 hover:translate-x-0.5'
                     }`}
                   >
-                    {(isActive('/platform/resources') || isPublicationRoute) && (
-                      <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-gradient-to-b from-[#5a32fa] to-[#ff79c6] shadow-[0_0_10px_rgba(90,50,250,0.5)]" />
-                    )}
+                    <span className="absolute left-0 top-2 bottom-2 w-1.5 rounded-r-full bg-gradient-to-b from-[#5a32fa] to-[#9333ea] shadow-[0_0_10px_rgba(90,50,250,0.6)]" />
                     <div className="flex items-center gap-3">
-                      <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
-                        isActive('/platform/resources') || isPublicationRoute
-                          ? 'bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white shadow-md shadow-purple-500/30' 
-                          : 'text-slate-400 group-hover/res:text-[#5a32fa] group-hover/res:bg-purple-50 dark:text-slate-400 dark:group-hover/res:text-purple-300 dark:group-hover/res:bg-white/5'
-                      }`}>
-                        <BookOpen size={17} strokeWidth={2.3} />
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all duration-200 bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white shadow-md shadow-purple-500/30">
+                        <BookOpen size={16} strokeWidth={2.5} />
                       </span>
-                      <span className="truncate tracking-tight">Resource Library</span>
+                      <span className="truncate tracking-tight font-black text-[13.5px] text-[#5a32fa] dark:text-purple-300 flex items-center gap-2">
+                        Resource Library
+                        <span className="px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] text-white rounded-md shadow-xs">
+                          HUB
+                        </span>
+                      </span>
                     </div>
                   </Link>
                   <button 
                     onClick={(e) => { e.preventDefault(); setIsResourcesExpanded(!isResourcesExpanded); }}
-                    className="absolute right-2 p-1.5 rounded-lg text-slate-400 hover:text-[#5a32fa] hover:bg-purple-50 dark:hover:bg-white/5 dark:hover:text-purple-300 transition-colors cursor-pointer"
+                    className="absolute right-2 p-1.5 rounded-lg text-purple-600 hover:text-[#5a32fa] hover:bg-purple-200/50 dark:text-purple-300 dark:hover:bg-purple-800/40 transition-colors cursor-pointer"
                     aria-label="Toggle Resource Library Submenu"
                   >
-                    <ChevronDown size={14} className={`transition-transform duration-300 ${isResourcesExpanded ? 'rotate-180 text-[#5a32fa] dark:text-violet-300' : ''}`} />
+                    <ChevronDown size={14} className={`transition-transform duration-300 ${isResourcesExpanded ? 'rotate-180 text-[#5a32fa] dark:text-purple-300' : ''}`} />
                   </button>
                 </div>
 

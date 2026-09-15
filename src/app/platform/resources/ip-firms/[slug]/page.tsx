@@ -7,7 +7,9 @@ import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft, CheckCircle2, MapPin, Globe, Mail, Phone, Star, Building2 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function FirmProfilePage({ params }: { params: { slug: string } }) {
+export default function FirmProfilePage({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
+  const resolvedParams = React.use(params as any) as { slug: string };
+  const slug = resolvedParams?.slug;
   const { user } = useAppStore();
   const [firm, setFirm] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -20,9 +22,33 @@ export default function FirmProfilePage({ params }: { params: { slug: string } }
   const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
+    if (!slug) return;
     const fetchFirm = async () => {
       setLoading(true);
-      const { data } = await supabase.from('ip_firms').select('*').eq('slug', params.slug).single();
+      let { data } = await supabase.from('ip_firms').select('*').eq('slug', slug).maybeSingle();
+      if (!data) {
+        const { data: bData } = await supabase.from('business_profiles').select('*').eq('slug', slug).maybeSingle();
+        if (bData) {
+          data = {
+            id: bData.id,
+            name: bData.name,
+            slug: bData.slug,
+            logo_url: bData.logo_url,
+            cover_image_url: bData.cover_image_url,
+            description: bData.description || bData.tagline,
+            website_url: bData.website_url,
+            linkedin_url: bData.linkedin_url,
+            headquarters: bData.headquarters,
+            size_range: bData.company_size,
+            founded_year: bData.founded_year,
+            specializations: bData.specializations || [],
+            is_verified: bData.is_verified,
+            is_claimed: true,
+            contact_email: bData.contact_email,
+            phone: bData.phone
+          };
+        }
+      }
       if (data) {
         setFirm(data);
         fetchReviews(data.id);
@@ -30,7 +56,7 @@ export default function FirmProfilePage({ params }: { params: { slug: string } }
       setLoading(false);
     };
     fetchFirm();
-  }, [params.slug]);
+  }, [slug]);
 
   const fetchReviews = async (firmId: string) => {
     const { data } = await supabase.from('ip_firm_reviews').select('*, profiles(first_name, last_name, avatar_url)').eq('firm_id', firmId).order('created_at', { ascending: false });

@@ -16,7 +16,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [checkingSession, setCheckingSession] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
+  const [sessionReady, setSessionReady] = useState(false);
+  const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
   const router = useRouter();
   const { setUser, isDarkMode, toggleDarkMode } = useAppStore();
 
@@ -25,13 +27,22 @@ export default function LoginPage() {
     const msg = params.get("message");
     if (msg) setMessage(msg);
 
+    // If redirected after splash already completed on another route, skip second splash
+    if (params.get("splash") === "done") {
+      setShowSplash(false);
+    }
+
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        router.replace("/platform");
-        return;
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setPendingRedirect("/platform?splash=done");
+        }
+      } catch (err) {
+        console.error("Login session check error", err);
+      } finally {
+        setSessionReady(true);
       }
-      setCheckingSession(false);
     };
     checkSession();
   }, [router]);
@@ -44,10 +55,6 @@ export default function LoginPage() {
       document.documentElement.style.colorScheme = nextDark ? 'dark' : 'light';
     }
   };
-
-  if (checkingSession) {
-    return <AppLaunchSplash message="Checking your secure session…" />;
-  }
 
   const handleResetPassword = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -146,9 +153,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#060608] text-slate-900 dark:text-white flex flex-col justify-between items-center p-6 pt-safe pb-safe relative overflow-hidden font-sans selection:bg-pink-500 selection:text-white transition-colors duration-300">
-      {/* Animated Glowing Wavy Line Gradient */}
-      <AnimatedWaveLine />
+    <>
+      {showSplash && (
+        <AppLaunchSplash
+          isReady={sessionReady}
+          minDurationMs={4200}
+          message="Checking your secure session…"
+          onComplete={() => {
+            setShowSplash(false);
+            if (pendingRedirect) {
+              router.replace(pendingRedirect);
+            }
+          }}
+        />
+      )}
+      <div className="min-h-screen bg-white dark:bg-[#060608] text-slate-900 dark:text-white flex flex-col justify-between items-center p-6 pt-safe pb-safe relative overflow-hidden font-sans selection:bg-pink-500 selection:text-white transition-colors duration-300">
+        {/* Animated Glowing Wavy Line Gradient */}
+        <AnimatedWaveLine />
 
       {/* Top Bar Header */}
       <header className="w-full max-w-sm flex items-center justify-between z-10 pt-2 pb-4">
@@ -331,5 +352,6 @@ export default function LoginPage() {
         Women&apos;s IP World Alliance Platform
       </footer>
     </div>
+    </>
   );
 }

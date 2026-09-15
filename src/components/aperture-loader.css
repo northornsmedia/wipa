@@ -1,0 +1,246 @@
+/* ==========================================================================
+   Aperture Iris Splash Loader Styles (Mobile + Desktop Optimized)
+   ========================================================================== */
+
+.aperture-loader-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  -webkit-clip-path: circle(150% at 50% 50%);
+  clip-path: circle(150% at 50% 50%);
+  opacity: 1;
+  transition: -webkit-clip-path 1.1s cubic-bezier(0.85, 0, 0.15, 1),
+              clip-path 1.1s cubic-bezier(0.85, 0, 0.15, 1),
+              opacity 0.7s cubic-bezier(0.85, 0, 0.15, 1) 0.3s;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* The Iris Shutter Retracts into Center */
+.aperture-loader-overlay.-loaded {
+  -webkit-clip-path: circle(0% at 50% 50%);
+  clip-path: circle(0% at 50% 50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 1. Center Logo / W Emblem */
+.aperture-logo-wrapper {
+  position: relative;
+  z-index: 2;
+  animation: apertureLogoIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, opacity;
+}
+
+.aperture-w-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.aperture-w-glyph {
+  width: min(64px, 16vw);
+  height: auto;
+  filter: drop-shadow(0 0 16px rgba(139, 92, 246, 0.5)) drop-shadow(0 0 24px rgba(255, 255, 255, 0.35));
+}
+
+.aperture-wipa-wordmark {
+  margin-top: 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  color: #ffffff;
+  text-indent: 0.28em;
+  opacity: 0.9;
+  text-transform: uppercase;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  animation: apertureFadeIn 1s ease forwards 0.4s;
+}
+
+/* 2. Concentric Rotating Vector Rings */
+.aperture-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.aperture-circle svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Small Gyro Ring - Mobile Responsive */
+.aperture-circle.-small {
+  width: min(280px, 74vw);
+  height: min(280px, 74vw);
+  animation: apertureCircleIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards,
+             apertureRotateCW 4s cubic-bezier(0.77, 0, 0.175, 1) infinite 0.3s;
+}
+
+/* Large Ambient Ring - Mobile Responsive */
+.aperture-circle.-large {
+  width: min(850px, 135vw);
+  height: min(850px, 135vw);
+  animation: apertureCircleIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards,
+             apertureRotateCCW 7s linear infinite 0.5s;
+}
+
+/* 3. Bottom Progress Bar & Counter */
+.aperture-counter {
+  position: absolute;
+  bottom: max(2rem, env(safe-area-inset-bottom, 24px));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  z-index: 2;
+  will-change: opacity;
+}
+
+.aperture-counter__numbers {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.aperture-counter__value {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.aperture-counter__max {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.5;
+}
+
+.aperture-counter__max::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.aperture-loader-message {
+  font-size: 0.75rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.35rem;
+  text-align: center;
+  animation: apertureFadeIn 0.8s ease forwards;
+  max-width: 80vw;
+}
+
+/* Mobile specific tweaks */
+@media (max-width: 640px) {
+  .aperture-counter {
+    bottom: max(1.75rem, env(safe-area-inset-bottom, 20px));
+    font-size: 0.75rem;
+  }
+
+  .aperture-circle.-small {
+    width: min(240px, 76vw);
+    height: min(240px, 76vw);
+  }
+
+  .aperture-w-glyph {
+    width: min(52px, 15vw);
+  }
+
+  .aperture-wipa-wordmark {
+    font-size: 0.6875rem;
+    margin-top: 0.5rem;
+  }
+}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+
+@keyframes apertureLogoIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) rotate(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes apertureCircleIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes apertureRotateCW {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes apertureRotateCCW {
+  0% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+}
+
+@keyframes apertureFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

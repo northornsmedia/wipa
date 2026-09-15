@@ -32,7 +32,6 @@ const checkIsMobile = (): boolean => {
   if (typeof window === 'undefined') return false;
   return (
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-    window.innerWidth < 1024 ||
     Boolean((window as any).Capacitor?.isNativePlatform?.())
   );
 };
@@ -57,23 +56,12 @@ export default function Home() {
   const router = useRouter();
   const { user, setUser, isDarkMode, toggleDarkMode } = useAppStore();
 
-  // If mobile and already logged in, immediately redirect to /platform without showing landing page
-  const [isRedirectingMobile] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return checkIsMobile() && checkHasPersistedUser();
-    }
-    return false;
-  });
+  // Pending destination if user is already logged in (redirects only AFTER mandatory 4.2s splash)
+  const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
 
-  // Code-based animated launch splash state
-  const [showSplash, setShowSplash] = useState(() => {
-    if (typeof window !== 'undefined') {
-      // Don't show splash on desktop web
-      if (!checkIsMobile()) return false;
-      return sessionStorage.getItem('wipa_splash_seen') !== '1';
-    }
-    return true;
-  });
+  // Code-based animated launch splash state (dismissed only when onComplete fires)
+  const [showSplash, setShowSplash] = useState(true);
 
   // Auth form states
   const [email, setEmail] = useState('');
@@ -89,18 +77,8 @@ export default function Home() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetStatus, setResetStatus] = useState<{ success?: boolean; text?: string } | null>(null);
 
-  const [isRedirecting, setIsRedirecting] = useState(false);
-
-  // Fast-track mobile logged-in user straight to the feed page
+  // Check active session on mount
   useEffect(() => {
-    if (isRedirectingMobile) {
-      window.location.replace('/platform');
-    }
-  }, [isRedirectingMobile]);
-
-  // Check active session on mount and coordinate splash timer
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
     const isMobile = checkIsMobile();
 
     const checkSession = async () => {
@@ -122,32 +100,17 @@ export default function Home() {
             member_id: profile?.member_id || undefined,
           });
 
-          // ONLY FOR MOBILE: logged in user lands directly on the feed page!
-          if (isMobile) {
-            setIsRedirecting(true);
-            window.location.replace('/platform');
-            return;
-          }
-
-          // Desktop: stay on this page with the desktop portal
-          setShowSplash(false);
-          return;
+          // Queue redirect to /platform once the 4.2-second splash finishes
+          setPendingRedirect('/platform?splash=done');
         }
       } catch (err) {
         console.error('Session check failed', err);
+      } finally {
+        setSessionLoaded(true);
       }
-
-      // Not logged in: fade out splash after animation completes
-      timer = setTimeout(() => {
-        setShowSplash(false);
-        try {
-          sessionStorage.setItem('wipa_splash_seen', '1');
-        } catch (_) {}
-      }, isMobile ? 2200 : 0);
     };
 
     checkSession();
-    return () => clearTimeout(timer);
   }, [setUser, router]);
 
   // Dark/Light theme toggle
@@ -278,15 +241,6 @@ export default function Home() {
     });
   };
 
-  // Mobile logged-in users bypass the landing page entirely and go directly to the feed
-  if (isRedirectingMobile || isRedirecting) {
-    return (
-      <div className="fixed inset-0 z-[99999] bg-[#6600FF]">
-        <AppLaunchSplash />
-      </div>
-    );
-  }
-
   return (
     <>
       {/* Code-Based Cinematic App Launch Splash Overlay */}
@@ -297,9 +251,21 @@ export default function Home() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6, ease: 'easeInOut' }}
-            className="fixed inset-0 z-[99999] pointer-events-auto bg-[#6600FF]"
+            className="fixed inset-0 z-[99999] pointer-events-auto"
           >
-            <AppLaunchSplash />
+            <AppLaunchSplash
+              isReady={sessionLoaded}
+              minDurationMs={4200}
+              onComplete={() => {
+                setShowSplash(false);
+                try {
+                  sessionStorage.setItem('wipa_splash_seen', '1');
+                } catch (_) {}
+                if (pendingRedirect) {
+                  router.replace(pendingRedirect);
+                }
+              }}
+            />
           </motion.div>
         )}
       </AnimatePresence>

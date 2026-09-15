@@ -6,6 +6,7 @@ import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Boo
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import MobileResourcesPage from './MobileResourcesPage';
 
 const MOCK_CATEGORIES = [
   {
@@ -481,7 +482,9 @@ export default function ResourcesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col">
+    <>
+    <MobileResourcesPage />
+    <div className="hidden min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] sm:flex sm:flex-col">
       {/* Main Content: Edge-to-edge on mobile with px-3.5, container on desktop */}
       <div className="flex-1 w-full max-w-none sm:max-w-[1400px] mx-auto px-3.5 sm:px-6 lg:px-8 py-3 sm:py-6 md:py-8">
         
@@ -1236,5 +1239,6 @@ export default function ResourcesPage() {
 
       </div>
     </div>
+    </>
   );
 }

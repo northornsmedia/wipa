@@ -8,7 +8,9 @@ import { useAppStore } from '@/store/useAppStore';
 import { ArrowLeft, Save, Users, Search, X, UserPlus, Shield } from 'lucide-react';
 import Link from 'next/link';
 
-export default function EditBusinessProfilePage({ params }: { params: { slug: string } }) {
+export default function EditBusinessProfilePage({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
+  const resolvedParams = React.use(params as any) as { slug: string };
+  const slug = resolvedParams?.slug;
   const router = useRouter();
   const { user } = useAppStore();
   
@@ -23,9 +25,10 @@ export default function EditBusinessProfilePage({ params }: { params: { slug: st
   const [searching, setSearching] = useState(false);
 
   useEffect(() => {
+    if (!slug) return;
     const fetchBusiness = async () => {
       setLoading(true);
-      const { data } = await supabase.from('business_profiles').select('*').eq('slug', params.slug).single();
+      const { data } = await supabase.from('business_profiles').select('*').eq('slug', slug).maybeSingle();
       
       if (data) {
         // Verify admin access
@@ -37,7 +40,7 @@ export default function EditBusinessProfilePage({ params }: { params: { slug: st
             setBusiness(data);
             fetchTeam(data.id);
           } else {
-            router.push(`/platform/business/${params.slug}`); // Not authorized
+            router.push(`/platform/business/${slug}`); // Not authorized
             return;
           }
         } else {
@@ -49,7 +52,7 @@ export default function EditBusinessProfilePage({ params }: { params: { slug: st
     };
     
     fetchBusiness();
-  }, [params.slug, user, router]);
+  }, [slug, user, router]);
 
   const fetchTeam = async (businessId: string) => {
     const { data } = await supabase
