@@ -60,8 +60,17 @@ export default function Home() {
   const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
   const [sessionLoaded, setSessionLoaded] = useState(false);
 
-  // Code-based animated launch splash state (dismissed only when onComplete fires)
-  const [showSplash, setShowSplash] = useState(true);
+  // Code-based animated launch splash state (dismissed only when onComplete fires, shown at most once per session)
+  const [showSplash, setShowSplash] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        if (sessionStorage.getItem('wipa_splash_seen') === '1') return false;
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('splash') === 'done') return false;
+      } catch (_) {}
+    }
+    return true;
+  });
 
   // Auth form states
   const [email, setEmail] = useState('');
@@ -100,8 +109,14 @@ export default function Home() {
             member_id: profile?.member_id || undefined,
           });
 
-          // Queue redirect to /platform once the 4.2-second splash finishes
-          setPendingRedirect('/platform?splash=done');
+          // If splash was already seen, redirect to platform immediately
+          if (typeof window !== 'undefined' && sessionStorage.getItem('wipa_splash_seen') === '1') {
+            router.replace('/platform');
+            return;
+          }
+
+          // Otherwise queue redirect to /platform once the initial splash finishes
+          setPendingRedirect('/platform');
         }
       } catch (err) {
         console.error('Session check failed', err);

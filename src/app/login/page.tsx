@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
   const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
   const router = useRouter();
@@ -27,16 +27,11 @@ export default function LoginPage() {
     const msg = params.get("message");
     if (msg) setMessage(msg);
 
-    // If redirected after splash already completed on another route, skip second splash
-    if (params.get("splash") === "done") {
-      setShowSplash(false);
-    }
-
     const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          setPendingRedirect("/platform?splash=done");
+          router.replace("/platform");
         }
       } catch (err) {
         console.error("Login session check error", err);

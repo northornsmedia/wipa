@@ -1,33 +1,16 @@
 // @ts-nocheck
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
-import AppLaunchSplash from '@/components/AppLaunchSplash';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, setUser } = useAppStore();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
-  const [pendingRedirect, setPendingRedirect] = useState<string | null>(null);
-  const [splashFinished, setSplashFinished] = useState(false);
-  const splashFinishedRef = useRef(splashFinished);
-  splashFinishedRef.current = splashFinished;
+  const [isChecking, setIsChecking] = useState(() => !user?.id);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('splash') === 'done') {
-        setSplashFinished(true);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    setMounted(true);
-
     let authListener: any = null;
     
     const checkAuthAndOnboarding = async () => {
@@ -38,8 +21,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         
         if (!session?.user) {
           setUser(null);
-          // Queue redirect to /login so splash completes mandatory 4.2s without being cut off
-          setPendingRedirect('/login?splash=done');
+          router.replace('/login');
           return;
         }
 
@@ -73,13 +55,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           if (pendingTier && (profile.membership_tier === 'free' || !profile.membership_tier)) {
             const isReturningFromStripe = window.location.search.includes('success=true') || window.location.search.includes('canceled=true');
             if (!isReturningFromStripe) {
-              setPendingRedirect(`/api/checkout?tier=${pendingTier}&userId=${userId}`);
+              window.location.href = `/api/checkout?tier=${pendingTier}&userId=${userId}`;
               return;
             }
           }
 
           if (!profile.onboarding_completed && window.location.pathname !== '/onboarding') {
-            setPendingRedirect('/onboarding?splash=done');
+            router.replace('/onboarding');
             return;
           }
         }
@@ -98,11 +80,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         async (event, session) => {
           if (event === 'SIGNED_OUT') {
             setUser(null);
-            if (splashFinishedRef.current) {
-              router.push('/login?splash=done');
-            } else {
-              setPendingRedirect('/login?splash=done');
-            }
+            router.replace('/login');
           } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
             checkAuthAndOnboarding();
           }
@@ -118,28 +96,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     };
   }, [router, setUser]);
 
-  // Underlying platform is ready when mounted and initial auth check is complete
-  const isPlatformReady = mounted && !isChecking;
+  // If user is already loaded or authenticated, render immediately with zero delay
+  if (user?.id) {
+    return <>{children}</>;
+  }
 
-  return (
-    <>
-      {/* 1. Underlying Platform Content (Preloads and renders in background behind the splash) */}
-      {children}
-
-      {/* 2. Mandatory 4.2-Second Aperture Iris Splash Overlay */}
-      {!splashFinished && (
-        <AppLaunchSplash
-          isReady={isPlatformReady}
-          minDurationMs={4200}
-          message={isChecking ? 'Verifying secure session…' : 'Launching WIPA Platform…'}
-          onComplete={() => {
-            setSplashFinished(true);
-            if (pendingRedirect) {
-              router.replace(pendingRedirect);
-            }
-          }}
-        />
-      )}
-    </>
-  );
+  // If still checking on initial cold load, render children in background
+  return <>{children}</>;
 }
