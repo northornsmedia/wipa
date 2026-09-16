@@ -99,19 +99,19 @@ export default function HostWebinarPricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] text-gray-900 dark:text-white selection:bg-[#5a32fa]/20 pb-24 font-sans">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] text-gray-900 dark:text-white selection:bg-[#ff2a5f]/20 pb-24 font-sans">
       {/* Top Navigation Bar */}
-      <div className="border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-[#0f172a]/90 backdrop-blur-md sticky top-0 z-30">
+      <div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0f172a] sticky top-0 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link 
             href="/platform/resources/webinars" 
-            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-[#ff2a5f] dark:text-gray-300 dark:hover:text-white transition-colors"
           >
             <ArrowLeft size={16} /> Back to Webinars & Learning
           </Link>
           <div className="flex items-center gap-2">
-            <span className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-semibold bg-purple-50 text-[#5a32fa] border border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800">
-              <Radio size={13} className="text-[#5a32fa] animate-pulse" /> WIPA Host Network
+            <span className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-bold bg-rose-50 text-[#ff2a5f] border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800">
+              <Radio size={13} className="text-[#ff2a5f] animate-pulse" /> WIPA Host Network
             </span>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function HostWebinarPricingPage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14">
         {/* Header Title Section */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-[#5a32fa] dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-rose-50 dark:bg-rose-950/40 text-[#ff2a5f] dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-xs font-black uppercase tracking-wider">
             <Video size={14} /> Masterclasses & Live Events
           </div>
 
@@ -138,21 +138,21 @@ export default function HostWebinarPricingPage() {
           {/* 1. First Event Card */}
           <div className={`bg-white dark:bg-[#1e293b] rounded-2xl border-2 ${
             isFirstEvent 
-              ? 'border-[#5a32fa] ring-4 ring-[#5a32fa]/10 shadow-lg' 
+              ? 'border-[#ff2a5f] ring-4 ring-[#ff2a5f]/10 shadow-xl' 
               : 'border-gray-200 dark:border-gray-800 shadow-sm opacity-85'
           } p-8 flex flex-col relative transition-all`}>
             {isFirstEvent && (
-              <div className="absolute top-0 right-0 bg-[#5a32fa] text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl tracking-wide">
-                FIRST EVENT OFFER
+              <div className="absolute top-0 right-0 bg-[#ff2a5f] text-white text-xs font-black px-4 py-1.5 rounded-bl-xl tracking-wider uppercase shadow-xs">
+                FIRST EVENT OFFER · SAVE £300
               </div>
             )}
 
             <div className="flex items-start justify-between">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-[#5a32fa]">Introductory Pass</span>
+                <span className="text-xs font-black uppercase tracking-wider text-[#ff2a5f]">Introductory Pass</span>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">First-Time Host</h3>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-purple-50 text-[#5a32fa] dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800 flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-rose-50 text-[#ff2a5f] dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex items-center justify-center shrink-0">
                 <Video size={22} />
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function HostWebinarPricingPage() {
                 <button
                   onClick={handleInitiateCheckout}
                   disabled={initiatingCheckout}
-                  className="w-full py-4 rounded-xl font-bold text-sm bg-[#5a32fa] hover:bg-[#4c24e6] text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="w-full py-4 rounded-xl font-bold text-sm bg-[#ff2a5f] hover:bg-[#e02553] text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
                 >
                   {initiatingCheckout ? (
                     <>
@@ -218,11 +218,11 @@ export default function HostWebinarPricingPage() {
           {/* 2. Standard / Subsequent Events Card */}
           <div className={`bg-white dark:bg-[#1e293b] rounded-2xl border-2 ${
             !isFirstEvent 
-              ? 'border-[#5a32fa] ring-4 ring-[#5a32fa]/10 shadow-lg' 
+              ? 'border-[#ff2a5f] ring-4 ring-[#ff2a5f]/10 shadow-xl' 
               : 'border-gray-200 dark:border-gray-800 shadow-sm'
           } p-8 flex flex-col relative transition-all`}>
             {!isFirstEvent && (
-              <div className="absolute top-0 right-0 bg-[#5a32fa] text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl tracking-wide">
+              <div className="absolute top-0 right-0 bg-[#ff2a5f] text-white text-xs font-black px-4 py-1.5 rounded-bl-xl tracking-wider uppercase shadow-xs">
                 STANDARD PASS
               </div>
             )}
@@ -274,7 +274,7 @@ export default function HostWebinarPricingPage() {
                 <button
                   onClick={handleInitiateCheckout}
                   disabled={initiatingCheckout}
-                  className="w-full py-4 rounded-xl font-bold text-sm bg-[#5a32fa] hover:bg-[#4c24e6] text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="w-full py-4 rounded-xl font-bold text-sm bg-[#ff2a5f] hover:bg-[#e02553] text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
                 >
                   {initiatingCheckout ? (
                     <>
@@ -308,7 +308,7 @@ export default function HostWebinarPricingPage() {
             </div>
             <Link 
               href="/platform/resources/webinars/create?admin_bypass=1"
-              className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-bold uppercase tracking-wider text-[11px] shrink-0 transition-colors"
+              className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-bold uppercase tracking-wider text-[11px] shrink-0 transition-colors shadow-xs"
             >
               Admin Direct Launch
             </Link>
@@ -346,7 +346,7 @@ export default function HostWebinarPricingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             <div className="p-6 rounded-2xl bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-800 shadow-sm relative">
-              <div className="w-9 h-9 rounded-lg bg-purple-50 text-[#5a32fa] font-bold text-sm flex items-center justify-center mb-4 border border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800">
+              <div className="w-9 h-9 rounded-lg bg-rose-50 text-[#ff2a5f] font-black text-sm flex items-center justify-center mb-4 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800">
                 01
               </div>
               <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2">Host Now & Checkout</h4>
@@ -356,7 +356,7 @@ export default function HostWebinarPricingPage() {
             </div>
 
             <div className="p-6 rounded-2xl bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-800 shadow-sm relative">
-              <div className="w-9 h-9 rounded-lg bg-purple-50 text-[#5a32fa] font-bold text-sm flex items-center justify-center mb-4 border border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800">
+              <div className="w-9 h-9 rounded-lg bg-rose-50 text-[#ff2a5f] font-black text-sm flex items-center justify-center mb-4 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800">
                 02
               </div>
               <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2">Build Your Session</h4>
@@ -366,7 +366,7 @@ export default function HostWebinarPricingPage() {
             </div>
 
             <div className="p-6 rounded-2xl bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-800 shadow-sm relative">
-              <div className="w-9 h-9 rounded-lg bg-purple-50 text-[#5a32fa] font-bold text-sm flex items-center justify-center mb-4 border border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800">
+              <div className="w-9 h-9 rounded-lg bg-rose-50 text-[#ff2a5f] font-black text-sm flex items-center justify-center mb-4 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800">
                 03
               </div>
               <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2">Admin Review & Go Live</h4>

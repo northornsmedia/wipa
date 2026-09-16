@@ -131,7 +131,7 @@ export default function AdminWebinarsPage() {
           </Link>
           <button
             onClick={fetchWebinars}
-            className="bg-[#5a32fa] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#4a24db] transition-colors shadow-xs"
+            className="bg-[#ff2a5f] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#e02553] transition-colors shadow-xs cursor-pointer"
           >
             Refresh
           </button>
@@ -203,45 +203,49 @@ export default function AdminWebinarsPage() {
             placeholder="Search title, host, submitter…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-white/10 rounded-xl text-xs text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5a32fa]"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-white/10 rounded-xl text-xs text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff2a5f]"
           />
         </div>
       </div>
 
-      {/* Webinars List */}
-      {loading ? (
-        <div className="bg-white dark:bg-[#1e293b] p-12 rounded-3xl border border-gray-200 dark:border-white/10 text-center">
-          <Loader2 size={36} className="animate-spin text-[#ff2a5f] mx-auto mb-3" />
-          <p className="text-xs font-bold text-gray-500 dark:text-gray-400">Loading submitted webinars…</p>
+      {/* Loading state */}
+      {loading && (
+        <div className="flex flex-col items-center justify-center p-12 text-gray-500">
+          <Loader2 size={36} className="text-[#ff2a5f] animate-spin mb-3" />
+          <span className="text-xs font-bold">Loading submissions…</span>
         </div>
-      ) : filteredWebinars.length === 0 ? (
-        <div className="bg-white dark:bg-[#1e293b] p-12 rounded-3xl border border-gray-200 dark:border-white/10 text-center">
-          <Video size={40} className="text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-gray-800 dark:text-white">No webinars in this tab</h3>
-          <p className="text-xs text-gray-400 mt-1">
-            {activeTab === 'pending' ? 'Great job! There are no submissions currently awaiting review.' : 'No entries found matching your query.'}
+      )}
+
+      {/* Webinars List */}
+      {!loading && filteredWebinars.length === 0 && (
+        <div className="bg-white dark:bg-[#1e293b] p-12 rounded-2xl border border-gray-200 dark:border-white/10 text-center space-y-3">
+          <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-400 flex items-center justify-center mx-auto">
+            <Video size={24} />
+          </div>
+          <h3 className="text-base font-bold text-gray-900 dark:text-white">No webinars found</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+            There are no webinar submissions matching your current tab or search filter.
           </p>
         </div>
-      ) : (
+      )}
+
+      {!loading && filteredWebinars.length > 0 && (
         <div className="space-y-4">
           {filteredWebinars.map((webinar) => {
             const isPending = webinar.approval_status === 'in_review' || webinar.approval_status === 'pending';
             const isApproved = webinar.approval_status === 'approved';
             const isRejected = webinar.approval_status === 'rejected';
-            const isActioning = actionLoadingId === webinar.id;
-
-            // Extract payment tag if present
-            const stripeTag = webinar.tags?.find?.((t: string) => t.startsWith('stripe:'));
-            const paidMembership = webinar.submitter_membership || 'Standard';
+            const isActing = actionLoadingId === webinar.id;
+            const paidMembership = webinar.submitter_membership || '';
 
             return (
-              <div 
-                key={webinar.id} 
-                className="bg-white dark:bg-[#1e293b] rounded-3xl border border-gray-200 dark:border-white/10 p-5 sm:p-6 shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 transition-all hover:border-gray-300 dark:hover:border-white/20"
+              <div
+                key={webinar.id}
+                className="bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:border-gray-300 dark:hover:border-white/20 transition-all"
               >
                 {/* Left: Thumbnail & Details */}
                 <div className="flex flex-col sm:flex-row items-start gap-4 flex-1 min-w-0">
-                  <div className="w-full sm:w-36 h-24 rounded-2xl overflow-hidden bg-black/40 border border-gray-200 dark:border-white/10 shrink-0 relative">
+                  <div className="w-full sm:w-36 h-24 rounded-xl overflow-hidden bg-black/40 border border-gray-200 dark:border-white/10 shrink-0 relative">
                     <img 
                       src={webinar.cover_image_url || '/resourceimg1.jpg'} 
                       alt={webinar.title} 
@@ -256,33 +260,33 @@ export default function AdminWebinarsPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       {/* Approval Status Badge */}
                       {isPending && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20 inline-flex items-center gap-1">
+                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 inline-flex items-center gap-1">
                           <Clock size={11} /> Pending Review
                         </span>
                       )}
                       {isApproved && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 inline-flex items-center gap-1">
+                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1">
                           <CheckCircle2 size={11} /> Approved & Live
                         </span>
                       )}
                       {isRejected && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-500 border border-rose-500/20 inline-flex items-center gap-1">
+                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 inline-flex items-center gap-1">
                           <XCircle size={11} /> Rejected
                         </span>
                       )}
 
                       {/* Format / Type */}
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-300 border border-purple-500/20">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-[#ff2a5f] border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800">
                         {webinar.resource_type || webinar.type || 'Webinar'}
                       </span>
 
                       {/* Subcategory */}
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-300 border border-blue-500/20">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800">
                         {webinar.subcategory || webinar.topic || 'General'}
                       </span>
 
                       {/* Payment Badge */}
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 inline-flex items-center gap-1">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1">
                         <DollarSign size={10} /> {paidMembership.includes('Paid') ? paidMembership : 'Paid Host (£199/£499)'}
                       </span>
                     </div>
@@ -330,17 +334,17 @@ export default function AdminWebinarsPage() {
                     <>
                       <button
                         onClick={() => handleUpdateStatus(webinar.id, 'approved')}
-                        disabled={isActioning}
-                        className="px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 inline-flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                        disabled={isActing}
+                        className="px-4 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-md inline-flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
                       >
-                        {isActioning ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                        {isActing ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={14} />}
                         Approve & Publish Live
                       </button>
 
                       <button
                         onClick={() => handleUpdateStatus(webinar.id, 'rejected')}
-                        disabled={isActioning}
-                        className="px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 border border-rose-500/20 inline-flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                        disabled={isActing}
+                        className="px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 inline-flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
                       >
                         <XCircle size={14} /> Reject
                       </button>
@@ -350,8 +354,8 @@ export default function AdminWebinarsPage() {
                   {isApproved && (
                     <button
                       onClick={() => handleUpdateStatus(webinar.id, 'rejected')}
-                      disabled={isActioning}
-                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-gray-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 border border-gray-200 dark:border-white/10 transition-colors"
+                      disabled={isActing}
+                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-gray-500 hover:text-rose-600 hover:bg-rose-50 border border-gray-200 dark:border-white/10 transition-colors cursor-pointer"
                     >
                       Unpublish / Reject
                     </button>
@@ -360,8 +364,8 @@ export default function AdminWebinarsPage() {
                   {isRejected && (
                     <button
                       onClick={() => handleUpdateStatus(webinar.id, 'approved')}
-                      disabled={isActioning}
-                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 border border-emerald-500/30 transition-colors"
+                      disabled={isActing}
+                      className="px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-600 hover:bg-emerald-50 border border-emerald-300 transition-colors cursor-pointer"
                     >
                       Re-Approve
                     </button>
@@ -369,8 +373,8 @@ export default function AdminWebinarsPage() {
 
                   <button
                     onClick={() => handleDelete(webinar.id)}
-                    disabled={isActioning}
-                    className="p-2.5 rounded-xl text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors"
+                    disabled={isActing}
+                    className="p-2.5 rounded-xl text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                     title="Delete permanently"
                   >
                     <Trash2 size={16} />

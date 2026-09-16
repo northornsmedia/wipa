@@ -16,7 +16,7 @@ import {
   ShieldCheck, 
   Lock,
   Copy,
-  Zap
+  SlidersHorizontal
 } from 'lucide-react';
 import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { supabase } from '@/lib/supabase';
@@ -269,7 +269,7 @@ function WebinarCreateContent() {
   if (verifyingSession) {
     return (
       <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col items-center justify-center text-gray-900 dark:text-white p-4 font-sans">
-        <Loader2 size={40} className="text-[#5a32fa] animate-spin mb-4" />
+        <Loader2 size={40} className="text-[#ff2a5f] animate-spin mb-4" />
         <h2 className="text-lg font-bold">Verifying Payment & Session…</h2>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Connecting to Stripe secure payment verification</p>
       </div>
@@ -281,7 +281,7 @@ function WebinarCreateContent() {
     return (
       <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex items-center justify-center p-4 text-gray-900 dark:text-white font-sans">
         <div className="max-w-md w-full p-8 rounded-2xl bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-800 shadow-md text-center space-y-5">
-          <div className="w-16 h-16 rounded-xl bg-purple-50 text-[#5a32fa] dark:bg-purple-950/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800 flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-xl bg-rose-50 text-[#ff2a5f] dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800 flex items-center justify-center mx-auto">
             <Lock size={28} />
           </div>
           <div>
@@ -294,7 +294,7 @@ function WebinarCreateContent() {
           <div className="pt-2 space-y-3">
             <Link
               href="/platform/resources/webinars/host"
-              className="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-[#5a32fa] hover:bg-[#4c24e6] text-white shadow-sm flex items-center justify-center gap-2 transition-all block"
+              className="w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-[#ff2a5f] hover:bg-[#e02553] text-white shadow-md flex items-center justify-center gap-2 transition-all block"
             >
               Get Hosting Pass (£199 / £499)
             </Link>
@@ -331,7 +331,7 @@ function WebinarCreateContent() {
 
           {/* Assigned Room Info */}
           <div className="bg-gray-50 dark:bg-[#0f172a] p-4 rounded-xl border border-gray-200 dark:border-gray-700 text-left space-y-2">
-            <div className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned Meetn Broadcast Studio URL</div>
+            <div className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Assigned Meetn Broadcast Studio URL</div>
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-white dark:bg-black/40 px-3 py-2.5 rounded-lg text-xs font-mono truncate text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700">
                 {successData.url}
@@ -341,7 +341,7 @@ function WebinarCreateContent() {
                   navigator.clipboard.writeText(successData.url);
                   alert('Broadcast link copied to clipboard!');
                 }} 
-                className="bg-[#5a32fa] hover:bg-[#4c24e6] text-white px-4 py-2.5 rounded-lg font-bold text-xs transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+                className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-4 py-2.5 rounded-lg font-bold text-xs transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
               >
                 <Copy size={13} /> Copy
               </button>
@@ -354,7 +354,7 @@ function WebinarCreateContent() {
           <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/platform/resources/webinars"
-              className="bg-[#5a32fa] hover:bg-[#4c24e6] text-white px-6 py-3 rounded-xl font-bold transition-colors text-xs uppercase tracking-wider shadow-sm"
+              className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-6 py-3 rounded-xl font-bold transition-colors text-xs uppercase tracking-wider shadow-sm"
             >
               Return to Webinars Hub
             </Link>
@@ -366,19 +366,19 @@ function WebinarCreateContent() {
 
   // Webinar Creation Form
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] text-gray-900 dark:text-white pb-24 font-sans selection:bg-[#5a32fa]/20">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] text-gray-900 dark:text-white pb-24 font-sans selection:bg-[#ff2a5f]/20">
       {/* Top Navbar */}
-      <div className="border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-[#0f172a]/90 backdrop-blur-md sticky top-0 z-30">
+      <div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0f172a] sticky top-0 z-30 shadow-xs">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link 
             href="/platform/resources/webinars/host" 
-            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-[#ff2a5f] dark:text-gray-300 dark:hover:text-white transition-colors"
           >
             <ArrowLeft size={16} /> Back to Hosting Info
           </Link>
           <div className="flex items-center gap-3">
             {verifiedAmount !== null && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800 text-xs font-bold">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800 text-xs font-bold">
                 <CheckCircle2 size={13} className="text-[#00d26a]" /> Payment Verified ({verifiedAmount === 0 ? 'Admin Pass' : `£${verifiedAmount} GBP`})
               </span>
             )}
@@ -389,7 +389,7 @@ function WebinarCreateContent() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
         {/* Header */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-purple-50 text-[#5a32fa] border border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800 text-xs font-bold mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-rose-50 text-[#ff2a5f] border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 text-xs font-black uppercase tracking-wider mb-3">
             <Video size={13} /> Webinar Builder
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Configure Your Live Webinar</h1>
@@ -409,7 +409,7 @@ function WebinarCreateContent() {
               <select
                 value={formData.resource_type}
                 onChange={(e) => setFormData({ ...formData, resource_type: e.target.value })}
-                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f] focus:ring-1 focus:ring-[#ff2a5f]/20"
               >
                 {["Upcoming Webinar", "Live Masterclass", "Interactive Panel", "Workshop", "Executive Briefing", "Video Session"].map(f => (
                   <option key={f} value={f}>{f}</option>
@@ -424,7 +424,7 @@ function WebinarCreateContent() {
               <select
                 value={formData.subcategory}
                 onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
-                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f] focus:ring-1 focus:ring-[#ff2a5f]/20"
               >
                 {["AI in IP", "Patent Law", "IP Litigation", "Trademark & Brand Protection", "Licensing & Tech Transfer", "Trade Secrets", "Copyright & Media", "IP Strategy & Valuation", "Global IP & Cross-Border", "Career & Leadership", "General"].map(t => (
                   <option key={t} value={t}>{t}</option>
@@ -445,7 +445,7 @@ function WebinarCreateContent() {
                 placeholder="e.g. AI in Patent Law: Opportunities, Liabilities, and Prosecution Risks"
                 value={formData.title}
                 onChange={handleTitleChange}
-                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#5a32fa]"
+                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#ff2a5f] focus:ring-1 focus:ring-[#ff2a5f]/20"
               />
             </div>
             <div>
@@ -457,7 +457,7 @@ function WebinarCreateContent() {
                 required
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className="w-full bg-gray-50 dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-700 dark:text-gray-300 font-mono focus:outline-none focus:border-[#5a32fa]"
+                className="w-full bg-gray-50 dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-700 dark:text-gray-300 font-mono focus:outline-none focus:border-[#ff2a5f]"
               />
             </div>
           </div>
@@ -465,7 +465,7 @@ function WebinarCreateContent() {
           {/* Speaker & Host Details Card */}
           <div className="p-5 rounded-xl bg-gray-50 dark:bg-[#0f172a] border border-gray-200 dark:border-gray-800 space-y-4">
             <div className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider flex items-center gap-2">
-              <Users size={16} className="text-[#5a32fa]" /> Speaker & Host Details
+              <Users size={16} className="text-[#ff2a5f]" /> Speaker & Host Details
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
@@ -475,7 +475,7 @@ function WebinarCreateContent() {
                   required
                   value={formData.author_name}
                   onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
-                  className="w-full bg-white dark:bg-[#1e293b] border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                  className="w-full bg-white dark:bg-[#1e293b] border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]"
                 />
               </div>
               <div>
@@ -485,7 +485,7 @@ function WebinarCreateContent() {
                   placeholder="e.g. Senior Patent Counsel"
                   value={formData.author_title}
                   onChange={(e) => setFormData({ ...formData, author_title: e.target.value })}
-                  className="w-full bg-white dark:bg-[#1e293b] border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                  className="w-full bg-white dark:bg-[#1e293b] border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]"
                 />
               </div>
               <div>
@@ -495,7 +495,7 @@ function WebinarCreateContent() {
                   placeholder="e.g. Global Tech Law LLP"
                   value={formData.organization}
                   onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
-                  className="w-full bg-white dark:bg-[#1e293b] border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                  className="w-full bg-white dark:bg-[#1e293b] border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]"
                 />
               </div>
             </div>
@@ -512,7 +512,7 @@ function WebinarCreateContent() {
                 required
                 value={formData.scheduled_at}
                 onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
-                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]"
               />
             </div>
 
@@ -527,7 +527,7 @@ function WebinarCreateContent() {
                 max={300}
                 value={formData.duration_minutes}
                 onChange={(e) => setFormData({ ...formData, duration_minutes: Number(e.target.value) })}
-                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]"
               />
             </div>
 
@@ -539,17 +539,17 @@ function WebinarCreateContent() {
                 type="number"
                 value={formData.max_attendees}
                 onChange={(e) => setFormData({ ...formData, max_attendees: Number(e.target.value) })}
-                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#5a32fa]"
+                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#ff2a5f]"
               />
             </div>
           </div>
 
           {/* Meetn HD Broadcast Room Auto-Allocator */}
-          <div className="p-5 rounded-xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900/40 space-y-3">
+          <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <span className="text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider flex items-center gap-2">
-                  <Radio size={16} className="text-[#5a32fa]" /> Meetn Live Room URL *
+                  <Radio size={16} className="text-[#ff2a5f]" /> Meetn Live Room URL *
                 </span>
                 <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
                   HD live broadcast room assigned automatically without room scheduling collisions.
@@ -559,9 +559,9 @@ function WebinarCreateContent() {
                 type="button"
                 onClick={handleAssignMeetn}
                 disabled={generatingMeetn}
-                className="bg-[#5a32fa] hover:bg-[#4c24e6] text-white px-4 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-sm self-start sm:self-auto cursor-pointer disabled:opacity-50"
+                className="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-sm self-start sm:self-auto cursor-pointer disabled:opacity-50 transition-colors"
               >
-                {generatingMeetn ? <Loader2 size={13} className="animate-spin" /> : <Zap size={13} />}
+                {generatingMeetn ? <Loader2 size={13} className="animate-spin" /> : <SlidersHorizontal size={13} />}
                 Auto-Assign Room
               </button>
             </div>
@@ -572,7 +572,7 @@ function WebinarCreateContent() {
                 required
                 value={formData.url}
                 onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-xs text-gray-800 dark:text-gray-200 font-mono focus:outline-none focus:border-[#5a32fa]"
+                className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-xs text-gray-800 dark:text-gray-200 font-mono focus:outline-none focus:border-[#ff2a5f]"
               />
               <span className="absolute right-3 top-2 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 uppercase">
                 {formData.assigned_room}
@@ -605,7 +605,7 @@ function WebinarCreateContent() {
                   placeholder="Cover image URL or upload file"
                   value={formData.cover_image_url}
                   onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
-                  className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[#5a32fa]"
+                  className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2.5 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:border-[#ff2a5f]"
                 />
                 <label className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs font-bold text-gray-700 dark:text-gray-200 cursor-pointer transition-colors border border-gray-200 dark:border-gray-700">
                   {uploadingCover ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
@@ -627,7 +627,7 @@ function WebinarCreateContent() {
               placeholder="Brief 1-2 sentence overview of what attendees will learn from this session..."
               value={formData.summary}
               onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-              className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#5a32fa]"
+              className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#ff2a5f]"
             />
           </div>
 
@@ -641,20 +641,20 @@ function WebinarCreateContent() {
               placeholder="Detailed session breakdown, bullet points, discussion topics, and speaker background..."
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#5a32fa]"
+              className="w-full bg-white dark:bg-[#0f172a] border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#ff2a5f]"
             />
           </div>
 
           {/* Submit Action */}
           <div className="pt-4 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
-              <ShieldCheck size={16} className="text-[#5a32fa]" />
+              <ShieldCheck size={16} className="text-[#ff2a5f]" />
               <span>Submissions are sent to Editorial Review before appearing live on the hub.</span>
             </div>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider bg-[#5a32fa] hover:bg-[#4c24e6] text-white shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-wider bg-[#ff2a5f] hover:bg-[#e02553] text-white shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 active:scale-[0.99]"
             >
               {isSubmitting ? (
                 <>
@@ -677,7 +677,7 @@ export default function WebinarCreatePage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex items-center justify-center text-gray-900 dark:text-white">
-        <Loader2 size={40} className="text-[#5a32fa] animate-spin" />
+        <Loader2 size={40} className="text-[#ff2a5f] animate-spin" />
       </div>
     }>
       <WebinarCreateContent />
