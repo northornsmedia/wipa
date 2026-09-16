@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import Link from 'next/link';
-import { LayoutDashboard, Users, Calendar, Briefcase, FileText, ArrowLeft, Building2, DollarSign, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, Briefcase, FileText, ArrowLeft, Building2, DollarSign, Sparkles, Video } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAppStore();
@@ -46,6 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'Overview', path: '/admin', icon: LayoutDashboard },
     { label: 'Users', path: '/admin/users', icon: Users },
     { label: 'Events', path: '/admin/events', icon: Calendar },
+    { label: 'Webinars', path: '/admin/webinars', icon: Video },
     { label: 'Jobs', path: '/admin/jobs', icon: Briefcase },
     { label: 'Resources', path: '/admin/content', icon: FileText },
     { label: 'IP Services', path: '/admin/ip-services', icon: Sparkles },

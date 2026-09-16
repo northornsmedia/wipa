@@ -71,7 +71,7 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
       icon: Video,
       color: 'from-[#ff2a5f] to-rose-600',
       bg: 'bg-[#ff2a5f]/10 text-[#ff2a5f]',
-      path: '/platform/resources/webinars'
+      path: '/platform/resources/webinars/host'
     },
     {
       id: 'forum',

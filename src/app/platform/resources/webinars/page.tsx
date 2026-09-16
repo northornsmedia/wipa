@@ -554,12 +554,12 @@ export default function WebinarsHubPage() {
               )}
 
               {canHost && (
-                <button 
-                  onClick={() => setIsModalOpen(true)}
+                <Link 
+                  href="/platform/resources/webinars/host"
                   className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-6 py-2.5 rounded-full font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm"
                 >
                   <Plus size={18} /> Host Webinar
-                </button>
+                </Link>
               )}
             </div>
           </div>
@@ -821,15 +821,13 @@ export default function WebinarsHubPage() {
                       : `You don't have any webinars with status '${userWebinarFilter}'.`}
                   </p>
                   {userWebinarFilter === 'all' && (
-                    <button
-                      onClick={() => {
-                        setIsUserWebinarsOpen(false);
-                        setIsModalOpen(true);
-                      }}
+                    <Link
+                      href="/platform/resources/webinars/host"
+                      onClick={() => setIsUserWebinarsOpen(false)}
                       className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-lg shadow-[#ff2a5f]/20 transition-all"
                     >
                       <Plus size={14} /> Host Your First Webinar
-                    </button>
+                    </Link>
                   )}
                 </div>
               ) : (
@@ -926,15 +924,13 @@ export default function WebinarsHubPage() {
               <span className="text-xs text-gray-500">
                 Total Submissions: <strong className="text-white">{userWebinars.length}</strong>
               </span>
-              <button
-                onClick={() => {
-                  setIsUserWebinarsOpen(false);
-                  setIsModalOpen(true);
-                }}
+              <Link
+                href="/platform/resources/webinars/host"
+                onClick={() => setIsUserWebinarsOpen(false)}
                 className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-lg shadow-[#ff2a5f]/20 transition-all"
               >
                 <Plus size={14} /> Host New Webinar
-              </button>
+              </Link>
             </div>
 
           </div>
