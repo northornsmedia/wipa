@@ -12,7 +12,6 @@ import {
   ExternalLink, 
   Radio, 
   Trash2, 
-  Sparkles,
   Users,
   Building2,
   DollarSign,
