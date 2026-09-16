@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type CSSProperties } from "react";
+import { useState, Suspense, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 import PlatformHeader from "@/components/PlatformHeader";
 import MobileTopBar from "@/components/MobileTopBar";
@@ -42,11 +42,13 @@ export default function PlatformLayout({
           
           <div className="flex-1 flex w-full max-w-full min-w-0 box-border pt-0 md:pt-[var(--platform-header-height)]">
             {!isMessagesPage && (
-              <Sidebar
-                isOpen={isSidebarOpen}
-                onToggle={() => setIsSidebarOpen((open) => !open)}
-                onOpen={() => setIsSidebarOpen(true)}
-              />
+              <Suspense fallback={null}>
+                <Sidebar
+                  isOpen={isSidebarOpen}
+                  onToggle={() => setIsSidebarOpen((open) => !open)}
+                  onOpen={() => setIsSidebarOpen(true)}
+                />
+              </Suspense>
             )}
             <div className={`flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-clip box-border transition-[padding-left] duration-300 ease-out ${
               isMessagesPage ? 'pl-0' : 'lg:pl-[var(--desktop-sidebar-width)]'

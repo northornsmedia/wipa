@@ -1,13 +1,13 @@
 'use client';
 
 import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
 import { Building2, ShieldCheck } from 'lucide-react';
 
-export default function ClaimFirmPage() {
+function ClaimFirmContent() {
   const { user } = useAppStore();
   const searchParams = useSearchParams();
   const defaultSlug = searchParams.get('slug') || '';
@@ -98,5 +98,13 @@ export default function ClaimFirmPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function ClaimFirmPage() {
+  return (
+    <Suspense fallback={null}>
+      <ClaimFirmContent />
+    </Suspense>
   );
 }

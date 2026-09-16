@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { 
   User, ShieldCheck, Bell, Eye, Palette, Crown, Download, Trash2, 
   Camera, Upload, Check, AlertCircle, Sparkles, Key, Lock, Mail, 
@@ -57,7 +57,7 @@ const INDUSTRY_SECTORS = [
   'Financial Services & FinTech',
 ];
 
-export default function SettingsPage() {
+function SettingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') || 'profile';
@@ -1503,5 +1503,13 @@ export default function SettingsPage() {
       </div>
 
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={null}>
+      <SettingsContent />
+    </Suspense>
   );
 }

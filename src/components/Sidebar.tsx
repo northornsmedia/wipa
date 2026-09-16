@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import { 
@@ -81,7 +81,14 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
     return pathname.startsWith(path);
   };
 
-  const searchParams = useSearchParams();
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      setActiveTag(params.get('tag')?.toLowerCase() || params.get('hashtag')?.toLowerCase() || null);
+    }
+  }, [pathname]);
   const [unreadChatsCount, setUnreadChatsCount] = useState(0);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
@@ -446,12 +453,13 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
             <nav className="space-y-1">
               {trendingHashtags.map(({ tag, count }, idx) => {
                 const tagPath = `/platform?tag=${encodeURIComponent(tag)}`;
-                const isSelected = pathname === '/platform' && searchParams?.get('tag')?.toLowerCase() === tag.toLowerCase();
+                const isSelected = pathname === '/platform' && activeTag === tag.toLowerCase();
 
                 return (
                   <Link 
                     key={tag} 
                     href={tagPath} 
+                    onClick={() => setActiveTag(tag.toLowerCase())} 
                     className={`flex items-center justify-between px-3.5 py-2 text-[12px] font-semibold transition-all rounded-xl group ${
                       isSelected
                         ? 'bg-purple-50 text-[#5a32fa] dark:bg-purple-950/40 dark:text-purple-300 font-bold shadow-2xs'

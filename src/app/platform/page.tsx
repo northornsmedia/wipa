@@ -1,7 +1,7 @@
 'use client';
 
 import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import { useAppStore } from '@/store/useAppStore';
 import { 
@@ -28,7 +28,7 @@ import { recordPostImpressions } from '@/lib/analytics';
 
 const FEED_PAGE_SIZE = 8;
 
-export default function PlatformPage() {
+function PlatformContent() {
   const { user, posts, likedPostIds, toggleLike, setUser, isDarkMode, isCreatePostOpen, setIsCreatePostOpen } = useAppStore();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -1585,5 +1585,13 @@ export default function PlatformPage() {
       )}
 
     </div>
+  );
+}
+
+export default function PlatformPage() {
+  return (
+    <Suspense fallback={null}>
+      <PlatformContent />
+    </Suspense>
   );
 }
