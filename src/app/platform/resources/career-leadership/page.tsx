@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Search, TrendingUp, ChevronDown, Star, Activity, Coffee, Users, Video, Mic, FileText, Briefcase, PlayCircle, Sparkles } from 'lucide-react';
+import { ArrowLeft, Search, TrendingUp, ChevronDown, Activity, Coffee, Users, Video, Mic, FileText, Briefcase, PlayCircle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 const MOCK_CAREER_SUBCATEGORIES = [
@@ -157,30 +157,33 @@ export default function CareerLeadershipHubPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-[#050505] text-gray-900 dark:text-white font-sans selection:bg-purple-500/30 overflow-x-hidden transition-colors duration-300">
       
       {/* Cinematic Hero Header */}
-      <div className="relative min-h-[350px] md:min-h-[400px] w-full flex flex-col justify-center pb-12 pt-8 border-b border-gray-200 dark:border-white/10">
+      <div className="relative min-h-[380px] md:min-h-[440px] w-full flex flex-col justify-center pb-12 pt-8 border-b border-gray-200 dark:border-white/10">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-gray-100 dark:from-[#1a0b2e] dark:via-[#0a0514] dark:to-black z-0 transition-colors duration-300"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-300/30 dark:bg-purple-600/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-purple-300/30 dark:bg-purple-600/20 rounded-full blur-[140px] pointer-events-none z-0"></div>
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-indigo-500/15 rounded-full blur-[120px] pointer-events-none z-0"></div>
         
-        <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 relative z-10 flex flex-col items-center justify-center h-full">
+        <div className="w-full px-6 sm:px-10 md:px-16 lg:px-24 xl:px-32 relative z-10 flex flex-col items-center justify-center h-full">
+           <div className="mt-6 w-full text-center flex flex-col items-center">
+             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-black uppercase tracking-wider mb-6">
+               <Sparkles size={13} /> Executive Legal Advancement
+             </div>
 
-           
-           <div className="mt-8 max-w-5xl mx-auto text-center flex flex-col items-center">
-             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none mb-6 text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-purple-700 to-purple-500 dark:from-white dark:via-purple-100 dark:to-purple-400 whitespace-nowrap overflow-hidden text-ellipsis">
+             <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none mb-6 text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-purple-700 to-purple-500 dark:from-white dark:via-purple-100 dark:to-purple-400">
                Career & Leadership
              </h1>
-             <p className="text-lg md:text-xl lg:text-2xl font-medium text-gray-600 dark:text-white/60 max-w-2xl leading-relaxed whitespace-normal mx-auto">
-               Masterclasses, coaching, and in-depth guides to accelerate your trajectory in the legal industry.
+             <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-medium text-gray-600 dark:text-white/60 max-w-3xl leading-relaxed mx-auto">
+               Masterclasses, executive coaching, and in-depth playbooks to accelerate your trajectory in the global IP ecosystem.
              </p>
              
              {/* Search & Dropdown */}
              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-2xl mt-10">
                <div className="relative group w-full">
                  <div className="absolute inset-0 bg-purple-500 rounded-full blur-md opacity-0 group-focus-within:opacity-20 transition duration-500"></div>
-                 <div className="relative flex items-center bg-white/60 dark:bg-white/10 border border-gray-200 dark:border-white/20 rounded-full overflow-hidden backdrop-blur-md shadow-xl shadow-purple-500/5 dark:shadow-none transition-all">
+                 <div className="relative flex items-center bg-white/70 dark:bg-white/10 border border-gray-200 dark:border-white/20 rounded-full overflow-hidden backdrop-blur-md shadow-xl shadow-purple-500/5 dark:shadow-none transition-all">
                    <Search size={16} className="text-gray-400 dark:text-white/40 ml-4 shrink-0" />
                    <input 
                      type="text" 
-                     placeholder="Search masterclasses..." 
+                     placeholder="Search masterclasses, guides, playbooks..." 
                      value={searchQuery}
                      onChange={(e) => setSearchQuery(e.target.value)}
                      className="w-full bg-transparent py-3.5 pl-3 pr-4 text-sm font-bold text-gray-900 dark:text-white focus:outline-none placeholder-gray-500 dark:placeholder-white/50"
@@ -188,11 +191,11 @@ export default function CareerLeadershipHubPage() {
                  </div>
                </div>
                
-               <div className="relative w-full sm:w-48 shrink-0">
+               <div className="relative w-full sm:w-56 shrink-0">
                   <select 
                      value={typeFilter}
                      onChange={(e) => setTypeFilter(e.target.value)}
-                     className="appearance-none w-full bg-white/60 dark:bg-white/10 border border-gray-200 dark:border-white/20 rounded-full px-6 py-3.5 pr-12 text-sm font-bold text-gray-900 dark:text-white focus:outline-none focus:border-purple-500 cursor-pointer backdrop-blur-md shadow-xl shadow-purple-500/5 dark:shadow-none transition-all"
+                     className="appearance-none w-full bg-white/70 dark:bg-white/10 border border-gray-200 dark:border-white/20 rounded-full px-6 py-3.5 pr-12 text-sm font-bold text-gray-900 dark:text-white focus:outline-none focus:border-purple-500 cursor-pointer backdrop-blur-md shadow-xl shadow-purple-500/5 dark:shadow-none transition-all"
                    >
                      {CONTENT_TYPES.map(type => (
                        <option key={type} value={type} className="dark:bg-gray-900">{type}</option>
@@ -206,77 +209,76 @@ export default function CareerLeadershipHubPage() {
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 py-12 relative z-10">
+      {/* Unboxed Full Canvas */}
+      <div className="w-full px-6 sm:px-10 md:px-16 lg:px-24 xl:px-32 py-12 relative z-10">
         
-        {/* Navigation & Filters */}
-        <div className="mb-14 flex justify-center w-full">
-           {/* Huge Category Text (Centered with guaranteed spacing) */}
-           <div 
-             className="flex flex-wrap items-center justify-center gap-6 md:gap-10 lg:gap-14 w-full max-w-5xl mx-auto"
-             style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '2.5rem' }}
-           >
-             {MOCK_CAREER_SUBCATEGORIES.map(sub => {
-               const isActive = activeSub === sub.id;
-               return (
-                 <button
-                   key={sub.id}
-                   type="button"
-                   onClick={() => setActiveSub(sub.id)}
-                   className={`relative py-2.5 px-4 rounded-xl text-2xl md:text-3xl lg:text-4xl font-black tracking-tight transition-all duration-300 cursor-pointer ${
-                     isActive 
-                       ? 'text-gray-900 dark:text-white' 
-                       : 'text-gray-400 dark:text-white/30 hover:text-gray-700 dark:hover:text-white/70'
-                   }`}
-                   style={{ margin: '0.25rem 0.75rem' }}
-                 >
-                   <span>{sub.name}</span>
-                   {isActive && (
-                     <span className="absolute -bottom-1 left-4 right-4 h-1 bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-600 rounded-full shadow-sm"></span>
-                   )}
-                 </button>
-               );
-             })}
-           </div>
+        {/* Navigation & Filters: Strictly 1 Single Line, Unconstrained & Fluid */}
+        <div className="mb-14 w-full flex items-center justify-center">
+          <div className="w-full flex items-center justify-start sm:justify-center gap-6 sm:gap-10 md:gap-14 lg:gap-20 overflow-x-auto no-scrollbar py-3 px-2 flex-nowrap whitespace-nowrap">
+            {MOCK_CAREER_SUBCATEGORIES.map(sub => {
+              const isActive = activeSub === sub.id;
+              return (
+                <button
+                  key={sub.id}
+                  type="button"
+                  onClick={() => setActiveSub(sub.id)}
+                  className={`relative py-3 px-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight transition-all duration-300 cursor-pointer whitespace-nowrap shrink-0 group ${
+                    isActive 
+                      ? 'text-gray-900 dark:text-white' 
+                      : 'text-gray-400/80 dark:text-white/30 hover:text-gray-800 dark:hover:text-white/80'
+                  }`}
+                >
+                  <span className="relative z-10">{sub.name}</span>
+                  {isActive && (
+                    <span className="absolute -bottom-1 left-0 right-0 h-1.5 bg-gradient-to-r from-[#5a32fa] via-purple-500 to-indigo-500 rounded-full shadow-lg shadow-purple-500/30"></span>
+                  )}
+                  {!isActive && (
+                    <span className="absolute -bottom-1 left-0 right-0 h-1 bg-transparent group-hover:bg-gray-300 dark:group-hover:bg-white/20 rounded-full transition-all"></span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Masterclass Feature */}
+        {/* Masterclass Feature: Full Fluid Panoramic Display */}
         {featuredResources.length > 0 && (
-          <div className="mb-20 md:mb-24">
-             <div className="relative h-[400px] md:h-[600px] w-full rounded-[2rem] md:rounded-[3rem] overflow-hidden group border border-gray-200 dark:border-white/10 shadow-2xl shadow-purple-900/5 dark:shadow-purple-900/20">
+          <div className="mb-20 md:mb-24 w-full">
+             <div className="relative h-[440px] md:h-[620px] lg:h-[700px] w-full rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden group border border-gray-200 dark:border-white/10 shadow-2xl shadow-purple-900/10 dark:shadow-purple-900/30">
                <img src={featuredResources[0].image} alt={featuredResources[0].title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90"></div>
                <div className="absolute inset-0 bg-purple-900/20 mix-blend-overlay"></div>
                
-               <div className="absolute inset-0 p-6 md:p-12 lg:p-16 flex flex-col justify-end text-white">
-                 <div className="max-w-3xl">
+               <div className="absolute inset-0 p-8 md:p-14 lg:p-20 flex flex-col justify-end text-white">
+                 <div className="max-w-4xl">
                    <div className="flex flex-wrap items-center gap-3 mb-4 md:mb-6">
-                     <span className="bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg shadow-purple-500/30">{featuredResources[0].type}</span>
-                     <span className="text-white/80 text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Activity size={14}/> {featuredResources[0].time}</span>
+                     <span className="bg-gradient-to-r from-[#5a32fa] to-purple-600 text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg shadow-purple-500/30">{featuredResources[0].type}</span>
+                     <span className="text-white/90 text-xs font-bold uppercase tracking-widest flex items-center gap-1.5"><Activity size={14}/> {featuredResources[0].time}</span>
                    </div>
-                   <h2 className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-[1.1] mb-6 drop-shadow-lg">{featuredResources[0].title}</h2>
+                   <h2 className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter leading-[1.05] mb-6 drop-shadow-2xl">{featuredResources[0].title}</h2>
                    <div className="flex items-center gap-4">
-                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0">
-                       <Briefcase size={20} className="text-purple-400" />
+                     <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0">
+                       <Briefcase size={22} className="text-purple-300" />
                      </div>
                      <div>
-                       <div className="text-white/60 text-[10px] font-black uppercase tracking-widest mb-0.5">Instructor / Expert</div>
+                       <div className="text-white/60 text-[11px] font-black uppercase tracking-widest mb-0.5">Instructor / Expert</div>
                        <div className="text-base md:text-lg font-bold">{featuredResources[0].expert}</div>
                      </div>
                    </div>
                  </div>
                  
                  {/* Play Button Overlay */}
-                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 cursor-pointer shadow-[0_0_50px_rgba(168,85,247,0.5)] hidden sm:flex">
-                   <PlayCircle size={40} className="ml-2" />
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-28 md:h-28 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 cursor-pointer shadow-[0_0_60px_rgba(168,85,247,0.6)] hidden sm:flex">
+                   <PlayCircle size={48} className="ml-2" />
                  </div>
                </div>
              </div>
           </div>
         )}
 
-        {/* Resource Grid (Bento/Staggered vibe) */}
-        <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {/* Resource Grid: Fluid Dynamic Unboxed Grid */}
+        <div className="w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
             {regularResources.map((resource, i) => (
               <Link key={resource.id} href={`/platform/resources/career-leadership/${resource.id}`} className={`group relative rounded-[2rem] overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-purple-300 dark:hover:border-purple-500/50 shadow-sm hover:shadow-xl dark:shadow-none transition-all duration-500 flex flex-col ${i === 0 ? 'md:col-span-2 lg:col-span-2 md:flex-row' : ''}`}>
                 

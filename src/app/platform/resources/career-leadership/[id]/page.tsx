@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowLeft, BookOpen, Star, TrendingUp, Target, ListChecks, FileText, ChevronRight, Briefcase, Award } from 'lucide-react';
+import { ArrowLeft, BookOpen, Sparkles, TrendingUp, Target, ListChecks, FileText, ChevronRight, Briefcase, Award } from 'lucide-react';
 import Link from 'next/link';
 import DOMPurify from 'dompurify';
 
@@ -103,7 +103,7 @@ export default function CareerDetailPage({ params }: { params: Promise<{ id: str
           {/* Key Takeaways */}
           <div className="bg-gradient-to-br from-[#a855f7]/10 to-transparent rounded-[2rem] p-8 border border-[#a855f7]/20 shadow-sm">
             <h2 className="text-xl font-black text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
-              <Star className="text-[#a855f7]" size={20} /> Key Takeaways
+              <Sparkles className="text-[#a855f7]" size={20} /> Key Takeaways
             </h2>
             <ul className="space-y-4">
               {resource.keyTakeaways.map((takeaway, idx) => (
