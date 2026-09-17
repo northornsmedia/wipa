@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
+const stripe = new Stripe((process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder').trim(), {
   apiVersion: '2023-10-16' as any,
 });
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+const webhookSecret = (process.env.STRIPE_WEBHOOK_SECRET || '').trim();
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
@@ -39,6 +39,12 @@ export async function POST(req: Request) {
       if (!userId) {
         console.error('No client_reference_id found in session');
         return NextResponse.json({ error: 'No user ID' }, { status: 400 });
+      }
+
+      // Handle webinar host pass purchases separately from membership tiers
+      if (session.metadata?.type === 'webinar_host') {
+        console.log(`[Stripe Webhook] Webinar host checkout completed for user ${userId}. Session: ${session.id}, Amount: £${session.metadata?.amountGbp || 199}`);
+        return NextResponse.json({ received: true });
       }
 
       // 1. Get the pending tier from user metadata

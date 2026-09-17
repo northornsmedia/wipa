@@ -4,7 +4,7 @@ import { DotmCircular7 } from '@/components/ui/dotm-circular-7';
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowLeft, CheckCircle2, MapPin, Globe, Mail, Phone, Star, Building2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MapPin, Globe, Mail, Phone, Building2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function FirmProfilePage({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
@@ -146,8 +146,8 @@ export default function FirmProfilePage({ params }: { params: Promise<{ slug: st
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">{firm.name}</h1>
                 {firm.is_verified && <CheckCircle2 size={20} className="text-blue-500 shrink-0 fill-blue-500/20" />}
                 {firm.is_featured && (
-                  <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1">
-                    <Star size={10} className="fill-white" /> Featured
+                  <span className="bg-slate-900 dark:bg-purple-950 text-purple-300 border border-purple-500/40 text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-xs flex items-center gap-1">
+                    <ShieldCheck size={11} className="text-purple-400" /> Premier Practice
                   </span>
                 )}
               </div>
@@ -276,12 +276,23 @@ export default function FirmProfilePage({ params }: { params: Promise<{ slug: st
               {user && (
                 <form onSubmit={handleSubmitReview} className="bg-white dark:bg-[#0f172a] p-6 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
                   <h3 className="font-bold text-lg mb-2">Write a Review</h3>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <button type="button" key={star} onClick={() => setReviewRating(star)}>
-                        <Star className={`${star <= reviewRating ? 'fill-yellow-400 text-yellow-400' : 'text-slate-300 dark:text-slate-700'}`} size={24} />
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-500">Client Rating:</span>
+                    {[1, 2, 3, 4, 5].map(score => (
+                      <button 
+                        type="button" 
+                        key={score} 
+                        onClick={() => setReviewRating(score)}
+                        className={`w-8 h-8 rounded-lg font-black text-xs transition-all cursor-pointer ${
+                          score <= reviewRating 
+                            ? 'bg-[#5a32fa] text-white shadow-sm' 
+                            : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        {score}
                       </button>
                     ))}
+                    <span className="text-xs font-bold text-[#5a32fa] dark:text-purple-400 ml-1">({reviewRating} of 5)</span>
                   </div>
                   <textarea 
                     required 
@@ -310,10 +321,9 @@ export default function FirmProfilePage({ params }: { params: Promise<{ slug: st
                             <div className="text-xs text-slate-500">{new Date(review.created_at).toLocaleDateString()}</div>
                           </div>
                         </div>
-                        <div className="flex gap-1">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <Star key={star} size={16} className={star <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-slate-200 dark:text-slate-800'} />
-                          ))}
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/40 text-xs font-black text-purple-700 dark:text-purple-300">
+                          <span>Rating:</span>
+                          <span>{review.rating || 5}/5</span>
                         </div>
                       </div>
                       <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{review.review_text}</p>

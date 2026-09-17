@@ -64,24 +64,45 @@ export default function IPNewsHubPage() {
   const [isPaused, setIsPaused] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
 
-  // 1. Fetch live news items directly from Supabase
+  // 1. Fetch live news items directly from Supabase (wire + approved community submissions)
   const loadNewsFromDatabase = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      // Wire news
+      const { data: wireData } = await supabase
         .from('ip_news')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(200);
 
-      if (!error && data && data.length > 0) {
-        const mapped = data.map((d: any) => {
+      // Community approved news from resources
+      const { data: communityData } = await supabase
+        .from('resources')
+        .select('*')
+        .eq('category', 'ip-news')
+        .eq('approval_status', 'approved')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      const allData = [
+        ...(communityData || []).map((d: any) => ({ ...d, __isCommunity: true })),
+        ...(wireData || [])
+      ];
+
+      allData.sort((a: any, b: any) => {
+        const dateA = new Date(a.created_at || 0).getTime();
+        const dateB = new Date(b.created_at || 0).getTime();
+        return dateB - dateA;
+      });
+
+      if (allData.length > 0) {
+        const mapped = allData.map((d: any) => {
           const cleanTitle = cleanIPNewsText(d.title) || d.title;
           const cleanSummary = formatCleanSummary(d.summary || d.description, cleanTitle);
           const createdDate = d.created_at ? new Date(d.created_at) : new Date();
           const timeStr = createdDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           const dateStr = d.created_at ? createdDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
-          const sourceOrg = d.organization || (d.tags?.includes('GlobalIPMagazineNews') ? 'The Global IP Magazine' : 'Global IP Wire');
-          const sourceLink = d.external_url || d.url || (d.slug && d.slug.includes('breaking-ip-wire') ? 'https://www.globalipmagazine.com/news/breaking-ip-wire' : `https://www.globalipmagazine.com/post/${d.slug || ''}`);
+          const sourceOrg = d.organization || (d.tags?.includes('GlobalIPMagazineNews') ? 'The Global IP Magazine' : (d.__isCommunity ? (d.author_name || 'WIPA Contributor') : 'Global IP Wire'));
+          const sourceLink = d.external_url || d.url || (d.__isCommunity ? `/platform/resources/ip-news/${d.slug || d.id}` : (d.slug && d.slug.includes('breaking-ip-wire') ? 'https://www.globalipmagazine.com/news/breaking-ip-wire' : `https://www.globalipmagazine.com/post/${d.slug || ''}`));
 
           return {
             id: d.id,
@@ -99,7 +120,8 @@ export default function IPNewsHubPage() {
             image: d.cover_image_url || "/resourceimg1.jpg",
             summary: cleanSummary,
             read_time: d.read_time || "4 min read",
-            tags: d.tags || ['Intellectual Property', 'Legal']
+            tags: d.tags || ['Intellectual Property', 'Legal'],
+            isCommunity: Boolean(d.__isCommunity)
           };
         });
         setNewsItems(mapped);
@@ -289,11 +311,20 @@ export default function IPNewsHubPage() {
               onClick={() => triggerBackgroundSync(true)}
               disabled={isSyncing}
               title="Sync Latest News from Internet"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white px-4 py-2.5 text-xs font-black shadow-sm transition-all disabled:opacity-60 shrink-0"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white px-4 py-2.5 text-xs font-black shadow-sm transition-all disabled:opacity-60 shrink-0 cursor-pointer"
             >
               <RefreshCw size={14} className={isSyncing ? "animate-spin" : ""} />
               <span className="hidden sm:inline">{isSyncing ? "Syncing..." : "Sync Fresh"}</span>
             </button>
+
+            {/* Publish Your News Button */}
+            <Link
+              href="/platform/resources/ip-news/create"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 active:scale-95 text-white px-4 py-2.5 text-xs font-black shadow-md shadow-orange-500/20 transition-all shrink-0 cursor-pointer"
+            >
+              <Plus size={15} />
+              <span>Publish Your News</span>
+            </Link>
           </div>
         </div>
       </div>

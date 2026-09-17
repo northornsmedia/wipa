@@ -266,16 +266,24 @@ export default function BuddingMindsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-4">
             
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 bg-[#00d26a]/15 text-[#00d26a] px-4 py-2 rounded-full font-black text-xs uppercase tracking-widest mb-6 border border-[#00d26a]/20 shadow-sm">
-                <Sparkles size={14} /> Official WIPA Wellbeing Partner
+              <div className="inline-flex items-center gap-2.5 bg-[#00d26a]/15 text-[#00d26a] px-4 py-2 rounded-full font-black text-xs uppercase tracking-widest mb-6 border border-[#00d26a]/20 shadow-sm">
+                <img src="/budding-minds-logo.png" alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
+                <span>Official WIPA Wellbeing Partner</span>
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tight leading-[1.1] mb-6">
-                Budding Minds <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00d26a] via-teal-400 to-[#20c997]">
-                  Whole-Person Wellbeing for Women
-                </span>
-              </h1>
+              <div className="flex items-center gap-4 mb-6">
+                <img 
+                  src="/budding-minds-logo.png" 
+                  alt="Budding Minds Logo" 
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-3 border-emerald-500/40 shadow-xl object-cover shrink-0 hidden sm:inline-block" 
+                />
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tight leading-[1.1]">
+                  Budding Minds <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00d26a] via-teal-400 to-[#20c997]">
+                    Whole-Person Wellbeing for Women
+                  </span>
+                </h1>
+              </div>
               
               <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 font-medium leading-relaxed mb-8 max-w-2xl">
                 Budding Minds supports women with their nutrition, gut health, hormone health, stress management, nervous system regulation and overall wellbeing.

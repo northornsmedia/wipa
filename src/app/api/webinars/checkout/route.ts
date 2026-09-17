@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
+const stripe = new Stripe((process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder').trim(), {
   apiVersion: '2023-10-16' as any,
 });
 
@@ -75,6 +75,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
     console.error('Webinar checkout session error:', error);
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.raw?.message || error?.message || 'Internal Server Error' },
+      { status: error?.statusCode || error?.status || 500 }
+    );
   }
 }

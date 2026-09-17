@@ -28,8 +28,16 @@ export default function HostWebinarPricingPage() {
   const [loading, setLoading] = useState(true);
   const [initiatingCheckout, setInitiatingCheckout] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [checkoutCanceled, setCheckoutCanceled] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('canceled') === 'true') {
+        setCheckoutCanceled(true);
+      }
+    }
+
     async function loadData() {
       if (!user?.id) {
         setLoading(false);
@@ -299,19 +307,12 @@ export default function HostWebinarPricingPage() {
           </div>
         </div>
 
-        {/* Admin Direct Pass Alert */}
-        {isAdmin && (
-          <div className="mt-8 max-w-4xl mx-auto p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 text-amber-900 dark:text-amber-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-medium">
-            <div className="flex items-center gap-2.5">
-              <ShieldCheck size={18} className="text-amber-600 dark:text-amber-400 shrink-0" />
-              <span>You are logged in as an <strong>Administrator</strong>. You can bypass payment for internal scheduling and testing.</span>
-            </div>
-            <Link 
-              href="/platform/resources/webinars/create?admin_bypass=1"
-              className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-bold uppercase tracking-wider text-[11px] shrink-0 transition-colors shadow-xs"
-            >
-              Admin Direct Launch
-            </Link>
+
+
+        {/* Canceled message */}
+        {checkoutCanceled && (
+          <div className="mt-6 max-w-md mx-auto p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 dark:bg-amber-950/30 dark:border-amber-900 dark:text-amber-300 text-xs text-center font-medium">
+            Checkout was canceled. You have not been charged.
           </div>
         )}
 

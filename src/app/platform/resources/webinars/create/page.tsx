@@ -379,7 +379,7 @@ function WebinarCreateContent() {
           <div className="flex items-center gap-3">
             {verifiedAmount !== null && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800 text-xs font-bold">
-                <CheckCircle2 size={13} className="text-[#00d26a]" /> Payment Verified ({verifiedAmount === 0 ? 'Admin Pass' : `£${verifiedAmount} GBP`})
+                <CheckCircle2 size={13} className="text-[#00d26a]" /> Payment Verified (£{verifiedAmount || 199} GBP)
               </span>
             )}
           </div>

@@ -23,7 +23,7 @@ const DEFAULT_IP_SERVICES = [
     title: "Genie AI",
     description: "AI-powered legal drafting, review and contract intelligence.",
     type: "ip_services",
-    url: "/genie-ai-logo.svg",
+    url: "/genie-ai-logo.png",
     category: "tech-way",
     slug: "genie-ai",
     subcategory: "Legal AI & Contracts"

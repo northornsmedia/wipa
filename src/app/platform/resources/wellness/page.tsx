@@ -303,9 +303,11 @@ export default function WellnessPage() {
 
             <Link 
               href="/platform/resources/wellness/budding-minds" 
-              className="inline-flex items-center gap-2 bg-[#00d26a]/10 hover:bg-[#00d26a]/20 text-[#00d26a] px-3.5 py-1.5 rounded-full font-bold text-xs border border-[#00d26a]/20 transition-all shadow-sm"
+              className="inline-flex items-center gap-2.5 bg-[#00d26a]/10 hover:bg-[#00d26a]/20 text-[#00d26a] px-4 py-1.5 rounded-full font-bold text-xs border border-[#00d26a]/20 transition-all shadow-sm"
             >
-              <Sparkles size={13} /> Partner Hub: Budding Minds <ArrowRight size={13} />
+              <img src="/budding-minds-logo.png" alt="" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-xs" />
+              <span>Partner Hub: Budding Minds</span> 
+              <ArrowRight size={13} />
             </Link>
           </div>
 
@@ -334,13 +336,28 @@ export default function WellnessPage() {
             <div className="absolute top-[-80px] left-[-80px] w-80 h-80 bg-[#00d26a]/15 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-[-80px] right-[-80px] w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
             
-            <div className="w-40 h-40 sm:w-52 sm:h-52 md:w-60 md:h-60 rounded-full overflow-hidden shrink-0 border-4 border-white dark:border-[#2a2a38] shadow-2xl relative z-10 bg-emerald-500/10 flex items-center justify-center">
-              <img 
-                src={partnerBanner.image_url || "/jel.jpg"} 
-                alt={partnerBanner.partner_name || "Wellbeing Partner"} 
-                onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/jel.jpg"; }}
-                className="w-full h-full object-cover object-top" 
-              />
+            {/* Portrait with Overlapping Partner Logo Emblem */}
+            <div className="relative shrink-0 z-10">
+              <div className="w-40 h-40 sm:w-52 sm:h-52 md:w-60 md:h-60 rounded-full overflow-hidden border-4 border-white dark:border-[#2a2a38] shadow-2xl bg-emerald-500/10 flex items-center justify-center">
+                <img 
+                  src={partnerBanner.image_url || "/jel.jpg"} 
+                  alt={partnerBanner.partner_name || "Wellbeing Partner"} 
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/jel.jpg"; }}
+                  className="w-full h-full object-cover object-top" 
+                />
+              </div>
+
+              {/* Budding Minds Logo Emblem Badge */}
+              <div 
+                className="absolute -bottom-1 -right-1 sm:bottom-1 sm:right-1 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-3 sm:border-4 border-white dark:border-[#161622] shadow-xl shadow-emerald-950/30 bg-[#1d3d1d] flex items-center justify-center group"
+                title="Budding Minds Official Partner"
+              >
+                <img 
+                  src="/budding-minds-logo.png" 
+                  alt="Budding Minds Logo" 
+                  className="w-full h-full object-cover" 
+                />
+              </div>
             </div>
 
             <div className="flex-1 text-center lg:text-left relative z-10">
@@ -357,9 +374,16 @@ export default function WellnessPage() {
                 )}
               </div>
 
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-2">
-                {partnerBanner.partner_name} {partnerBanner.expert_name && <span className="text-gray-400 font-normal">· with {partnerBanner.expert_name}</span>}
-              </h2>
+              <div className="flex items-center justify-center lg:justify-start gap-3 mb-2">
+                <img 
+                  src="/budding-minds-logo.png" 
+                  alt="Budding Minds Logo" 
+                  className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-2 border-emerald-500/30 shadow-md object-cover shrink-0 hidden sm:inline-block" 
+                />
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white">
+                  {partnerBanner.partner_name} {partnerBanner.expert_name && <span className="text-gray-400 font-normal">· with {partnerBanner.expert_name}</span>}
+                </h2>
+              </div>
               
               {partnerBanner.subheadline && (
                 <p className="text-xs sm:text-sm font-bold text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wider">

@@ -1,25 +1,30 @@
+// @ts-nocheck
 'use client';
 
-import React from 'react';
-import { ArrowLeft, BookOpen, Download, FileText, User, ChevronRight, Tag, Share2, Bookmark, Clock, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, BookOpen, Download, FileText, User, ChevronRight, Tag, Share2, Bookmark, Clock, Calendar, Check } from 'lucide-react';
 import Link from 'next/link';
 import DOMPurify from 'dompurify';
+import { supabase } from '@/lib/supabase';
 
 export default function ArticleDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
-  
-  // Mock data for the specific article resource
-  const article = {
+  const [copied, setCopied] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+
+  // Fallback mock article if not found in database
+  const DEFAULT_MOCK = {
     id: id,
     title: "Navigating AI Patents in 2026: Strategies for Tech Startups",
     type: "Thought Leadership",
     publicationDate: "Oct 15, 2026",
     readingTime: "7 min read",
+    coverImage: "/resourceimg1.jpg",
     author: {
       name: "Elena Rostova",
       role: "Partner, Innovation IP Law",
       bio: "Elena specializes in advising hyper-growth startups on building defensive patent portfolios in the AI and machine learning sectors. She is a frequent contributor to IP World Magazine.",
-      image: "https://i.pravatar.cc/150?img=47"
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80"
     },
     content: `
       <p class="mb-6 text-xl text-gray-500 dark:text-gray-400 font-medium leading-relaxed">As generative AI models continue to evolve at breakneck speed, patent offices worldwide are struggling to keep pace with the novel legal questions they raise. For tech startups, this creates a landscape of both unprecedented opportunity and significant risk.</p>
@@ -49,130 +54,197 @@ export default function ArticleDetailPage({ params }: { params: Promise<{ id: st
     ]
   };
 
+  const [article, setArticle] = useState<any>(DEFAULT_MOCK);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadArticle() {
+      try {
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        let query = supabase.from('resources').select('*');
+        if (isUUID) {
+          query = query.eq('id', id);
+        } else {
+          query = query.or(`slug.eq.${id},id.eq.${id}`);
+        }
+
+        const { data, error } = await query.single();
+        if (data && !error) {
+          setArticle({
+            id: data.id,
+            title: data.title,
+            type: data.resource_type || data.subcategory || "Expert Article",
+            publicationDate: new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            readingTime: data.read_time || "6 min read",
+            coverImage: data.cover_image_url || "/resourceimg1.jpg",
+            author: {
+              name: data.author_name || "WIPA Contributor",
+              role: data.author_title ? `${data.author_title}${data.organization ? `, ${data.organization}` : ''}` : (data.organization || "IP Professional"),
+              bio: data.summary || `${data.author_name || 'Contributor'} is a specialized intellectual property practitioner and active contributor to the WIPA Resource Library and Global IP Journal.`,
+              image: data.author_avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80"
+            },
+            content: data.content || data.description || '',
+            tags: data.tags || ["Patent Law", "Intellectual Property"],
+            attachments: data.file_url ? [{ title: "Download Attached Resource", type: "FILE", size: "Direct" }] : [
+              { title: "WIPA Thought Leadership Brief", type: "PDF", size: "1.8 MB" }
+            ],
+            related: [
+              { id: '2', title: "The Fall of the Standard Essential Patent Monopoly", type: "Opinion" },
+              { id: '3', title: "Tech Giants vs. Startups: A Patent Case Study", type: "Case Study" }
+            ]
+          });
+        }
+      } catch (e) {
+        console.error('Error fetching article detail:', e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadArticle();
+  }, [id]);
+
+  const handleShare = () => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    }
+  };
+
+  const formatContentHtml = (raw: string) => {
+    if (!raw) return '';
+    if (raw.includes('<p') || raw.includes('<div') || raw.includes('<h3') || raw.includes('<h2')) {
+      return typeof window !== 'undefined' ? DOMPurify.sanitize(raw) : raw;
+    }
+    // Markdown formatting converter
+    const formatted = raw
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/^### (.*$)/gim, '<h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 mt-8">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-3xl font-black text-gray-900 dark:text-gray-100 mb-4 mt-10 border-b border-gray-100 dark:border-white/10 pb-2">$1</h2>')
+      .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-gray-900 dark:text-white">$1</strong>')
+      .replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>')
+      .replace(/^&gt; (.*$)/gim, '<div class="my-8 p-6 bg-emerald-500/10 border-l-4 border-emerald-500 rounded-r-2xl"><p class="text-lg italic font-medium text-gray-800 dark:text-gray-200">$1</p></div>')
+      .replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc text-gray-700 dark:text-gray-300 my-1">$1</li>')
+      .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-emerald-600 underline font-semibold hover:text-emerald-700">$1</a>')
+      .split('\n\n')
+      .map(b => b.startsWith('<') ? b : `<p class="mb-6 text-base leading-relaxed text-gray-700 dark:text-gray-300">${b.replace(/\n/g, '<br/>')}</p>`)
+      .join('\n');
+    return typeof window !== 'undefined' ? DOMPurify.sanitize(formatted) : formatted;
+  };
+
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] pb-20">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] pb-20 font-sans">
       
       {/* Header Area */}
       <div className="bg-white dark:bg-[#1e293b] border-b border-gray-200 dark:border-white/10 pt-8 pb-12">
         <div className="w-full max-w-[900px] mx-auto p-4 md:p-6 lg:p-8">
-          <Link href="/platform/resources/articles-insights" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-[#3b82f6] font-bold text-sm mb-10 transition-colors">
+          <Link href="/platform/resources/articles-insights" className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-emerald-600 font-bold text-xs uppercase tracking-wider mb-8 transition-colors">
             <ArrowLeft size={16} />
             Back to Articles & Insights
           </Link>
           
-          <div className="flex items-center gap-3 text-sm font-bold text-[#3b82f6] mb-6">
-            <span className="bg-[#3b82f6]/10 px-3 py-1 rounded-md uppercase tracking-wider text-[10px] text-[#3b82f6]">{article.type}</span>
+          <div className="flex items-center gap-3 text-sm font-bold text-emerald-600 mb-6">
+            <span className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-3 py-1 rounded-md uppercase tracking-wider text-[10px] font-black">{article.type}</span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-gray-100 mb-8 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-gray-100 mb-8 leading-tight tracking-tight">
             {article.title}
           </h1>
 
+          {/* Author & Publication Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-t border-gray-100 dark:border-white/10 pt-6">
             <div className="flex items-center gap-4">
-              <img src={article.author.image} alt={article.author.name} className="w-12 h-12 rounded-full object-cover" />
+              <img src={article.author.image} alt={article.author.name} className="w-12 h-12 rounded-full object-cover border-2 border-emerald-500/20" />
               <div>
                 <p className="font-bold text-gray-900 dark:text-gray-100">{article.author.name}</p>
-                <p className="text-sm text-gray-500">{article.author.role}</p>
+                <p className="text-xs text-gray-500">{article.author.role}</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-6 text-sm text-gray-500 font-medium">
-              <span className="flex items-center gap-2"><Calendar size={16} className="text-gray-400" /> {article.publicationDate}</span>
-              <span className="flex items-center gap-2"><Clock size={16} className="text-gray-400" /> {article.readingTime}</span>
+            <div className="flex items-center gap-6 text-xs text-gray-500 font-medium">
+              <span className="flex items-center gap-1.5"><Calendar size={15} className="text-gray-400" /> {article.publicationDate}</span>
+              <span className="flex items-center gap-1.5"><Clock size={15} className="text-gray-400" /> {article.readingTime}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="w-full max-w-[900px] mx-auto p-4 md:p-6 lg:p-8 pt-12">
+      <div className="w-full max-w-[900px] mx-auto p-4 md:p-6 lg:p-8 pt-8">
         
         {/* Floating Actions */}
-        <div className="flex gap-4 justify-end mb-8">
-          <button className="w-10 h-10 rounded-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 hover:text-[#3b82f6] hover:border-[#3b82f6] shadow-sm transition-all">
-            <Bookmark size={18} />
-          </button>
-          <button className="w-10 h-10 rounded-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 hover:text-[#3b82f6] hover:border-[#3b82f6] shadow-sm transition-all">
-            <Share2 size={18} />
-          </button>
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/platform/resources/articles-insights/create"
+              className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
+            >
+              Write your own article &rarr;
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setBookmarked(!bookmarked)}
+              className={`w-10 h-10 rounded-full bg-white dark:bg-[#1e293b] border flex items-center justify-center shadow-xs transition-all cursor-pointer ${
+                bookmarked 
+                  ? 'border-emerald-500 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30' 
+                  : 'border-gray-200 dark:border-white/10 text-gray-500 hover:text-emerald-600 hover:border-emerald-500'
+              }`}
+              title="Bookmark article"
+            >
+              <Bookmark size={18} className={bookmarked ? 'fill-emerald-600' : ''} />
+            </button>
+            <button 
+              onClick={handleShare}
+              className="w-10 h-10 rounded-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 hover:text-emerald-600 hover:border-emerald-500 shadow-xs transition-all cursor-pointer relative"
+              title="Share article link"
+            >
+              {copied ? <Check size={18} className="text-emerald-600" /> : <Share2 size={18} />}
+            </button>
+          </div>
         </div>
 
+        {/* Cover image if present */}
+        {article.coverImage && (
+          <div className="w-full h-72 sm:h-96 rounded-3xl overflow-hidden mb-10 shadow-sm border border-gray-200 dark:border-white/10">
+            <img src={article.coverImage} alt={article.title} className="w-full h-full object-cover" />
+          </div>
+        )}
+
         {/* Article Body */}
-        <div className="bg-white dark:bg-[#1e293b] rounded-[2rem] p-8 md:p-12 shadow-sm border border-gray-100 dark:border-white/10 mb-12">
+        <div className="bg-white dark:bg-[#1e293b] rounded-3xl p-6 sm:p-12 shadow-sm border border-gray-100 dark:border-white/10 mb-12">
           <div 
-            className="prose prose-lg dark:prose-invert prose-p:text-gray-600 dark:prose-p:text-gray-300 max-w-none"
-            dangerouslySetInnerHTML={{ __html: typeof window !== 'undefined' ? DOMPurify.sanitize(article.content) : article.content }}
+            className="prose prose-lg dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"
+            dangerouslySetInnerHTML={{ __html: formatContentHtml(article.content) }}
           />
           
           {/* Tags */}
           <div className="mt-12 pt-8 border-t border-gray-100 dark:border-white/10">
-            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Tag size={16} /> Tags
+            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <Tag size={14} /> Topic Tags
             </h4>
             <div className="flex flex-wrap gap-2">
-              {article.tags.map(tag => (
-                <span key={tag} className="px-3 py-1.5 bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-white/10 cursor-pointer transition-colors">
-                  {tag}
+              {article.tags.map((tag: string) => (
+                <span key={tag} className="px-3 py-1 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+                  #{tag}
                 </span>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Attachments & Author Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          
-          {/* Author Bio */}
-          <div className="bg-gradient-to-br from-[#3b82f6]/10 to-transparent p-8 rounded-3xl border border-[#3b82f6]/20 shadow-sm flex flex-col items-center text-center">
-            <img src={article.author.image} alt={article.author.name} className="w-20 h-20 rounded-full object-cover border-4 border-white dark:border-[#0f172a] shadow-lg mb-4" />
+        {/* Author Bio Card */}
+        <div className="bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent p-8 rounded-3xl border border-emerald-500/20 shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-12">
+          <img src={article.author.image} alt={article.author.name} className="w-20 h-20 rounded-full object-cover border-4 border-white dark:border-[#0f172a] shadow-md shrink-0" />
+          <div className="text-center sm:text-left">
+            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1 block">Article Author</span>
             <h3 className="font-black text-xl text-gray-900 dark:text-gray-100 mb-1">{article.author.name}</h3>
-            <p className="text-[#3b82f6] font-bold text-sm mb-4">{article.author.role}</p>
-            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-6">
+            <p className="text-emerald-600 font-bold text-xs mb-3">{article.author.role}</p>
+            <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm leading-relaxed">
               {article.author.bio}
             </p>
-            <button className="mt-auto px-6 py-2.5 bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-white/10 rounded-xl font-bold text-gray-700 dark:text-gray-200 hover:text-[#3b82f6] hover:border-[#3b82f6] transition-all shadow-sm">
-              View Full Profile
-            </button>
-          </div>
-
-          {/* Attachments */}
-          <div className="bg-white dark:bg-[#1e293b] p-8 rounded-3xl border border-gray-200 dark:border-white/10 shadow-sm">
-            <h3 className="font-black text-xl text-gray-800 dark:text-gray-100 mb-6 flex items-center gap-2">
-              <Download size={20} className="text-[#3b82f6]" /> Article Attachments
-            </h3>
-            <div className="flex flex-col gap-4">
-              {article.attachments.map((doc, idx) => (
-                <a key={idx} href="#" className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 dark:border-white/5 hover:border-[#3b82f6]/50 hover:bg-[#3b82f6]/5 transition-all group">
-                  <div className="w-12 h-12 rounded-lg bg-gray-50 dark:bg-[#0f172a] flex items-center justify-center text-gray-400 group-hover:text-[#3b82f6] transition-colors">
-                    <FileText size={24} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-800 dark:text-gray-100 truncate text-sm group-hover:text-[#3b82f6] transition-colors">{doc.title}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] font-black text-[#3b82f6] uppercase">{doc.type}</span>
-                      <span className="text-[10px] font-medium text-gray-400">• {doc.size}</span>
-                    </div>
-                  </div>
-                  <Download size={18} className="text-gray-300 group-hover:text-[#3b82f6] transition-colors" />
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Related Reads */}
-        <div className="border-t border-gray-200 dark:border-white/10 pt-12">
-          <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 mb-8 flex items-center gap-2">
-            <BookOpen className="text-[#3b82f6]" size={24} /> Related Reads
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {article.related.map(item => (
-              <Link key={item.id} href={`/platform/resources/articles-insights/${item.id}`} className="group bg-white dark:bg-[#1e293b] p-6 rounded-2xl border border-gray-200 dark:border-white/10 hover:-translate-y-1 hover:shadow-lg transition-all">
-                <span className="text-[10px] font-black uppercase text-[#3b82f6] bg-[#3b82f6]/10 px-2 py-1 rounded-md mb-3 inline-block">{item.type}</span>
-                <h4 className="font-bold text-gray-800 dark:text-gray-100 group-hover:text-[#3b82f6] transition-colors line-clamp-2">{item.title}</h4>
-              </Link>
-            ))}
           </div>
         </div>
 

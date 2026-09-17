@@ -7,8 +7,7 @@ const MOCK_CAREER_SUBCATEGORIES = [
   { id: 'all', name: 'All Resources' },
   { id: 'leadership', name: 'Leadership' },
   { id: 'career-growth', name: 'Career Growth' },
-  { id: 'mentorship', name: 'Mentorship' },
-  { id: 'toolkits', name: 'Toolkits & Guides' }
+  { id: 'mentorship', name: 'Mentorship' }
 ];
 
 const CONTENT_TYPES = [
@@ -19,7 +18,7 @@ const CONTENT_TYPES = [
   "Webinar",
   "Video",
   "Podcast",
-  "Toolkit",
+  "Executive Playbook",
   "Checklist",
   "Interview",
   "Leadership Profile"
@@ -51,11 +50,11 @@ const MOCK_CAREER_RESOURCES = [
   {
     id: 3,
     title: "The First 90 Days as Head of IP",
-    type: "Toolkit",
+    type: "Executive Playbook",
     topic: "Career Growth",
-    subcategory: "toolkits",
+    subcategory: "career-growth",
     expert: "Corporate Practice Team",
-    time: "5 Templates + Guide",
+    time: "Executive Playbook",
     featured: false,
     image: "/resource3.jpg"
   },
@@ -210,22 +209,33 @@ export default function CareerLeadershipHubPage() {
       <div className="max-w-[1400px] mx-auto w-full px-4 md:px-6 py-12 relative z-10">
         
         {/* Navigation & Filters */}
-        <div className="mb-16">
-           {/* Huge Category Text (Full Width) */}
-           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-4 md:gap-x-10 w-full">
-             {MOCK_CAREER_SUBCATEGORIES.map(sub => (
-               <button
-                 key={sub.id}
-                 onClick={() => setActiveSub(sub.id)}
-                 className={`text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter transition-all duration-500 ${
-                   activeSub === sub.id 
-                     ? 'text-gray-900 dark:text-white' 
-                     : 'text-gray-400 dark:text-white/20 hover:text-gray-600 dark:hover:text-white/60'
-                 }`}
-               >
-                 {sub.name}
-               </button>
-             ))}
+        <div className="mb-14 flex justify-center w-full">
+           {/* Huge Category Text (Centered with guaranteed spacing) */}
+           <div 
+             className="flex flex-wrap items-center justify-center gap-6 md:gap-10 lg:gap-14 w-full max-w-5xl mx-auto"
+             style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '2.5rem' }}
+           >
+             {MOCK_CAREER_SUBCATEGORIES.map(sub => {
+               const isActive = activeSub === sub.id;
+               return (
+                 <button
+                   key={sub.id}
+                   type="button"
+                   onClick={() => setActiveSub(sub.id)}
+                   className={`relative py-2.5 px-4 rounded-xl text-2xl md:text-3xl lg:text-4xl font-black tracking-tight transition-all duration-300 cursor-pointer ${
+                     isActive 
+                       ? 'text-gray-900 dark:text-white' 
+                       : 'text-gray-400 dark:text-white/30 hover:text-gray-700 dark:hover:text-white/70'
+                   }`}
+                   style={{ margin: '0.25rem 0.75rem' }}
+                 >
+                   <span>{sub.name}</span>
+                   {isActive && (
+                     <span className="absolute -bottom-1 left-4 right-4 h-1 bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-600 rounded-full shadow-sm"></span>
+                   )}
+                 </button>
+               );
+             })}
            </div>
         </div>
 

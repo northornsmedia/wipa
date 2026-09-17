@@ -35,10 +35,11 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
       try {
         setLoading(true);
         
-        // 1. Fetch the main article by ID or slug
+        // 1. Fetch the main article by ID or slug (first check ip_news, then resources)
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        let articleData: any = null;
+
         let query = supabase.from('ip_news').select('*');
-        
         if (isUUID) {
           query = query.eq('id', id);
         } else {
@@ -46,15 +47,30 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
         }
 
         const { data, error } = await query.single();
-
         if (!error && data) {
-          setArticle(data);
+          articleData = data;
+        } else {
+          // Fallback to resources table for community-contributed news
+          let resQuery = supabase.from('resources').select('*');
+          if (isUUID) {
+            resQuery = resQuery.eq('id', id);
+          } else {
+            resQuery = resQuery.eq('slug', id);
+          }
+          const { data: resData } = await resQuery.single();
+          if (resData) {
+            articleData = resData;
+          }
+        }
+
+        if (articleData) {
+          setArticle(articleData);
 
           // 2. Fetch related articles
           const { data: related } = await supabase
             .from('ip_news')
             .select('id, title, resource_type, subcategory, cover_image_url, created_at')
-            .neq('id', data.id)
+            .neq('id', articleData.id)
             .limit(3);
 
           if (related) {

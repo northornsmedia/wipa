@@ -273,7 +273,7 @@ export const DEFAULT_GENIE_CONFIG: IPServiceConfig = {
   category: "tech-way",
   subcategory: "Legal AI & Contracts",
   description: "AI-powered legal drafting, review and contract intelligence.",
-  url: "/genie-ai-logo.svg",
+  url: "/genie-ai-logo.png",
   external_url: "https://www.genieai.co/partners/wipa",
   location: "London, UK & Worldwide (150+ Jurisdictions)",
   website: "www.genieai.co",
@@ -295,7 +295,7 @@ export const DEFAULT_GENIE_CONFIG: IPServiceConfig = {
     subheadline: "Genie AI helps legal and business teams draft, review, edit and negotiate contracts using purpose-built legal AI.",
     ctaText: "Visit Genie AI",
     ctaUrl: "https://www.genieai.co/partners/wipa",
-    logoUrl: "/genie-ai-logo.svg",
+    logoUrl: "/genie-ai-logo.png",
     logoSubtext: "Official Partner of WIPA",
     bgGlowColor: "rgba(147,51,234,0.2)"
   },
