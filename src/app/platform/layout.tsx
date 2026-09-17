@@ -40,7 +40,10 @@ export default function PlatformLayout({
           {/* Mobile Top App Bar */}
           <MobileTopBar />
           
-          <div className="flex-1 flex w-full max-w-full min-w-0 box-border pt-0 md:pt-[var(--platform-header-height)]">
+          <div 
+            style={{ paddingTop: 'var(--platform-header-height, 77px)' }}
+            className="flex-1 flex w-full max-w-full min-w-0 box-border pt-0 md:pt-[77px]"
+          >
             {!isMessagesPage && (
               <Suspense fallback={null}>
                 <Sidebar

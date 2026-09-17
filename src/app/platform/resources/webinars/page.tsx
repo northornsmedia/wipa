@@ -520,14 +520,15 @@ export default function WebinarsHubPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-[#f8f9fa]/80 via-[#f8f9fa]/20 dark:from-[#0f172a]/90 dark:via-[#0f172a]/50 to-transparent" />
           </div>
 
-          {/* Search bar & Top Navigation */}
-          <div className="relative z-50 p-6 flex items-center justify-between">
+          {/* Webinar Utility Header & Actions Bar */}
+          <div className="relative z-20 pt-6 px-6 md:px-12 pb-2 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <Link 
                 href="/platform/resources"
-                className="flex items-center gap-2 bg-white/70 dark:bg-black/50 hover:bg-white dark:hover:bg-black/70 backdrop-blur-md rounded-full px-4 py-2 border border-gray-300 dark:border-white/20 text-gray-700 dark:text-gray-200 text-sm font-semibold transition-all shadow-sm"
+                className="inline-flex items-center gap-2 bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 backdrop-blur-md rounded-full px-4 py-2 border border-slate-200/90 dark:border-white/15 text-xs sm:text-sm font-bold transition-all shadow-sm hover:scale-[1.02] active:scale-95"
               >
-                <ArrowLeft size={16} /> Back
+                <ArrowLeft size={16} strokeWidth={2.2} />
+                <span>Back to Resources</span>
               </Link>
             </div>
             
@@ -538,12 +539,12 @@ export default function WebinarsHubPage() {
                     setIsUserWebinarsOpen(true);
                     fetchUserWebinars();
                   }}
-                  className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-full font-bold flex items-center gap-2 border border-white/15 backdrop-blur-md shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm"
+                  className="inline-flex items-center gap-2 bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 px-4 py-2 rounded-full font-bold border border-slate-200/90 dark:border-white/15 backdrop-blur-md shadow-sm transition-all hover:scale-[1.02] active:scale-95 text-xs sm:text-sm"
                 >
                   <Video size={16} className="text-[#ff2a5f]" />
                   <span>Your Webinars</span>
                   {userWebinars.length > 0 && (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-black bg-[#ff2a5f] text-white">
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-black bg-[#ff2a5f] text-white shadow-xs">
                       {userWebinars.length}
                     </span>
                   )}
@@ -556,9 +557,10 @@ export default function WebinarsHubPage() {
               {canHost && (
                 <Link 
                   href="/platform/resources/webinars/host"
-                  className="bg-[#ff2a5f] hover:bg-[#e02553] text-white px-6 py-2.5 rounded-full font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm"
+                  className="inline-flex items-center gap-2 bg-[#ff2a5f] hover:bg-[#e02553] text-white px-5 py-2 rounded-full font-bold shadow-md shadow-rose-500/25 transition-all hover:scale-[1.02] active:scale-95 text-xs sm:text-sm"
                 >
-                  <Plus size={18} /> Host Webinar
+                  <Plus size={16} strokeWidth={2.5} />
+                  <span>Host Webinar</span>
                 </Link>
               )}
             </div>

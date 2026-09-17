@@ -211,7 +211,10 @@ export default function WebinarDetailPage({ params }: { params: Promise<{ id: st
     <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#09090b] text-gray-900 dark:text-gray-100 font-sans pb-28">
       
       {/* Top Header & Breadcrumb */}
-      <div className="border-b border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c0c0e] sticky top-0 z-30 backdrop-blur-md bg-opacity-90 dark:bg-opacity-90">
+      <div 
+        style={{ top: 'var(--platform-header-height, 77px)' }}
+        className="border-b border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c0c0e] sticky top-[77px] z-30 backdrop-blur-md bg-opacity-90 dark:bg-opacity-90"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link 
             href="/platform/resources/webinars" 

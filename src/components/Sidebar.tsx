@@ -266,7 +266,10 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
   };
 
   return (
-    <aside className={`fixed bottom-0 left-0 top-[var(--platform-header-height)] z-30 hidden flex-col border-r border-slate-200/70 bg-white/90 backdrop-blur-2xl transition-all duration-300 dark:border-white/5 dark:bg-[#0c1020]/95 lg:flex ${isOpen ? 'w-[268px]' : 'w-16'}`}>
+    <aside 
+      style={{ top: 'var(--platform-header-height, 77px)' }}
+      className={`fixed bottom-0 left-0 top-[77px] z-30 hidden flex-col border-r border-slate-200/70 bg-white/90 backdrop-blur-2xl transition-all duration-300 dark:border-white/5 dark:bg-[#0c1020]/95 lg:flex ${isOpen ? 'w-[268px]' : 'w-16'}`}
+    >
       
       {/* Toggle button */}
       <button 

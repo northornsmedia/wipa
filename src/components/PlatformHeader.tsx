@@ -201,7 +201,10 @@ export default function PlatformHeader() {
 
   return (
     <>
-      <header className="fixed left-0 right-0 top-0 z-50 box-border hidden h-[var(--platform-header-height)] items-center justify-between border-b border-gray-100 bg-white px-4 py-3 shadow-[0_1px_0_rgba(15,23,42,0.02)] sm:px-6 md:flex dark:border-white/10 dark:bg-[#0f172a] dark:shadow-none">
+      <header 
+        style={{ height: 'var(--platform-header-height, 77px)' }}
+        className="fixed left-0 right-0 top-0 z-50 box-border hidden h-[77px] items-center justify-between border-b border-gray-100 bg-white px-4 py-3 shadow-[0_1px_0_rgba(15,23,42,0.02)] sm:px-6 md:flex dark:border-white/10 dark:bg-[#0f172a] dark:shadow-none"
+      >
         {isSearchOpen ? (
           <div className="flex items-center w-full gap-4 max-w-4xl mx-auto animate-in fade-in duration-200">
             <Search size={18} className="text-gray-400 flex-shrink-0" />

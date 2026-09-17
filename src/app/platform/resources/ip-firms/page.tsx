@@ -13,7 +13,8 @@ import {
   Users, 
   X,
   Share2,
-  Bookmark
+  Bookmark,
+  ArrowDown
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
@@ -150,51 +151,66 @@ export default function IPFirmsPage() {
       {/* ========================================================================= */}
       {/* 1. INSTITUTIONAL HERO HEADER                                              */}
       {/* ========================================================================= */}
-      <section className="relative bg-white dark:bg-[#070b14] border-b border-slate-200 dark:border-white/10 pt-12 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-50/40 via-transparent to-transparent dark:from-purple-950/20 dark:via-transparent pointer-events-none" />
+      <section className="relative bg-white dark:bg-[#070b14] border-b border-slate-200 dark:border-white/10 pt-14 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6 overflow-hidden">
+        {/* Subtle Ambient Depth & Luxury Glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(90,50,250,0.12),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(120,60,255,0.18),rgba(7,11,20,0))] pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none opacity-40 dark:opacity-25">
+          <div className="absolute -top-32 left-1/4 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl" />
+          <div className="absolute -top-32 right-1/4 w-96 h-96 bg-rose-400/15 rounded-full blur-3xl" />
+        </div>
         
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          {/* Institutional Eyebrow */}
-          <div className="flex items-center justify-center gap-2.5 mb-5">
-            <span className="h-px w-8 bg-gradient-to-r from-transparent to-[#5a32fa]" />
-            <span className="text-[11px] font-black uppercase tracking-[0.22em] text-[#5a32fa] dark:text-purple-400">
-              Accredited Global IP Directory
-            </span>
-            <span className="h-px w-8 bg-gradient-to-l from-transparent to-[#5a32fa]" />
+          {/* Institutional Eyebrow Pill */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500/20 dark:border-purple-400/30 text-[#5a32fa] dark:text-purple-300 text-[11px] font-black uppercase tracking-[0.2em] shadow-2xs mb-6 backdrop-blur-md">
+            <Building2 size={13} className="text-[#5a32fa] dark:text-purple-400" />
+            <span>Accredited Global IP Directory</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#ff2a5f] shadow-xs shadow-rose-500/50" />
           </div>
 
+          {/* Heading with Gradient Accent */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.08] max-w-4xl mx-auto mb-5">
-            Find the Right IP Partner
+            Find the Right{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5a32fa] via-[#7c3aed] to-[#ff2a5f]">
+              IP Partner
+            </span>
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 font-medium max-w-2xl mx-auto mb-8 leading-relaxed">
             Browse our curated directory of premier intellectual property law firms, patent attorney practices, and global enforcement specialists.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
+          {/* Dual Action CTAs */}
+          <div className="flex flex-wrap items-center justify-center gap-3.5 sm:gap-4 mb-10">
             <Link
               href="/platform/resources/ip-firms/claim"
-              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#5a32fa] hover:bg-[#4a24db] text-white font-bold text-sm shadow-lg shadow-[#5a32fa]/25 hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] hover:from-[#4a24db] hover:to-[#6d28d9] text-white font-black text-sm shadow-lg shadow-[#5a32fa]/25 hover:shadow-xl hover:shadow-[#5a32fa]/35 hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer"
             >
-              <Building2 size={17} />
+              <Building2 size={16} />
               <span>Showcase or List Your Firm</span>
             </Link>
+
+            <a
+              href="#firms-directory"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-slate-50 dark:bg-slate-900/90 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/90 dark:border-white/15 font-bold text-sm shadow-2xs hover:shadow-xs active:scale-95 transition-all cursor-pointer"
+            >
+              <Search size={15} className="text-slate-400" />
+              <span>Explore All Practices</span>
+              <ArrowDown size={14} className="text-slate-400" />
+            </a>
           </div>
 
-          {/* Institutional Trust Badges */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-6 sm:gap-10 pt-6 border-t border-slate-200/80 dark:border-white/10 text-xs font-bold text-slate-500 dark:text-slate-400">
-            <div className="flex items-center gap-2">
-              <Globe size={15} className="text-[#5a32fa]" />
-              <span>150+ Jurisdictions</span>
+          {/* Institutional Trust Badges (Elevated Capsules) */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 pt-4 border-t border-slate-200/70 dark:border-white/10 text-xs font-bold text-slate-600 dark:text-slate-300">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200/70 dark:border-white/[0.08] shadow-2xs">
+              <Globe size={14} className="text-[#5a32fa] shrink-0" />
+              <span>150+ Global Jurisdictions</span>
             </div>
-            <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700 hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <ShieldCheck size={15} className="text-emerald-500" />
-              <span>Vetted IP Practices</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200/70 dark:border-white/[0.08] shadow-2xs">
+              <ShieldCheck size={14} className="text-emerald-500 shrink-0" />
+              <span>100% Vetted IP Practices</span>
             </div>
-            <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700 hidden sm:block" />
-            <div className="flex items-center gap-2">
-              <Users size={15} className="text-indigo-500" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200/70 dark:border-white/[0.08] shadow-2xs">
+              <Users size={14} className="text-indigo-500 shrink-0" />
               <span>Direct Counsel Connect</span>
             </div>
           </div>
@@ -204,7 +220,7 @@ export default function IPFirmsPage() {
       {/* ========================================================================= */}
       {/* 2. DIRECTORY CONTROLS & FIRMS GRID                                        */}
       {/* ========================================================================= */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+      <div id="firms-directory" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 scroll-mt-20">
         
         {/* Practice Area Navigation Tabs */}
         <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">

@@ -50,6 +50,8 @@
 }
 
 :root {
+  --platform-header-height: 77px;
+  --desktop-sidebar-width: 268px;
   --color-dot-on: var(--foreground);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
