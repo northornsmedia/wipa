@@ -98,7 +98,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] flex flex-col items-center justify-center p-6 text-slate-400">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent mb-3" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#5a32fa] border-t-transparent mb-3" />
         <p className="text-xs font-bold uppercase tracking-wider">Loading intelligence briefing...</p>
       </div>
     );
@@ -131,13 +131,13 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
           
           <Link 
             href="/platform/resources/ip-news" 
-            className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-orange-500 font-bold text-xs uppercase tracking-wider mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-[#5a32fa] dark:hover:text-indigo-400 font-bold text-xs uppercase tracking-wider mb-8 transition-colors"
           >
             <ArrowLeft size={15} /> Back to IP News & Intelligence
           </Link>
           
           <div className="flex flex-wrap items-center gap-2.5 text-xs font-bold mb-4">
-            <span className="bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-full uppercase tracking-wider text-[10px] font-black">
+            <span className="bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full uppercase tracking-wider text-[10px] font-black">
               {displayType}
             </span>
             <span className="inline-flex items-center gap-1.5 text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 px-3 py-1 rounded-full text-[11px] font-bold">
@@ -150,7 +150,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
               href={displayExternalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/25 text-orange-600 dark:text-orange-400 text-[11px] font-bold hover:bg-orange-500 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-600 dark:text-indigo-400 text-[11px] font-bold hover:bg-[#5a32fa] hover:text-white transition-colors"
               title="Read full article on publisher site"
             >
               <span>Source: {displaySource}</span>
@@ -165,7 +165,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
           <div className="flex flex-wrap items-center justify-between border-t border-slate-100 dark:border-white/5 pt-6 gap-4">
             <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-500 dark:text-slate-400">
               <div className="flex items-center gap-1.5">
-                <Calendar size={15} className="text-orange-500" />
+                <Calendar size={15} className="text-[#5a32fa] dark:text-indigo-400" />
                 <span>{displayDate}</span>
               </div>
               {displayTime && (
@@ -182,10 +182,10 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => setBookmarked(!bookmarked)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                   bookmarked 
-                    ? 'border-orange-500 bg-orange-500 text-white' 
-                    : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-orange-500'
+                    ? 'border-[#5a32fa] bg-[#5a32fa] text-white' 
+                    : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-[#5a32fa]'
                 }`}
               >
                 <Bookmark size={14} />
@@ -194,7 +194,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
 
               <button 
                 onClick={handleShare}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-orange-500 text-xs font-bold transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:border-[#5a32fa] text-xs font-bold transition-all cursor-pointer"
               >
                 <Share2 size={14} />
                 <span>{copied ? 'Copied Link' : 'Share'}</span>
@@ -209,9 +209,9 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
       <div className="max-w-[960px] mx-auto px-5 pt-10">
         
         {/* Executive Summary Card */}
-        <div className="bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent p-7 md:p-9 rounded-3xl border border-orange-500/20 shadow-xs mb-10">
+        <div className="bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent p-7 md:p-9 rounded-3xl border border-indigo-500/20 shadow-xs mb-10">
           <h2 className="text-lg font-black text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-            <FileText className="text-orange-500" size={18} /> Executive Summary
+            <FileText className="text-[#5a32fa] dark:text-indigo-400" size={18} /> Executive Summary
           </h2>
           <p className="text-slate-700 dark:text-slate-200 text-base md:text-lg leading-relaxed font-medium">
             {displaySummary}
@@ -221,7 +221,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
         {/* Detailed Analysis / Formatted HTML */}
         <div className="bg-white dark:bg-[#0d1322] rounded-3xl p-7 md:p-10 shadow-xs border border-slate-200/80 dark:border-white/10 mb-8">
           <h2 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-4">
-            <Scale className="text-orange-500" size={20} /> Legal Intelligence & Practice Analysis
+            <Scale className="text-[#5a32fa] dark:text-indigo-400" size={20} /> Legal Intelligence & Practice Analysis
           </h2>
           
           <div 
@@ -233,7 +233,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Publisher Attribution & Legal Safe Harbor Card */}
-        <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-100 to-amber-50/40 dark:from-[#0d1322] dark:to-amber-950/20 border border-slate-200 dark:border-white/10 mb-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 shadow-xs">
+        <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-100 to-indigo-50/40 dark:from-[#0d1322] dark:to-indigo-950/20 border border-slate-200 dark:border-white/10 mb-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 shadow-xs">
           <div className="space-y-1">
             <h4 className="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
               <ShieldCheck size={18} className="text-emerald-500 shrink-0" />
@@ -247,7 +247,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
             href={displayExternalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold text-xs shadow-md transition-all shrink-0"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#5a32fa] to-indigo-600 hover:opacity-95 active:scale-95 text-white font-bold text-xs shadow-md shadow-indigo-500/20 transition-all shrink-0"
           >
             <span>Read Original Article</span>
             <ExternalLink size={14} />
@@ -258,7 +258,7 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
         {relatedArticles.length > 0 && (
           <div className="rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] p-7 md:p-8 shadow-xs">
             <h3 className="font-black text-lg text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-              <BookOpen size={18} className="text-orange-500" /> Related Intelligence Briefings
+              <BookOpen size={18} className="text-[#5a32fa] dark:text-indigo-400" /> Related Intelligence Briefings
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -266,12 +266,12 @@ export default function IPNewsDetailPage({ params }: { params: Promise<{ id: str
                 <Link 
                   key={rel.id} 
                   href={`/platform/resources/ip-news/${rel.id}`}
-                  className="group block p-4 rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-900/50 hover:border-orange-500/40 hover:bg-orange-50/30 dark:hover:bg-orange-950/20 transition-all"
+                  className="group block p-4 rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-slate-900/50 hover:border-indigo-500/40 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 transition-all"
                 >
-                  <span className="text-[10px] font-black uppercase text-orange-600 dark:text-orange-400 mb-1.5 block">
+                  <span className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 mb-1.5 block">
                     {rel.resource_type || "Update"}
                   </span>
-                  <h4 className="font-bold text-slate-900 dark:text-white text-xs leading-snug group-hover:text-orange-500 transition-colors line-clamp-2">
+                  <h4 className="font-bold text-slate-900 dark:text-white text-xs leading-snug group-hover:text-[#5a32fa] dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
                     {rel.title}
                   </h4>
                 </Link>

@@ -397,7 +397,7 @@ export default function IPNewsCreatePage() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] flex items-center justify-center p-4 font-sans text-slate-900 dark:text-white">
         <div className="max-w-xl w-full bg-white dark:bg-[#0d1322] border border-slate-200 dark:border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-6 animate-fadeIn">
-          <div className="w-16 h-16 rounded-2xl bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 flex items-center justify-center mx-auto shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-[#5a32fa] dark:text-indigo-400 border border-indigo-500/20 flex items-center justify-center mx-auto shadow-sm">
             <CheckCircle2 size={36} />
           </div>
 
@@ -415,10 +415,10 @@ export default function IPNewsCreatePage() {
           </div>
 
           <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-white/10 text-left space-y-2">
-            <div className="text-[10px] font-black uppercase tracking-widest text-orange-500">Submitted Briefing</div>
+            <div className="text-[10px] font-black uppercase tracking-widest text-[#5a32fa] dark:text-indigo-400">Submitted Briefing</div>
             <div className="font-bold text-base text-slate-900 dark:text-white">{successData.title}</div>
             <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 pt-1">
-              <span className="font-bold text-orange-500">[{successData.resource_type}]</span> &bull; 
+              <span className="font-bold text-[#5a32fa] dark:text-indigo-400">[{successData.resource_type}]</span> &bull; 
               <span>{successData.subcategory?.toUpperCase()}</span> &bull; 
               <span>{successData.read_time}</span>
             </div>
@@ -427,7 +427,7 @@ export default function IPNewsCreatePage() {
           <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/platform/resources/ip-news"
-              className="px-6 py-3.5 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all text-center"
+              className="px-6 py-3.5 rounded-full bg-gradient-to-r from-[#5a32fa] to-purple-600 hover:opacity-95 text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all text-center"
             >
               Return to IP News Hub
             </Link>
@@ -450,21 +450,21 @@ export default function IPNewsCreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 pb-24 font-sans selection:bg-orange-500/20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 pb-24 font-sans selection:bg-indigo-500/20">
       
       {/* Top Navigation Bar */}
-      <div className="border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1322] sticky top-0 z-30 shadow-xs">
+      <div className="border-b border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] sticky top-0 z-30 shadow-xs">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link 
             href="/platform/resources/ip-news" 
-            className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-600 hover:text-orange-600 dark:text-slate-400 dark:hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-600 hover:text-[#5a32fa] dark:text-slate-400 dark:hover:text-white transition-colors"
           >
             <ArrowLeft size={16} /> Back to Live Stream
           </Link>
 
           <div className="flex items-center gap-3">
             <span className="text-[11px] font-bold text-slate-400 hidden sm:inline-flex items-center gap-1.5">
-              <Newspaper size={13} className="text-orange-500" />
+              <Newspaper size={13} className="text-[#5a32fa]" />
               WIPA IP Newsroom Desk
             </span>
 
@@ -472,7 +472,7 @@ export default function IPNewsCreatePage() {
             <button
               type="button"
               onClick={handleOpenAiModal}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600 text-white text-xs font-bold shadow-xs transition-all active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-purple-600 hover:opacity-95 text-white text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
             >
               <Sparkles size={13} className="animate-pulse" />
               <span>Refine with AI</span>
@@ -494,11 +494,11 @@ export default function IPNewsCreatePage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
         {/* Header Title */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 text-[11px] font-black uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 text-[11px] font-black uppercase tracking-wider mb-3">
             <Globe size={13} /> Live Intelligence Contribution
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight uppercase">
-            Publish Your <span className="text-orange-500">News</span>
+            Publish Your <span className="bg-gradient-to-r from-[#5a32fa] to-purple-600 bg-clip-text text-transparent">News</span>
           </h1>
           <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-2 max-w-2xl">
             Draft your breaking intellectual property briefing, case law update, or regulatory dispatch. Use our AI Refinement studio to elevate clarity before submitting for editorial review.
@@ -596,7 +596,7 @@ export default function IPNewsCreatePage() {
                   type="button"
                   onClick={() => execCmd('bold')}
                   className={`p-2 rounded-xl transition-all font-bold text-xs ${
-                    isBold ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                    isBold ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                   }`}
                   title="Bold (Ctrl+B)"
                 >
@@ -607,7 +607,7 @@ export default function IPNewsCreatePage() {
                   type="button"
                   onClick={() => execCmd('italic')}
                   className={`p-2 rounded-xl transition-all text-xs ${
-                    isItalic ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                    isItalic ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                   }`}
                   title="Italic (Ctrl+I)"
                 >
@@ -618,7 +618,7 @@ export default function IPNewsCreatePage() {
                   type="button"
                   onClick={() => execCmd('underline')}
                   className={`p-2 rounded-xl transition-all text-xs ${
-                    isUnderline ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                    isUnderline ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                   }`}
                   title="Underline (Ctrl+U)"
                 >
@@ -632,7 +632,7 @@ export default function IPNewsCreatePage() {
                   type="button"
                   onClick={() => execCmd('formatBlock', '<h2>')}
                   className={`px-2.5 py-1.5 rounded-xl transition-all font-black text-xs ${
-                    isH2 ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                    isH2 ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                   }`}
                   title="Section Heading (H2)"
                 >
@@ -643,7 +643,7 @@ export default function IPNewsCreatePage() {
                   type="button"
                   onClick={() => execCmd('formatBlock', '<h3>')}
                   className={`px-2.5 py-1.5 rounded-xl transition-all font-black text-xs ${
-                    isH3 ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                    isH3 ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                   }`}
                   title="Subsection Heading (H3)"
                 >
@@ -657,7 +657,7 @@ export default function IPNewsCreatePage() {
                   type="button"
                   onClick={() => execCmd('formatBlock', '<blockquote>')}
                   className={`p-2 rounded-xl transition-all text-xs ${
-                    isQuote ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                    isQuote ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                   }`}
                   title="Blockquote (Judicial citation / quote)"
                 >
@@ -668,7 +668,7 @@ export default function IPNewsCreatePage() {
                   type="button"
                   onClick={() => execCmd('insertUnorderedList')}
                   className={`p-2 rounded-xl transition-all text-xs ${
-                    isBulletList ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                    isBulletList ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                   }`}
                   title="Bullet List"
                 >
@@ -679,7 +679,7 @@ export default function IPNewsCreatePage() {
                   type="button"
                   onClick={() => execCmd('insertOrderedList')}
                   className={`p-2 rounded-xl transition-all text-xs ${
-                    isNumberedList ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                    isNumberedList ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                   }`}
                   title="Numbered List"
                 >
@@ -740,7 +740,7 @@ export default function IPNewsCreatePage() {
                   [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-slate-900 dark:[&_h2]:text-white [&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:border-b [&_h2]:border-slate-200 dark:[&_h2]:border-white/10 [&_h2]:pb-2
                   [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-slate-900 dark:[&_h3]:text-white [&_h3]:mt-4 [&_h3]:mb-2
                   [&_p]:my-3
-                  [&_blockquote]:border-l-4 [&_blockquote]:border-orange-500 [&_blockquote]:bg-orange-500/10 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:rounded-r-xl [&_blockquote]:italic [&_blockquote]:my-4
+                  [&_blockquote]:border-l-4 [&_blockquote]:border-indigo-500 [&_blockquote]:bg-indigo-500/10 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:rounded-r-xl [&_blockquote]:italic [&_blockquote]:my-4
                   [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
                   [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
                   [&_strong]:font-black [&_strong]:text-slate-900 dark:[&_strong]:text-white
@@ -767,7 +767,7 @@ export default function IPNewsCreatePage() {
                     onClick={() => setCoverImageUrl(preset.url)}
                     className={`relative rounded-2xl overflow-hidden aspect-video border-2 transition-all cursor-pointer group text-left ${
                       coverImageUrl === preset.url
-                        ? 'border-orange-500 ring-2 ring-orange-500/30'
+                        ? 'border-[#5a32fa] ring-2 ring-indigo-500/30'
                         : 'border-slate-200 dark:border-white/10 hover:border-slate-400'
                     }`}
                   >
@@ -776,7 +776,7 @@ export default function IPNewsCreatePage() {
                       <span className="text-[10px] font-bold text-white truncate">{preset.label}</span>
                     </div>
                     {coverImageUrl === preset.url && (
-                      <div className="absolute top-2 right-2 bg-orange-500 text-white rounded-full p-1">
+                      <div className="absolute top-2 right-2 bg-[#5a32fa] text-white rounded-full p-1">
                         <Check size={10} />
                       </div>
                     )}
@@ -784,7 +784,7 @@ export default function IPNewsCreatePage() {
                 ))}
 
                 {/* Upload Custom */}
-                <label className="relative rounded-2xl aspect-video border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-orange-500 bg-slate-50 dark:bg-slate-900/60 flex flex-col items-center justify-center p-3 cursor-pointer transition-all text-center">
+                <label className="relative rounded-2xl aspect-video border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-[#5a32fa] bg-slate-50 dark:bg-slate-900/60 flex flex-col items-center justify-center p-3 cursor-pointer transition-all text-center">
                   <input
                     type="file"
                     accept="image/*"
@@ -793,7 +793,7 @@ export default function IPNewsCreatePage() {
                     disabled={uploadingCover}
                   />
                   {uploadingCover ? (
-                    <Loader2 className="w-6 h-6 animate-spin text-orange-500" />
+                    <Loader2 className="w-6 h-6 animate-spin text-[#5a32fa]" />
                   ) : (
                     <>
                       <Upload size={18} className="text-slate-400 mb-1" />
@@ -902,7 +902,7 @@ export default function IPNewsCreatePage() {
           {/* Submit Actions Bar */}
           <div className="p-6 rounded-3xl bg-white dark:bg-[#0d1322] border border-slate-200 dark:border-white/10 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-[#5a32fa] shrink-0">
                 <ShieldCheck size={20} />
               </div>
               <div className="text-xs">
@@ -915,7 +915,7 @@ export default function IPNewsCreatePage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#5a32fa] via-indigo-600 to-purple-600 hover:opacity-95 active:scale-95 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 {submitting ? (
                   <>
@@ -1100,7 +1100,7 @@ export default function IPNewsCreatePage() {
                   type="button"
                   disabled={!aiResult || aiLoading}
                   onClick={handleApplyAiChanges}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-purple-600 hover:opacity-95 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   <Check size={14} />
                   <span>Accept & Apply to Editor</span>

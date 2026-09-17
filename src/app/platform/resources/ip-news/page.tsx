@@ -235,22 +235,22 @@ export default function IPNewsHubPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 font-sans pb-24 overflow-x-hidden selection:bg-orange-500/20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 font-sans pb-24 overflow-x-hidden selection:bg-indigo-500/20">
       
       {/* Real-time Ticker Tape */}
-      <div className="w-full bg-slate-950 text-white overflow-hidden py-4 border-b-2 border-orange-500/40 flex items-center shadow-md">
+      <div className="w-full bg-slate-950 text-white overflow-hidden py-3.5 border-b border-indigo-500/30 flex items-center shadow-md">
         <div className="flex whitespace-nowrap animate-marquee gap-14 font-black uppercase text-xs md:text-sm tracking-wider text-slate-200">
           {newsItems.slice(0, 15).map((r, i) => (
             <span key={`ticker-1-${r.id || i}`} className="inline-flex items-center gap-2.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-orange-500 animate-pulse shrink-0" />
-              <span className="font-extrabold text-orange-400">[{r.type}]</span> 
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+              <span className="font-black text-indigo-400">[{r.type}]</span> 
               <span className="font-bold text-slate-100">{r.title}</span>
             </span>
           ))}
           {newsItems.slice(0, 15).map((r, i) => (
             <span key={`ticker-2-${r.id || i}`} className="inline-flex items-center gap-2.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-orange-500 animate-pulse shrink-0" />
-              <span className="font-extrabold text-orange-400">[{r.type}]</span> 
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+              <span className="font-black text-indigo-400">[{r.type}]</span> 
               <span className="font-bold text-slate-100">{r.title}</span>
             </span>
           ))}
@@ -273,12 +273,12 @@ export default function IPNewsHubPage() {
       `}</style>
 
       {/* Terminal / Header Area */}
-      <div className="border-b-2 border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1322] shadow-sm">
-        <div className="max-w-[1440px] mx-auto px-6 py-10 md:py-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+      <div className="border-b border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] shadow-2xs">
+        <div className="max-w-[1440px] mx-auto px-6 py-9 md:py-11 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400">
-                <Activity size={13} className="animate-pulse" /> Real-Time Live Stream (30s Sync)
+            <div className="flex items-center gap-3 mb-2.5">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                <Activity size={13} className="animate-pulse text-indigo-500" /> Real-Time Live Stream (30s Sync)
               </span>
               <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
@@ -286,7 +286,7 @@ export default function IPNewsHubPage() {
               </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
-              Live <span className="text-orange-500">Updates</span>
+              Live <span className="bg-gradient-to-r from-[#5a32fa] via-indigo-500 to-purple-600 bg-clip-text text-transparent">Updates</span>
             </h1>
             <p className="mt-2 text-sm md:text-base font-medium text-slate-600 dark:text-slate-400 max-w-2xl">
               Continuous live intelligence covering patent rulings, trademark decisions, IP office circulars, and global policy updates.
@@ -295,7 +295,7 @@ export default function IPNewsHubPage() {
           
           <div className="flex items-center gap-3 w-full md:w-auto">
             {/* Search Bar */}
-            <div className="relative flex-1 md:w-80 flex items-center border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-900/90 rounded-xl px-3.5 py-2.5 shadow-2xs focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-500/20 transition-all">
+            <div className="relative flex-1 md:w-80 flex items-center border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-900/90 rounded-xl px-3.5 py-2.5 shadow-2xs focus-within:border-[#5a32fa] focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
               <Search size={16} className="text-slate-400 mr-2 shrink-0" />
               <input 
                 type="text" 
@@ -311,16 +311,16 @@ export default function IPNewsHubPage() {
               onClick={() => triggerBackgroundSync(true)}
               disabled={isSyncing}
               title="Sync Latest News from Internet"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white px-4 py-2.5 text-xs font-black shadow-sm transition-all disabled:opacity-60 shrink-0 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] text-slate-800 dark:text-white border border-slate-200/80 dark:border-white/10 px-4 py-2.5 text-xs font-bold shadow-2xs hover:shadow-xs active:scale-95 transition-all disabled:opacity-60 shrink-0 cursor-pointer"
             >
-              <RefreshCw size={14} className={isSyncing ? "animate-spin" : ""} />
+              <RefreshCw size={14} className={isSyncing ? "animate-spin text-[#5a32fa]" : "text-slate-500 dark:text-slate-300"} />
               <span className="hidden sm:inline">{isSyncing ? "Syncing..." : "Sync Fresh"}</span>
             </button>
 
             {/* Publish Your News Button */}
             <Link
               href="/platform/resources/ip-news/create"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 active:scale-95 text-white px-4 py-2.5 text-xs font-black shadow-md shadow-orange-500/20 transition-all shrink-0 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#5a32fa] via-indigo-600 to-purple-600 hover:opacity-95 active:scale-95 text-white px-4 py-2.5 text-xs font-black shadow-md shadow-indigo-500/20 transition-all shrink-0 cursor-pointer"
             >
               <Plus size={15} />
               <span>Publish Your News</span>
@@ -347,9 +347,9 @@ export default function IPNewsHubPage() {
           <div className="sticky top-20 space-y-6">
             
             {/* Jurisdictions Card */}
-            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0c1322] p-5 shadow-lg">
+            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0c1322] p-5 shadow-sm">
               <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 mb-4 flex items-center gap-2">
-                <Filter size={14} className="text-orange-500" /> Jurisdictions
+                <Filter size={14} className="text-[#5a32fa] dark:text-indigo-400" /> Jurisdictions
               </h3>
               <div className="flex flex-col gap-1.5">
                 {JURISDICTION_FILTERS.map(sub => {
@@ -359,16 +359,16 @@ export default function IPNewsHubPage() {
                     <button
                       key={sub.id}
                       onClick={() => { setActiveSub(sub.id); setHeadlineIndex(0); setSecondsRemaining(30); }}
-                      className={`text-left text-xs font-bold transition-all px-3.5 py-2.5 rounded-2xl flex items-center justify-between group ${
+                      className={`text-left text-xs font-bold transition-all px-3.5 py-2.5 rounded-2xl flex items-center justify-between group cursor-pointer ${
                         isSelected
-                          ? 'bg-gradient-to-r from-orange-500/20 via-orange-500/10 to-transparent border border-orange-500/40 text-orange-600 dark:text-orange-400 shadow-xs'
+                          ? 'bg-indigo-500/10 border border-indigo-500/30 text-[#5a32fa] dark:text-indigo-300 font-black shadow-2xs'
                           : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
                       <span className="font-bold">{sub.name}</span>
                       <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-mono font-bold transition-all ${
                         isSelected 
-                          ? 'bg-orange-500/20 text-orange-600 dark:text-orange-300 border border-orange-500/30' 
+                          ? 'bg-[#5a32fa]/15 text-[#5a32fa] dark:text-indigo-300 border border-[#5a32fa]/25' 
                           : 'bg-slate-100 dark:bg-slate-900 text-slate-400 group-hover:text-slate-200'
                       }`}>
                         {count}
@@ -380,9 +380,9 @@ export default function IPNewsHubPage() {
             </div>
 
             {/* Type Card */}
-            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0c1322] p-5 shadow-lg">
+            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0c1322] p-5 shadow-sm">
               <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-400 mb-4 flex items-center gap-2">
-                <Scale size={14} className="text-orange-500" /> Type
+                <Scale size={14} className="text-[#5a32fa] dark:text-indigo-400" /> Type
               </h3>
               <div className="flex flex-col gap-1.5">
                 {CONTENT_TYPES.map(type => {
@@ -392,16 +392,16 @@ export default function IPNewsHubPage() {
                     <button
                       key={type}
                       onClick={() => { setTypeFilter(type); setHeadlineIndex(0); setSecondsRemaining(30); }}
-                      className={`text-left text-xs font-bold transition-all px-3.5 py-2.5 rounded-2xl flex items-center justify-between group ${
+                      className={`text-left text-xs font-bold transition-all px-3.5 py-2.5 rounded-2xl flex items-center justify-between group cursor-pointer ${
                         isSelected
-                          ? 'bg-gradient-to-r from-orange-500/20 via-orange-500/10 to-transparent border border-orange-500/40 text-orange-600 dark:text-orange-400 shadow-xs'
+                          ? 'bg-indigo-500/10 border border-indigo-500/30 text-[#5a32fa] dark:text-indigo-300 font-black shadow-2xs'
                           : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
                       <span className="font-bold">{type}</span>
                       <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-mono font-bold transition-all ${
                         isSelected 
-                          ? 'bg-orange-500/20 text-orange-600 dark:text-orange-300 border border-orange-500/30' 
+                          ? 'bg-[#5a32fa]/15 text-[#5a32fa] dark:text-indigo-300 border border-[#5a32fa]/25' 
                           : 'bg-slate-100 dark:bg-slate-900 text-slate-400 group-hover:text-slate-200'
                       }`}>
                         {count}
@@ -420,7 +420,7 @@ export default function IPNewsHubPage() {
           
           {loading ? (
             <div className="flex flex-col items-center justify-center py-24 text-slate-400">
-              <RefreshCw size={28} className="animate-spin text-orange-500 mb-3" />
+              <RefreshCw size={28} className="animate-spin text-[#5a32fa] mb-3" />
               <p className="text-sm font-bold">Loading live IP intelligence stream...</p>
             </div>
           ) : filteredNews.length === 0 ? (
@@ -430,7 +430,7 @@ export default function IPNewsHubPage() {
               <p className="text-xs text-slate-500 mb-6">Try selecting "All Types" or broadening your jurisdiction filter.</p>
               <button 
                 onClick={() => { setSearchQuery(''); setActiveSub('all'); setTypeFilter('All Types'); }}
-                className="px-4 py-2 rounded-xl bg-orange-500 text-white text-xs font-bold hover:bg-orange-600 transition"
+                className="px-4 py-2 rounded-xl bg-[#5a32fa] text-white text-xs font-bold hover:opacity-90 transition cursor-pointer"
               >
                 Reset Filters
               </button>
@@ -440,7 +440,7 @@ export default function IPNewsHubPage() {
               {/* Rotating 30-Second Lead Headline Feature */}
               {currentFeatured && (
                 <div 
-                  className="group relative overflow-hidden rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-[#0d1322] shadow-sm hover:shadow-xl transition-all duration-300 hover:border-orange-500/50"
+                  className="group relative overflow-hidden rounded-3xl border border-slate-200/90 dark:border-white/10 bg-white dark:bg-[#0d1322] shadow-sm hover:shadow-xl transition-all duration-300 hover:border-indigo-500/40"
                   onMouseEnter={() => setIsPaused(true)}
                   onMouseLeave={() => setIsPaused(false)}
                 >
@@ -459,7 +459,7 @@ export default function IPNewsHubPage() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                         <div className="absolute top-4 left-4 flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 text-white px-3.5 py-1 text-[11px] font-black uppercase tracking-wider shadow-md">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#5a32fa] to-indigo-600 text-white px-3.5 py-1 text-[11px] font-black uppercase tracking-wider shadow-md">
                             <Flame size={13} /> Lead Briefing #{safeHeadlineIndex + 1}
                           </span>
                           <span className="rounded-full bg-slate-900/85 backdrop-blur border border-white/10 text-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider">
@@ -471,15 +471,15 @@ export default function IPNewsHubPage() {
                       {/* Content Below */}
                       <div className="p-6 md:p-8 lg:p-10 flex flex-col justify-between">
                         <div>
-                          <div className="flex items-center gap-2 text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-3">
-                            <span className="bg-orange-500/10 px-2.5 py-0.5 rounded-md font-extrabold">{currentFeatured.type}</span>
+                          <div className="flex items-center gap-2 text-xs font-bold text-[#5a32fa] dark:text-indigo-400 uppercase tracking-wider mb-3">
+                            <span className="bg-[#5a32fa]/10 px-2.5 py-0.5 rounded-md font-extrabold">{currentFeatured.type}</span>
                             <span>•</span>
                             <span className="flex items-center gap-1 text-slate-400 font-semibold">
                               <Clock size={13} /> {currentFeatured.read_time}
                             </span>
                           </div>
                           
-                          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.15] tracking-tight text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors mb-4">
+                          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.15] tracking-tight text-slate-900 dark:text-white group-hover:text-[#5a32fa] dark:group-hover:text-indigo-400 transition-colors mb-4">
                             {currentFeatured.title}
                           </h2>
                           
@@ -491,7 +491,7 @@ export default function IPNewsHubPage() {
                         <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5 flex flex-wrap items-center justify-between gap-3">
                           <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-500 dark:text-slate-400">
                             <span className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
-                              <Clock size={13} className="text-orange-500" /> {currentFeatured.fullTimestamp || currentFeatured.date}
+                              <Clock size={13} className="text-[#5a32fa] dark:text-indigo-400" /> {currentFeatured.fullTimestamp || currentFeatured.date}
                             </span>
                             <span>•</span>
                             <a 
@@ -499,14 +499,14 @@ export default function IPNewsHubPage() {
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 font-bold text-orange-600 dark:text-orange-400 hover:underline hover:text-orange-500 transition-colors"
+                              className="inline-flex items-center gap-1 font-bold text-[#5a32fa] dark:text-indigo-400 hover:underline hover:opacity-80 transition-colors"
                               title="Open original reporting at publisher"
                             >
                               <span>Source: {currentFeatured.sourceName}</span>
                               <ExternalLink size={12} />
                             </a>
                           </div>
-                          <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform">
+                          <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-[#5a32fa] dark:text-indigo-400 group-hover:translate-x-1 transition-transform">
                             Read Full Briefing <ArrowRight size={15} />
                           </span>
                         </div>
@@ -519,14 +519,14 @@ export default function IPNewsHubPage() {
                     <div className="flex items-center gap-3">
                       <span className="font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
                         <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500" />
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                         </span>
-                        Next headline in <span className="font-black text-orange-500 font-mono">{secondsRemaining}s</span>
+                        Next headline in <span className="font-black text-[#5a32fa] dark:text-indigo-400 font-mono">{secondsRemaining}s</span>
                       </span>
                       <button 
                         onClick={(e) => { e.preventDefault(); setIsPaused(!isPaused); }}
-                        className="p-1 rounded-md text-slate-400 hover:text-orange-500 transition"
+                        className="p-1 rounded-md text-slate-400 hover:text-[#5a32fa] transition cursor-pointer"
                         title={isPaused ? "Resume auto-rotation" : "Pause auto-rotation"}
                       >
                         {isPaused ? <Play size={13} /> : <Pause size={13} />}
@@ -539,14 +539,14 @@ export default function IPNewsHubPage() {
                       </span>
                       <button 
                         onClick={(e) => { e.preventDefault(); handlePrevHeadline(); }}
-                        className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-orange-500 border border-slate-200 dark:border-white/10 shadow-2xs transition"
+                        className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-[#5a32fa] border border-slate-200 dark:border-white/10 shadow-2xs transition cursor-pointer"
                         title="Previous headline"
                       >
                         <ChevronLeft size={14} />
                       </button>
                       <button 
                         onClick={(e) => { e.preventDefault(); handleNextHeadline(); }}
-                        className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-orange-500 border border-slate-200 dark:border-white/10 shadow-2xs transition"
+                        className="p-1.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-[#5a32fa] border border-slate-200 dark:border-white/10 shadow-2xs transition cursor-pointer"
                         title="Next headline"
                       >
                         <ChevronRight size={14} />
@@ -557,7 +557,7 @@ export default function IPNewsHubPage() {
                   {/* Visual 30-Second Countdown Progress Bar */}
                   <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 overflow-hidden">
                     <div 
-                      className="bg-orange-500 h-full transition-all duration-1000 ease-linear"
+                      className="bg-gradient-to-r from-[#5a32fa] to-indigo-500 h-full transition-all duration-1000 ease-linear"
                       style={{ width: `${((30 - secondsRemaining) / 30) * 100}%` }}
                     />
                   </div>
@@ -565,11 +565,11 @@ export default function IPNewsHubPage() {
               )}
 
               {/* Fair Use & Attribution Disclaimer Banner */}
-              <div className="rounded-2xl p-4 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40 flex items-start gap-3 text-xs text-amber-900 dark:text-amber-200 shadow-2xs">
-                <ShieldCheck size={18} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div className="rounded-2xl p-4 bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/10 flex items-start gap-3 text-xs text-slate-700 dark:text-slate-300 shadow-2xs">
+                <ShieldCheck size={18} className="text-[#5a32fa] dark:text-indigo-400 shrink-0 mt-0.5" />
                 <div className="space-y-0.5">
-                  <span className="font-bold block">Publisher Attribution & Legal Safe Harbor</span>
-                  <p className="text-[11px] leading-relaxed text-amber-800/90 dark:text-amber-300/80">
+                  <span className="font-bold block text-slate-900 dark:text-white">Publisher Attribution & Legal Safe Harbor</span>
+                  <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
                     All original intellectual property reporting, trademarks, and excerpts belong exclusively to their respective publishers (including The Global IP Magazine, USPTO, WIPO, etc.). WIPA indexes these intelligence briefings solely for educational reference. Click any story's <strong>Source ↗</strong> link to view the complete reporting on the original publisher's platform.
                   </p>
                 </div>
@@ -582,7 +582,7 @@ export default function IPNewsHubPage() {
                     <Link
                       key={item.id}
                       href={`/platform/resources/ip-news/${item.id}`}
-                      className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] p-5 shadow-2xs hover:shadow-lg transition-all duration-300 hover:border-orange-500/40 hover:-translate-y-0.5"
+                      className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] p-5 shadow-2xs hover:shadow-lg transition-all duration-300 hover:border-indigo-500/40 hover:-translate-y-0.5"
                     >
                       <div>
                         <div className="relative h-44 w-full rounded-xl overflow-hidden mb-4 bg-slate-900">
@@ -598,13 +598,13 @@ export default function IPNewsHubPage() {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 text-[11px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-2">
+                        <div className="flex items-center gap-2 text-[11px] font-bold text-[#5a32fa] dark:text-indigo-400 uppercase tracking-wider mb-2">
                           <span>{item.type}</span>
                           <span>•</span>
                           <span className="text-slate-400 font-medium">{item.read_time}</span>
                         </div>
 
-                        <h3 className="text-lg font-black leading-snug tracking-tight text-slate-900 dark:text-white group-hover:text-orange-500 transition-colors mb-2.5 line-clamp-2">
+                        <h3 className="text-lg font-black leading-snug tracking-tight text-slate-900 dark:text-white group-hover:text-[#5a32fa] dark:group-hover:text-indigo-400 transition-colors mb-2.5 line-clamp-2">
                           {item.title}
                         </h3>
 
@@ -616,9 +616,9 @@ export default function IPNewsHubPage() {
                       <div className="pt-3 border-t border-slate-100 dark:border-white/5 flex flex-col gap-2 text-xs">
                         <div className="flex items-center justify-between">
                           <span className="font-semibold text-slate-500 dark:text-slate-400 text-[11px] flex items-center gap-1">
-                            <Clock size={11} className="text-orange-500" /> {item.fullTimestamp || item.date}
+                            <Clock size={11} className="text-slate-400" /> {item.fullTimestamp || item.date}
                           </span>
-                          <span className="inline-flex items-center gap-1 font-bold text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform text-xs">
+                          <span className="inline-flex items-center gap-1 font-black text-[#5a32fa] dark:text-indigo-400 group-hover:translate-x-1 transition-transform text-xs">
                             Briefing <ArrowRight size={12} />
                           </span>
                         </div>
@@ -628,7 +628,7 @@ export default function IPNewsHubPage() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 hover:underline transition-colors"
+                            className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 dark:text-slate-400 hover:text-[#5a32fa] dark:hover:text-indigo-400 hover:underline transition-colors"
                             title={`Visit ${item.sourceName}`}
                           >
                             <span>Source: {item.sourceName}</span>
@@ -646,7 +646,7 @@ export default function IPNewsHubPage() {
                 <div className="flex justify-center pt-4">
                   <button
                     onClick={() => setVisibleCount(prev => prev + 12)}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white dark:bg-[#0d1322] border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm hover:border-orange-500/50 hover:text-orange-500 transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white dark:bg-[#0d1322] border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-2xs hover:border-indigo-500/40 hover:text-[#5a32fa] dark:hover:text-indigo-400 transition-all cursor-pointer"
                   >
                     <Plus size={15} /> Load More IP Intelligence ({listItems.length - visibleCount} remaining)
                   </button>
@@ -661,11 +661,11 @@ export default function IPNewsHubPage() {
         <div className="w-full lg:w-72 shrink-0">
           <div className="sticky top-20 space-y-6">
             
-            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0c1322] p-5 shadow-lg">
-              <h3 className="text-xs font-black uppercase tracking-widest mb-5 flex items-center gap-2 text-orange-600 dark:text-orange-400">
+            <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0c1322] p-5 shadow-sm">
+              <h3 className="text-xs font-black uppercase tracking-widest mb-5 flex items-center gap-2 text-slate-800 dark:text-white">
                 <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                 </span>
                 Jurisdiction Activity
               </h3>
@@ -673,41 +673,41 @@ export default function IPNewsHubPage() {
               <div className="flex flex-col gap-3 text-xs font-bold">
                 <button
                   onClick={() => { setActiveSub('global'); setHeadlineIndex(0); }}
-                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group"
+                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group cursor-pointer"
                 >
-                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-orange-500 transition-colors">Global (WIPO)</span>
-                  <span className="text-orange-600 dark:text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">+12%</span>
+                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-[#5a32fa] dark:group-hover:text-indigo-400 transition-colors">Global (WIPO)</span>
+                  <span className="text-[#5a32fa] dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">+12%</span>
                 </button>
 
                 <button
                   onClick={() => { setActiveSub('us'); setHeadlineIndex(0); }}
-                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group"
+                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group cursor-pointer"
                 >
-                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-orange-500 transition-colors">United States (USPTO)</span>
+                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-[#5a32fa] dark:group-hover:text-indigo-400 transition-colors">United States (USPTO)</span>
                   <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">+5%</span>
                 </button>
 
                 <button
                   onClick={() => { setActiveSub('eu'); setHeadlineIndex(0); }}
-                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group"
+                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group cursor-pointer"
                 >
-                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-orange-500 transition-colors">European Union (EPO)</span>
+                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-[#5a32fa] dark:group-hover:text-indigo-400 transition-colors">European Union (EPO)</span>
                   <span className="text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">-2%</span>
                 </button>
 
                 <button
                   onClick={() => { setActiveSub('uk'); setHeadlineIndex(0); }}
-                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group"
+                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group cursor-pointer"
                 >
-                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-orange-500 transition-colors">United Kingdom (UKIPO)</span>
+                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-[#5a32fa] dark:group-hover:text-indigo-400 transition-colors">United Kingdom (UKIPO)</span>
                   <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">+1%</span>
                 </button>
 
                 <button
                   onClick={() => { setActiveSub('asia-pacific'); setHeadlineIndex(0); }}
-                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group"
+                  className="flex justify-between items-center p-2.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-white/5 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-left group cursor-pointer"
                 >
-                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-orange-500 transition-colors">Asia-Pacific (APAC)</span>
+                  <span className="text-slate-700 dark:text-slate-200 group-hover:text-[#5a32fa] dark:group-hover:text-indigo-400 transition-colors">Asia-Pacific (APAC)</span>
                   <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md font-mono text-[11px] font-black">+8%</span>
                 </button>
               </div>
