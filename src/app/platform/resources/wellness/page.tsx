@@ -25,7 +25,7 @@ import {
   Plane, 
   Building2, 
   Calendar,
-  Star,
+  ShieldCheck,
   Clock,
   Loader2
 } from 'lucide-react';
@@ -189,7 +189,7 @@ export default function WellnessPage() {
     is_active: true,
     partner_name: "Budding Minds",
     expert_name: "Jel",
-    badge_text: "⭐ Featured Wellbeing Partner",
+    badge_text: "Featured Wellbeing Partner",
     specialty_badge: "Nutritional Therapy · Gut & Hormone Health",
     subheadline: "QUALIFIED NUTRITIONAL THERAPIST · POLYVAGAL & SOMATIC NERVOUS SYSTEM SUPPORT",
     description: "Budding Minds supports women with practical, personalized nutrition, gut health, hormone balance, stress management, and nervous system regulation. Taking a whole-person approach that looks beyond symptoms to make realistic, sustainable changes around demanding careers and life.",
@@ -303,11 +303,13 @@ export default function WellnessPage() {
 
             <Link 
               href="/platform/resources/wellness/budding-minds" 
-              className="inline-flex items-center gap-2.5 bg-[#00d26a]/10 hover:bg-[#00d26a]/20 text-[#00d26a] px-4 py-1.5 rounded-full font-bold text-xs border border-[#00d26a]/20 transition-all shadow-sm"
+              className="inline-flex items-center gap-2.5 bg-white dark:bg-white/[0.06] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-slate-800 dark:text-white hover:text-[#00d26a] px-4 py-2 rounded-xl font-bold text-xs border border-slate-200/80 dark:border-white/10 transition-all shadow-xs cursor-pointer"
             >
-              <img src="/budding-minds-logo.png" alt="" className="w-5 h-5 rounded-full object-cover shrink-0 shadow-xs" />
+              <div className="w-7 h-7 rounded-lg bg-[#142e14] p-1 shrink-0 flex items-center justify-center">
+                <img src="/budding-minds-logo.png" alt="Budding Minds" className="w-full h-full object-contain" />
+              </div>
               <span>Partner Hub: Budding Minds</span> 
-              <ArrowRight size={13} />
+              <ArrowRight size={13} className="text-[#00d26a]" />
             </Link>
           </div>
 
@@ -332,13 +334,13 @@ export default function WellnessPage() {
         
         {/* Featured Partner Section: Dynamic from database */}
         {partnerBanner && partnerBanner.is_active !== false && (
-          <div className="w-full bg-gradient-to-br from-white/90 via-white/70 to-emerald-50/40 dark:from-[#161622]/90 dark:via-[#13131c]/80 dark:to-emerald-950/20 backdrop-blur-2xl rounded-[2.5rem] md:rounded-[3rem] border border-gray-200 dark:border-white/10 p-6 sm:p-10 md:p-12 shadow-xl mb-14 relative overflow-hidden flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+          <div className="w-full bg-gradient-to-br from-white/95 via-white/80 to-emerald-50/40 dark:from-[#131722]/95 dark:via-[#0e111a]/90 dark:to-emerald-950/25 backdrop-blur-2xl rounded-[2.5rem] md:rounded-[3rem] border border-slate-200/90 dark:border-white/10 p-7 sm:p-10 md:p-12 shadow-xl mb-14 relative overflow-hidden flex flex-col lg:flex-row items-center gap-8 lg:gap-14">
             <div className="absolute top-[-80px] left-[-80px] w-80 h-80 bg-[#00d26a]/15 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-[-80px] right-[-80px] w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
             
-            {/* Portrait with Overlapping Partner Logo Emblem */}
+            {/* Portrait with Prominent Partner Logo Emblem */}
             <div className="relative shrink-0 z-10">
-              <div className="w-40 h-40 sm:w-52 sm:h-52 md:w-60 md:h-60 rounded-full overflow-hidden border-4 border-white dark:border-[#2a2a38] shadow-2xl bg-emerald-500/10 flex items-center justify-center">
+              <div className="w-44 h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-3xl overflow-hidden border-4 border-white dark:border-[#2a2a38] shadow-2xl bg-emerald-500/10 flex items-center justify-center">
                 <img 
                   src={partnerBanner.image_url || "/jel.jpg"} 
                   alt={partnerBanner.partner_name || "Wellbeing Partner"} 
@@ -347,42 +349,47 @@ export default function WellnessPage() {
                 />
               </div>
 
-              {/* Budding Minds Logo Emblem Badge */}
+              {/* Budding Minds Logo Emblem Badge on Avatar */}
               <div 
-                className="absolute -bottom-1 -right-1 sm:bottom-1 sm:right-1 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-3 sm:border-4 border-white dark:border-[#161622] shadow-xl shadow-emerald-950/30 bg-[#1d3d1d] flex items-center justify-center group"
+                className="absolute -bottom-2 -right-2 sm:bottom-0 sm:right-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden border-4 border-white dark:border-[#131722] shadow-2xl bg-[#142e14] p-2 flex items-center justify-center group transition-transform hover:scale-105"
                 title="Budding Minds Official Partner"
               >
                 <img 
                   src="/budding-minds-logo.png" 
                   alt="Budding Minds Logo" 
-                  className="w-full h-full object-cover" 
+                  className="w-full h-full object-contain" 
                 />
               </div>
             </div>
 
             <div className="flex-1 text-center lg:text-left relative z-10">
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-3">
-                {partnerBanner.badge_text && (
-                  <span className="inline-block bg-[#00d26a]/15 text-[#00d26a] font-black text-xs px-3.5 py-1 rounded-full border border-[#00d26a]/20">
-                    {partnerBanner.badge_text}
-                  </span>
-                )}
-                {partnerBanner.specialty_badge && (
-                  <span className="inline-block bg-teal-500/10 text-teal-600 dark:text-teal-400 font-bold text-xs px-3 py-1 rounded-full border border-teal-500/20">
-                    {partnerBanner.specialty_badge}
-                  </span>
-                )}
-              </div>
-
-              <div className="flex items-center justify-center lg:justify-start gap-3 mb-2">
-                <img 
-                  src="/budding-minds-logo.png" 
-                  alt="Budding Minds Logo" 
-                  className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border-2 border-emerald-500/30 shadow-md object-cover shrink-0 hidden sm:inline-block" 
-                />
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white">
-                  {partnerBanner.partner_name} {partnerBanner.expert_name && <span className="text-gray-400 font-normal">· with {partnerBanner.expert_name}</span>}
-                </h2>
+              {/* Prominent Company Identity & Accreditation */}
+              <div className="flex flex-col sm:flex-row items-center lg:items-start gap-4 mb-4">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#142e14] border-2 border-emerald-500/40 p-2 shadow-lg shadow-emerald-950/30 flex items-center justify-center shrink-0">
+                  <img 
+                    src="/budding-minds-logo.png" 
+                    alt="Budding Minds Official Logo" 
+                    className="w-full h-full object-contain" 
+                  />
+                </div>
+                
+                <div>
+                  <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-1.5">
+                    <span className="inline-flex items-center gap-1.5 bg-[#00d26a]/15 text-[#00d26a] font-black text-xs px-3.5 py-1 rounded-full border border-[#00d26a]/20">
+                      <ShieldCheck size={13} />
+                      {partnerBanner.badge_text ? partnerBanner.badge_text.replace(/⭐|★|\*/g, '').trim() : "Featured Wellbeing Partner"}
+                    </span>
+                    {partnerBanner.specialty_badge && (
+                      <span className="inline-block bg-teal-500/10 text-teal-600 dark:text-teal-400 font-bold text-xs px-3 py-1 rounded-full border border-teal-500/20">
+                        {partnerBanner.specialty_badge}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+                    {partnerBanner.partner_name} {partnerBanner.expert_name && <span className="text-gray-400 font-normal">· with {partnerBanner.expert_name}</span>}
+                  </h2>
+                </div>
               </div>
               
               {partnerBanner.subheadline && (
@@ -610,7 +617,7 @@ export default function WellnessPage() {
                     <Heart className="text-pink-500" fill="currentColor" size={20} /> Featured Offerings
                   </h2>
                   <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1">
-                    <Star size={11} className="fill-emerald-500" /> {featuredOfferings.length} Spotlighted Offerings
+                    <ShieldCheck size={13} className="text-emerald-500" /> {featuredOfferings.length} Spotlighted Offerings
                   </span>
                 </div>
 
@@ -630,7 +637,7 @@ export default function WellnessPage() {
                       
                       <div className="absolute top-5 left-5 right-5 flex items-center justify-between">
                         <span className="bg-black/50 backdrop-blur-md text-white text-xs font-black px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5">
-                          <Star size={11} className="fill-amber-400 text-amber-400" /> {resource.type}
+                          <Sparkles size={11} className="text-emerald-400" /> {resource.type}
                         </span>
                         <div className="flex flex-wrap gap-1.5 justify-end">
                           {resource.tags && resource.tags.slice(0, 2).map((tag: string) => (

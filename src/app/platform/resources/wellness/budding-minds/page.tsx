@@ -267,16 +267,20 @@ export default function BuddingMindsPage() {
             
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2.5 bg-[#00d26a]/15 text-[#00d26a] px-4 py-2 rounded-full font-black text-xs uppercase tracking-widest mb-6 border border-[#00d26a]/20 shadow-sm">
-                <img src="/budding-minds-logo.png" alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
+                <div className="w-6 h-6 rounded-md bg-[#142e14] p-1 shrink-0 flex items-center justify-center">
+                  <img src="/budding-minds-logo.png" alt="Budding Minds" className="w-full h-full object-contain" />
+                </div>
                 <span>Official WIPA Wellbeing Partner</span>
               </div>
               
               <div className="flex items-center gap-4 mb-6">
-                <img 
-                  src="/budding-minds-logo.png" 
-                  alt="Budding Minds Logo" 
-                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-3 border-emerald-500/40 shadow-xl object-cover shrink-0 hidden sm:inline-block" 
-                />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#142e14] border-2 border-emerald-500/40 p-2 shadow-lg shadow-emerald-950/30 flex items-center justify-center shrink-0">
+                  <img 
+                    src="/budding-minds-logo.png" 
+                    alt="Budding Minds Logo" 
+                    className="w-full h-full object-contain" 
+                  />
+                </div>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tight leading-[1.1]">
                   Budding Minds <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00d26a] via-teal-400 to-[#20c997]">
@@ -325,12 +329,20 @@ export default function BuddingMindsPage() {
                 
                 <div className="flex flex-col items-center text-center">
                   <div className="relative mb-6">
-                    <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden border-4 border-white dark:border-[#2b2b3a] shadow-xl relative z-10">
+                    <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-3xl overflow-hidden border-4 border-white dark:border-[#2b2b3a] shadow-2xl relative z-10">
                       <img src="/jel.jpg" alt="Jel · Budding Minds" className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
                     </div>
-                    <div className="absolute -bottom-2 bg-gradient-to-r from-[#00d26a] to-teal-500 text-white font-black text-[11px] px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md z-20">
-                      Nutritional Therapist
+                    {/* Budding Minds Company Emblem */}
+                    <div 
+                      className="absolute -bottom-2 -right-2 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden border-4 border-white dark:border-[#181824] shadow-xl bg-[#142e14] p-1.5 flex items-center justify-center z-20 group-hover:scale-105 transition-transform"
+                      title="Budding Minds Official Partner"
+                    >
+                      <img src="/budding-minds-logo.png" alt="Budding Minds Logo" className="w-full h-full object-contain" />
                     </div>
+                  </div>
+
+                  <div className="inline-block bg-gradient-to-r from-[#00d26a] to-teal-500 text-white font-black text-[11px] px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md mb-2">
+                    Nutritional Therapist
                   </div>
 
                   <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-1">Meet Jel</h2>

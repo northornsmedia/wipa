@@ -7,7 +7,6 @@ import {
   ExternalLink, 
   Heart, 
   Clock, 
-  Star, 
   MapPin, 
   CheckCircle2, 
   Globe, 
