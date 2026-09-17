@@ -842,7 +842,7 @@ export default function ResearchReportCreatePage() {
           {/* Section 4: Submission Action Footer */}
           <div className="p-6 rounded-3xl bg-white dark:bg-[#0d1322] border border-slate-200 dark:border-white/10 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-[#5a32fa] shrink-0">
                 <ShieldCheck size={20} />
               </div>
               <div className="text-xs">
@@ -855,7 +855,7 @@ export default function ResearchReportCreatePage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-red-500 hover:bg-red-600 active:scale-95 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-red-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-[#5a32fa] hover:bg-[#4a26e0] active:scale-95 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 {submitting ? (
                   <>
