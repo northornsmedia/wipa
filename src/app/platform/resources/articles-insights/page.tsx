@@ -278,7 +278,7 @@ export default function ArticlesInsightsHubPage() {
              <div className="flex items-center gap-3">
                <Link 
                  href="/platform/resources/articles-insights/create"
-                 className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#ff2a5f] hover:bg-[#e02553] text-white text-xs font-black uppercase tracking-wider shadow-md hover:shadow-lg transition-all"
+                 className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-wider shadow-md hover:shadow-lg shadow-emerald-600/20 transition-all cursor-pointer"
                >
                  <PenTool size={14} className="group-hover:rotate-12 transition-transform" />
                  Publish Your Article
@@ -314,15 +314,15 @@ export default function ArticlesInsightsHubPage() {
                   onClick={() => setActiveSub(sub.id)}
                   className={`relative text-xs font-black uppercase tracking-widest transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                     isActive 
-                      ? (isLexis ? 'text-blue-600 dark:text-blue-400' : isMine ? 'text-[#ff2a5f]' : 'text-emerald-600') 
-                      : (isLexis ? 'text-blue-600/80 hover:text-blue-600 dark:text-blue-400/80' : isMine ? 'text-rose-400 hover:text-rose-600' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white')
+                      ? (isLexis ? 'text-blue-600 dark:text-blue-400' : 'text-emerald-600') 
+                      : (isLexis ? 'text-blue-600/80 hover:text-blue-600 dark:text-blue-400/80' : isMine ? 'text-emerald-600/70 hover:text-emerald-600' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white')
                   }`}
                 >
                   {isLexis && <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />}
-                  {isMine && <span className="w-2 h-2 rounded-full bg-[#ff2a5f]" />}
+                  {isMine && <span className="w-2 h-2 rounded-full bg-emerald-500" />}
                   <span>{sub.name}</span>
                   {isActive && (
-                    <span className={`absolute -bottom-4 left-0 right-0 h-0.5 rounded-t-full ${isLexis ? 'bg-blue-600' : isMine ? 'bg-[#ff2a5f]' : 'bg-emerald-600'}`} />
+                    <span className={`absolute -bottom-4 left-0 right-0 h-0.5 rounded-t-full ${isLexis ? 'bg-blue-600' : 'bg-emerald-600'}`} />
                   )}
                 </button>
               );
@@ -519,12 +519,12 @@ export default function ArticlesInsightsHubPage() {
                  {activeSub === 'my-submissions' ? "You haven't submitted any articles yet." : "No articles found"}
                </h3>
                {activeSub === 'my-submissions' && (
-                 <Link 
-                   href="/platform/resources/articles-insights/create" 
-                   className="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#ff2a5f] text-white font-bold text-xs uppercase tracking-wider"
-                 >
-                   <PenTool size={14} /> Draft Your First Article
-                 </Link>
+                  <Link 
+                    href="/platform/resources/articles-insights/create" 
+                    className="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+                  >
+                    <PenTool size={14} /> Draft Your First Article
+                  </Link>
                )}
              </div>
           )}

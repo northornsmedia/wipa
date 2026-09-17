@@ -987,7 +987,7 @@ export default function ArticleCreatePage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-[#ff2a5f] hover:bg-[#e02553] text-white font-black text-xs uppercase tracking-wider shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-600/20 hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {submitting ? (
                 <>
