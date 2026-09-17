@@ -324,79 +324,25 @@ export default function IPFirmsPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredFirms.map((firm) => {
               const isBookmarked = bookmarkedFirms[firm.id];
 
               return (
                 <div 
                   key={firm.id}
-                  className="group bg-white dark:bg-[#0c1120] rounded-[1.75rem] border border-slate-200/80 dark:border-white/10 hover:border-[#5a32fa]/40 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col relative overflow-hidden"
+                  className="group bg-white dark:bg-[#0c1120] rounded-2xl border border-slate-200/90 dark:border-white/[0.08] hover:border-slate-300 dark:hover:border-purple-500/30 shadow-xs hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/60 transition-all duration-300 p-6 sm:p-7 flex flex-col justify-between relative"
                 >
-                  {/* Cover Photo */}
-                  <div className="h-40 sm:h-44 w-full relative overflow-hidden bg-slate-900">
-                    <img 
-                      src={firm.cover_image_url || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80'} 
-                      alt={`${firm.name} cover`} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-[0.88]"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 pointer-events-none" />
-
-                    {/* Floating Badges (Clean & Institutional, NO STARS) */}
-                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        {firm.is_featured && (
-                          <div className="bg-slate-950/90 text-purple-300 border border-purple-500/40 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-md flex items-center gap-1.5 backdrop-blur-md">
-                            <ShieldCheck size={12} className="text-purple-400" /> Premier Practice
-                          </div>
-                        )}
-                        {firm.is_verified && (
-                          <div className="bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-md flex items-center gap-1">
-                            <CheckCircle2 size={11} /> Verified
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={(e) => handleShare(e, firm)}
-                          title="Share firm"
-                          className="w-8 h-8 rounded-lg bg-black/40 hover:bg-black/70 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition-colors active:scale-90 cursor-pointer"
-                        >
-                          <Share2 size={13} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => toggleBookmark(e, firm.id)}
-                          title="Save firm"
-                          className="w-8 h-8 rounded-lg bg-black/40 hover:bg-black/70 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition-colors active:scale-90 cursor-pointer"
-                        >
-                          <Bookmark size={13} className={isBookmarked ? 'fill-purple-400 text-purple-400' : ''} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Location Badge on cover */}
-                    <div className="absolute bottom-3 right-3 z-10">
-                      <div className="flex items-center gap-1 text-[11px] font-bold text-white/95 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 shadow-xs">
-                        <MapPin size={11} className="text-rose-400" />
-                        <span>{firm.headquarters || 'Global Practice'}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Card Body */}
-                  <div className="px-6 pb-6 pt-0 relative flex-1 flex flex-col">
-                    {/* Emblem & Top Meta Bar */}
-                    <div className="-mt-8 mb-4 flex items-end justify-between">
-                      <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-white dark:bg-slate-900 border-2 border-white dark:border-slate-800 shadow-xl overflow-hidden flex items-center justify-center relative z-10 shrink-0 p-1">
+                  <div>
+                    {/* Top Header: Monogram Emblem & Ghost Actions */}
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      {/* Emblem / Monogram Logo */}
+                      <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 shadow-xs overflow-hidden flex items-center justify-center shrink-0 p-1">
                         {firm.logo_url ? (
                           <img 
                             src={firm.logo_url} 
                             alt={firm.name} 
-                            className="w-full h-full object-cover rounded-xl"
+                            className="w-full h-full object-cover rounded-lg"
                             onError={(e: any) => {
                               e.target.style.display = 'none';
                               if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
@@ -404,69 +350,114 @@ export default function IPFirmsPage() {
                           />
                         ) : null}
                         <div 
-                          className="w-full h-full rounded-xl bg-gradient-to-br from-[#5a32fa] to-purple-600 text-white font-black text-2xl flex items-center justify-center"
+                          className="w-full h-full rounded-lg bg-gradient-to-br from-slate-900 to-indigo-950 text-white font-black text-lg flex items-center justify-center"
                           style={{ display: firm.logo_url ? 'none' : 'flex' }}
                         >
                           {firm.name.charAt(0)}
                         </div>
                       </div>
 
-                      {firm.size_range && (
-                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 px-2.5 py-1 rounded-lg border border-slate-200/60 dark:border-white/5">
-                          <Users size={12} className="text-[#5a32fa]" />
-                          <span>{firm.size_range} Attorneys</span>
-                        </div>
+                      {/* Header Right Actions (Bookmark & Share) */}
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={(e) => handleShare(e, firm)}
+                          title="Share firm"
+                          className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] flex items-center justify-center transition-colors active:scale-90 cursor-pointer"
+                        >
+                          <Share2 size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => toggleBookmark(e, firm.id)}
+                          title="Save firm"
+                          className="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] flex items-center justify-center transition-colors active:scale-90 cursor-pointer"
+                        >
+                          <Bookmark size={14} className={isBookmarked ? 'fill-purple-500 text-purple-500' : ''} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Firm Status & Verified Indicator */}
+                    <div className="flex items-center gap-2 mb-2">
+                      {firm.is_featured ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/40">
+                          <ShieldCheck size={12} className="text-purple-600 dark:text-purple-400" />
+                          Premier Practice
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-white/[0.06]">
+                          Institutional Practice
+                        </span>
+                      )}
+                      {firm.is_verified && (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                          <CheckCircle2 size={13} className="shrink-0" />
+                          Verified
+                        </span>
                       )}
                     </div>
 
-                    {/* Firm Title & Verified Checkmark */}
-                    <Link href={`/platform/resources/ip-firms/${firm.slug}`} className="block group-hover:text-[#5a32fa] transition-colors mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight line-clamp-1">
-                          {firm.name}
-                        </h3>
-                        {firm.is_verified && (
-                          <CheckCircle2 size={17} className="text-blue-500 shrink-0 fill-blue-500/20" />
-                        )}
-                      </div>
+                    {/* Firm Title */}
+                    <Link href={`/platform/resources/ip-firms/${firm.slug}`} className="block group-hover:text-[#5a32fa] dark:group-hover:text-purple-400 transition-colors">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight line-clamp-1">
+                        {firm.name}
+                      </h3>
                     </Link>
 
-                    {/* Practice Tier & Est (NO STARS) */}
-                    <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400 font-semibold mb-3">
-                      {firm.founded_year && <span>Est. {firm.founded_year}</span>}
-                      {firm.founded_year && <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />}
-                      <span className="text-[#5a32fa] dark:text-purple-400 font-bold flex items-center gap-1">
-                        <ShieldCheck size={13} /> Tier 1 Practice
-                      </span>
+                    {/* Location & Founded Year */}
+                    <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                      <MapPin size={12} className="text-slate-400 shrink-0" />
+                      <span className="line-clamp-1">{firm.headquarters || 'Global Practice'}</span>
+                      {firm.founded_year && (
+                        <>
+                          <span className="text-slate-300 dark:text-slate-700">•</span>
+                          <span>Est. {firm.founded_year}</span>
+                        </>
+                      )}
                     </div>
 
-                    {/* Description */}
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-5">
+                    {/* Practice Metric Strip */}
+                    {firm.size_range && (
+                      <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        <span className="flex items-center gap-1.5">
+                          <Users size={13} className="text-slate-400" />
+                          <span>{firm.size_range} Attorneys</span>
+                        </span>
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500">Tier 1 Global</span>
+                      </div>
+                    )}
+
+                    {/* Executive Description */}
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2 mt-3 mb-4">
                       {firm.description || 'Full-service intellectual property prosecution, counseling, portfolio strategy, and litigation practice.'}
                     </p>
+                  </div>
 
-                    {/* Specialization Tags */}
-                    <div className="flex flex-wrap gap-1.5 mb-6 mt-auto">
+                  {/* Practice Specializations & Footer */}
+                  <div>
+                    {/* Neutral Specialization Tags */}
+                    <div className="flex flex-wrap gap-1.5 mb-5">
                       {(firm.specializations || ['Patents', 'Trademarks']).slice(0, 3).map((spec: string) => (
                         <span 
                           key={spec}
-                          className="bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-[11px] font-bold px-2.5 py-1 rounded-md border border-purple-100/80 dark:border-purple-900/40"
+                          className="bg-slate-100/90 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 text-[11px] font-medium px-2.5 py-1 rounded-md border border-slate-200/50 dark:border-white/[0.05]"
                         >
                           {spec}
                         </span>
                       ))}
                       {(firm.specializations?.length || 0) > 3 && (
-                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 px-1 py-1">
+                        <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500 px-1 py-1">
                           +{firm.specializations.length - 3} more
                         </span>
                       )}
                     </div>
 
                     {/* Card Footer Actions */}
-                    <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-2">
+                    <div className="pt-4 border-t border-slate-100 dark:border-white/[0.06] flex items-center gap-2">
                       <Link
                         href={`/platform/resources/ip-firms/${firm.slug}`}
-                        className="flex-1 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-[#5a32fa] text-white dark:bg-white dark:text-slate-900 dark:hover:bg-[#5a32fa] dark:hover:text-white font-bold text-xs transition-all text-center flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
+                        className="flex-1 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-[#5a32fa] text-white dark:bg-white dark:text-slate-900 dark:hover:bg-[#5a32fa] dark:hover:text-white font-bold text-xs transition-all text-center flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98]"
                       >
                         <span>View Practice</span>
                         <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
@@ -476,9 +467,9 @@ export default function IPFirmsPage() {
                         <a
                           href={`mailto:${firm.contact_email}`}
                           title="Email firm"
-                          className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-900/30 text-slate-600 dark:text-slate-300 hover:text-[#5a32fa] flex items-center justify-center transition-colors active:scale-95 shrink-0 border border-slate-200/60 dark:border-white/5"
+                          className="w-9 h-9 rounded-xl border border-slate-200/80 dark:border-white/[0.08] hover:border-slate-300 dark:hover:border-white/20 bg-slate-50/60 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.08] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all active:scale-95 shrink-0"
                         >
-                          <Mail size={15} />
+                          <Mail size={14} />
                         </a>
                       )}
 
@@ -488,9 +479,9 @@ export default function IPFirmsPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Visit official website"
-                          className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-900/30 text-slate-600 dark:text-slate-300 hover:text-[#5a32fa] flex items-center justify-center transition-colors active:scale-95 shrink-0 border border-slate-200/60 dark:border-white/5"
+                          className="w-9 h-9 rounded-xl border border-slate-200/80 dark:border-white/[0.08] hover:border-slate-300 dark:hover:border-white/20 bg-slate-50/60 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.08] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all active:scale-95 shrink-0"
                         >
-                          <Globe size={15} />
+                          <Globe size={14} />
                         </a>
                       )}
                     </div>
