@@ -4,14 +4,23 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
-import { ArrowRight, Upload, Camera, Building2, GraduationCap, Briefcase, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Upload, Camera, Building2, GraduationCap, Briefcase, CheckCircle2, Scale } from 'lucide-react';
 import Image from 'next/image';
 
 const MEMBERSHIP_TIERS = [
   {
+    id: 'in_house_counsel',
+    title: 'In-House Counsel & Corporate IP',
+    description: 'For corporate in-house counsel, general counsel, and enterprise IP directors leading corporate legal functions.',
+    price: '£495',
+    interval: 'per year',
+    icon: Scale,
+    requiresDoc: false,
+  },
+  {
     id: 'ip_professional',
     title: 'IP Professionals',
-    description: 'For IP lawyers, attorneys, trademark practitioners, patent professionals, in-house counsel, academics, and consultants.',
+    description: 'For IP lawyers, attorneys, trademark practitioners, patent professionals, academics, and private practice consultants.',
     price: '£395',
     interval: 'per year',
     icon: Briefcase,

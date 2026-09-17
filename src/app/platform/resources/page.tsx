@@ -240,29 +240,34 @@ export default function ResourcesPage() {
         .select('*')
         .order('created_at', { ascending: false });
 
+      const categorySlugFromPath = (path: string) => {
+        const parts = (path || '').split('/').filter(Boolean);
+        return parts[parts.length - 1] || '';
+      };
+
       const updatedCategories = MOCK_CATEGORIES.map(category => {
         let latest = [];
-        if (category.id === 11) { // Podcasts
+        const slug = categorySlugFromPath(category.path);
+        if (slug === 'podcasts-conversations' || category.id === 11) {
           latest = (allPodcasts || []).slice(0, 2).map((p: any) => ({
             title: p.title,
             type: "Podcast",
             time: new Date(p.created_at).toLocaleDateString()
           }));
         } else {
-          // Attempt to match by category name or similar
-          const matches = (allResources || []).filter((r: any) => 
-            r.category?.toLowerCase() === category.title.toLowerCase() || 
-            category.title.toLowerCase().includes(r.category?.toLowerCase() || 'xyz')
-          );
+          const matches = (allResources || []).filter((r: any) => {
+            const cat = (r.category || '').toLowerCase();
+            return cat === slug.toLowerCase() || cat.replace(/-/g, ' ') === slug.replace(/-/g, ' ');
+          });
           latest = matches.slice(0, 2).map((r: any) => ({
             title: r.title,
-            type: r.type,
+            type: r.resource_type || r.type || "Resource",
             time: new Date(r.created_at).toLocaleDateString()
           }));
         }
         return {
           ...category,
-          latestItems: latest.length > 0 ? latest : category.latestItems // fallback to mock if empty for visual
+          latestItems: latest.length > 0 ? latest : category.latestItems
         };
       });
 

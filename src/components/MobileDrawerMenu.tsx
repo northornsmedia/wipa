@@ -135,7 +135,7 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
                       <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
                       <div className="mt-1 flex items-center gap-1">
                         <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-[#5a32fa]/10 text-[#5a32fa] dark:text-[#ff90e8] border border-[#5a32fa]/20">
-                          {user.membership_tier || 'Verified Counsel'}
+                          {user.membership_tier === 'in_house_counsel' ? 'In-House Counsel' : user.membership_tier === 'ip_professional' ? 'IP Professional' : user.membership_tier || 'Verified Counsel'}
                         </span>
                       </div>
                     </div>

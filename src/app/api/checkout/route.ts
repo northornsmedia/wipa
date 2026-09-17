@@ -23,6 +23,8 @@ export async function GET(request: Request) {
       ip_professional: { name: 'WIPA IP Professional Membership', amountPence: 29900, interval: 'year' },
       startup: { name: 'WIPA Startup Membership', amountPence: 49900, interval: 'year' },
       'start-ups': { name: 'WIPA Startup Membership', amountPence: 49900, interval: 'year' },
+      in_house_counsel: { name: 'WIPA In-House Counsel Membership', amountPence: 49500, interval: 'year' },
+      'in-house-counsel': { name: 'WIPA In-House Counsel Membership', amountPence: 49500, interval: 'year' },
     };
 
     const selectedTier = tierConfig[tier.toLowerCase()] || {

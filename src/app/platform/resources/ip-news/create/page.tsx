@@ -34,7 +34,8 @@ import {
   Check,
   AlertCircle,
   ExternalLink,
-  BookOpen
+  BookOpen,
+  Zap
 } from 'lucide-react';
 import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { supabase } from '@/lib/supabase';
@@ -397,7 +398,7 @@ export default function IPNewsCreatePage() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] flex items-center justify-center p-4 font-sans text-slate-900 dark:text-white">
         <div className="max-w-xl w-full bg-white dark:bg-[#0d1322] border border-slate-200 dark:border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-6 animate-fadeIn">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-[#5a32fa] dark:text-indigo-400 border border-indigo-500/20 flex items-center justify-center mx-auto shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-orange-500/10 text-orange-500 border border-orange-500/20 flex items-center justify-center mx-auto shadow-sm">
             <CheckCircle2 size={36} />
           </div>
 
@@ -415,10 +416,10 @@ export default function IPNewsCreatePage() {
           </div>
 
           <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-white/10 text-left space-y-2">
-            <div className="text-[10px] font-black uppercase tracking-widest text-[#5a32fa] dark:text-indigo-400">Submitted Briefing</div>
+            <div className="text-[10px] font-black uppercase tracking-widest text-orange-500">Submitted Briefing</div>
             <div className="font-bold text-base text-slate-900 dark:text-white">{successData.title}</div>
             <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 pt-1">
-              <span className="font-bold text-[#5a32fa] dark:text-indigo-400">[{successData.resource_type}]</span> &bull; 
+              <span className="font-bold text-orange-500">[{successData.resource_type}]</span> &bull; 
               <span>{successData.subcategory?.toUpperCase()}</span> &bull; 
               <span>{successData.read_time}</span>
             </div>
@@ -427,7 +428,7 @@ export default function IPNewsCreatePage() {
           <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/platform/resources/ip-news"
-              className="px-6 py-3.5 rounded-full bg-gradient-to-r from-[#5a32fa] to-purple-600 hover:opacity-95 text-white font-black text-xs uppercase tracking-wider shadow-sm transition-all text-center"
+              className="px-6 py-3.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 hover:opacity-95 text-white font-black text-xs uppercase tracking-wider shadow-sm shadow-orange-500/20 transition-all text-center"
             >
               Return to IP News Hub
             </Link>
@@ -450,32 +451,61 @@ export default function IPNewsCreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 pb-24 font-sans selection:bg-indigo-500/20">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 pb-24 font-sans selection:bg-orange-500/20">
       
       {/* Top Navigation Bar */}
-      <div className="border-b border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] sticky top-0 z-30 shadow-xs">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link 
-            href="/platform/resources/ip-news" 
-            className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-600 hover:text-[#5a32fa] dark:text-slate-400 dark:hover:text-white transition-colors"
-          >
-            <ArrowLeft size={16} /> Back to Live Stream
-          </Link>
-
+      <div className="border-b border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-[#0d1322]/95 backdrop-blur-md sticky top-0 z-30 shadow-2xs">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="text-[11px] font-bold text-slate-400 hidden sm:inline-flex items-center gap-1.5">
-              <Newspaper size={13} className="text-[#5a32fa]" />
-              WIPA IP Newsroom Desk
-            </span>
+            <Link 
+              href="/platform/resources/ip-news" 
+              className="group inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-orange-50 dark:bg-white/5 dark:hover:bg-orange-500/10 border border-slate-200/80 dark:border-white/10 text-xs font-bold text-slate-700 hover:text-orange-600 dark:text-slate-300 dark:hover:text-orange-400 transition-all cursor-pointer"
+            >
+              <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform text-slate-500 group-hover:text-orange-600 dark:text-slate-400 dark:group-hover:text-orange-400" />
+              <span>Live Stream</span>
+            </Link>
 
+            <span className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></span>
+
+            <div className="hidden sm:inline-flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+              </span>
+              <span>WIPA Newsroom Desk</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5">
             {/* Top Bar Direct AI Refine Action */}
             <button
               type="button"
               onClick={handleOpenAiModal}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-purple-600 hover:opacity-95 text-white text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-orange-500/10 to-amber-500/10 hover:from-orange-500/20 hover:to-amber-500/20 text-orange-600 dark:text-orange-400 border border-orange-500/30 text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-2xs"
             >
-              <Sparkles size={13} className="animate-pulse" />
-              <span>Refine with AI</span>
+              <Sparkles size={13} className="text-orange-500" />
+              <span className="hidden xs:inline">Refine with AI</span>
+              <span className="xs:hidden">AI</span>
+            </button>
+
+            {/* Quick Top Submit Button */}
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-xs shadow-md shadow-orange-500/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span className="hidden sm:inline">Submitting…</span>
+                </>
+              ) : (
+                <>
+                  <Send size={13} />
+                  <span>Submit for Review</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -483,54 +513,397 @@ export default function IPNewsCreatePage() {
 
       {/* Applied AI Toast */}
       {aiAppliedNotification && (
-        <div className="max-w-4xl mx-auto px-4 pt-4">
-          <div className="p-3 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center gap-2 animate-fadeIn">
-            <Sparkles size={15} />
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+          <div className="p-3.5 rounded-2xl bg-orange-500/15 border border-orange-500/30 text-orange-800 dark:text-orange-300 text-xs font-bold flex items-center gap-2 animate-fadeIn shadow-xs">
+            <Sparkles size={16} className="text-orange-500 shrink-0" />
             <span>AI refinements applied to your news draft! Review and make any final personal adjustments.</span>
           </div>
         </div>
       )}
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
-        {/* Header Title */}
-        <div className="mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 text-[11px] font-black uppercase tracking-wider mb-3">
-            <Globe size={13} /> Live Intelligence Contribution
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight uppercase">
-            Publish Your <span className="bg-gradient-to-r from-[#5a32fa] to-purple-600 bg-clip-text text-transparent">News</span>
-          </h1>
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-2 max-w-2xl">
-            Draft your breaking intellectual property briefing, case law update, or regulatory dispatch. Use our AI Refinement studio to elevate clarity before submitting for editorial review.
-          </p>
-        </div>
-
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="space-y-8">
-          
-          {/* Card 1: Headline, Jurisdiction & Meta */}
-          <div className="bg-white dark:bg-[#0d1322] p-6 sm:p-10 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm space-y-6">
+      {/* Studio Header Hero */}
+      <div className="relative border-b border-slate-200/80 dark:border-white/10 bg-gradient-to-b from-orange-500/[0.04] via-orange-500/[0.01] to-transparent overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-96 h-48 bg-orange-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+        
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             
-            {/* Headline / Title */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
-                  News Headline / Breaking Story Title *
-                </label>
-                <span className="text-[11px] text-slate-400 font-semibold">{title.length}/150</span>
+            {/* Left Column: Heading & Subtitle */}
+            <div className="lg:col-span-7 xl:col-span-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 text-[11px] font-black uppercase tracking-wider mb-3">
+                <Globe size={13} className="text-orange-500" />
+                <span>Live Intelligence Contribution</span>
               </div>
-              <input
-                type="text"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. USITC Issues Exclusion Order in High-Stakes Semiconductor Patent Dispute"
-                className="w-full text-xl sm:text-2xl font-black px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all placeholder-slate-400 text-slate-900 dark:text-white"
-              />
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                Publish Your <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">News Briefing</span>
+              </h1>
+              <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 mt-2 max-w-2xl font-medium leading-relaxed">
+                Draft breaking intellectual property briefings, case law updates, or regulatory dispatches. Refine clarity with AI before submitting for editorial verification.
+              </p>
             </div>
 
-            {/* Jurisdiction & Type */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Right Column: Editorial Desk Info Card */}
+            <div className="lg:col-span-5 xl:col-span-4">
+              <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-orange-500/20 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0 text-orange-500">
+                    <Zap size={18} className="animate-pulse" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                      <span>Fast-Track Wire</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/20">Active Desk</span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                      Peer & editorial verification happens within minutes before syndication across the WIPA global network.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2.5 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck size={13} className="text-orange-500" />
+                    Verified Source Wire
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock size={13} className="text-orange-500" />
+                    Real-time review
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* Main Studio 2-Column Split Layout */}
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* ========================================================================= */}
+          {/* LEFT COLUMN: STORY HEADLINE & WYSIWYG NEWSROOM CANVAS (COL-SPAN-8)         */}
+          {/* ========================================================================= */}
+          <div className="lg:col-span-8 space-y-6">
+            
+            {/* Card 1: Headline & Briefing Summary */}
+            <div className="bg-white dark:bg-[#0d1322] p-6 sm:p-10 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-6">
+              
+              {/* Headline / Title */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                    News Headline / Breaking Story Title *
+                  </label>
+                  <span className="text-[11px] text-slate-400 font-semibold">{title.length}/150</span>
+                </div>
+                <input
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. USITC Issues Exclusion Order in High-Stakes Semiconductor Patent Dispute"
+                  className="w-full text-xl sm:text-2xl md:text-3xl font-black px-4 sm:px-5 py-3.5 sm:py-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all placeholder-slate-400 text-slate-900 dark:text-white"
+                />
+              </div>
+
+              {/* Executive Summary / Key Takeaway */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                    Briefing Summary / Executive Takeaway *
+                  </label>
+                  <span className="text-[11px] text-slate-400 font-semibold">{summary.length}/280</span>
+                </div>
+                <textarea
+                  required
+                  rows={3}
+                  value={summary}
+                  onChange={(e) => setSummary(e.target.value)}
+                  placeholder="A concise 1–2 sentence summary explaining the core development and immediate impact on patent holders or practitioners."
+                  className="w-full text-sm sm:text-base font-medium p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all placeholder-slate-400 text-slate-900 dark:text-white leading-relaxed"
+                />
+              </div>
+            </div>
+
+            {/* Card 2: Visual WYSIWYG Editor + AI Refine Button */}
+            <div className="bg-white dark:bg-[#0d1322] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs overflow-hidden">
+              
+              {/* Card Header with Mode Tabs */}
+              <div className="px-6 py-4 border-b border-slate-200/80 dark:border-white/10 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/30">
+                <span className="text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                  Story Content & Factual Reporting *
+                </span>
+                
+                <div className="flex items-center gap-1 bg-slate-200/70 dark:bg-white/10 p-1 rounded-xl text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('write')}
+                    className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+                      activeTab === 'write'
+                        ? 'bg-white dark:bg-[#0d1322] text-orange-600 dark:text-orange-400 shadow-2xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <Edit3 size={13} />
+                    <span>Write</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('preview')}
+                    className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+                      activeTab === 'preview'
+                        ? 'bg-white dark:bg-[#0d1322] text-orange-600 dark:text-orange-400 shadow-2xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <Eye size={13} />
+                    <span>Preview</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Editor Toolbar (Only in Write mode) */}
+              {activeTab === 'write' && (
+                <div className="p-3 sm:p-4 border-b border-slate-200/80 dark:border-white/10 bg-slate-50/80 dark:bg-slate-900/60 flex flex-wrap items-center justify-between gap-3 sticky top-16 z-20 backdrop-blur-md">
+                  <div className="flex flex-wrap items-center gap-1">
+                    {/* Bold */}
+                    <button
+                      type="button"
+                      onClick={() => execCmd('bold')}
+                      className={`p-2 rounded-xl transition-all font-bold text-xs cursor-pointer ${
+                        isBold ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                      }`}
+                      title="Bold (Ctrl+B)"
+                    >
+                      <Bold size={14} />
+                    </button>
+
+                    {/* Italic */}
+                    <button
+                      type="button"
+                      onClick={() => execCmd('italic')}
+                      className={`p-2 rounded-xl transition-all text-xs cursor-pointer ${
+                        isItalic ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                      }`}
+                      title="Italic (Ctrl+I)"
+                    >
+                      <Italic size={14} />
+                    </button>
+
+                    {/* Underline */}
+                    <button
+                      type="button"
+                      onClick={() => execCmd('underline')}
+                      className={`p-2 rounded-xl transition-all text-xs cursor-pointer ${
+                        isUnderline ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                      }`}
+                      title="Underline (Ctrl+U)"
+                    >
+                      <Underline size={14} />
+                    </button>
+
+                    <span className="w-px h-5 bg-slate-200 dark:border-white/10 mx-1" />
+
+                    {/* H2 */}
+                    <button
+                      type="button"
+                      onClick={() => formatBlockTag('h2')}
+                      className={`p-2 rounded-xl transition-all font-bold text-xs cursor-pointer ${
+                        isH2 ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                      }`}
+                      title="Section Headline (H2)"
+                    >
+                      <Heading2 size={14} />
+                    </button>
+
+                    {/* H3 */}
+                    <button
+                      type="button"
+                      onClick={() => formatBlockTag('h3')}
+                      className={`p-2 rounded-xl transition-all font-bold text-xs cursor-pointer ${
+                        isH3 ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                      }`}
+                      title="Sub-heading (H3)"
+                    >
+                      <Heading3 size={14} />
+                    </button>
+
+                    {/* Quote */}
+                    <button
+                      type="button"
+                      onClick={() => formatBlockTag('blockquote')}
+                      className={`p-2 rounded-xl transition-all text-xs cursor-pointer ${
+                        isQuote ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                      }`}
+                      title="Pull Quote / Statement"
+                    >
+                      <Quote size={14} />
+                    </button>
+
+                    <span className="w-px h-5 bg-slate-200 dark:border-white/10 mx-1" />
+
+                    {/* Bullet List */}
+                    <button
+                      type="button"
+                      onClick={() => execCmd('insertUnorderedList')}
+                      className={`p-2 rounded-xl transition-all text-xs cursor-pointer ${
+                        isBulletList ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                      }`}
+                      title="Bullet List"
+                    >
+                      <List size={14} />
+                    </button>
+
+                    {/* Numbered List */}
+                    <button
+                      type="button"
+                      onClick={() => execCmd('insertOrderedList')}
+                      className={`p-2 rounded-xl transition-all text-xs cursor-pointer ${
+                        isNumberedList ? 'bg-orange-500 text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                      }`}
+                      title="Numbered List"
+                    >
+                      <ListOrdered size={14} />
+                    </button>
+
+                    {/* Link */}
+                    <button
+                      type="button"
+                      onClick={handleCreateLink}
+                      className="p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all text-xs cursor-pointer"
+                      title="Insert Hyperlink"
+                    >
+                      <Link2 size={14} />
+                    </button>
+
+                    {/* Clear Formatting */}
+                    <button
+                      type="button"
+                      onClick={() => execCmd('removeFormat')}
+                      className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white transition-all text-xs cursor-pointer"
+                      title="Clear formatting"
+                    >
+                      <RemoveFormatting size={14} />
+                    </button>
+                  </div>
+
+                  {/* Right side of toolbar: Word Count & AI Refine button */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-semibold text-slate-400">
+                      {wordCount} words &bull; {readTime}
+                    </span>
+
+                    {/* AI Refine Button in Toolbar */}
+                    <button
+                      type="button"
+                      onClick={handleOpenAiModal}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
+                    >
+                      <Sparkles size={13} />
+                      <span>Refine with AI</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Visual Editor Content Area */}
+              <div className="p-6 sm:p-10 min-h-[380px] relative">
+                {activeTab === 'write' ? (
+                  <div
+                    ref={editorRef}
+                    contentEditable
+                    suppressContentEditableWarning
+                    onKeyUp={updateToolbarState}
+                    onMouseUp={updateToolbarState}
+                    onInput={(e) => {
+                      setContentHtml(e.currentTarget.innerHTML);
+                      updateToolbarState();
+                    }}
+                    data-placeholder="Write your news briefing here... Detail the factual background, key patent or trademark claims, court ruling, and implications for industry practitioners. Highlight text to format bold, headings, or quotes."
+                    className="w-full min-h-[320px] outline-none text-base sm:text-lg leading-relaxed text-slate-800 dark:text-slate-200 prose dark:prose-invert max-w-none
+                      [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-slate-900 dark:[&_h2]:text-white [&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:border-b [&_h2]:border-slate-200 dark:[&_h2]:border-white/10 [&_h2]:pb-2
+                      [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-slate-900 dark:[&_h3]:text-white [&_h3]:mt-5 [&_h3]:mb-2
+                      [&_blockquote]:border-l-4 [&_blockquote]:border-orange-500 [&_blockquote]:bg-orange-500/10 [&_blockquote]:p-4 [&_blockquote]:rounded-r-2xl [&_blockquote]:italic [&_blockquote]:my-4
+                      [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
+                      [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
+                      [&_a]:text-orange-500 [&_a]:underline [&_a]:font-semibold"
+                  />
+                ) : (
+                  <div className="prose dark:prose-invert max-w-none text-base leading-relaxed">
+                    {contentHtml ? (
+                      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(contentHtml) }} />
+                    ) : (
+                      <div className="text-slate-400 italic text-sm">
+                        No content entered yet. Switch to "Write" tab to begin drafting your briefing.
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </div>
+
+          {/* ========================================================================= */}
+          {/* RIGHT COLUMN: WIRE METADATA, TAXONOMY & SUBMIT (COL-SPAN-4)               */}
+          {/* ========================================================================= */}
+          <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+            
+            {/* Card 1: Cover Image */}
+            <div className="bg-white dark:bg-[#0d1322] p-5 sm:p-6 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-4">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                Story Cover Image *
+              </label>
+
+              <div className="grid grid-cols-2 gap-3">
+                {PRESET_COVERS.map((preset) => (
+                  <button
+                    type="button"
+                    key={preset.url}
+                    onClick={() => setCoverImageUrl(preset.url)}
+                    className={`relative rounded-2xl overflow-hidden aspect-video border-2 transition-all cursor-pointer group text-left ${
+                      coverImageUrl === preset.url
+                        ? 'border-orange-500 ring-2 ring-orange-500/30'
+                        : 'border-slate-200 dark:border-white/10 hover:border-slate-400'
+                    }`}
+                  >
+                    <img src={preset.url} alt="" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2">
+                      <span className="text-[10px] font-bold text-white line-clamp-1 leading-tight">{preset.label}</span>
+                    </div>
+                    {coverImageUrl === preset.url && (
+                      <div className="absolute top-1.5 right-1.5 bg-orange-500 text-white rounded-full p-1 shadow-sm">
+                        <Check size={10} />
+                      </div>
+                    )}
+                  </button>
+                ))}
+
+                {/* Upload Custom */}
+                <label className="relative rounded-2xl aspect-video border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-orange-500 bg-slate-50 dark:bg-slate-900/60 flex flex-col items-center justify-center p-2.5 cursor-pointer transition-all text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverUpload}
+                    className="hidden"
+                    disabled={uploadingCover}
+                  />
+                  {uploadingCover ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-orange-500" />
+                  ) : (
+                    <>
+                      <Upload size={16} className="text-slate-400 mb-1" />
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Upload Image</span>
+                      <span className="text-[9px] text-slate-400">Auto-compressed</span>
+                    </>
+                  )}
+                </label>
+              </div>
+            </div>
+
+            {/* Card 2: Jurisdiction & Intelligence Classification */}
+            <div className="bg-white dark:bg-[#0d1322] p-5 sm:p-6 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-4">
               <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
                   Jurisdiction & IP Office *
@@ -538,7 +911,7 @@ export default function IPNewsCreatePage() {
                 <select
                   value={jurisdiction}
                   onChange={(e) => setJurisdiction(e.target.value)}
-                  className="w-full text-sm font-bold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all text-slate-900 dark:text-white"
+                  className="w-full text-xs sm:text-sm font-bold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all text-slate-900 dark:text-white cursor-pointer"
                 >
                   {JURISDICTIONS.map((j) => (
                     <option key={j.id} value={j.id} className="bg-slate-900 text-white">
@@ -555,7 +928,7 @@ export default function IPNewsCreatePage() {
                 <select
                   value={resourceType}
                   onChange={(e) => setResourceType(e.target.value)}
-                  className="w-full text-sm font-bold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all text-slate-900 dark:text-white"
+                  className="w-full text-xs sm:text-sm font-bold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all text-slate-900 dark:text-white cursor-pointer"
                 >
                   {CONTENT_TYPES.map((t) => (
                     <option key={t} value={t} className="bg-slate-900 text-white">
@@ -566,249 +939,27 @@ export default function IPNewsCreatePage() {
               </div>
             </div>
 
-            {/* Executive Summary / Key Takeaway */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
-                  Briefing Summary / Executive Takeaway *
-                </label>
-                <span className="text-[11px] text-slate-400 font-semibold">{summary.length}/280</span>
-              </div>
-              <textarea
-                required
-                rows={2}
-                value={summary}
-                onChange={(e) => setSummary(e.target.value)}
-                placeholder="A concise 1–2 sentence summary explaining the core development and immediate impact on patent holders or practitioners."
-                className="w-full text-sm font-medium px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all placeholder-slate-400 text-slate-900 dark:text-white"
-              />
-            </div>
-          </div>
-
-          {/* Card 2: Visual WYSIWYG Editor + AI Refine Button */}
-          <div className="bg-white dark:bg-[#0d1322] rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
-            
-            {/* Editor Toolbar */}
-            <div className="p-4 border-b border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-slate-900/50 flex flex-wrap items-center justify-between gap-3 sticky top-16 z-20 backdrop-blur-md">
-              <div className="flex flex-wrap items-center gap-1.5">
-                {/* Text Styles */}
-                <button
-                  type="button"
-                  onClick={() => execCmd('bold')}
-                  className={`p-2 rounded-xl transition-all font-bold text-xs ${
-                    isBold ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                  }`}
-                  title="Bold (Ctrl+B)"
-                >
-                  <Bold size={15} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => execCmd('italic')}
-                  className={`p-2 rounded-xl transition-all text-xs ${
-                    isItalic ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                  }`}
-                  title="Italic (Ctrl+I)"
-                >
-                  <Italic size={15} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => execCmd('underline')}
-                  className={`p-2 rounded-xl transition-all text-xs ${
-                    isUnderline ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                  }`}
-                  title="Underline (Ctrl+U)"
-                >
-                  <Underline size={15} />
-                </button>
-
-                <div className="w-px h-5 bg-slate-300 dark:bg-white/10 mx-1" />
-
-                {/* Headings */}
-                <button
-                  type="button"
-                  onClick={() => execCmd('formatBlock', '<h2>')}
-                  className={`px-2.5 py-1.5 rounded-xl transition-all font-black text-xs ${
-                    isH2 ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                  }`}
-                  title="Section Heading (H2)"
-                >
-                  <Heading2 size={15} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => execCmd('formatBlock', '<h3>')}
-                  className={`px-2.5 py-1.5 rounded-xl transition-all font-black text-xs ${
-                    isH3 ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                  }`}
-                  title="Subsection Heading (H3)"
-                >
-                  <Heading3 size={15} />
-                </button>
-
-                <div className="w-px h-5 bg-slate-300 dark:bg-white/10 mx-1" />
-
-                {/* Quotes & Lists */}
-                <button
-                  type="button"
-                  onClick={() => execCmd('formatBlock', '<blockquote>')}
-                  className={`p-2 rounded-xl transition-all text-xs ${
-                    isQuote ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                  }`}
-                  title="Blockquote (Judicial citation / quote)"
-                >
-                  <Quote size={15} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => execCmd('insertUnorderedList')}
-                  className={`p-2 rounded-xl transition-all text-xs ${
-                    isBulletList ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                  }`}
-                  title="Bullet List"
-                >
-                  <List size={15} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => execCmd('insertOrderedList')}
-                  className={`p-2 rounded-xl transition-all text-xs ${
-                    isNumberedList ? 'bg-[#5a32fa] text-white shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                  }`}
-                  title="Numbered List"
-                >
-                  <ListOrdered size={15} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleCreateLink}
-                  className="p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all text-xs"
-                  title="Insert Link"
-                >
-                  <Link2 size={15} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => execCmd('removeFormat')}
-                  className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white transition-all text-xs"
-                  title="Clear formatting"
-                >
-                  <RemoveFormatting size={15} />
-                </button>
-              </div>
-
-              {/* Right side of toolbar: Word Count & AI Refine button */}
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-slate-400">
-                  {wordCount} words &bull; {readTime}
-                </span>
-
-                {/* AI Refine Button in Toolbar */}
-                <button
-                  type="button"
-                  onClick={handleOpenAiModal}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600 text-white text-xs font-bold shadow-xs transition-all active:scale-95"
-                >
-                  <Sparkles size={13} />
-                  <span>Refine with AI</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Visual Editor Content Area */}
-            <div className="p-6 sm:p-10 min-h-[360px] relative">
-              <div
-                ref={editorRef}
-                contentEditable
-                suppressContentEditableWarning
-                onKeyUp={updateToolbarState}
-                onMouseUp={updateToolbarState}
-                onInput={(e) => {
-                  setContentHtml(e.currentTarget.innerHTML);
-                  updateToolbarState();
-                }}
-                data-placeholder="Write your news briefing here... Detail the factual background, key patent or trademark claims, court ruling, and implications for industry practitioners. Highlight text to format bold, headings, or quotes."
-                className="w-full min-h-[300px] outline-none text-base sm:text-lg leading-relaxed text-slate-800 dark:text-slate-200 prose dark:prose-invert max-w-none
-                  [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-slate-900 dark:[&_h2]:text-white [&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:border-b [&_h2]:border-slate-200 dark:[&_h2]:border-white/10 [&_h2]:pb-2
-                  [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-slate-900 dark:[&_h3]:text-white [&_h3]:mt-4 [&_h3]:mb-2
-                  [&_p]:my-3
-                  [&_blockquote]:border-l-4 [&_blockquote]:border-indigo-500 [&_blockquote]:bg-indigo-500/10 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:rounded-r-xl [&_blockquote]:italic [&_blockquote]:my-4
-                  [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3
-                  [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3
-                  [&_strong]:font-black [&_strong]:text-slate-900 dark:[&_strong]:text-white
-                  [&_b]:font-black [&_b]:text-slate-900 dark:[&_b]:text-white
-                  empty:before:content-[attr(data-placeholder)] empty:before:text-slate-400 empty:before:pointer-events-none"
-              />
-            </div>
-          </div>
-
-          {/* Card 3: Cover Image & Source Credentials */}
-          <div className="bg-white dark:bg-[#0d1322] p-6 sm:p-10 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm space-y-6">
-            
-            {/* Cover Image Selector */}
-            <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-3">
-                Cover Image *
+            {/* Card 3: Publisher & Source Attribution */}
+            <div className="bg-white dark:bg-[#0d1322] p-5 sm:p-6 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-4">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                Publisher & Wire Credentials
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
-                {/* Preset Options */}
-                {PRESET_COVERS.map((preset) => (
-                  <button
-                    type="button"
-                    key={preset.url}
-                    onClick={() => setCoverImageUrl(preset.url)}
-                    className={`relative rounded-2xl overflow-hidden aspect-video border-2 transition-all cursor-pointer group text-left ${
-                      coverImageUrl === preset.url
-                        ? 'border-[#5a32fa] ring-2 ring-indigo-500/30'
-                        : 'border-slate-200 dark:border-white/10 hover:border-slate-400'
-                    }`}
-                  >
-                    <img src={preset.url} alt="" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2">
-                      <span className="text-[10px] font-bold text-white truncate">{preset.label}</span>
-                    </div>
-                    {coverImageUrl === preset.url && (
-                      <div className="absolute top-2 right-2 bg-[#5a32fa] text-white rounded-full p-1">
-                        <Check size={10} />
-                      </div>
-                    )}
-                  </button>
-                ))}
 
-                {/* Upload Custom */}
-                <label className="relative rounded-2xl aspect-video border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-[#5a32fa] bg-slate-50 dark:bg-slate-900/60 flex flex-col items-center justify-center p-3 cursor-pointer transition-all text-center">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCoverUpload}
-                    className="hidden"
-                    disabled={uploadingCover}
-                  />
-                  {uploadingCover ? (
-                    <Loader2 className="w-6 h-6 animate-spin text-[#5a32fa]" />
-                  ) : (
-                    <>
-                      <Upload size={18} className="text-slate-400 mb-1" />
-                      <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">Upload Image</span>
-                      <span className="text-[9px] text-slate-400">Max 8MB</span>
-                    </>
-                  )}
-                </label>
-              </div>
-            </div>
-
-            {/* Author Credentials & Organization */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-4 border-t border-slate-200 dark:border-white/10">
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                  Source / Gazette URL (Optional)
+                </label>
+                <input
+                  type="url"
+                  value={sourceUrl}
+                  onChange={(e) => setSourceUrl(e.target.value)}
+                  placeholder="https://uspto.gov/... or official docket"
+                  className="w-full text-xs sm:text-sm font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-orange-500 focus:outline-none text-slate-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
                   Author / Reporter Byline *
                 </label>
                 <input
@@ -817,12 +968,12 @@ export default function IPNewsCreatePage() {
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
                   placeholder="e.g. Sarah Jenkins, Esq."
-                  className="w-full text-sm font-semibold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-orange-500 focus:outline-none text-slate-900 dark:text-white"
+                  className="w-full text-xs sm:text-sm font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-orange-500 focus:outline-none text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
                   Organization / IP Wire *
                 </label>
                 <input
@@ -831,48 +982,16 @@ export default function IPNewsCreatePage() {
                   value={organization}
                   onChange={(e) => setOrganization(e.target.value)}
                   placeholder="e.g. Global IP Wire / Firm Name"
-                  className="w-full text-sm font-semibold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-orange-500 focus:outline-none text-slate-900 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
-                  Source / Gazette URL (Optional)
-                </label>
-                <input
-                  type="url"
-                  value={sourceUrl}
-                  onChange={(e) => setSourceUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full text-sm font-semibold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-orange-500 focus:outline-none text-slate-900 dark:text-white"
+                  className="w-full text-xs sm:text-sm font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-orange-500 focus:outline-none text-slate-900 dark:text-white"
                 />
               </div>
             </div>
 
-            {/* Topic Tags */}
-            <div className="pt-4 border-t border-slate-200 dark:border-white/10">
-              <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
-                Topic Tags (Select or add custom)
+            {/* Card 4: Topic Tags */}
+            <div className="bg-white dark:bg-[#0d1322] p-5 sm:p-6 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-3">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                Topic Keyword Tags
               </label>
-              <div className="flex flex-wrap gap-2 mb-3">
-                {TOPIC_TAGS.map((t) => {
-                  const isSelected = tags.includes(t);
-                  return (
-                    <button
-                      type="button"
-                      key={t}
-                      onClick={() => isSelected ? handleRemoveTag(t) : handleAddTag(t)}
-                      className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-                        isSelected 
-                          ? 'bg-orange-500 text-white shadow-xs' 
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                      }`}
-                    >
-                      {isSelected ? '✓ ' : '+ '}{t}
-                    </button>
-                  );
-                })}
-              </div>
 
               <div className="flex gap-2">
                 <input
@@ -885,37 +1004,59 @@ export default function IPNewsCreatePage() {
                       handleAddTag(tagInput);
                     }
                   }}
-                  placeholder="Add custom tag and press enter..."
-                  className="text-xs px-3.5 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-orange-500 text-slate-900 dark:text-white"
+                  placeholder="Type keyword..."
+                  className="flex-1 text-xs px-3.5 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-orange-500 text-slate-900 dark:text-white"
                 />
                 <button
                   type="button"
                   onClick={() => handleAddTag(tagInput)}
-                  className="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
+                  className="px-3.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                 >
                   Add
                 </button>
               </div>
-            </div>
-          </div>
 
-          {/* Submit Actions Bar */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0d1322] border border-slate-200 dark:border-white/10 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-[#5a32fa] shrink-0">
-                <ShieldCheck size={20} />
-              </div>
-              <div className="text-xs">
-                <div className="font-bold text-slate-900 dark:text-white">Editorial Review Guaranteed</div>
-                <div className="text-slate-500 dark:text-slate-400">All submissions pass through our verified WIPA editor review desk before broadcasting live.</div>
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {TOPIC_TAGS.map((t) => {
+                  const isSelected = tags.includes(t);
+                  return (
+                    <button
+                      type="button"
+                      key={t}
+                      onClick={() => isSelected ? handleRemoveTag(t) : handleAddTag(t)}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
+                        isSelected 
+                          ? 'bg-orange-500 text-white shadow-2xs' 
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {isSelected ? '✓ ' : '+ '}{t}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+            {/* Card 5: Fast-Track Dispatch & Submit */}
+            <div className="rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent dark:from-orange-950/30 dark:via-[#0d1322] dark:to-[#0d1322] p-5 sm:p-6 shadow-sm space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-orange-500/15 border border-orange-500/25 flex items-center justify-center text-orange-600 dark:text-orange-400 shrink-0">
+                  <ShieldCheck size={18} />
+                </div>
+                <div className="space-y-0.5">
+                  <div className="font-black text-xs text-slate-900 dark:text-white uppercase tracking-wider">
+                    Fast-Track Newsroom Review
+                  </div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    All submissions pass through our verified WIPA editor review desk before broadcasting live.
+                  </div>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#5a32fa] via-indigo-600 to-purple-600 hover:opacity-95 active:scale-95 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 active:scale-95 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-orange-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 {submitting ? (
                   <>
@@ -930,6 +1071,7 @@ export default function IPNewsCreatePage() {
                 )}
               </button>
             </div>
+
           </div>
 
         </form>
@@ -943,7 +1085,7 @@ export default function IPNewsCreatePage() {
             {/* Modal Header */}
             <div className="p-6 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-slate-900/60">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-600 to-orange-500 flex items-center justify-center text-white shadow-sm">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-white shadow-sm">
                   <Sparkles size={20} />
                 </div>
                 <div>
@@ -981,9 +1123,9 @@ export default function IPNewsCreatePage() {
                       setAiMode(mode.id as any);
                       handleRefineWithAI(mode.id as any);
                     }}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       aiMode === mode.id
-                        ? 'bg-purple-600 text-white shadow-xs'
+                        ? 'bg-orange-500 text-white shadow-xs'
                         : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                     }`}
                   >
@@ -996,7 +1138,7 @@ export default function IPNewsCreatePage() {
                 type="button"
                 onClick={() => handleRefineWithAI(aiMode)}
                 disabled={aiLoading}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-all disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-all disabled:opacity-60 cursor-pointer"
               >
                 <RefreshCw size={13} className={aiLoading ? "animate-spin" : ""} />
                 <span>{aiLoading ? "Refining..." : "Re-Run Refinement"}</span>
@@ -1007,7 +1149,7 @@ export default function IPNewsCreatePage() {
             <div className="p-6 sm:p-8 overflow-y-auto flex-1 space-y-6">
               {aiLoading ? (
                 <div className="py-20 flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-600 to-orange-500 flex items-center justify-center text-white shadow-lg animate-bounce">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-white shadow-lg animate-bounce">
                     <Sparkles size={28} />
                   </div>
                   <div className="space-y-1">
@@ -1022,14 +1164,14 @@ export default function IPNewsCreatePage() {
                   
                   {/* Editorial Improvements Summary */}
                   {aiResult.improvements?.length > 0 && (
-                    <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 space-y-2">
-                      <div className="text-[11px] font-black uppercase tracking-widest text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
+                    <div className="p-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 space-y-2">
+                      <div className="text-[11px] font-black uppercase tracking-widest text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
                         <Sparkles size={13} /> Key Editorial Improvements Made:
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 dark:text-slate-300">
                         {aiResult.improvements.map((imp, idx) => (
                           <div key={idx} className="flex items-start gap-2">
-                            <span className="text-purple-500 font-bold">•</span>
+                            <span className="text-orange-500 font-bold">•</span>
                             <span>{imp}</span>
                           </div>
                         ))}
@@ -1100,7 +1242,7 @@ export default function IPNewsCreatePage() {
                   type="button"
                   disabled={!aiResult || aiLoading}
                   onClick={handleApplyAiChanges}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-purple-600 hover:opacity-95 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-black uppercase tracking-wider shadow-md shadow-orange-500/20 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
                 >
                   <Check size={14} />
                   <span>Accept & Apply to Editor</span>

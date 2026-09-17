@@ -1412,7 +1412,7 @@ function SettingsContent() {
                   <div className="flex items-center gap-2">
                     <Crown size={20} className="text-amber-300" />
                     <span className="font-extrabold text-sm uppercase tracking-wider text-amber-200">
-                      {profileForm.membership_tier} Counsel
+                      {profileForm.membership_tier === 'in_house_counsel' ? 'In-House Counsel' : profileForm.membership_tier === 'ip_professional' ? 'IP Professional' : profileForm.membership_tier === 'startup' ? 'Start-Up' : profileForm.membership_tier === 'student' ? 'Student' : `${profileForm.membership_tier} Member`}
                     </span>
                   </div>
                   <span className="text-xs font-mono opacity-80">{profileForm.member_id}</span>

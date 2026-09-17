@@ -3,7 +3,7 @@
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
 import { useEffect, useState } from 'react';
-import { Check, Briefcase, Building2, GraduationCap, ArrowRight } from 'lucide-react';
+import { Check, Briefcase, Building2, GraduationCap, ArrowRight, Scale, Sparkles } from 'lucide-react';
 
 export default function MembershipsPage() {
   const { user } = useAppStore();
@@ -32,7 +32,7 @@ export default function MembershipsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a]"><div className="py-12 px-4 md:px-8 max-w-6xl mx-auto">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a]"><div className="py-12 px-4 md:px-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
@@ -44,7 +44,7 @@ export default function MembershipsPage() {
       </div>
 
       {/* Pricing Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* STUDENTS PLAN */}
         <div className={`bg-white dark:bg-[#0f172a] rounded-[2rem] border-2 ${currentTier === 'student' ? 'border-[#5a32fa] shadow-md ring-4 ring-[#5a32fa]/10' : 'border-gray-100 dark:border-white/10 shadow-sm hover:shadow-md'} p-8 flex flex-col relative overflow-hidden transition-all`}>
@@ -182,6 +182,58 @@ export default function MembershipsPage() {
             disabled={currentTier === 'ip_professional'}
             className={`w-full py-4 rounded-xl font-bold text-lg transition-colors border-2 ${currentTier === 'ip_professional' ? 'bg-gray-200 text-gray-500 dark:text-gray-400 border-transparent cursor-not-allowed' : 'bg-[#131313] text-white border-[#131313] hover:bg-black'}`}>
             {currentTier === 'ip_professional' ? 'Active' : 'Get Professional Tier'}
+          </button>
+        </div>
+
+        {/* IN-HOUSE COUNSEL PLAN */}
+        <div className={`bg-white dark:bg-[#0f172a] rounded-[2rem] border-2 ${currentTier === 'in_house_counsel' ? 'border-[#0284c7] shadow-md ring-4 ring-[#0284c7]/10' : 'border-gray-100 dark:border-white/10 shadow-sm hover:shadow-md'} p-8 flex flex-col relative overflow-hidden transition-all`}>
+          {currentTier === 'in_house_counsel' && (
+            <div className="absolute top-0 right-0 bg-[#0284c7] text-white text-xs font-bold px-4 py-2 rounded-bl-xl border-b border-l border-[#0284c7]">
+              CURRENT PLAN
+            </div>
+          )}
+          <div className="mb-8">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 text-xs font-bold mb-3">
+              <Sparkles size={13} /> Corporate Leadership
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+              <Scale className="text-[#0284c7]" size={28} /> In-House Counsel
+            </h2>
+            <div className="flex items-baseline gap-1">
+              <span className="text-5xl font-bold text-gray-900 dark:text-white">£495</span>
+              <span className="text-lg font-bold text-gray-500 dark:text-gray-400">/year</span>
+            </div>
+            <p className="text-sm font-bold text-gray-500 dark:text-gray-400 mt-4">For corporate counsel, general counsel, and enterprise in-house IP leaders.</p>
+          </div>
+          
+          <div className="flex-1 space-y-4 mb-8">
+            <div className="flex items-start gap-3">
+              <Check className="text-[#0284c7] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
+              <span className="font-bold text-gray-700 dark:text-gray-200">Verified Counsel Authority</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <Check className="text-[#0284c7] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
+              <span className="font-bold text-gray-700 dark:text-gray-200">In-House Q&A Answer Privileges</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <Check className="text-[#0284c7] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
+              <span className="font-bold text-gray-700 dark:text-gray-200">Corporate Playbooks & Benchmarks</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <Check className="text-[#0284c7] mt-0.5 flex-shrink-0" size={20} strokeWidth={3} />
+              <span className="font-bold text-gray-700 dark:text-gray-200">Closed-Door Roundtables</span>
+            </div>
+          </div>
+          
+          <button 
+            onClick={() => {
+              if (currentTier !== 'in_house_counsel' && user?.id) {
+                window.location.href = `/api/checkout?tier=in_house_counsel&userId=${user.id}`;
+              }
+            }}
+            disabled={currentTier === 'in_house_counsel'}
+            className={`w-full py-4 rounded-xl font-bold text-lg transition-colors border-2 ${currentTier === 'in_house_counsel' ? 'bg-gray-200 text-gray-500 dark:text-gray-400 border-transparent cursor-not-allowed' : 'bg-[#0284c7] text-white border-[#0284c7] hover:bg-[#0369a1]'}`}>
+            {currentTier === 'in_house_counsel' ? 'Active' : 'Get In-House Tier'}
           </button>
         </div>
 

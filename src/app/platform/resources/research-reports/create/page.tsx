@@ -257,6 +257,14 @@ export default function ResearchReportCreatePage() {
     }
   };
 
+  const handleRemoveFindingField = (index: number) => {
+    if (keyFindings.length > 1) {
+      setKeyFindings(keyFindings.filter((_, i) => i !== index));
+    } else {
+      setKeyFindings(['']);
+    }
+  };
+
   // Tag Helpers
   const handleAddTag = (t: string) => {
     const cleaned = t.trim();
@@ -455,8 +463,8 @@ export default function ResearchReportCreatePage() {
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#070b14] text-slate-900 dark:text-slate-100 pb-24 font-sans selection:bg-red-500/20">
       
       {/* Top Navbar */}
-      <div className="border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#0d1322] sticky top-0 z-30 shadow-xs">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="border-b border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-[#0d1322]/95 backdrop-blur-md sticky top-0 z-30 shadow-2xs">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           <Link 
             href="/platform/resources/research-reports" 
             className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-white transition-colors"
@@ -465,54 +473,285 @@ export default function ResearchReportCreatePage() {
           </Link>
 
           <div className="flex items-center gap-3">
-            <span className="text-[11px] font-bold text-slate-400 hidden sm:inline-flex items-center gap-1.5">
+            <span className="text-[11px] font-bold text-slate-400 hidden md:inline-flex items-center gap-1.5">
               <BookOpen size={13} className="text-red-500" />
-              WIPA Global Research Desk
+              WIPA Global Research Desk &bull; Institutional Dossier
             </span>
+
+            {/* Quick Top Submit Button */}
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold text-xs shadow-md shadow-red-600/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span className="hidden sm:inline">Submitting…</span>
+                </>
+              ) : (
+                <>
+                  <Send size={13} />
+                  <span>Submit for Review</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
-        {/* Header Title */}
-        <div className="mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 text-[11px] font-black uppercase tracking-wider mb-3">
-            <BarChart3 size={13} /> Institutional IP Publishing
+      {/* Studio Header Banner */}
+      <div className="border-b border-slate-200/80 dark:border-white/10 bg-white/60 dark:bg-[#0d1322]/60 backdrop-blur-sm">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-7 md:py-9 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 text-[11px] font-black uppercase tracking-wider mb-2.5">
+              <BarChart3 size={13} /> Institutional IP Publishing
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight uppercase">
+              Publish Your <span className="bg-gradient-to-r from-red-600 via-rose-600 to-red-500 bg-clip-text text-transparent">Research</span>
+            </h1>
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-2 max-w-2xl font-medium">
+              Contribute peer-reviewed market data, white papers, or patent analytics to the global WIPA repository. Upload your executive brief and document for editorial approval.
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight uppercase">
-            Publish Your <span className="text-red-500">Research</span>
-          </h1>
-          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-2 max-w-2xl">
-            Contribute peer-reviewed market data, white papers, or patent analytics to the global WIPA repository. Upload your executive brief and document for editorial approval.
-          </p>
-        </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 px-4 py-2.5 rounded-2xl shrink-0">
+            <ShieldCheck size={16} className="text-emerald-500 shrink-0" />
+            <span>Peer Review Desk &bull; Binary Integrity Storage</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Studio 2-Column Split Layout */}
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Section 1: Report Title & Classification */}
-          <div className="bg-white dark:bg-[#0d1322] p-6 sm:p-10 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm space-y-6">
+          {/* ========================================================================= */}
+          {/* LEFT COLUMN: MANUSCRIPT CANVAS & ATTACHMENTS (COL-SPAN-8)                 */}
+          {/* ========================================================================= */}
+          <div className="lg:col-span-8 space-y-6">
             
-            {/* Title / Headline */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
-                  Report Title / Headline *
-                </label>
-                <span className="text-[11px] text-slate-400 font-semibold">{title.length}/160</span>
+            {/* Card 1: Manuscript Title, Abstract & Key Findings */}
+            <div className="bg-white dark:bg-[#0d1322] p-6 sm:p-10 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-7">
+              
+              {/* Report Title / Headline */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                    Report Title / Headline *
+                  </label>
+                  <span className="text-[11px] text-slate-400 font-semibold">{title.length}/160</span>
+                </div>
+                <input
+                  type="text"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Cross-Border Standard Essential Patents (SEPs): 2026 Valuation & Licensing Benchmark"
+                  className="w-full text-xl sm:text-2xl md:text-3xl font-black px-4 sm:px-5 py-3.5 sm:py-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-red-500 focus:outline-none transition-all placeholder-slate-400 text-slate-900 dark:text-white"
+                />
               </div>
-              <input
-                type="text"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Cross-Border Standard Essential Patents (SEPs): 2026 Valuation & Licensing Benchmark"
-                className="w-full text-xl sm:text-2xl font-black px-4 py-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-red-500 focus:outline-none transition-all placeholder-slate-400 text-slate-900 dark:text-white"
-              />
+
+              {/* Executive Brief / Abstract */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                    Executive Brief / Abstract *
+                  </label>
+                  <span className="text-[11px] text-slate-400 font-semibold">{abstract.length}/600</span>
+                </div>
+                <textarea
+                  required
+                  rows={5}
+                  value={abstract}
+                  onChange={(e) => setAbstract(e.target.value)}
+                  placeholder="Provide a comprehensive abstract outlining the empirical methodology, dataset scope, jurisdictions investigated, and principal actionable takeaways for enterprise counsel and policymakers..."
+                  className="w-full text-sm sm:text-base font-medium p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-red-500 focus:outline-none transition-all placeholder-slate-400 text-slate-900 dark:text-white leading-relaxed"
+                />
+              </div>
+
+              {/* Key Findings & Highlights */}
+              <div className="pt-2">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                      Key Findings & Empirical Highlights
+                    </label>
+                    <span className="text-[11px] text-slate-400 font-normal">Add key empirical takeaways and data observations</span>
+                  </div>
+                  {keyFindings.length < 6 && (
+                    <button
+                      type="button"
+                      onClick={handleAddFindingField}
+                      className="text-xs font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors cursor-pointer flex items-center gap-1"
+                    >
+                      + Add Bullet
+                    </button>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  {keyFindings.map((finding, idx) => (
+                    <div key={idx} className="flex items-center gap-2.5">
+                      <span className="w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-black flex items-center justify-center shrink-0 font-mono">
+                        {String(idx + 1).padStart(2, '0')}
+                      </span>
+                      <input
+                        type="text"
+                        value={finding}
+                        onChange={(e) => handleFindingChange(idx, e.target.value)}
+                        placeholder={`Finding ${idx + 1}: e.g. Average global litigation duration decreased by 18% in participating trial venues...`}
+                        className="flex-1 text-xs sm:text-sm font-medium px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white transition-all"
+                      />
+                      {keyFindings.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFindingField(idx)}
+                          className="p-2 text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
+                          title="Remove bullet"
+                        >
+                          <X size={15} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
             </div>
 
-            {/* Subcategory & Format Classification */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Card 2: Document Upload & Binary Integrity */}
+            <div className="bg-white dark:bg-[#0d1322] p-6 sm:p-10 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                    Upload Report Document (.PDF / .DOCX) *
+                  </label>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Upload your publication document. Exact file structure and tables are preserved byte-for-byte in the cloud repository.
+                  </p>
+                </div>
+                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 self-start sm:self-auto bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-1 rounded-full">
+                  <ShieldCheck size={13} /> Binary Integrity Guaranteed
+                </span>
+              </div>
+
+              {/* Upload Dropzone */}
+              {!attachedDoc ? (
+                <label className="border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-red-500 dark:hover:border-red-500 rounded-3xl p-8 sm:p-10 flex flex-col items-center justify-center cursor-pointer transition-all bg-slate-50/50 dark:bg-slate-900/30 text-center group">
+                  <input
+                    type="file"
+                    accept=".pdf,.docx,.doc,.pptx"
+                    onChange={handleDocSelect}
+                    className="hidden"
+                  />
+                  <div className="w-14 h-14 rounded-2xl bg-red-500/10 text-red-600 dark:text-red-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <Upload size={24} />
+                  </div>
+                  <div className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
+                    Click to browse or drag & drop document
+                  </div>
+                  <div className="text-xs text-slate-400 font-medium">
+                    Supports PDF, DOCX, EPUB, PPTX (Max 35MB)
+                  </div>
+                </label>
+              ) : (
+                <div className="p-5 rounded-2xl border border-red-500/30 bg-red-500/5 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm font-mono">
+                      {attachedDoc.ext}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                        {attachedDoc.name}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 pt-0.5">
+                        <span className="font-semibold">{attachedDoc.sizeFormatted}</span>
+                        <span>&bull;</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                          <CheckCircle2 size={12} /> Ready for repository upload
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAttachedDoc(null);
+                      setDocPublicUrl(null);
+                    }}
+                    className="p-2 rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer shrink-0"
+                    title="Remove document"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+            </div>
+
+          </div>
+
+          {/* ========================================================================= */}
+          {/* RIGHT COLUMN: METADATA, CLASSIFICATION & SUBMISSION (COL-SPAN-4)          */}
+          {/* ========================================================================= */}
+          <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+            
+            {/* Dossier Cover Picker */}
+            <div className="bg-white dark:bg-[#0d1322] p-5 sm:p-6 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-4">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                Publication Dossier Cover *
+              </label>
+
+              <div className="grid grid-cols-2 gap-3">
+                {PRESET_COVERS.map((preset) => (
+                  <button
+                    type="button"
+                    key={preset.url}
+                    onClick={() => setCoverImageUrl(preset.url)}
+                    className={`relative rounded-2xl overflow-hidden aspect-[4/3] border-2 transition-all cursor-pointer group text-left ${
+                      coverImageUrl === preset.url
+                        ? 'border-red-500 ring-2 ring-red-500/30'
+                        : 'border-slate-200 dark:border-white/10 hover:border-slate-400'
+                    }`}
+                  >
+                    <img src={preset.url} alt="" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent flex items-end p-2">
+                      <span className="text-[10px] font-bold text-white line-clamp-1 leading-tight">{preset.label}</span>
+                    </div>
+                    {coverImageUrl === preset.url && (
+                      <div className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full p-1 shadow-sm">
+                        <Check size={10} />
+                      </div>
+                    )}
+                  </button>
+                ))}
+
+                {/* Upload Custom Cover */}
+                <label className="relative rounded-2xl aspect-[4/3] border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-red-500 bg-slate-50 dark:bg-slate-900/60 flex flex-col items-center justify-center p-2.5 cursor-pointer transition-all text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverUpload}
+                    className="hidden"
+                    disabled={uploadingCover}
+                  />
+                  {uploadingCover ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-red-500" />
+                  ) : (
+                    <>
+                      <Upload size={16} className="text-slate-400 mb-1" />
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Upload Cover</span>
+                      <span className="text-[9px] text-slate-400">Auto-compressed</span>
+                    </>
+                  )}
+                </label>
+              </div>
+            </div>
+
+            {/* Classification & Taxonomy */}
+            <div className="bg-white dark:bg-[#0d1322] p-5 sm:p-6 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-4">
               <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
                   Repository Category *
@@ -520,7 +759,7 @@ export default function ResearchReportCreatePage() {
                 <select
                   value={subcategory}
                   onChange={(e) => setSubcategory(e.target.value)}
-                  className="w-full text-sm font-bold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-slate-900 dark:text-white"
+                  className="w-full text-xs sm:text-sm font-bold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-slate-900 dark:text-white cursor-pointer"
                 >
                   {SUBCATEGORIES.map((s) => (
                     <option key={s.id} value={s.id} className="bg-slate-900 text-white">
@@ -537,7 +776,7 @@ export default function ResearchReportCreatePage() {
                 <select
                   value={resourceType}
                   onChange={(e) => setResourceType(e.target.value)}
-                  className="w-full text-sm font-bold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-slate-900 dark:text-white"
+                  className="w-full text-xs sm:text-sm font-bold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-slate-900 dark:text-white cursor-pointer"
                 >
                   {REPORT_TYPES.map((t) => (
                     <option key={t} value={t} className="bg-slate-900 text-white">
@@ -546,132 +785,7 @@ export default function ResearchReportCreatePage() {
                   ))}
                 </select>
               </div>
-            </div>
 
-            {/* Executive Brief / Abstract */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
-                  Executive Brief / Abstract *
-                </label>
-                <span className="text-[11px] text-slate-400 font-semibold">{abstract.length}/600</span>
-              </div>
-              <textarea
-                required
-                rows={4}
-                value={abstract}
-                onChange={(e) => setAbstract(e.target.value)}
-                placeholder="Provide a comprehensive abstract outlining the empirical methodology, dataset scope, jurisdictions investigated, and principal actionable takeaways for enterprise counsel and policymakers..."
-                className="w-full text-sm font-medium px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-red-500 focus:outline-none transition-all placeholder-slate-400 text-slate-900 dark:text-white leading-relaxed"
-              />
-            </div>
-
-            {/* Key Findings Highlights (Optional Bullets) */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
-                  Key Findings & Highlights
-                </label>
-                {keyFindings.length < 6 && (
-                  <button
-                    type="button"
-                    onClick={handleAddFindingField}
-                    className="text-xs font-bold text-red-500 hover:text-red-600 transition-colors"
-                  >
-                    + Add Bullet
-                  </button>
-                )}
-              </div>
-              <div className="space-y-2.5">
-                {keyFindings.map((finding, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <span className="text-xs font-black text-red-500 w-5 text-center">{idx + 1}.</span>
-                    <input
-                      type="text"
-                      value={finding}
-                      onChange={(e) => handleFindingChange(idx, e.target.value)}
-                      placeholder={`Finding ${idx + 1}: e.g. Average global litigation duration decreased by 18% in participating trial venues...`}
-                      className="flex-1 text-xs sm:text-sm font-medium px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-
-          {/* Section 2: Document Upload & Compression Integrity */}
-          <div className="bg-white dark:bg-[#0d1322] p-6 sm:p-10 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm space-y-6">
-            
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
-                  Upload Report Document (.PDF / .DOCX) *
-                </label>
-                <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                  <ShieldCheck size={13} /> Binary Integrity Guaranteed
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                Upload your publication document. Exact file structure and tables are preserved byte-for-byte in the cloud repository.
-              </p>
-
-              {/* Upload Dropzone */}
-              {!attachedDoc ? (
-                <label className="border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-red-500 dark:hover:border-red-500 rounded-3xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all bg-slate-50/50 dark:bg-slate-900/30 text-center group">
-                  <input
-                    type="file"
-                    accept=".pdf,.docx,.doc,.pptx"
-                    onChange={handleDocSelect}
-                    className="hidden"
-                  />
-                  <div className="w-14 h-14 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                    <Upload size={24} />
-                  </div>
-                  <div className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
-                    Click to browse or drag & drop document
-                  </div>
-                  <div className="text-xs text-slate-400">
-                    Supports PDF, DOCX, EPUB (Max 35MB)
-                  </div>
-                </label>
-              ) : (
-                <div className="p-5 rounded-2xl border border-red-500/30 bg-red-500/5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-red-500 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
-                      {attachedDoc.ext}
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold text-slate-900 dark:text-white truncate max-w-sm sm:max-w-md">
-                        {attachedDoc.name}
-                      </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                        <span>{attachedDoc.sizeFormatted}</span>
-                        <span>&bull;</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                          <CheckCircle2 size={12} /> Ready for repository upload
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAttachedDoc(null);
-                      setDocPublicUrl(null);
-                    }}
-                    className="p-2 rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
-                    title="Remove document"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Page Count / Format Label Input */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
               <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
                   Format / Page Badge *
@@ -681,122 +795,70 @@ export default function ResearchReportCreatePage() {
                   required
                   value={pageCount}
                   onChange={(e) => setPageCount(e.target.value)}
-                  placeholder="e.g. 36 Pages (PDF) or PDF (12MB)"
-                  className="w-full text-sm font-semibold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
+                  placeholder="e.g. 24 Pages (PDF)"
+                  className="w-full text-xs sm:text-sm font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
                 />
               </div>
-
-              <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
-                  Topic Keyword Tags
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddTag(tagInput);
-                      }
-                    }}
-                    placeholder="Type keyword and press Enter..."
-                    className="flex-1 text-xs px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleAddTag(tagInput)}
-                    className="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
             </div>
 
-            {/* Tags Pills */}
-            <div className="flex flex-wrap gap-2 pt-1">
-              {TOPIC_TAGS.map((t) => {
-                const isSelected = tags.includes(t);
-                return (
-                  <button
-                    type="button"
-                    key={t}
-                    onClick={() => isSelected ? handleRemoveTag(t) : handleAddTag(t)}
-                    className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-                      isSelected 
-                        ? 'bg-red-500 text-white shadow-xs' 
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                    }`}
-                  >
-                    {isSelected ? '✓ ' : '+ '}{t}
-                  </button>
-                );
-              })}
-            </div>
-
-          </div>
-
-          {/* Section 3: Cover Image & Author Credentials */}
-          <div className="bg-white dark:bg-[#0d1322] p-6 sm:p-10 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm space-y-6">
-            
-            {/* Cover Image Selector */}
-            <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-3">
-                Publication Dossier Cover *
+            {/* Topic Keyword Tags */}
+            <div className="bg-white dark:bg-[#0d1322] p-5 sm:p-6 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-3">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                Topic Keyword Tags
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
-                {/* Preset Options */}
-                {PRESET_COVERS.map((preset) => (
-                  <button
-                    type="button"
-                    key={preset.url}
-                    onClick={() => setCoverImageUrl(preset.url)}
-                    className={`relative rounded-2xl overflow-hidden aspect-[4/3] border-2 transition-all cursor-pointer group text-left ${
-                      coverImageUrl === preset.url
-                        ? 'border-red-500 ring-2 ring-red-500/30'
-                        : 'border-slate-200 dark:border-white/10 hover:border-slate-400'
-                    }`}
-                  >
-                    <img src={preset.url} alt="" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2">
-                      <span className="text-[10px] font-bold text-white truncate">{preset.label}</span>
-                    </div>
-                    {coverImageUrl === preset.url && (
-                      <div className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 shadow-sm">
-                        <Check size={10} />
-                      </div>
-                    )}
-                  </button>
-                ))}
 
-                {/* Upload Custom Cover with Canvas Compression */}
-                <label className="relative rounded-2xl aspect-[4/3] border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-red-500 bg-slate-50 dark:bg-slate-900/60 flex flex-col items-center justify-center p-3 cursor-pointer transition-all text-center">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCoverUpload}
-                    className="hidden"
-                    disabled={uploadingCover}
-                  />
-                  {uploadingCover ? (
-                    <Loader2 className="w-6 h-6 animate-spin text-red-500" />
-                  ) : (
-                    <>
-                      <Upload size={18} className="text-slate-400 mb-1" />
-                      <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">Upload Cover</span>
-                      <span className="text-[9px] text-slate-400">Auto-compressed</span>
-                    </>
-                  )}
-                </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTag(tagInput);
+                    }
+                  }}
+                  placeholder="Type keyword..."
+                  className="flex-1 text-xs px-3.5 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAddTag(tagInput)}
+                  className="px-3.5 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                >
+                  Add
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {TOPIC_TAGS.map((t) => {
+                  const isSelected = tags.includes(t);
+                  return (
+                    <button
+                      type="button"
+                      key={t}
+                      onClick={() => isSelected ? handleRemoveTag(t) : handleAddTag(t)}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
+                        isSelected 
+                          ? 'bg-red-500 text-white shadow-2xs' 
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {isSelected ? '✓ ' : '+ '}{t}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Author Byline & Organization */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-4 border-t border-slate-200 dark:border-white/10">
+            {/* Author & Institution */}
+            <div className="bg-white dark:bg-[#0d1322] p-5 sm:p-6 rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs space-y-4">
+              <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">
+                Author & Academic Credentials *
+              </label>
+
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
                   Lead Author / Researcher *
                 </label>
                 <input
@@ -805,12 +867,12 @@ export default function ResearchReportCreatePage() {
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
                   placeholder="e.g. Dr. Samuel Chen"
-                  className="w-full text-sm font-semibold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
+                  className="w-full text-xs sm:text-sm font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
                   Author Professional Title
                 </label>
                 <input
@@ -818,12 +880,12 @@ export default function ResearchReportCreatePage() {
                   value={authorTitle}
                   onChange={(e) => setAuthorTitle(e.target.value)}
                   placeholder="e.g. Principal IP Economist"
-                  className="w-full text-sm font-semibold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
+                  className="w-full text-xs sm:text-sm font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
                   Institution / Law Firm *
                 </label>
                 <input
@@ -832,30 +894,31 @@ export default function ResearchReportCreatePage() {
                   value={organization}
                   onChange={(e) => setOrganization(e.target.value)}
                   placeholder="e.g. Stanford Law School / WIPA"
-                  className="w-full text-sm font-semibold px-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
+                  className="w-full text-xs sm:text-sm font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/60 focus:ring-2 focus:ring-red-500 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
 
-          </div>
-
-          {/* Section 4: Submission Action Footer */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0d1322] border border-slate-200 dark:border-white/10 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-[#5a32fa] shrink-0">
-                <ShieldCheck size={20} />
+            {/* Peer Review & Submit Action Card */}
+            <div className="rounded-3xl border border-red-500/20 bg-gradient-to-br from-red-500/10 via-rose-500/5 to-transparent dark:from-red-950/30 dark:via-[#0d1322] dark:to-[#0d1322] p-5 sm:p-6 shadow-sm space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-red-500/15 border border-red-500/25 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+                  <ShieldCheck size={18} />
+                </div>
+                <div className="space-y-0.5">
+                  <div className="font-black text-xs text-slate-900 dark:text-white uppercase tracking-wider">
+                    Peer Review & Verification
+                  </div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    All submissions pass through our verified WIPA research review desk before broadcasting live.
+                  </div>
+                </div>
               </div>
-              <div className="text-xs">
-                <div className="font-bold text-slate-900 dark:text-white">Peer Review & Editorial Verification</div>
-                <div className="text-slate-500 dark:text-slate-400">All submissions pass through our verified WIPA research review desk before broadcasting live.</div>
-              </div>
-            </div>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto">
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-[#5a32fa] hover:bg-[#4a26e0] active:scale-95 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-500 hover:from-red-700 hover:to-rose-700 active:scale-95 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-red-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 {submitting ? (
                   <>
@@ -870,6 +933,7 @@ export default function ResearchReportCreatePage() {
                 )}
               </button>
             </div>
+
           </div>
 
         </form>
