@@ -65,7 +65,7 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
     if (res.error) {
       setMessages([...newMessages, { role: 'ai', content: res.error }]);
     } else if (res.text) {
-      setMessages([...newMessages, { role: 'ai', content: res.text, reasoning_details: res.reasoning_details }]);
+      setMessages([...newMessages, { role: 'ai', content: res.text }]);
     }
   };
 
@@ -91,8 +91,8 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
           {/* Header */}
           <div className="flex items-center justify-between p-4 sm:p-5 border-b border-white/10 bg-white/10 backdrop-blur-md shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg overflow-hidden">
-                <SiriWave variant="wave" size={32} />
+              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg overflow-hidden p-1.5">
+                <img src="/sally-logo.png" alt="Sally 4.1 Pro" className="w-full h-full object-contain" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -131,8 +131,8 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex items-start gap-3 max-w-[90%] ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : ''}`}>
                 {msg.role === 'ai' ? (
-                  <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0 mt-1 shadow-lg overflow-hidden">
-                    <SiriWave variant="wave" size={26} />
+                  <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0 mt-1 shadow-lg overflow-hidden p-1">
+                    <img src="/sally-logo.png" alt="Sally" className="w-full h-full object-contain" />
                   </div>
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md border border-black/10 flex items-center justify-center shrink-0 mt-1 shadow-lg">
@@ -145,21 +145,9 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
                     : 'bg-white/30 text-gray-900 border-white/40 rounded-tl-sm shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] font-medium'
                 }`}>
                   {msg.role === 'ai' ? (
-                    <>
-                      {msg.reasoning_details && (
-                        <details className="mb-2 border border-black/10 rounded-md bg-white/40 cursor-pointer text-xs">
-                          <summary className="px-3 py-2 font-medium text-gray-600 select-none">
-                            Thought Process
-                          </summary>
-                          <div className="px-3 pb-2 text-gray-700 border-t border-black/10 pt-2 whitespace-pre-wrap font-mono">
-                            {typeof msg.reasoning_details === 'string' ? msg.reasoning_details : JSON.stringify(msg.reasoning_details, null, 2)}
-                          </div>
-                        </details>
-                      )}
-                      <div className="prose prose-sm dark:prose-invert max-w-none text-gray-900 leading-relaxed [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:list-disc [&>ul]:pl-4 [&>ol]:list-decimal [&>ol]:pl-4 [&_strong]:font-black [&_strong]:text-gray-950 [&_blockquote]:border-l-4 [&_blockquote]:border-blue-600 [&_blockquote]:bg-white/40 [&_blockquote]:p-2.5 [&_blockquote]:rounded-r-xl [&_blockquote]:my-2">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
-                      </div>
-                    </>
+                    <div className="prose prose-sm dark:prose-invert max-w-none text-gray-900 leading-relaxed [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:list-disc [&>ul]:pl-4 [&>ol]:list-decimal [&>ol]:pl-4 [&_strong]:font-black [&_strong]:text-gray-950 [&_blockquote]:border-l-4 [&_blockquote]:border-blue-600 [&_blockquote]:bg-white/40 [&_blockquote]:p-2.5 [&_blockquote]:rounded-r-xl [&_blockquote]:my-2">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
                   ) : (
                     msg.content
                   )}
@@ -168,8 +156,8 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
             ))}
             {isTyping && (
               <div className="flex items-start gap-3 max-w-[85%]">
-                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0 mt-1 shadow-lg overflow-hidden">
-                  <SiriWave variant="wave" size={26} />
+                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0 mt-1 shadow-lg overflow-hidden p-1">
+                  <img src="/sally-logo.png" alt="Sally" className="w-full h-full object-contain animate-pulse" />
                 </div>
                 <div className="p-3.5 rounded-2xl bg-white/30 backdrop-blur-md border border-white/40 rounded-tl-sm shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] flex items-center">
                   <LoadingState label="Sally 4.1 Pro is thinking..." variant="Dots" />
@@ -186,11 +174,7 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
               placeholder="Ask Sally 4.1 Pro..."
               disabled={isTyping}
               models={[
-                "Sally 4.1 Pro (LexisNexis® Deep Legal)",
-                "Sally 4.1 Pro",
-                "Sally Gemini",
-                "Sally Fast",
-                "Sally Advanced"
+                "Sally 4.1 Pro"
               ]}
             />
             <p className="text-[10px] text-white/50 text-center mt-2 font-medium tracking-wide">

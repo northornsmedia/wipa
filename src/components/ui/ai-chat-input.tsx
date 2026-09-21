@@ -54,16 +54,11 @@ function MorphingText({ text }: { text: string }) {
 }
 
 function ModelIcon({ model, className }: { model: string; className?: string }) {
-  const icons: Record<string, string> = {
-    "LexIQ Fast": "https://res.cloudinary.com/drhx7imeb/image/upload/v1781695268/google-gemini-icon_l6kk5q.svg",
-    "LexIQ Advanced": "https://res.cloudinary.com/drhx7imeb/image/upload/v1781695268/google-gemini-icon_l6kk5q.svg",
-  };
-
   return (
     <img 
-      src={icons[model] || icons["LexIQ Fast"]} 
+      src="/sally-logo.png" 
       alt={model} 
-      className={cn("object-contain", className)} 
+      className={cn("object-contain dark:invert", className)} 
     />
   );
 }
@@ -322,6 +317,13 @@ export const PromptInput = React.forwardRef<HTMLDivElement, PromptInputProps>(
     const [selectedModel, setSelectedModel] = useState(models[0]);
     const [effortIndex, setEffortIndex] = useState(1);
     const [isModelSelectOpen, setIsModelSelectOpen] = useState(false);
+
+    // Sync selectedModel if models prop changes or previous selection is invalid
+    useEffect(() => {
+      if (models && models.length > 0 && !models.includes(selectedModel)) {
+        setSelectedModel(models[0]);
+      }
+    }, [models, selectedModel]);
 
     const [attachments, setAttachments] = useState<Attachment[]>([]);
     const [activeAttachment, setActiveAttachment] = useState<{ attachment: Attachment; rect: DOMRect } | null>(null);
@@ -852,13 +854,15 @@ export const PromptInput = React.forwardRef<HTMLDivElement, PromptInputProps>(
                   onMouseDown={(e) => e.preventDefault()} 
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsModelSelectOpen((prev) => !prev);
+                    if (models && models.length > 1) {
+                      setIsModelSelectOpen((prev) => !prev);
+                    }
                   }}
                   className={cn(
                     "group flex items-center gap-1 rounded-full px-2 py-1 text-gray-400 dark:text-gray-500 transition-all duration-200 outline-none hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white cursor-default",
                     isModelSelectOpen ? "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white" : ""
                   )}
-                  aria-label={`Select model. Current: ${selectedModel}`}
+                  aria-label={`Current model: ${selectedModel}`}
                 >
                   <ModelIcon model={selectedModel} className="size-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
                   <span className="text-xs font-semibold select-none transition-colors">
@@ -866,44 +870,46 @@ export const PromptInput = React.forwardRef<HTMLDivElement, PromptInputProps>(
                   </span>
                 </button>
 
-                <div
-                  style={{ transformOrigin: "bottom left" }}
-                  onMouseLeave={() => {
-                    setHoverStyle((prev) => ({
-                      ...prev, opacity: 0, transform: prev.transform.replace("scale(1)", "scale(0.95)"), transition: "opacity 0.2s ease-in, transform 0.2s ease-out",
-                    }));
-                  }}
-                  className={cn(
-                    "absolute bottom-full left-0 mb-2.5 z-50 w-44 rounded-2xl border border-gray-200 dark:border-white/10 bg-white/95 dark:bg-[#0f172a]/95 p-1 shadow-xl backdrop-blur-md flex flex-col gap-0.5 transition-all duration-400 cursor-default",
-                    isModelSelectOpen
-                      ? "opacity-100 scale-100 translate-y-0 pointer-events-auto ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-                      : "opacity-0 scale-95 translate-y-3 pointer-events-none ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
-                  )}
-                >
-                  <div className="relative flex flex-col gap-0.5">
-                    <div style={hoverStyle} className="absolute left-0 right-0 top-0 h-8 -z-10 rounded-xl bg-gray-100 dark:bg-white/10 pointer-events-none" />
-                    {models.map((model, idx) => (
-                      <button
-                        key={model}
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onMouseEnter={() => {
-                          setHoverStyle((prev) => ({
-                            opacity: 1, transform: `translateY(${idx * 34}px) scale(1)`,
-                            transition: prev.opacity === 0 ? "opacity 0.15s ease-out" : "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.15s ease", 
-                          }));
-                        }}
-                        onClick={(e) => { e.stopPropagation(); setSelectedModel(model); setIsModelSelectOpen(false); }}
-                        className="group relative flex h-8 w-full items-center justify-between rounded-xl px-2.5 py-1.5 text-left text-xs font-medium text-gray-700 dark:text-gray-300 outline-none active:scale-[0.98] cursor-default"
-                      >
-                        <span className="flex items-center gap-2">
-                          <ModelIcon model={model} className="size-3.5 opacity-85 group-hover:opacity-100 transition-opacity" />
-                          {model}
-                        </span>
-                      </button>
-                    ))}
+                {models && models.length > 1 && (
+                  <div
+                    style={{ transformOrigin: "bottom left" }}
+                    onMouseLeave={() => {
+                      setHoverStyle((prev) => ({
+                        ...prev, opacity: 0, transform: prev.transform.replace("scale(1)", "scale(0.95)"), transition: "opacity 0.2s ease-in, transform 0.2s ease-out",
+                      }));
+                    }}
+                    className={cn(
+                      "absolute bottom-full left-0 mb-2.5 z-50 w-44 rounded-2xl border border-gray-200 dark:border-white/10 bg-white/95 dark:bg-[#0f172a]/95 p-1 shadow-xl backdrop-blur-md flex flex-col gap-0.5 transition-all duration-400 cursor-default",
+                      isModelSelectOpen
+                        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+                        : "opacity-0 scale-95 translate-y-3 pointer-events-none ease-[cubic-bezier(0.175,0.885,0.32,1.275)]"
+                    )}
+                  >
+                    <div className="relative flex flex-col gap-0.5">
+                      <div style={hoverStyle} className="absolute left-0 right-0 top-0 h-8 -z-10 rounded-xl bg-gray-100 dark:bg-white/10 pointer-events-none" />
+                      {models.map((model, idx) => (
+                        <button
+                          key={model}
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onMouseEnter={() => {
+                            setHoverStyle((prev) => ({
+                              opacity: 1, transform: `translateY(${idx * 34}px) scale(1)`,
+                              transition: prev.opacity === 0 ? "opacity 0.15s ease-out" : "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.15s ease", 
+                            }));
+                          }}
+                          onClick={(e) => { e.stopPropagation(); setSelectedModel(model); setIsModelSelectOpen(false); }}
+                          className="group relative flex h-8 w-full items-center justify-between rounded-xl px-2.5 py-1.5 text-left text-xs font-medium text-gray-700 dark:text-gray-300 outline-none active:scale-[0.98] cursor-default"
+                        >
+                          <span className="flex items-center gap-2">
+                            <ModelIcon model={model} className="size-3.5 opacity-85 group-hover:opacity-100 transition-opacity" />
+                            {model}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <button

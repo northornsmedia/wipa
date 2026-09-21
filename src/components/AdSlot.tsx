@@ -277,7 +277,7 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
             <img 
               src={ad.banner_image_url} 
               alt={ad.headline || "Sponsored Banner"} 
-              className="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-500 block" 
+              className="w-full h-full object-cover block" 
             />
             <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/75 backdrop-blur-md text-amber-300 border border-amber-400/40 shadow-sm z-10">
               {ad.badge_text || "Sponsored"}
@@ -307,7 +307,7 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
           <img 
             src={ad.banner_image_url} 
             alt={ad.headline || "Sponsored Banner"} 
-            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 block" 
+            className="w-full h-full object-cover block" 
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
           <div className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-black/75 backdrop-blur-md text-amber-300 border border-amber-400/40 shadow-sm z-10">

@@ -321,55 +321,86 @@ export default function InHouseCounselHubPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-sky-500/30 overflow-x-hidden transition-colors duration-300 pb-24">
       
-      {/* Sleek, Modern Hero Header (Ice Blue Theme) */}
-      <div className="relative w-full border-b border-slate-200/80 dark:border-white/10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-500/10 via-sky-500/5 to-transparent dark:from-[#082f49]/40 dark:via-[#020d20] dark:to-[#020617] z-0"></div>
-        <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-sky-400/15 dark:bg-sky-500/15 rounded-full blur-[110px] pointer-events-none z-0"></div>
+      {/* Sleek, Grand Hero Header (Ice Blue / Cyber Corporate Theme) */}
+      <div className="relative w-full border-b border-slate-200/80 dark:border-white/10 overflow-hidden bg-white/50 dark:bg-[#030816]/70 backdrop-blur-3xl">
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-500/12 via-cyan-500/5 to-transparent dark:from-[#0369a1]/25 dark:via-[#082f49]/20 dark:to-transparent z-0 pointer-events-none"></div>
+        <div className="absolute -top-36 left-1/2 -translate-x-1/2 w-[850px] h-[450px] bg-gradient-to-br from-sky-400/25 via-cyan-400/20 to-transparent dark:from-sky-500/25 dark:via-cyan-600/20 rounded-full blur-[130px] pointer-events-none z-0"></div>
+        <div className="absolute top-1/2 -left-48 w-96 h-96 bg-blue-500/10 dark:bg-sky-500/10 rounded-full blur-[100px] pointer-events-none z-0"></div>
+        <div className="absolute top-1/2 -right-48 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none z-0"></div>
+        <div className="absolute inset-0 opacity-[0.025] dark:opacity-[0.05] bg-[url('/patterns/stardust.png')] z-0 mix-blend-overlay pointer-events-none"></div>
         
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12 relative z-10 flex flex-col items-center text-center">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 md:pt-20 pb-12 sm:pb-16 relative z-10 flex flex-col items-center text-center">
           
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/25 text-sky-600 dark:text-sky-400 text-[11px] font-black uppercase tracking-wider mb-3">
-            <Shield size={13} /> Enterprise Counsel Knowledge Base
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 dark:bg-sky-500/20 border border-sky-500/30 text-sky-700 dark:text-sky-300 text-xs font-black uppercase tracking-widest mb-5 shadow-xs backdrop-blur-md">
+            <Shield size={14} className="text-sky-500 shrink-0" />
+            <span>Enterprise Counsel Knowledge Base</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-2.5 text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-sky-700 to-cyan-500 dark:from-white dark:via-sky-200 dark:to-cyan-400">
-            In-House Counsel
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[80px] font-black tracking-tight leading-[1.05] mb-5 text-slate-900 dark:text-white">
+            In-House{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-cyan-500 to-teal-400 dark:from-sky-400 dark:via-cyan-300 dark:to-teal-300 drop-shadow-xs">
+              Counsel
+            </span>
           </h1>
           
-          <p className="text-xs sm:text-sm md:text-base font-medium text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed mx-auto">
+          <p className="text-base sm:text-lg md:text-xl font-medium text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed mx-auto mb-6">
             Ask corporate IP leaders questions, connect with verified General Counsels, and download exclusive in-house playbooks.
           </p>
 
+          {/* Quick Authority Highlights */}
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 shadow-2xs">
+              <UsersRound size={14} className="text-sky-500" />
+              <span>{counsels.length} Verified General Counsels</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 shadow-2xs">
+              <ShieldCheck size={14} className="text-emerald-500" />
+              <span>Corporate Playbooks & Roundtables</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 shadow-2xs">
+              <MessageSquare size={14} className="text-cyan-500" />
+              <span>Direct In-House Q&A</span>
+            </span>
+          </div>
+
           {/* Integrated Search & Filter Controls */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 w-full max-w-xl mt-6">
-            <div className="relative w-full flex items-center bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2 shadow-2xs transition-all focus-within:ring-2 focus-within:ring-sky-500/20 focus-within:border-sky-500">
-              <Search size={15} className="text-slate-400 dark:text-slate-500 mr-2.5 shrink-0" />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-2xl">
+            <div className="relative w-full flex items-center bg-white dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-white/15 rounded-2xl px-4 py-3 shadow-md shadow-sky-500/5 transition-all focus-within:ring-4 focus-within:ring-sky-500/20 focus-within:border-sky-500">
+              <Search size={18} className="text-slate-400 dark:text-slate-500 mr-3 shrink-0" />
               <input 
                 type="text" 
                 placeholder="Search in-house counsel, questions, playbooks..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:outline-none placeholder-slate-400 dark:placeholder-slate-500"
+                className="w-full bg-transparent text-sm sm:text-base font-semibold text-slate-900 dark:text-white focus:outline-none placeholder-slate-400 dark:placeholder-slate-500"
               />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400"
+                >
+                  <X size={15} />
+                </button>
+              )}
             </div>
             
-            <div className="relative w-full sm:w-48 shrink-0">
+            <div className="relative w-full sm:w-56 shrink-0">
               <select 
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="appearance-none w-full bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-white/15 rounded-xl px-3.5 py-2 pr-9 text-xs sm:text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 cursor-pointer shadow-2xs transition-all"
+                className="appearance-none w-full bg-white dark:bg-slate-900/95 border-2 border-slate-200/90 dark:border-white/15 rounded-2xl px-4 py-3 pr-10 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-sky-500/20 focus:border-sky-500 cursor-pointer shadow-md shadow-sky-500/5 transition-all"
               >
                 {CONTENT_TYPES.map(type => (
                   <option key={type} value={type} className="dark:bg-slate-900">{type}</option>
                 ))}
               </select>
-              <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none" />
+              <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none" />
             </div>
           </div>
 
-          {/* Clean 3 Navigation Options */}
-          <div className="mt-6 flex items-center justify-center max-w-full overflow-x-auto no-scrollbar">
-            <div className="inline-flex items-center gap-1.5 p-1 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 shadow-2xs backdrop-blur-md">
+          {/* Prominent 3 Navigation Switchboard */}
+          <div className="mt-8 flex items-center justify-center max-w-full overflow-x-auto no-scrollbar py-1">
+            <div className="inline-flex items-center gap-2 p-1.5 sm:p-2 rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-[#0c1427] border-2 border-slate-200/90 dark:border-white/15 shadow-xl shadow-sky-500/10 backdrop-blur-xl">
               {MOCK_INHOUSE_SUBCATEGORIES.map(sub => {
                 const Icon = sub.icon;
                 const isActive = activeSub === sub.id;
@@ -378,21 +409,21 @@ export default function InHouseCounselHubPage() {
                     key={sub.id}
                     type="button"
                     onClick={() => setActiveSub(sub.id as any)}
-                    className={`inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-bold tracking-tight transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 ${
+                    className={`inline-flex items-center gap-2 sm:gap-2.5 px-5 sm:px-7 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm md:text-base font-bold tracking-tight transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 ${
                       isActive 
-                        ? 'bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-xs font-black' 
-                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/5'
+                        ? 'bg-gradient-to-r from-sky-500 via-sky-600 to-cyan-500 text-white shadow-lg shadow-sky-500/30 scale-[1.02] font-black' 
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10'
                     }`}
                   >
-                    <Icon size={15} className={isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400'} />
+                    <Icon size={18} strokeWidth={isActive ? 2.6 : 2} className={isActive ? 'text-white' : 'text-slate-400 dark:text-slate-400'} />
                     <span>{sub.name}</span>
                     {sub.id === 'counsels' && (
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${isActive ? 'bg-white/25 text-white' : 'bg-sky-500/15 text-sky-600 dark:text-sky-400'}`}>
+                      <span className={`text-xs px-2.5 py-0.5 rounded-full font-black ${isActive ? 'bg-white/25 text-white' : 'bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/20'}`}>
                         {counsels.length}
                       </span>
                     )}
                     {sub.id === 'ask-counsel' && (
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${isActive ? 'bg-white/25 text-white' : 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400'}`}>
+                      <span className={`text-xs px-2.5 py-0.5 rounded-full font-black ${isActive ? 'bg-white/25 text-white' : 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20'}`}>
                         {questions.length}
                       </span>
                     )}

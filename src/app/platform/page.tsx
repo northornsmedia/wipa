@@ -8,7 +8,7 @@ import {
   Search, Bell, LayoutGrid, BookOpen, Calendar, Users, Info, Settings, 
   Hash, BellOff, ArrowUpRight, CheckCircle2, Circle, Image as ImageIcon, Video, Smile,
   Bookmark, MoreVertical, Heart, MessageCircle, Gift, LogOut, Pencil, Copy, MessageSquareOff, Trash2, Globe, Lock, Shield,
-  FileText, PlayCircle, Plus, Send, X, Mail, ThumbsUp, UsersRound, MessageSquare, Briefcase, GraduationCap, Home, Star, Paperclip,
+  FileText, PlayCircle, Play, Plus, Send, X, Mail, ThumbsUp, UsersRound, MessageSquare, Briefcase, GraduationCap, Home, Star, Paperclip,
   Share2, Repeat2
 } from 'lucide-react';
 import Link from 'next/link';
@@ -80,6 +80,90 @@ function PlatformContent() {
   const [isPullRefreshing, setIsPullRefreshing] = useState(false);
   const pullStartRef = useRef({ x: 0, y: 0, active: false });
   const pullDistanceRef = useRef(0);
+  const rightSidebarRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const sidebar = rightSidebarRef.current;
+    if (!sidebar) return;
+
+    let lastScrollY = typeof window !== 'undefined' ? Math.max(0, window.scrollY) : 0;
+    const headerOffset = 96; // 77px header + spacing
+    const bottomPadding = 20; // clean padding from viewport bottom
+
+    // Initial calculation
+    const sidebarHeight = sidebar.offsetHeight;
+    const viewportHeight = window.innerHeight;
+    const initialMinTop = viewportHeight - sidebarHeight - bottomPadding;
+
+    let currentTop = headerOffset;
+    if (sidebarHeight > viewportHeight - headerOffset - bottomPadding) {
+      if (lastScrollY > 50) {
+        currentTop = initialMinTop;
+      } else {
+        currentTop = headerOffset;
+      }
+    } else {
+      currentTop = headerOffset;
+    }
+    sidebar.style.top = `${currentTop}px`;
+
+    let rafId: number | null = null;
+
+    const updatePosition = () => {
+      if (!sidebar) return;
+      const h = sidebar.offsetHeight;
+      const vh = window.innerHeight;
+      const min = vh - h - bottomPadding;
+
+      if (h <= vh - headerOffset - bottomPadding) {
+        currentTop = headerOffset;
+        sidebar.style.top = `${headerOffset}px`;
+        return;
+      }
+
+      const scrollY = Math.max(0, window.scrollY);
+      const delta = scrollY - lastScrollY;
+      lastScrollY = scrollY;
+
+      // Scrolling down (delta > 0) -> move sidebar up (currentTop decreases towards min)
+      // Scrolling up (delta < 0) -> move sidebar down (currentTop increases towards headerOffset)
+      currentTop = Math.max(min, Math.min(headerOffset, currentTop - delta));
+      sidebar.style.top = `${currentTop}px`;
+    };
+
+    const handleScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(updatePosition);
+    };
+
+    const handleResize = () => {
+      if (!sidebar) return;
+      const h = sidebar.offsetHeight;
+      const vh = window.innerHeight;
+      const min = vh - h - bottomPadding;
+      if (h <= vh - headerOffset - bottomPadding) {
+        currentTop = headerOffset;
+      } else {
+        currentTop = Math.max(min, Math.min(headerOffset, currentTop));
+      }
+      sidebar.style.top = `${currentTop}px`;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize);
+
+    const observer = new ResizeObserver(() => {
+      handleResize();
+    });
+    observer.observe(sidebar);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      observer.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 768px)');
@@ -791,28 +875,58 @@ function PlatformContent() {
                     {/* IP Wisdom Card - Top Right (9:16 Thumbnail) */}
                     <div 
                       onClick={() => setIsIpWisdomModalOpen(true)}
-                      className="hidden sm:block absolute top-6 right-6 sm:top-8 sm:right-8 z-20 w-[120px] aspect-[9/16] rounded-[1.5rem] overflow-hidden cursor-pointer group shadow-[0_8px_20px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-white/40 dark:border-white/10 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.3)] hover:border-[#ff90e8]/50"
+                      className="hidden sm:block absolute top-6 right-6 sm:top-8 sm:right-8 z-20 w-[124px] aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer group shadow-lg border border-slate-200/80 dark:border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl bg-slate-900"
+                      title="Play IP Wisdom Daily Insight"
                     >
                       {/* Thumbnail Image */}
-                      <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80&w=400&h=700" alt="IP Wisdom Insight" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <img 
+                        src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80&w=400&h=700" 
+                        alt="IP Wisdom Insight" 
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-85" 
+                      />
                       
-                      {/* Sleek Gradient Overlays */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-[#0a0a0a]/90"></div>
-                      <div className="absolute inset-0 bg-[#5a32fa]/10 mix-blend-overlay group-hover:bg-[#5a32fa]/0 transition-colors duration-500"></div>
+                      {/* Hover Video Preview */}
+                      <video 
+                        src="/WIPA-Intro.mp4"
+                        muted
+                        loop
+                        playsInline
+                        autoPlay
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                      />
                       
-                      {/* Glowing Play Button */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40 shadow-[0_4px_20px_rgba(0,0,0,0.2)] group-hover:bg-white/30 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] group-hover:scale-110 transition-all duration-300">
-                          <PlayCircle className="text-white relative z-10" size={26} strokeWidth={1.5} />
+                      {/* Crisp Gradient Vignette (bottom & top) */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30 pointer-events-none"></div>
+
+                      {/* Top Badge: Executive Editorial Tag */}
+                      <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none z-10">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/70 border border-white/15 text-[8px] font-bold uppercase tracking-wider text-slate-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5a32fa]" />
+                          Insight
+                        </span>
+                        <span className="text-[9px] font-semibold text-white/80 bg-black/60 px-1.5 py-0.5 rounded">
+                          1:30
+                        </span>
+                      </div>
+                      
+                      {/* Precision Solid Play Button */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-10 h-10 rounded-full bg-white text-slate-950 shadow-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-[#5a32fa] group-hover:text-white">
+                          <Play size={15} className="translate-x-0.5 fill-current" />
                         </div>
                       </div>
                       
-                      {/* Text Container at bottom */}
-                      <div className="absolute bottom-0 left-0 right-0 p-4 flex flex-col items-center">
-                        <span className="bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] text-white px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest mb-1.5 shadow-sm transform group-hover:-translate-y-0.5 transition-transform duration-300">
+                      {/* Structured Bottom Info */}
+                      <div className="absolute bottom-0 inset-x-0 p-3 flex flex-col text-left pointer-events-none z-10">
+                        <span className="text-[9px] font-black uppercase tracking-wider text-[#a5b4fc] mb-0.5">
                           IP Wisdom
                         </span>
-                        <p className="text-[14px] font-black text-white leading-tight drop-shadow-md text-center group-hover:text-[#ff90e8] transition-colors">Daily Insight</p>
+                        <p className="text-[12px] font-bold text-white leading-snug line-clamp-2">
+                          Welcome to WIPA
+                        </p>
+                        <span className="text-[9px] font-medium text-slate-400 mt-1 flex items-center gap-1 group-hover:text-white transition-colors">
+                          Watch Briefing &rarr;
+                        </span>
                       </div>
                     </div>
                     
@@ -820,7 +934,7 @@ function PlatformContent() {
                       <div className="lg:w-[70%]">
                         <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tighter mb-2 leading-[1.1] transition-transform duration-500 group-hover:scale-[1.01] origin-left">
                           Hello{user?.name ? ` ${user.name}` : ''},<br/>
-                          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#5a32fa] via-[#ff90e8] to-[#5a32fa] animate-gradient bg-[length:200%_auto]">Welcome to WIPA</span>
+                          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#5a32fa] via-[#7c3aed] to-[#3b82f6]">Welcome to WIPA</span>
                         </h1>
                         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2 tracking-tight">Building the Future of Innovation Together</h2>
                         <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base leading-relaxed mb-4 sm:w-5/6 font-medium">
@@ -850,14 +964,13 @@ function PlatformContent() {
                         ))}
                       </div>
                       <div className="relative shrink-0 group/search">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] rounded-2xl blur opacity-0 group-hover/search:opacity-20 transition-opacity duration-500"></div>
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                         <input 
                           type="text" 
                           placeholder="Search feeds..." 
                           value={feedSearchQuery}
                           onChange={(event) => setFeedSearchQuery(event.target.value)}
-                          className="relative z-10 pl-11 pr-5 py-3 bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/50 focus:border-transparent transition-all shadow-sm font-medium placeholder:text-gray-400" 
+                          className="relative z-10 pl-11 pr-5 py-3 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/10 rounded-2xl text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/50 focus:border-transparent transition-all shadow-sm font-medium placeholder:text-gray-400" 
                         />
                       </div>
                     </div>
@@ -1259,8 +1372,12 @@ function PlatformContent() {
               </div>
             </div>
 
-            {/* RIGHT SIDEBAR - Sticky & Sticks to bottom content */}
-            <aside className="hidden xl:flex flex-col w-[320px] shrink-0 space-y-6 sticky top-[min(1.5rem,calc(100vh-100%-1.5rem))] self-start pb-6 pr-1">
+            {/* RIGHT SIDEBAR - Two-Way Sticky (Pins when copyright line reaches viewport bottom) */}
+            <aside 
+              ref={rightSidebarRef}
+              style={{ top: '96px' }}
+              className="hidden xl:flex flex-col w-[320px] shrink-0 space-y-6 sticky self-start pb-2 pr-1"
+            >
                 
                 {/* Dynamic Advertisement Space */}
                 <AdSlot placement="sidebar_banner" className="w-full shrink-0" />
@@ -1284,7 +1401,7 @@ function PlatformContent() {
                   <h3 className="font-bold text-gray-900 dark:text-white mb-4">Trending in Forums</h3>
                   <div className="space-y-4">
                     {trendingForums.length > 0 ? trendingForums.map((post) => (
-                      <Link href={`/platform/forums/post/${post.id}`} key={post.id} className="block group cursor-pointer">
+                      <Link href={`/platform/forums?topic=${post.id}`} key={post.id} className="block group cursor-pointer">
                         <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#5a32fa] transition-colors line-clamp-2">{post.title}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{post.replies_count || 0} replies</p>
                       </Link>
@@ -1325,14 +1442,14 @@ function PlatformContent() {
                 </div>
 
                 {/* Helpful Links / Footer-ish */}
-                <div className="px-2 pb-6">
+                <div className="px-2 pb-1">
                   <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
                     <a href="#" className="hover:text-gray-900 dark:text-white">About</a>
                     <a href="#" className="hover:text-gray-900 dark:text-white">Help Center</a>
                     <a href="#" className="hover:text-gray-900 dark:text-white">Privacy & Terms</a>
                     <a href="#" className="hover:text-gray-900 dark:text-white">Advertising</a>
                   </div>
-                  <p className="text-xs text-gray-400 mt-4">© 2026 WIPA. All rights reserved.</p>
+                  <p className="text-xs text-gray-400 mt-3">© 2026 WIPA. All rights reserved.</p>
                 </div>
 
               </aside>
@@ -1343,7 +1460,7 @@ function PlatformContent() {
       
       {/* Comment Modal */}
       {activeCommentPost && isDesktopViewport === true && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-[620px] overflow-hidden flex flex-col max-h-[85vh] border border-gray-100 dark:border-white/10 animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10 shrink-0 bg-white dark:bg-[#0f172a]">
@@ -1473,7 +1590,7 @@ function PlatformContent() {
       )}
       {/* Delete Confirmation Modal */}
       {postToDelete && (
-        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-150">
           <div className="bg-white dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-[400px] overflow-hidden flex flex-col p-6 animate-in zoom-in-95 duration-200 text-center">
             <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <Trash2 size={28} />
@@ -1503,26 +1620,51 @@ function PlatformContent() {
       {/* IP Wisdom Video Modal */}
       {isIpWisdomModalOpen && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/85 animate-in fade-in duration-200"
           onClick={() => setIsIpWisdomModalOpen(false)}
         >
           <div 
-            className="relative w-full max-w-[400px] h-[80vh] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 animate-in zoom-in-95 duration-300"
+            className="relative w-full max-w-3xl md:max-w-4xl bg-[#0c1020] rounded-2xl overflow-hidden shadow-2xl border border-slate-800 animate-in zoom-in-95 duration-200 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <button 
-              onClick={() => setIsIpWisdomModalOpen(false)}
-              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/80 text-white rounded-full backdrop-blur-md transition-colors"
-            >
-              <X size={20} />
-            </button>
-            <video 
-              src="https://www.w3schools.com/html/mov_bbb.mp4" 
-              className="w-full h-full object-cover"
-              controls
-              autoPlay
-              onEnded={() => setIsIpWisdomModalOpen(false)}
-            />
+            {/* Header / Top Bar */}
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-[#0c1020] z-10">
+              <div className="flex items-center gap-2.5">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#5a32fa]/15 border border-[#5a32fa]/30 text-[#a5b4fc] text-[10px] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#5a32fa]" />
+                  IP Wisdom
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-white tracking-tight">
+                    Daily Insight
+                  </span>
+                  <span className="text-xs text-slate-400 font-medium">
+                    — Welcome to WIPA
+                  </span>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsIpWisdomModalOpen(false)}
+                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-all cursor-pointer active:scale-95"
+                title="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Video Player Container */}
+            <div className="relative w-full aspect-video bg-black flex items-center justify-center">
+              <video 
+                src="/WIPA-Intro.mp4" 
+                poster="/wipa-intro-thumb.jpg"
+                className="w-full h-full object-contain"
+                controls
+                autoPlay
+                playsInline
+                preload="auto"
+                onEnded={() => setIsIpWisdomModalOpen(false)}
+              />
+            </div>
           </div>
         </div>
       )}
@@ -1561,7 +1703,7 @@ function PlatformContent() {
       {/* Desktop Image Lightbox Preview Modal */}
       {previewModalImage && (
         <div 
-          className="hidden md:flex fixed inset-0 z-[120] bg-black/90 backdrop-blur-md items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200"
+          className="hidden md:flex fixed inset-0 z-[120] bg-black/90 items-center justify-center p-4 sm:p-8 animate-in fade-in duration-150"
           onClick={() => setPreviewModalImage(null)}
         >
           <button 

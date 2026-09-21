@@ -3,24 +3,24 @@
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, BriefcaseBusiness, Building2, FileText, GraduationCap, HeartPulse, Mic2, Newspaper, Play, Plus, Search, Sparkles, Wrench, X } from 'lucide-react';
+import { ArrowRight, BookOpen, BriefcaseBusiness, Building2, FileText, GraduationCap, HeartPulse, Mic2, Newspaper, Play, Plus, Search, Wrench, X, Layers } from 'lucide-react';
 
 const spaces = [
   { title: 'Webinars', detail: 'Live sessions and masterclasses', meta: '42 sessions', href: '/platform/resources/webinars', icon: Play, color: '#7c3aed', tint: '#f0eafe' },
-  { title: 'Podcasts', detail: 'Conversations with IP leaders', meta: '28 episodes', href: '/platform/resources/podcasts-conversations', icon: Mic2, color: '#e74887', tint: '#fdebf3' },
+  { title: 'Education', detail: 'Courses for every career stage', meta: '19 courses', href: '/platform/resources/education', icon: GraduationCap, color: '#6654d9', tint: '#efedff' },
   { title: 'Articles', detail: 'Analysis and fresh perspectives', meta: '86 reads', href: '/platform/resources/articles-insights', icon: FileText, color: '#1677ff', tint: '#eaf3ff' },
   { title: 'IP News', detail: 'Updates from around the world', meta: 'Updated daily', href: '/platform/resources/ip-news', icon: Newspaper, color: '#f05b44', tint: '#fff0ec' },
-  { title: 'Wellbeing', detail: 'Balance, focus and mental health', meta: '24 resources', href: '/platform/resources/wellness', icon: HeartPulse, color: '#089b75', tint: '#e6f7f1' },
-  { title: 'Education', detail: 'Courses for every career stage', meta: '19 courses', href: '/platform/resources/education', icon: GraduationCap, color: '#6654d9', tint: '#efedff' },
-  { title: 'Guides & Toolkits', detail: 'Practical templates and playbooks', meta: '31 toolkits', href: '/platform/resources/guides-toolkits', icon: Wrench, color: '#d97706', tint: '#fff5dc' },
   { title: 'Research', detail: 'Reports, trends and industry data', meta: '17 reports', href: '/platform/resources/research-reports', icon: BookOpen, color: '#3758c8', tint: '#eaf0ff' },
+  { title: 'Guides & Toolkits', detail: 'Practical templates and playbooks', meta: '31 toolkits', href: '/platform/resources/guides-toolkits', icon: Wrench, color: '#d97706', tint: '#fff5dc' },
   { title: 'Career', detail: 'Grow your path and leadership', meta: '34 resources', href: '/platform/resources/career-leadership', icon: BriefcaseBusiness, color: '#ba4d89', tint: '#f9eaf3' },
   { title: 'In-House Counsel', detail: 'Built for corporate IP teams', meta: '22 resources', href: '/platform/resources/in-house-counsel', icon: Building2, color: '#0f8495', tint: '#e4f5f7' },
+  { title: 'Podcasts', detail: 'Conversations with IP leaders', meta: '28 episodes', href: '/platform/resources/podcasts-conversations', icon: Mic2, color: '#e74887', tint: '#fdebf3' },
+  { title: 'IP Services', detail: 'Tools and trusted providers', meta: 'Partner directory', href: '/platform/resources/ip-services', icon: Layers, color: '#9a5b13', tint: '#fff3df' },
   { title: 'IP Firms', detail: 'Find specialist firms worldwide', meta: 'Global directory', href: '/platform/resources/ip-firms', icon: Building2, color: '#3d5366', tint: '#edf2f5' },
-  { title: 'IP Services', detail: 'Tools and trusted providers', meta: 'Partner directory', href: '/platform/resources/ip-services', icon: Sparkles, color: '#9a5b13', tint: '#fff3df' },
+  { title: 'Wellbeing', detail: 'Balance, focus and mental health', meta: '24 resources', href: '/platform/resources/wellness', icon: HeartPulse, color: '#089b75', tint: '#e6f7f1' },
 ];
 
-const quickSpaces = [spaces[0], spaces[2], spaces[4], spaces[10]];
+const quickSpaces = [spaces[0], spaces[1], spaces[2], spaces[8]];
 
 export default function MobileResourcesPage() {
   const [query, setQuery] = useState('');
@@ -36,9 +36,6 @@ export default function MobileResourcesPage() {
           <p className="mb-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#7c3aed] dark:text-[#c4b5fd]">WIPA Library</p>
           <h1 className="text-[28px] font-black leading-none tracking-[-0.04em]">Resources</h1>
         </div>
-        <Link href="/platform/resources/ip-services/list" aria-label="Add a resource" className="flex h-11 w-11 items-center justify-center rounded-full bg-[#171624] text-white shadow-[0_8px_24px_rgba(23,22,36,0.18)] active:scale-95 dark:bg-white dark:text-[#171624]">
-          <Plus size={19} strokeWidth={2.6} />
-        </Link>
       </header>
 
       <div className="relative mt-5">
@@ -54,7 +51,7 @@ export default function MobileResourcesPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#161321] via-[#161321]/75 to-black/5" />
             <div className="relative flex min-h-[170px] flex-col justify-between">
               <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.12em] backdrop-blur-md"><span className="h-1.5 w-1.5 rounded-full bg-[#ff4d88]" />Featured masterclass</span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-[0.12em]"><span className="h-1.5 w-1.5 rounded-full bg-[#ff4d88]" />Featured masterclass</span>
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#171426]"><Play size={14} className="ml-0.5 fill-current" /></span>
               </div>
               <div>

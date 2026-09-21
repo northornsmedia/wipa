@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { supabase } from '@/lib/supabase';
-import { ArrowLeft, MessageSquare, Search, Plus, Clock, MessageCircle, TrendingUp, Filter } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Search, Plus, Clock, MessageCircle, TrendingUp, Filter, Heart, ChevronRight, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -16,227 +16,291 @@ export default function ForumThreadListPage({ params }: { params: { forumId: str
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTopic, setNewTopic] = useState({ title: '', content: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      // Fetch forum details
-      const { data: forumData } = await supabase
-        .from('forums')
-        .select('*')
-        .eq('id', params.forumId)
-        .single();
-      
-      if (forumData) {
-        setForum(forumData);
-        // Fetch posts for this forum
-        const { data: postsData } = await supabase
-          .from('forum_posts')
-          .select(`
-            *,
-            author:profiles(full_name, is_wipa_recommended),
-            forum_replies(count),
-            forum_post_likes(count)
-          `)
-          .eq('forum_id', params.forumId)
-          .order('created_at', { ascending: false });
+      try {
+        // Fetch forum details
+        const { data: forumData } = await supabase
+          .from('forums')
+          .select('*')
+          .eq('id', params.forumId)
+          .single();
         
-        if (postsData) {
-          setTopics(postsData.map((p: any) => ({
-            id: p.id,
-            title: p.title,
-            author: p.author?.full_name || 'Unknown',
-            author_is_wipa_recommended: p.author?.is_wipa_recommended,
-            replies: p.forum_replies?.[0]?.count || 0,
-            likes: p.forum_post_likes?.[0]?.count || 0,
-            lastActivity: new Date(p.created_at).toLocaleDateString(),
-            content: p.content,
-            isHot: (p.forum_replies?.[0]?.count || 0) > 5
-          })));
+        if (forumData) {
+          setForum(forumData);
+          // Fetch posts for this forum with unambiguous relation
+          const { data: postsData } = await supabase
+            .from('forum_posts')
+            .select(`
+              *,
+              author:profiles!forum_posts_author_id_fkey(id, full_name, avatar_url, role, company, is_wipa_recommended),
+              forum_replies(count),
+              forum_post_likes(count)
+            `)
+            .eq('forum_id', params.forumId)
+            .order('created_at', { ascending: false });
+          
+          if (postsData) {
+            setTopics(postsData.map((p: any) => ({
+              id: p.id,
+              title: p.title,
+              author: p.author?.full_name || 'WIPA Member',
+              author_avatar: p.author?.avatar_url,
+              author_company: p.author?.company,
+              author_is_wipa_recommended: p.author?.is_wipa_recommended,
+              replies: p.forum_replies?.[0]?.count || 0,
+              likes: p.forum_post_likes?.[0]?.count || 0,
+              lastActivity: new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+              content: p.content,
+              isHot: (p.forum_replies?.[0]?.count || 0) >= 2 || (p.forum_post_likes?.[0]?.count || 0) >= 2
+            })));
+          }
         }
+      } catch (err) {
+        console.error('Error fetching forum topics:', err);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     fetchData();
   }, [params.forumId]);
 
   const handleCreateTopic = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?.id || !newTopic.title || !newTopic.content) return;
+    if (!newTopic.title.trim() || !newTopic.content.trim() || isSubmitting) return;
+    setIsSubmitting(true);
     
-    const { data: post, error } = await supabase
-      .from('forum_posts')
-      .insert({
-        forum_id: params.forumId,
-        author_id: user.id,
-        title: newTopic.title,
-        content: newTopic.content
-      })
-      .select(`
-        *,
-        author:profiles(full_name, is_wipa_recommended),
-        forum_replies(count),
-        forum_post_likes(count)
-      `)
-      .single();
-      
-    if (post) {
-      setTopics([{
-        id: post.id,
-        title: post.title,
-        author: post.author?.full_name || 'You',
-        author_is_wipa_recommended: post.author?.is_wipa_recommended,
-        replies: 0,
-        likes: 0,
-        lastActivity: 'Just now',
-        content: post.content,
-        isHot: false
-      }, ...topics]);
-      setIsModalOpen(false);
-      setNewTopic({ title: '', content: '' });
+    try {
+      const res = await fetch('/api/forums/create-topic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          forumId: params.forumId,
+          title: newTopic.title.trim(),
+          content: newTopic.content.trim(),
+          authorId: user?.id
+        })
+      });
+
+      const result = await res.json();
+      if (result.success && result.post) {
+        setTopics([{
+          id: result.post.id,
+          title: result.post.title,
+          author: result.post.author?.full_name || user?.name || 'You',
+          author_avatar: result.post.author?.avatar_url || user?.avatar_url,
+          author_company: result.post.author?.company,
+          author_is_wipa_recommended: result.post.author?.is_wipa_recommended,
+          replies: 0,
+          likes: 0,
+          lastActivity: 'Just now',
+          content: result.post.content,
+          isHot: false
+        }, ...topics]);
+        setIsModalOpen(false);
+        setNewTopic({ title: '', content: '' });
+      }
+    } catch (err) {
+      console.error('Error creating topic:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const filteredTopics = topics.filter(t => 
-    t.title.toLowerCase().includes(searchQuery.toLowerCase())
+    t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.author.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] flex flex-col relative overflow-hidden">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
-      
-      <div className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 pt-8 relative z-10">
+    <div className="min-h-screen bg-[#f8f9fa] dark:bg-[#0b0f19] text-slate-900 dark:text-white font-sans relative pb-20">
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         
         <button 
           onClick={() => router.push('/platform/forums')}
-          className="flex items-center gap-2 text-gray-500 dark:text-gray-400 font-bold mb-6 hover:text-gray-900 dark:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 mb-6 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
         >
-          <ArrowLeft size={20} /> Back to Forums
+          <ArrowLeft size={14} />
+          <span>All Forums</span>
         </button>
 
         {forum && (
-          <div className="mb-12 bg-white/60 dark:bg-[#1e293b]/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/50 dark:border-white/10 shadow-xl shadow-indigo-900/5 flex flex-col md:flex-row md:items-center justify-between gap-8 relative overflow-hidden group">
-            <div className="relative z-10">
-              <span className="bg-indigo-100 text-indigo-700 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider mb-4 inline-block">
-                {forum.category}
-              </span>
-              <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-8">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-medium tracking-wide uppercase bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-slate-800">
+                  {forum.category} Channel
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
                 {forum.title}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 font-medium text-lg max-w-xl">{forum.description}</p>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                {forum.description}
+              </p>
             </div>
 
-            <div className="relative z-10 flex items-center gap-4">
+            <div className="shrink-0">
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="group flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-8 py-4 rounded-2xl font-black shadow-xl shadow-gray-900/20 dark:shadow-white/20 hover:scale-105 transition-all duration-300"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 transition-all shadow-xs cursor-pointer active:scale-[0.98]"
               >
-                <Plus size={20} strokeWidth={3} className="text-[#ff90e8] dark:text-indigo-600" />
+                <Plus size={14} strokeWidth={2.5} />
                 <span>New Topic</span>
               </button>
             </div>
           </div>
         )}
 
-        <div className="flex flex-col md:flex-row gap-6 mb-10 items-center">
-          <div className="relative flex-1 w-full max-w-lg mx-auto md:ml-auto md:mx-0 group">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-[#ff90e8] rounded-2xl blur-md opacity-20 group-focus-within:opacity-40 transition-opacity duration-500"></div>
-            <div className="relative flex items-center bg-white dark:bg-[#1e293b] rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm transition-all">
-              <Search className="w-5 h-5 text-gray-400 ml-5 shrink-0 group-focus-within:text-indigo-500 transition-colors" />
-              <input 
-                type="text" 
-                placeholder="Search topics..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent py-4 pl-4 pr-5 font-bold text-gray-900 dark:text-white focus:outline-none placeholder-gray-400"
-              />
-            </div>
-          </div>
+        {/* Search Bar */}
+        <div className="relative mb-6 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+          <input 
+            type="text" 
+            placeholder="Search topics in this channel..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-9 bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 rounded-xl pl-9 pr-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-slate-400 dark:focus:border-slate-600 transition-colors shadow-xs"
+          />
         </div>
 
-        <div className="flex flex-col gap-5">
-          {filteredTopics.map((topic) => (
-            <Link href={`/platform/forums/${params.forumId}/${topic.id}`} key={topic.id} className="block">
-              <div className="bg-white/80 dark:bg-[#1e293b]/80 backdrop-blur-xl rounded-3xl border border-white/50 dark:border-white/10 p-6 md:p-8 shadow-sm hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-900/10 hover:border-indigo-500/30 transition-all duration-300 flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center cursor-pointer group">
-                <div className="flex-1">
+        {/* Topics List */}
+        <div className="space-y-3.5">
+          {isLoading ? (
+            <div className="p-16 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 text-center">
+              <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-[#5a32fa] mb-3" />
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Loading topics...</p>
+            </div>
+          ) : filteredTopics.map((topic) => (
+            <Link 
+              href={`/platform/forums?topic=${topic.id}`} 
+              key={topic.id} 
+              className="block group"
+            >
+              <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-xs hover:shadow-sm transition-all cursor-pointer">
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold flex items-center justify-center shrink-0">
+                      {(topic.author || 'U').charAt(0)}
+                    </div>
+                    <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{topic.author}</span>
+                    {topic.author_company && (
+                      <>
+                        <span className="text-slate-300 dark:text-slate-700 text-xs">·</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-400 truncate">{topic.author_company}</span>
+                      </>
+                    )}
+                    <span className="text-slate-300 dark:text-slate-700 text-xs">·</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-400">{topic.lastActivity}</span>
+                  </div>
+
                   {topic.isHot && (
-                    <span className="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider flex items-center gap-1.5 w-fit mb-3">
-                      <TrendingUp size={14} /> Hot Topic
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                      <TrendingUp size={10} /> Trending
                     </span>
                   )}
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
-                    {topic.title}
-                  </h3>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 font-medium">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white text-[10px] font-black">
-                      {topic.author.charAt(0)}
-                    </div>
-                    Started by <span className="font-bold text-gray-900 dark:text-gray-200 flex items-center gap-1">{topic.author}{topic.author_is_wipa_recommended && <span className="text-[9px] bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 px-1 py-0.5 rounded-full whitespace-nowrap ml-1">⭐ WIPA</span>}</span>
-                  </div>
                 </div>
 
-                <div className="flex items-center gap-8 text-sm font-bold text-gray-500 dark:text-gray-400 shrink-0 bg-gray-50 dark:bg-[#0f172a] p-4 rounded-2xl border border-gray-100 dark:border-white/5 w-full md:w-auto">
-                  <div className="flex flex-col items-center gap-1">
-                    <MessageCircle size={20} className="text-indigo-500 mb-1" />
-                    <span className="text-gray-900 dark:text-white text-lg leading-none">{topic.replies}</span>
-                    <span className="text-xs uppercase tracking-wider">Replies</span>
+                <h3 className="text-base sm:text-[17px] font-semibold text-slate-900 dark:text-white group-hover:text-[#5a32fa] dark:group-hover:text-purple-400 transition-colors leading-snug mb-1.5">
+                  {topic.title}
+                </h3>
+                
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
+                  {topic.content}
+                </p>
+
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
+                  <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="inline-flex items-center gap-1.5">
+                      <MessageCircle size={14} className="text-slate-400" />
+                      <span>{topic.replies} {topic.replies === 1 ? 'reply' : 'replies'}</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Heart size={14} className="text-slate-400" />
+                      <span>{topic.likes}</span>
+                    </span>
                   </div>
-                  <div className="w-px h-12 bg-gray-200 dark:bg-white/10"></div>
-                  <div className="flex flex-col items-center gap-1">
-                    <TrendingUp size={20} className="text-gray-400 mb-1" />
-                    <span className="text-gray-900 dark:text-white text-lg leading-none">{topic.likes}</span>
-                    <span className="text-xs uppercase tracking-wider">Likes</span>
-                  </div>
-                  <div className="w-px h-12 bg-gray-200 dark:bg-white/10"></div>
-                  <div className="flex flex-col items-end gap-1 min-w-[80px]">
-                    <Clock size={20} className="text-gray-400 mb-1" />
-                    <span className="text-gray-900 dark:text-white text-sm whitespace-nowrap">{topic.lastActivity}</span>
-                  </div>
+
+                  <span className="text-xs font-medium text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white flex items-center gap-1 transition-colors">
+                    <span>View discussion</span>
+                    <ChevronRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+                  </span>
                 </div>
               </div>
             </Link>
           ))}
 
           {filteredTopics.length === 0 && !isLoading && (
-            <div className="py-24 text-center bg-white/50 dark:bg-[#1e293b]/50 backdrop-blur-md rounded-[2.5rem] border border-gray-200 dark:border-white/10 shadow-sm flex flex-col items-center justify-center">
-              <div className="w-24 h-24 bg-gray-100 dark:bg-[#0f172a] rounded-full flex items-center justify-center mb-6">
-                <MessageSquare size={40} className="text-gray-400" />
+            <div className="p-16 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 text-center">
+              <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3 text-slate-400">
+                <MessageSquare size={18} />
               </div>
-              <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3">No topics yet</h3>
-              <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">Be the first to start a new topic.</p>
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">No topics yet in this channel</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">Be the first to start a conversation in this area.</p>
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="py-2 px-4 rounded-full bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-semibold cursor-pointer"
+              >
+                Start Topic
+              </button>
             </div>
           )}
         </div>
       </div>
 
+      {/* New Topic Modal - Clean Solid Minimal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#0f172a] rounded-[2rem] p-8 w-full max-w-2xl relative">
-            <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 font-bold text-xl">X</button>
-            <h2 className="text-2xl font-bold mb-6">Create New Topic</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-7 w-full max-w-lg relative shadow-2xl">
+            <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">Create Topic in {forum?.title}</h2>
+              <button onClick={() => setIsModalOpen(false)} className="h-7 w-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-white flex items-center justify-center transition-colors">
+                <X size={14} />
+              </button>
+            </div>
             <form onSubmit={handleCreateTopic} className="space-y-4">
               <div>
-                <label className="block text-sm font-bold mb-1">Title</label>
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
                 <input 
                   required
                   type="text" 
                   value={newTopic.title}
                   onChange={e => setNewTopic({...newTopic, title: e.target.value})}
-                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-xl px-4 py-3"
+                  className="w-full bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-600"
                   placeholder="Topic title..."
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold mb-1">Content</label>
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Detailed Context</label>
                 <textarea 
                   required
+                  rows={4}
                   value={newTopic.content}
                   onChange={e => setNewTopic({...newTopic, content: e.target.value})}
-                  className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/20 rounded-xl px-4 py-3 h-32 resize-none"
-                  placeholder="What do you want to discuss?"
+                  className="w-full bg-slate-50 dark:bg-[#131b2e] border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-600 resize-none"
+                  placeholder="What would you like to ask or discuss?"
                 />
               </div>
-              <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl">Post Topic</button>
+              <div className="flex justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="py-2 px-4 rounded-full border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting || !newTopic.title.trim() || !newTopic.content.trim()}
+                  className="bg-slate-950 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100 text-white font-semibold text-xs py-2 px-5 rounded-full cursor-pointer shadow-xs disabled:opacity-50 transition-all"
+                >
+                  {isSubmitting ? 'Posting...' : 'Post Topic'}
+                </button>
+              </div>
             </form>
           </div>
         </div>

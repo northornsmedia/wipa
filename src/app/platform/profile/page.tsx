@@ -1086,10 +1086,6 @@ export default function ProfilePage() {
                   </span>
                 )}
 
-                <span className="inline-flex items-center gap-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2.5 py-0.5 rounded-full text-xs font-bold border border-blue-500/20 shadow-xs">
-                  <ShieldCheck size={14} className="text-blue-500" /> LexisNexis® Certified IP Specialist
-                </span>
-
                 {profileData.isWipaRecommended && (
                   <span className="inline-flex items-center gap-1 bg-amber-400/10 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded-full text-xs font-bold border border-amber-400/30 shadow-sm">
                     <Star size={12} className="fill-amber-400 text-amber-400" /> Recommended by WIPA

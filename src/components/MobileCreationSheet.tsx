@@ -49,7 +49,7 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
       id: 'lexiq',
       title: 'Ask Sally 4.1 Pro',
       desc: 'Research IP case law, patent drafting & legal analysis',
-      image: '/lexiq.png',
+      image: '/sally-logo.png',
       color: 'from-[#5a32fa] via-purple-600 to-[#ff90e8]',
       bg: 'bg-gradient-to-tr from-[#5a32fa]/20 via-[#ff90e8]/20 to-purple-500/20 text-[#5a32fa] dark:text-[#ff90e8] border border-[#5a32fa]/30',
       action: 'open_lexiq',

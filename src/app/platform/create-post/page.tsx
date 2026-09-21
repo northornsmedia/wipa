@@ -681,9 +681,9 @@ export default function CreatePostPage() {
             type="button"
             onClick={handleAiDraft}
             className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5a32fa]/10 to-[#ff90e8]/10 text-[#5a32fa] dark:text-[#ff90e8] border border-[#5a32fa]/20 flex items-center justify-center active:scale-90 transition-transform p-2 overflow-hidden shadow-sm"
-            title="LexIQ AI Post Assistant"
+            title="Sally 4.1 Pro AI Post Assistant"
           >
-            <img src="/lexiq.png" alt="LexIQ AI" className="w-full h-full object-contain" />
+            <img src="/sally-logo.png" alt="Sally 4.1 Pro" className="w-full h-full object-contain dark:invert" />
           </button>
         </div>
 

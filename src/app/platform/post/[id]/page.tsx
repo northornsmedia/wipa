@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { 
   ArrowLeft, Heart, MessageCircle, Send, Share2, Bookmark, 
-  CheckCircle2, Sparkles, Copy, Check, ShieldCheck, MoreHorizontal 
+  CheckCircle2, Copy, Check, ShieldCheck, MoreHorizontal 
 } from 'lucide-react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';
@@ -114,7 +114,7 @@ export default function SharedPostPage() {
         ) : !post ? (
           <div className="mx-auto max-w-md px-6 py-24 text-center bg-white dark:bg-[#0c1220] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-sm space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 flex items-center justify-center mx-auto">
-              <Sparkles size={24} />
+              <ShieldCheck size={24} />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white">Post Unavailable</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">

@@ -158,7 +158,7 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#5a32fa]/20 via-[#ff90e8]/20 to-purple-500/20 border border-[#5a32fa]/30 flex items-center justify-center shadow-md p-1.5 overflow-hidden">
-                    <img src="/lexiq.png" alt="LexIQ AI" className="w-full h-full object-contain" />
+                    <img src="/sally-logo.png" alt="Sally 4.1 Pro" className="w-full h-full object-contain dark:invert" />
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1">

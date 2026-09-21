@@ -61,9 +61,9 @@ const RESOURCE_SUBITEMS = [
   { label: 'Career & Leadership', path: '/platform/resources/career-leadership', color: 'bg-orange-500' },
   { label: 'In-House Counsel', path: '/platform/resources/in-house-counsel', color: 'bg-purple-500' },
   { label: 'Podcasts & Convos', path: '/platform/resources/podcasts-conversations', color: 'bg-pink-500' },
-  { label: 'Wellness & Wellbeing', path: '/platform/resources/wellness', color: 'bg-rose-500' },
   { label: 'IP Services', path: '/platform/resources/ip-services', color: 'bg-sky-500' },
   { label: 'IP Firms', path: '/platform/resources/ip-firms', color: 'bg-blue-600' },
+  { label: 'Wellness & Wellbeing', path: '/platform/resources/wellness', color: 'bg-rose-500' },
 ];
 
 export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
@@ -212,7 +212,17 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
     return null;
   }
 
+  const SallyLogoIcon = ({ size = 18, className = '' }: { size?: number; className?: string }) => (
+    <img 
+      src="/sally-logo.png" 
+      alt="Sally" 
+      className={`object-contain transition-transform group-hover:scale-110 dark:invert ${className}`}
+      style={{ width: size, height: size }}
+    />
+  );
+
   const collapsedNavItems = [
+    { label: 'Explore SallyIP', path: '/platform/sallyip', Icon: SallyLogoIcon },
     { label: 'Feed', path: '/platform', Icon: LayoutGrid },
     { label: 'Notifications', path: '/platform/notifications', Icon: Bell },
     { label: 'My Network', path: '/platform/network', Icon: Globe },
@@ -232,7 +242,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
     { label: 'Board Members', path: '/platform/board-members', Icon: Crown },
   ];
 
-  const renderNavLink = (path: string, label: string, Icon: any, badge?: React.ReactNode) => {
+  const renderNavLink = (path: string, label: string, Icon: any, badge?: React.ReactNode, isHighlight?: boolean) => {
     const active = isActive(path);
     return (
       <Link 
@@ -241,7 +251,9 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
         className={`group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 ${
           active 
             ? 'bg-gradient-to-r from-purple-500/12 via-purple-500/5 to-transparent text-[#5a32fa] dark:from-purple-500/25 dark:via-purple-900/10 dark:to-transparent dark:text-purple-300 font-bold' 
-            : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white'
+            : isHighlight
+              ? 'bg-gradient-to-r from-purple-500/8 via-pink-500/5 to-transparent text-[#5a32fa] hover:bg-purple-100/60 dark:text-purple-300 dark:from-purple-500/15 dark:via-purple-900/10 dark:to-transparent dark:hover:bg-white/5 hover:translate-x-0.5 font-bold'
+              : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 hover:translate-x-0.5 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white'
         }`}
       >
         {/* Luminous Active left indicator bar */}
@@ -253,7 +265,9 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
           <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
             active 
               ? 'bg-gradient-to-br from-[#5a32fa] to-[#7c3aed] text-white shadow-md shadow-purple-500/30' 
-              : 'text-slate-400 group-hover:text-[#5a32fa] group-hover:bg-purple-50 dark:text-slate-400 dark:group-hover:text-purple-300 dark:group-hover:bg-white/5'
+              : isHighlight
+                ? 'bg-gradient-to-br from-purple-500/15 to-pink-500/20 text-[#5a32fa] dark:text-purple-300 group-hover:from-[#5a32fa] group-hover:to-[#7c3aed] group-hover:text-white shadow-xs group-hover:shadow-purple-500/30'
+                : 'text-slate-400 group-hover:text-[#5a32fa] group-hover:bg-purple-50 dark:text-slate-400 dark:group-hover:text-purple-300 dark:group-hover:bg-white/5'
           }`}>
             <Icon size={17} strokeWidth={active ? 2.3 : 2} />
           </span>
@@ -331,6 +345,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
             </div>
             
             <nav className="space-y-1">
+              {renderNavLink('/platform/sallyip', 'Explore SallyIP', SallyLogoIcon)}
               {renderNavLink('/platform', 'Feed', LayoutGrid)}
               {renderNavLink(
                 '/platform/notifications', 

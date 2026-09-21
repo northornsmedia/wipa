@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, Home, UsersRound, Globe, Briefcase, Calendar, Star, Bell, X, BookOpen, Sparkles, Building2,
+  Search, Home, UsersRound, Globe, Briefcase, Calendar, Star, Bell, X, BookOpen, Building2,
   Zap, ChevronDown, Activity, BarChart3, ArrowRight, ArrowUpRight
 } from 'lucide-react';
 import Link from 'next/link';
@@ -17,15 +17,20 @@ import SiriWave from '@/components/ui/siri-wave';
 import { LogOut } from 'lucide-react';
 import AdSlot from '@/components/AdSlot';
 
-const SiriWaveIcon = (props: any) => (
-  <SiriWave variant="wave" size={props.size || 48} className={props.className} />
+const SallyIcon = (props: any) => (
+  <img 
+    src="/sally-logo.png" 
+    alt="Sally 4.1 Pro" 
+    className={`object-contain transition-transform dark:invert ${props.className || ''}`}
+    style={{ width: props.size || 19, height: props.size || 19 }}
+  />
 );
 
 const navItems = [
   { name: 'Home', icon: Home, path: '/platform' },
   { name: 'My Network', icon: Globe, path: '/platform/network' },
   { name: 'Groups', icon: UsersRound, path: '/platform/groups' },
-  { name: 'Sally 4.1 Pro', icon: SiriWaveIcon, path: '#lexiq', special: true },
+  { name: 'Sally 4.1 Pro', icon: SallyIcon, path: '#lexiq', special: true },
   { name: 'Events', icon: Calendar, path: '/platform/events' },
   { name: 'Resources', icon: BookOpen, path: '/platform/resources' },
   { name: 'Jobs', icon: Briefcase, path: '/platform/jobs' },
@@ -251,7 +256,7 @@ export default function PlatformHeader() {
               </Link>
             </div>
             
-            <nav className="hidden items-center gap-1 rounded-full border border-slate-200/70 bg-white/75 p-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.04)] backdrop-blur-2xl md:flex dark:border-white/[0.08] dark:bg-[#070b14]/75 dark:shadow-[0_10px_35px_rgba(0,0,0,0.4)]">
+            <nav className="hidden items-center gap-1 rounded-full border border-slate-200 bg-white p-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.04)] md:flex dark:border-slate-800 dark:bg-[#0c1020] dark:shadow-[0_10px_35px_rgba(0,0,0,0.4)]">
               {navItems.map((item) => {
                 const isActive = item.path === '/platform' ? pathname === '/platform' : (item.path.startsWith('/') && pathname.startsWith(item.path));
                 const Icon = item.icon;
@@ -261,7 +266,7 @@ export default function PlatformHeader() {
                     <button 
                       key={item.name} 
                       onClick={handleLexIQClick}
-                      className={`group relative flex h-[46px] w-[56px] flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
+                      className={`group relative flex h-[46px] w-[68px] flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
                         flyingBox || isLexIQOpen ? "opacity-0 pointer-events-none w-0 mx-0" : "opacity-100 mx-0.5"
                       }`}
                       title="Sally 4.1 Pro AI Legal Intelligence"
@@ -269,11 +274,11 @@ export default function PlatformHeader() {
                       {/* Ambient iridescent glow */}
                       <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-[#5a32fa]/15 via-[#ff90e8]/20 to-amber-400/15 dark:from-[#5a32fa]/30 dark:via-[#ff90e8]/30 dark:to-amber-400/20 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out border border-[#ff90e8]/30 shadow-[0_0_18px_rgba(255,144,232,0.25)]" />
                       
-                      <div className="relative z-10 transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:scale-115">
-                        <Icon size={20} className="drop-shadow-sm" />
+                      <div className="relative z-10 transition-all duration-300 ease-out group-hover:-translate-y-2 group-hover:scale-105">
+                        <Icon size={19} className="drop-shadow-sm" />
                       </div>
                       
-                      <span className="text-[8px] font-black uppercase tracking-wider absolute bottom-1 transition-all duration-300 ease-out whitespace-nowrap opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 bg-gradient-to-r from-[#5a32fa] to-[#ff90e8] bg-clip-text text-transparent">
+                      <span className="text-[8px] font-black uppercase tracking-wider absolute bottom-1.5 leading-none transition-all duration-200 ease-out whitespace-nowrap opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 text-[#5a32fa] dark:text-[#ff90e8] pointer-events-none">
                         {item.name}
                       </span>
                     </button>
@@ -310,17 +315,17 @@ export default function PlatformHeader() {
                       strokeWidth={isActive ? 2.4 : 1.8} 
                       className={`relative z-10 transition-all duration-300 ease-out ${
                         isActive 
-                          ? '-translate-y-1.5 scale-105 drop-shadow-xs' 
-                          : 'group-hover:-translate-y-1.5 group-hover:scale-110'
+                          ? '-translate-y-2 scale-105 drop-shadow-xs' 
+                          : 'group-hover:-translate-y-2 group-hover:scale-110'
                       }`} 
                     />
                     
                     {/* Text Label */}
                     <span 
-                      className={`text-[8.5px] font-bold tracking-tight absolute bottom-1 transition-all duration-300 ease-out whitespace-nowrap ${
+                      className={`text-[8.5px] font-bold tracking-tight absolute bottom-1.5 leading-none transition-all duration-300 ease-out whitespace-nowrap pointer-events-none ${
                         isActive 
                           ? 'opacity-100 translate-y-0 text-[#5a32fa] dark:text-[#c7d2fe]' 
-                          : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 text-slate-700 dark:text-slate-200'
+                          : 'opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 text-slate-700 dark:text-slate-200'
                       }`}
                     >
                       {item.name}
@@ -789,7 +794,7 @@ export default function PlatformHeader() {
               ease: [0.34, 1.56, 0.64, 1]
             }}
           >
-             <SiriWave variant="wave" size={32} />
+            <img src="/sally-logo.png" alt="Sally" className="w-6 h-6 object-contain dark:invert" />
           </motion.div>
         )}
       </AnimatePresence>

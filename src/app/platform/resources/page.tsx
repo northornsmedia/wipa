@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Building2, Mic, MonitorPlay, FileCheck, Presentation, Sparkles, ChevronRight, X, Play, Flame, ArrowUpRight, CheckCircle2, ArrowRight } from 'lucide-react';
+import { ArrowLeft, BookOpen, Search, Download, FileText, Video, Headphones, Bookmark, Plus, Globe, Newspaper, Lightbulb, Briefcase, Building, Building2, Mic, MonitorPlay, FileCheck, Presentation, ChevronRight, X, Play, Flame, ArrowUpRight, CheckCircle2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -26,35 +26,19 @@ const MOCK_CATEGORIES = [
     ]
   },
   {
-    id: 2,
-    title: "Wellness & Wellbeing",
-    badge: "Mind & Focus",
-    icon: Headphones,
-    color: "#00d26a",
-    image: "/wellbeing.jpg",
-    path: "/platform/resources/wellness",
+    id: 3,
+    title: "Education & Prep",
+    badge: "Academy",
+    icon: BookOpen,
+    color: "#5a32fa",
+    image: "/resourceimg1.jpg",
+    path: "/platform/resources/education",
     isWide: false,
-    actionText: "Listen 🎧",
-    description: "Resources focused on mental health and work-life balance.",
+    actionText: "Courses 🎓",
+    description: "Resources for advancing your IP career and patent knowledge.",
     latestItems: [
-      { title: "Work-Life Balance for Lawyers", type: "New Webinar", time: "5 hours ago" },
-      { title: "Stress Management Techniques", type: "Audio Guide", time: "2 days ago" }
-    ]
-  },
-  {
-    id: 11,
-    title: "Podcasts & Audio",
-    badge: "Audio Series",
-    icon: Mic,
-    color: "#00cec9",
-    image: "https://coruzant.com/wp-content/uploads/2022/05/podcast-conversation.jpg",
-    path: "/platform/resources/podcasts-conversations",
-    isWide: false,
-    actionText: "Tune In 🎙️",
-    description: "Interviews and discussions with leading IP professionals.",
-    latestItems: [
-      { title: "Interview with USPTO Director", type: "New Episode", time: "1 day ago" },
-      { title: "The IP Innovators Series", type: "Podcast", time: "4 days ago" }
+      { title: "Global IP Strategies 2026", type: "New PDF", time: "2 hours ago" },
+      { title: "Patent Law Fundamentals", type: "New Course", time: "1 day ago" }
     ]
   },
   {
@@ -74,22 +58,6 @@ const MOCK_CATEGORIES = [
     ]
   },
   {
-    id: 6,
-    title: "IP News & Updates",
-    badge: "Breaking",
-    icon: Newspaper,
-    color: "#d63031",
-    image: "https://www.bennett.edu.in/wp-content/uploads/2025/02/Advanced-Intellectual-Property-Law-Types-Core-Modules-and-Career-Avenues.webp",
-    path: "/platform/resources/ip-news",
-    isWide: false,
-    actionText: "Read 📰",
-    description: "The latest developments in patent, trademark, and copyright law.",
-    latestItems: [
-      { title: "Supreme Court IP Ruling", type: "Breaking", time: "30 mins ago" },
-      { title: "New EPO Guidelines", type: "Update", time: "5 hours ago" }
-    ]
-  },
-  {
     id: 5,
     title: "Articles & Insights",
     badge: "Analysis",
@@ -106,69 +74,19 @@ const MOCK_CATEGORIES = [
     ]
   },
   {
-    id: 13,
-    title: "IP Law Firms",
-    badge: "Directory",
-    icon: Building2,
-    color: "#f59e0b",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
-    path: "/platform/resources/ip-firms",
-    claimPath: "/platform/resources/ip-firms/claim",
+    id: 6,
+    title: "IP News & Updates",
+    badge: "Breaking",
+    icon: Newspaper,
+    color: "#d63031",
+    image: "https://www.bennett.edu.in/wp-content/uploads/2025/02/Advanced-Intellectual-Property-Law-Types-Core-Modules-and-Career-Avenues.webp",
+    path: "/platform/resources/ip-news",
     isWide: false,
-    actionText: "Firms 🏢",
-    description: "Search and connect with specialized IP law firms worldwide.",
+    actionText: "Read 📰",
+    description: "The latest developments in patent, trademark, and copyright law.",
     latestItems: [
-      { title: "Browse Top Firms", type: "Directory", time: "Available" },
-      { title: "Verified IP Partners", type: "Network", time: "Available" }
-    ]
-  },
-  {
-    id: 12,
-    title: "IP Services & Tech",
-    badge: "Solutions",
-    icon: Building,
-    color: "#1dd1a1",
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
-    path: "/platform/resources/ip-services",
-    listPath: "/platform/resources/ip-services/list",
-    isWide: false,
-    actionText: "Solutions ⚡",
-    description: "Specialized IP consulting, docketing, portfolio management, and technology solutions.",
-    latestItems: [
-      { title: "Tech Operations (PSS)", type: "Service", time: "Available" },
-      { title: "Genie AI Legal Intelligence", type: "AI Tool", time: "Available" }
-    ]
-  },
-  {
-    id: 3,
-    title: "Education & Prep",
-    badge: "Academy",
-    icon: BookOpen,
-    color: "#5a32fa",
-    image: "/resourceimg1.jpg",
-    path: "/platform/resources/education",
-    isWide: false,
-    actionText: "Courses 🎓",
-    description: "Resources for advancing your IP career and patent knowledge.",
-    latestItems: [
-      { title: "Global IP Strategies 2026", type: "New PDF", time: "2 hours ago" },
-      { title: "Patent Law Fundamentals", type: "New Course", time: "1 day ago" }
-    ]
-  },
-  {
-    id: 8,
-    title: "Guides & Toolkits",
-    badge: "Templates",
-    icon: BookOpen,
-    color: "#00b894",
-    image: "https://media.licdn.com/dms/image/v2/D5610AQG43vrwkaPiSQ/image-shrink_800/image-shrink_800/0/1707177003680?e=2147483647&v=beta&t=sq45ZJZYH8htsCpG76UiVa0yDDkZUsddD_Axx5yFKKY",
-    path: "/platform/resources/guides-toolkits",
-    isWide: false,
-    actionText: "Toolkits 📥",
-    description: "Practical guides, due diligence checklists, and toolkits for daily IP operations.",
-    latestItems: [
-      { title: "Prior Art Search Guide", type: "PDF Guide", time: "2 days ago" },
-      { title: "IP Due Diligence Checklist", type: "Toolkit", time: "5 days ago" }
+      { title: "Supreme Court IP Ruling", type: "Breaking", time: "30 mins ago" },
+      { title: "New EPO Guidelines", type: "Update", time: "5 hours ago" }
     ]
   },
   {
@@ -185,6 +103,22 @@ const MOCK_CATEGORIES = [
     latestItems: [
       { title: "2026 IP Filing Statistics", type: "Data", time: "1 day ago" },
       { title: "Global Innovation Index", type: "Report", time: "1 week ago" }
+    ]
+  },
+  {
+    id: 8,
+    title: "Guides & Toolkits",
+    badge: "Templates",
+    icon: BookOpen,
+    color: "#00b894",
+    image: "https://media.licdn.com/dms/image/v2/D5610AQG43vrwkaPiSQ/image-shrink_800/image-shrink_800/0/1707177003680?e=2147483647&v=beta&t=sq45ZJZYH8htsCpG76UiVa0yDDkZUsddD_Axx5yFKKY",
+    path: "/platform/resources/guides-toolkits",
+    isWide: false,
+    actionText: "Toolkits 📥",
+    description: "Practical guides, due diligence checklists, and toolkits for daily IP operations.",
+    latestItems: [
+      { title: "Prior Art Search Guide", type: "PDF Guide", time: "2 days ago" },
+      { title: "IP Due Diligence Checklist", type: "Toolkit", time: "5 days ago" }
     ]
   },
   {
@@ -217,6 +151,72 @@ const MOCK_CATEGORIES = [
     latestItems: [
       { title: "Managing Outside Counsel", type: "Webinar", time: "4 days ago" },
       { title: "IP Budgeting Templates", type: "Toolkit", time: "1 week ago" }
+    ]
+  },
+  {
+    id: 11,
+    title: "Podcasts & Audio",
+    badge: "Audio Series",
+    icon: Mic,
+    color: "#00cec9",
+    image: "https://coruzant.com/wp-content/uploads/2022/05/podcast-conversation.jpg",
+    path: "/platform/resources/podcasts-conversations",
+    isWide: false,
+    actionText: "Tune In 🎙️",
+    description: "Interviews and discussions with leading IP professionals.",
+    latestItems: [
+      { title: "Interview with USPTO Director", type: "New Episode", time: "1 day ago" },
+      { title: "The IP Innovators Series", type: "Podcast", time: "4 days ago" }
+    ]
+  },
+  {
+    id: 12,
+    title: "IP Services & Tech",
+    badge: "Solutions",
+    icon: Building,
+    color: "#1dd1a1",
+    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
+    path: "/platform/resources/ip-services",
+    listPath: "/platform/resources/ip-services/list",
+    isWide: false,
+    actionText: "Solutions ⚡",
+    description: "Specialized IP consulting, docketing, portfolio management, and technology solutions.",
+    latestItems: [
+      { title: "Tech Operations (PSS)", type: "Service", time: "Available" },
+      { title: "Genie AI Legal Intelligence", type: "AI Tool", time: "Available" }
+    ]
+  },
+  {
+    id: 13,
+    title: "IP Law Firms",
+    badge: "Directory",
+    icon: Building2,
+    color: "#f59e0b",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+    path: "/platform/resources/ip-firms",
+    claimPath: "/platform/resources/ip-firms/claim",
+    isWide: false,
+    actionText: "Firms 🏢",
+    description: "Search and connect with specialized IP law firms worldwide.",
+    latestItems: [
+      { title: "Browse Top Firms", type: "Directory", time: "Available" },
+      { title: "Verified IP Partners", type: "Network", time: "Available" }
+    ]
+  },
+  {
+    id: 2,
+    title: "Wellness & Wellbeing",
+    badge: "Mind & Focus",
+    icon: Headphones,
+    color: "#00d26a",
+    image: "/wellbeing.jpg",
+    path: "/platform/resources/wellness",
+    isWide: false,
+    actionText: "Listen 🎧",
+    description: "Resources focused on mental health and work-life balance.",
+    latestItems: [
+      { title: "Work-Life Balance for Lawyers", type: "New Webinar", time: "5 hours ago" },
+      { title: "Stress Management Techniques", type: "Audio Guide", time: "2 days ago" }
     ]
   }
 ];
@@ -490,59 +490,38 @@ export default function ResourcesPage() {
     <>
     <MobileResourcesPage />
     <div className="hidden min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] sm:flex sm:flex-col">
-      {/* Main Content: Edge-to-edge on mobile with px-3.5, container on desktop */}
-      <div className="flex-1 w-full max-w-none sm:max-w-[1400px] mx-auto px-3.5 sm:px-6 lg:px-8 py-3 sm:py-6 md:py-8">
+      {/* Main Content: Full-width edge-to-edge layout without container bounds */}
+      <div className="flex-1 w-full max-w-full px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-4 sm:py-8 md:py-10">
         
         {/* Mobile Modern Header */}
         <div className="sm:hidden mb-3.5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                Resource Library
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                11 IP verticals, webinars & directories
-              </p>
-            </div>
-
-            {/* Mobile Quick Upload Action */}
-            <Link
-              href="/platform/resources/ip-services/list"
-              className="inline-flex items-center gap-1.5 bg-gradient-to-r from-[#5a32fa] to-[#ff2a5f] text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-xs active:scale-95 transition-all shrink-0"
-            >
-              <Plus size={13} strokeWidth={2.8} />
-              <span>Upload</span>
-            </Link>
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+              Resource Library
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+              Access exclusive guides, templates, webinars, and reports across 11 verticals.
+            </p>
           </div>
         </div>
 
-        {/* Desktop Header */}
-        <div className="hidden sm:flex mb-8 flex-row items-center justify-between gap-4">
-          <div className="w-auto">
-            <div className="flex items-center justify-start gap-3">
-              <div className="w-12 h-12 bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 p-2.5 rounded-2xl flex items-center justify-center shrink-0 shadow-xs">
-                <BookOpen className="w-6 h-6 text-[#5a32fa] dark:text-[#ff90e8]" />
-              </div>
-              <div>
-                <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight text-left">
-                  Resource Library
-                </h1>
-                <p className="text-gray-500 dark:text-gray-400 font-medium mt-1 text-sm md:text-base text-left">
-                  Access exclusive guides, templates, webinars, and reports across 11 verticals.
-                </p>
-              </div>
-            </div>
+        {/* Desktop Apple-grade Header */}
+        <div className="hidden sm:block mb-10 pt-2">
+          <div className="flex items-center gap-3 mb-3 flex-wrap">
+            <span className="text-[11px] font-black uppercase tracking-[0.25em] px-3 py-1 rounded-full bg-[#5a32fa]/10 text-[#5a32fa] dark:text-purple-300 border border-[#5a32fa]/20">
+              WIPA Knowledge Vault
+            </span>
+            <span className="text-xs text-slate-300 dark:text-slate-700">•</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              11 Professional IP Verticals
+            </span>
           </div>
-
-          <div className="flex items-center">
-            <Link
-              href="/platform/resources/ip-services/list"
-              className="group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#5a32fa] to-[#ff2a5f] text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-md shadow-[#5a32fa]/20 hover:shadow-lg hover:shadow-[#5a32fa]/30 active:scale-95 transition-all overflow-hidden"
-            >
-              <Plus size={16} strokeWidth={2.8} className="relative z-10 group-hover:rotate-90 transition-transform duration-300" />
-              <span className="relative z-10">Upload Resource</span>
-            </Link>
-          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.08] mb-3">
+            Resource Library & <span className="text-[#5a32fa] dark:text-purple-400">Legal Intelligence</span>.
+          </h1>
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-normal max-w-3xl leading-relaxed">
+            Access exclusive practitioner guides, webinar masterclasses, legal templates, market surveys, and annual publications curated for women in intellectual property.
+          </p>
         </div>
 
         {/* Mobile Real-Time Interactive Search Bar */}
@@ -560,7 +539,7 @@ export default function ResourcesPage() {
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                className="text-slate-400 hover:text-slate-600 p-1"
               >
                 <X size={14} />
               </button>
@@ -568,15 +547,12 @@ export default function ResourcesPage() {
           </div>
         </div>
 
-        {/* Edge-to-Edge Swipeable Category Chips for Mobile Navigation */}
-        <div className="mb-3.5 sm:hidden -mx-3.5 px-3.5 overflow-x-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex items-center gap-1.5 w-max py-0.5">
+        {/* Horizontal Category Pill Filter Bar */}
+        <div className="mb-4">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
             <button
               type="button"
-              onClick={() => {
-                setActiveTab('All Resources');
-                setSearchQuery("");
-              }}
+              onClick={() => setActiveTab('All Resources')}
               className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap active:scale-95 shrink-0 ${
                 activeTab === 'All Resources'
                   ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs'
@@ -587,18 +563,18 @@ export default function ResourcesPage() {
             </button>
             {[
               { title: 'Webinars', key: 'Webinars' },
+              { title: 'Education', key: 'Education' },
               { title: 'Publications', key: 'Publications' },
-              { title: 'Wellness', key: 'Wellness' },
-              { title: 'Podcasts', key: 'Podcasts' },
               { title: 'Articles', key: 'Articles' },
               { title: 'IP News', key: 'News' },
-              { title: 'IP Firms', key: 'Firms' },
-              { title: 'IP Services', key: 'Services' },
-              { title: 'Education', key: 'Education' },
-              { title: 'Toolkits', key: 'Guides' },
               { title: 'Research', key: 'Research' },
+              { title: 'Toolkits', key: 'Guides' },
               { title: 'Career', key: 'Career' },
               { title: 'In-House', key: 'In-House' },
+              { title: 'Podcasts', key: 'Podcasts' },
+              { title: 'IP Services', key: 'Services' },
+              { title: 'IP Firms', key: 'Firms' },
+              { title: 'Wellness', key: 'Wellness' },
             ].map((tab, tIdx) => {
               const isActive = activeTab === tab.key;
               return (
@@ -637,17 +613,18 @@ export default function ResourcesPage() {
             <div className="-mx-3.5 px-3.5 overflow-x-auto no-scrollbar flex items-center gap-3.5 pb-1">
               {[
                 { title: 'Webinars', path: '/platform/resources/webinars', icon: MonitorPlay, color: 'from-[#ff90e8] to-[#5a32fa]' },
-                { title: 'Podcasts', path: '/platform/resources/podcasts-conversations', icon: Mic, color: 'from-[#00cec9] to-[#0984e3]' },
-                { title: 'Wellness', path: '/platform/resources/wellness', icon: Headphones, color: 'from-[#00d26a] to-[#00cec9]' },
-                { title: 'Publications', path: '/platform/publications', icon: Globe, color: 'from-[#e84393] to-[#ff2a5f]' },
-                { title: 'IP News', path: '/platform/resources/ip-news', icon: Newspaper, color: 'from-[#d63031] to-[#ff7675]' },
-                { title: 'IP Firms', path: '/platform/resources/ip-firms', icon: Building2, color: 'from-[#f59e0b] to-[#fdcb6e]' },
-                { title: 'IP Services', path: '/platform/resources/ip-services', icon: Building, color: 'from-[#1dd1a1] to-[#10ac84]' },
                 { title: 'Education', path: '/platform/resources/education', icon: BookOpen, color: 'from-[#5a32fa] to-[#a29bfe]' },
-                { title: 'Toolkits', path: '/platform/resources/guides-toolkits', icon: Download, color: 'from-[#00b894] to-[#55efc4]' },
+                { title: 'Publications', path: '/platform/publications', icon: Globe, color: 'from-[#e84393] to-[#ff2a5f]' },
+                { title: 'Articles', path: '/platform/resources/articles-insights', icon: FileText, color: 'from-[#0984e3] to-[#74b9ff]' },
+                { title: 'IP News', path: '/platform/resources/ip-news', icon: Newspaper, color: 'from-[#d63031] to-[#ff7675]' },
                 { title: 'Research', path: '/platform/resources/research-reports', icon: FileCheck, color: 'from-[#6c5ce7] to-[#a29bfe]' },
+                { title: 'Toolkits', path: '/platform/resources/guides-toolkits', icon: Download, color: 'from-[#00b894] to-[#55efc4]' },
                 { title: 'Career', path: '/platform/resources/career-leadership', icon: Briefcase, color: 'from-[#e17055] to-[#fab1a0]' },
                 { title: 'In-House', path: '/platform/resources/in-house-counsel', icon: Building, color: 'from-[#0984e3] to-[#74b9ff]' },
+                { title: 'Podcasts', path: '/platform/resources/podcasts-conversations', icon: Mic, color: 'from-[#00cec9] to-[#0984e3]' },
+                { title: 'IP Services', path: '/platform/resources/ip-services', icon: Building, color: 'from-[#1dd1a1] to-[#10ac84]' },
+                { title: 'IP Firms', path: '/platform/resources/ip-firms', icon: Building2, color: 'from-[#f59e0b] to-[#fdcb6e]' },
+                { title: 'Wellness', path: '/platform/resources/wellness', icon: Headphones, color: 'from-[#00d26a] to-[#00cec9]' },
               ].map((orb, oIdx) => {
                 const OrbIcon = orb.icon;
                 return (
@@ -766,7 +743,7 @@ export default function ResourcesPage() {
                     <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                     LIVE MASTERCLASS
                   </span>
-                  <span className="text-xs font-bold bg-white/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1">
+                  <span className="text-xs font-bold bg-white/20 px-3 py-1 rounded-full flex items-center gap-1">
                     Watch ↗
                   </span>
                 </div>
@@ -819,7 +796,7 @@ export default function ResourcesPage() {
                       <div className="relative h-28 w-full bg-slate-900 overflow-hidden">
                         <img src={vid.image} alt={vid.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-black/60 backdrop-blur-md text-white border border-white/10">
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-black/75 text-white border border-white/10">
                           {vid.type}
                         </div>
                         <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/70 text-white">
@@ -1092,7 +1069,7 @@ export default function ResourcesPage() {
                 className="p-4 rounded-3xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#ff2a5f] text-white shadow-md cursor-pointer active:scale-[0.99] transition-all"
               >
                 <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/20 text-white backdrop-blur-md">
+                  <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-white/20 text-white">
                     ⭐ Featured Global Partner
                   </span>
                   <span className="text-xs font-bold bg-white/20 px-2.5 py-0.5 rounded-full">
@@ -1117,7 +1094,7 @@ export default function ResourcesPage() {
           {/* Desktop Splash Sponsored Banner */}
           <div className="mb-8 p-6 rounded-3xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#ff2a5f] text-white shadow-lg relative overflow-hidden flex flex-row items-center justify-between gap-4">
             <div className="relative z-10">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-white/20 text-white backdrop-blur-md mb-2 inline-block border border-white/20">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-white/20 text-white mb-2 inline-block border border-white/20">
                 ⭐ Featured Global IP Partner
               </span>
               <h3 className="text-xl font-black">Ennoble IP · Global Patent Prosecution</h3>
@@ -1160,7 +1137,7 @@ export default function ResourcesPage() {
                 <div
                   key={resource.id}
                   onClick={() => router.push(categoryHref)}
-                  className="relative bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2rem] border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex flex-col hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(90,50,250,0.15)] active:scale-[0.98] transition-all duration-300 group overflow-hidden z-10 cursor-pointer"
+                  className="relative bg-white dark:bg-[#111827] rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-slate-300 dark:hover:border-slate-700 flex flex-col hover:-translate-y-1.5 active:scale-[0.99] transition-all duration-300 group overflow-hidden z-10 cursor-pointer"
                 >
                   <Link
                     href={categoryHref}

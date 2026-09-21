@@ -173,46 +173,7 @@ export default function FeedStoriesCarousel({ onOpenCreatePost }: { onOpenCreate
           isDragging ? 'md:cursor-grabbing md:select-none' : ''
         }`}
       >
-        
-        {/* 1. Share / Your Story Tile */}
-        <Link
-          href="/platform/create-post"
-          draggable={false}
-          className="w-[96px] h-[138px] sm:w-28 sm:h-38 md:w-36 md:h-28 rounded-2xl shrink-0 border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/[0.05] md:bg-gray-50/80 md:dark:bg-white/[0.04] hover:bg-gray-50 dark:hover:bg-white/[0.08] flex flex-col items-center justify-center p-2 transition-all group active:scale-95 text-center relative overflow-hidden shadow-xs backdrop-blur-md select-none"
-        >
-          {/* Mobile Layout (Your Story) */}
-          <div className="flex flex-col items-center md:hidden">
-            <div className="w-13 h-13 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative">
-              {user?.avatar_url ? (
-                <img src={user.avatar_url} alt={user.name} draggable={false} className="w-full h-full object-cover select-none pointer-events-none" />
-              ) : (
-                <User size={24} className="text-slate-400" />
-              )}
-            </div>
-            {/* Blue Plus Badge */}
-            <div className="w-5 h-5 rounded-full bg-[#0095f6] text-white flex items-center justify-center -mt-2.5 z-10 border-2 border-white dark:border-slate-900 shadow-xs">
-              <Plus size={12} strokeWidth={3} />
-            </div>
-            <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-200 mt-2 tracking-tight leading-none">
-              Your Story
-            </span>
-          </div>
-
-          {/* Desktop Layout (Share Insight) */}
-          <div className="hidden md:flex flex-col items-center justify-center">
-            <div className="w-10 h-10 rounded-full bg-indigo-600/90 dark:bg-white/10 text-white flex items-center justify-center shadow-sm mb-1.5 group-hover:scale-105 transition-transform border border-white/10">
-              <Plus size={18} strokeWidth={2.5} />
-            </div>
-            <span className="text-xs font-bold text-gray-900 dark:text-white leading-tight text-center">
-              Share Insight
-            </span>
-            <span className="text-[9px] text-gray-500 dark:text-gray-400 mt-0.5 text-center">
-              Create post
-            </span>
-          </div>
-        </Link>
-
-        {/* 2. Executive Spotlight & Feature Story Cards */}
+        {/* Executive Spotlight & Feature Story Cards */}
         {SPOTLIGHT_STORIES.map((story) => (
           <Link
             key={story.id}

@@ -121,7 +121,7 @@ export default function LikedThreadsPage() {
       </main>
 
       {/* FIXED RIGHT SIDEBAR */}
-      <aside className="w-[300px] hidden xl:flex flex-col shrink-0 space-y-6 pt-6 sticky top-[min(1.5rem,calc(100vh-100%-1.5rem))] self-start pb-10 pr-4 md:pr-8 lg:pr-12">
+      <aside className="w-[300px] hidden xl:flex flex-col shrink-0 space-y-6 pt-6 sticky top-24 self-start pb-10 pr-4 md:pr-8 lg:pr-12">
         <div className="flex flex-col gap-6">
           
           {/* Active Groups */}
