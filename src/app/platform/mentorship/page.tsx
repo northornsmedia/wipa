@@ -58,6 +58,192 @@ interface MentorshipBooking {
   status: 'Confirmed' | 'Pending Mentor Review';
 }
 
+// Curated 13 Elite Senior Mentors
+const CURATED_13_MENTORS: MentorProfile[] = [
+  {
+    id: "37e1b565-de5d-4ea8-81f8-e4cb47199b59",
+    full_name: "Katherine Pierce",
+    avatar_url: "https://images.unsplash.com/photo-1598550874175-4d0ef436c909?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Chief Trademark Counsel",
+    company: "The Coca-Cola Company",
+    country: "Atlanta, Georgia, USA",
+    bio: "Safeguarding some of the planet's most recognized brand marks, signature bottle silhouettes, and advertising slogans across 200+ territories.",
+    skills: "Contour Bottle Trade Dress, Famous Mark Protection, 200+ Country Portfolio Maintenance",
+    practice_area: "Global Beverage Trademarks & Trade Dress",
+    experience_years: 22,
+    education: "Emory University School of Law",
+    is_wipa_recommended: true
+  },
+  {
+    id: "c22686be-0417-4395-b8ce-4976d08e274a",
+    full_name: "Dr. Yoko Takahashi",
+    avatar_url: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "General Manager - Global IP",
+    company: "Canon Inc. Global IP Headquarters",
+    country: "Tokyo, Japan",
+    bio: "Pioneering Japanese Benrishi leading high-volume USPTO and JPO patent creation across nanoimprint lithography, medical optical scanners, and cameras.",
+    skills: "Nanoimprint Lithography Patents, Inkjet Fluidics, JPO Board of Appeals Trials",
+    practice_area: "Optoelectronic Sensors & Printing Technologies",
+    experience_years: 22,
+    education: "University of Tokyo (Ph.D. Applied Physics), Registered Benrishi",
+    is_wipa_recommended: true
+  },
+  {
+    id: "6a623700-1cfa-4ebf-a185-1d41bcbf16b9",
+    full_name: "Nandita Das",
+    avatar_url: "https://images.unsplash.com/photo-1573497019236-17f8177b81e8?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Senior Patent Examiner (Ex-IPO) & Consultant",
+    company: "Kolkata IP Advisory",
+    country: "Kolkata, India",
+    bio: "Decades of public service insight into Indian Patent Office examination standards, helping enterprises streamline prosecution timelines.",
+    skills: "Patent Office Procedures, First Examination Reports (FER), Section 8 Compliance",
+    practice_area: "IPO Office Practice & Patent Audits",
+    experience_years: 21,
+    education: "Jadavpur University (M.Tech), ILS Pune",
+    is_wipa_recommended: true
+  },
+  {
+    id: "9f8d304a-0be6-4aad-b2eb-376e3c596f93",
+    full_name: "Dr. Ingrid Weber",
+    avatar_url: "https://images.unsplash.com/photo-1573496358961-3c82861ab8f4?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "VP of Global Patents",
+    company: "Siemens AG",
+    country: "Munich, Germany",
+    bio: "Overseeing 15,000+ active patent families covering cyber-physical production systems, smart grid distribution, and train traction electronics.",
+    skills: "Digital Twin Systems, Factory Automation Protocols, SCADA Security Inventions",
+    practice_area: "Industrial Automation & Digital Twins",
+    experience_years: 21,
+    education: "Technical University of Munich (Dr.-Ing.), German & European Patent Bar",
+    is_wipa_recommended: true
+  },
+  {
+    id: "2c42bd60-73ea-4d70-8dbf-7f8d6118b371",
+    full_name: "Anjali Mukherjee",
+    avatar_url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Founding Partner",
+    company: "Mukherjee & Associates IP",
+    country: "Kolkata, India",
+    bio: "Dedicated champion for community-owned intellectual property, GI registrations for artisan collectives, and preservation of indigenous crafts.",
+    skills: "Geographical Indications (GI), Traditional Knowledge Digital Library (TKDL), Handicrafts IP",
+    practice_area: "Geographical Indications & Heritage IP",
+    experience_years: 20,
+    education: "Calcutta University",
+    is_wipa_recommended: true
+  },
+  {
+    id: "68337cdb-0d7c-4e9a-a770-1ab0daed9830",
+    full_name: "Victoria Montgomery",
+    avatar_url: "https://images.unsplash.com/photo-1507152832244-10d45c7eda57?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Partner & Head of Trademarks",
+    company: "DLA Piper LLP",
+    country: "New York, USA",
+    bio: "Advisor to Fortune 50 media conglomerates, social networks, and streaming giants on international trademark clearance and brand enforcement.",
+    skills: "Worldwide Trademark Prosecution, Dilution Claims, Metaverse Branding Strategies",
+    practice_area: "Global Brand Management & Media",
+    experience_years: 20,
+    education: "Columbia Law School",
+    is_wipa_recommended: true
+  },
+  {
+    id: "2d2901bc-b2fc-4e07-9e84-fa5526829c6e",
+    full_name: "Dr. Kimberly Adams",
+    avatar_url: "https://images.unsplash.com/photo-1573496799515-eebbb63814f2?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Chief Patent Counsel",
+    company: "Genentech / Roche Group",
+    country: "South San Francisco, USA",
+    bio: "Veteran biotech patent strategist managing multi-billion dollar biological franchises, chimeric antigen receptor therapies, and pioneer drug exclusivities.",
+    skills: "CAR-T Cell Patents, Biologic Exclusivity Extensions, Federal Circuit Oral Arguments",
+    practice_area: "Therapeutic Antibodies & Targeted Cell Therapy",
+    experience_years: 20,
+    education: "Stanford University (Ph.D. Immunology), Harvard Law School",
+    is_wipa_recommended: true
+  },
+  {
+    id: "687f8714-d06c-47e9-8b69-b3a2ea8d7f06",
+    full_name: "Dr. Eleanor Vance",
+    avatar_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Senior Patent Partner",
+    company: "Bird & Bird LLP",
+    country: "London, United Kingdom",
+    bio: "Top-ranked European Patent Attorney specializing in quantum algorithms, superconducting qubits, and multi-jurisdictional UPC enforcement.",
+    skills: "EPO Opposition, Quantum Computing Patents, Unified Patent Court (UPC) Litigation",
+    practice_area: "European Patent Prosecution (EPO)",
+    experience_years: 19,
+    education: "University of Oxford (Ph.D. Quantum Physics), BPP Law School",
+    is_wipa_recommended: true
+  },
+  {
+    id: "57f66f44-b042-4ac2-9154-9561db84fdaf",
+    full_name: "Malini Sundaram",
+    avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Director of IP Strategy",
+    company: "Ashok Leyland Defense Systems",
+    country: "Chennai, India",
+    bio: "Managing mission-critical engineering patent portfolios, tactical mobility systems, and electric propulsion technologies.",
+    skills: "Powertrain Inventions, Dual-Use Tech Export Controls, Defense Inventions Licensing",
+    practice_area: "Aerospace & Automotive IP",
+    experience_years: 19,
+    education: "IIT Madras (B.Tech Mechanical), NLSIU (MBL)",
+    is_wipa_recommended: true
+  },
+  {
+    id: "251be9ea-1bc3-49a7-96e0-766ed8755152",
+    full_name: "Freja Møller",
+    avatar_url: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Chief IP Officer",
+    company: "Vestas Wind Systems",
+    country: "Aarhus, Denmark",
+    bio: "Directing the global patent strategy for modular wind turbine blades, advanced carbon composite structures, and predictive yaw controllers.",
+    skills: "Composite Blade Aerodynamics, Pitch Bearings IP, Grid Compatibility Controls",
+    practice_area: "Clean Energy & Mechanical Patents",
+    experience_years: 19,
+    education: "Aarhus University (Mechanical Eng & Law)",
+    is_wipa_recommended: true
+  },
+  {
+    id: "82e2a4b8-4a82-49a2-841f-fbdef36d92e8",
+    full_name: "Leela Namboodiri",
+    avatar_url: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Chief Trademark Counsel",
+    company: "Dabur India Limited",
+    country: "New Delhi, India",
+    bio: "Protecting iconic Indian FMCG trademarks, defending herbal formulations against predatory imitators in over 60 export markets.",
+    skills: "Traditional Formulation Protection, Passing Off Litigation, Trade Dress Safeguards",
+    practice_area: "Ayurvedic Products & Consumer IP",
+    experience_years: 19,
+    education: "Kerala Law Academy",
+    is_wipa_recommended: true
+  },
+  {
+    id: "ce99c3f0-abf7-4993-a91d-480b2c7adf0b",
+    full_name: "Brooke Kensington",
+    avatar_url: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Senior Partner",
+    company: "Clifford Chance LLP",
+    country: "London, United Kingdom",
+    bio: "Advising tier-1 investment banks on intellectual property joint ventures, quantitative trading software licenses, and clearinghouse proprietary systems.",
+    skills: "Algorithmic Trading Systems, ISDA Standard Tech Terms, Bank Consortium IP",
+    practice_area: "Fintech, Derivatives & AI Licensing",
+    experience_years: 19,
+    education: "University of Cambridge (MA Law)",
+    is_wipa_recommended: true
+  },
+  {
+    id: "59da0825-4875-4f4f-bfb9-da51dbb95196",
+    full_name: "Grace Kelly",
+    avatar_url: "https://images.unsplash.com/photo-1548142813-c348350df52b?auto=format&fit=crop&w=400&h=400&q=80",
+    role: "Senior Director - Brand Legal",
+    company: "Warner Bros. Discovery",
+    country: "Burbank, California, USA",
+    bio: "Preserving multi-billion dollar cinematic franchises, defending comic character trademarks, and supervising worldwide merchandise licensing deals.",
+    skills: "Iconic Character Trademarks, Theme Park Ride Licensing, Global Merchandising Monopolies",
+    practice_area: "Franchise IP & Character Licensing",
+    experience_years: 18,
+    education: "USC Gould School of Law",
+    is_wipa_recommended: true
+  }
+];
+
 const PRACTICE_AREAS = [
   'All Focus Areas',
   'Patents & Claim Drafting',
@@ -75,8 +261,8 @@ function MentorshipPageContent() {
   const user = useAppStore((state) => state.user);
 
   const [activeTab, setActiveTab] = useState<'find' | 'my-mentors' | 'how-it-works'>('find');
-  const [mentors, setMentors] = useState<MentorProfile[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [mentors, setMentors] = useState<MentorProfile[]>(CURATED_13_MENTORS);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPracticeArea, setSelectedPracticeArea] = useState('All Focus Areas');
   const [selectedExperience, setSelectedExperience] = useState('all');
@@ -106,14 +292,14 @@ function MentorshipPageContent() {
     },
     {
       id: 'book_2',
-      mentorId: '9b3c3082-04ef-4041-bebe-f018f3b3ef4d',
-      mentorName: 'Charlotte Sterling',
-      mentorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=400&q=80',
-      mentorRole: 'Lead IP Counsel - AI & Autonomous Vehicles',
-      mentorCompany: 'Waymo / Alphabet',
+      mentorId: '37e1b565-de5d-4ea8-81f8-e4cb47199b59',
+      mentorName: 'Katherine Pierce',
+      mentorAvatar: 'https://images.unsplash.com/photo-1598550874175-4d0ef436c909?auto=format&fit=crop&w=400&h=400&q=80',
+      mentorRole: 'Chief Trademark Counsel',
+      mentorCompany: 'The Coca-Cola Company',
       objective: 'Career Transition to In-House',
       format: '30-Min Strategy Call',
-      scheduledDate: 'Next Tuesday at 5:30 PM PST',
+      scheduledDate: 'Next Tuesday at 5:30 PM EST',
       status: 'Confirmed'
     }
   ]);
@@ -126,25 +312,32 @@ function MentorshipPageContent() {
     }
   }, [searchParams]);
 
-  // Fetch real senior practitioners from Supabase
+  // Fetch real senior practitioners from Supabase (strictly limited to 13 elite mentors)
   useEffect(() => {
     const fetchMentors = async () => {
-      setIsLoading(true);
       try {
         const { data, error } = await supabase
           .from('profiles')
           .select('id, full_name, avatar_url, role, company, country, bio, skills, practice_area, experience_years, education, is_wipa_recommended')
           .not('role', 'is', null)
-          .order('experience_years', { ascending: false })
-          .limit(100);
+          .not('company', 'is', null)
+          .order('experience_years', { ascending: false, nullsFirst: false })
+          .limit(30);
 
         if (data && data.length > 0) {
-          // Filter to high quality profiles
-          const filtered = data.filter(p => p.full_name && p.company);
-          setMentors(filtered);
+          // Filter to high quality senior mentor profiles and cap strictly at 13
+          const filtered = data.filter(p => p.full_name && p.company && p.role !== 'admin' && p.role !== 'subadmin');
+          if (filtered.length >= 13) {
+            setMentors(filtered.slice(0, 13));
+          } else if (filtered.length > 0) {
+            // Merge with curated defaults to always guarantee 13 mentors
+            const ids = new Set(filtered.map(f => f.id));
+            const remainder = CURATED_13_MENTORS.filter(c => !ids.has(c.id));
+            setMentors([...filtered, ...remainder].slice(0, 13));
+          }
         }
       } catch (err) {
-        console.error('Error fetching mentors:', err);
+        console.error('Error fetching mentors, using curated 13 mentors:', err);
       } finally {
         setIsLoading(false);
       }
@@ -153,7 +346,7 @@ function MentorshipPageContent() {
     fetchMentors();
   }, []);
 
-  // Filtered Mentors List
+  // Filtered Mentors List (searches & filters within the 13 mentors)
   const filteredMentors = useMemo(() => {
     return mentors.filter(m => {
       // Search
@@ -171,14 +364,14 @@ function MentorshipPageContent() {
 
       // Practice Area
       if (selectedPracticeArea !== 'All Focus Areas') {
-        const areaStr = (m.practice_area || '' + m.skills || '').toLowerCase();
+        const areaStr = `${m.practice_area || ''} ${m.skills || ''} ${m.role || ''} ${m.bio || ''}`.toLowerCase();
         if (selectedPracticeArea.includes('Patent') && !areaStr.includes('patent')) return false;
         if (selectedPracticeArea.includes('Trademark') && !areaStr.includes('trademark') && !areaStr.includes('brand')) return false;
-        if (selectedPracticeArea.includes('Litigation') && !areaStr.includes('litigat') && !areaStr.includes('dispute')) return false;
-        if (selectedPracticeArea.includes('Life Sciences') && !areaStr.includes('bio') && !areaStr.includes('pharma') && !areaStr.includes('health')) return false;
-        if (selectedPracticeArea.includes('Intelligence') && !areaStr.includes('ai') && !areaStr.includes('tech') && !areaStr.includes('software')) return false;
-        if (selectedPracticeArea.includes('In-House') && !areaStr.includes('in-house') && !areaStr.includes('counsel') && !areaStr.includes('head of')) return false;
-        if (selectedPracticeArea.includes('Trade Secrets') && !areaStr.includes('secret') && !areaStr.includes('licens')) return false;
+        if (selectedPracticeArea.includes('Litigation') && !areaStr.includes('litigat') && !areaStr.includes('dispute') && !areaStr.includes('enforcement') && !areaStr.includes('court') && !areaStr.includes('opposition')) return false;
+        if (selectedPracticeArea.includes('Life Sciences') && !areaStr.includes('bio') && !areaStr.includes('pharma') && !areaStr.includes('cell') && !areaStr.includes('health') && !areaStr.includes('ayurved')) return false;
+        if (selectedPracticeArea.includes('Intelligence') && !areaStr.includes('ai') && !areaStr.includes('tech') && !areaStr.includes('software') && !areaStr.includes('digital') && !areaStr.includes('quantum') && !areaStr.includes('lithography') && !areaStr.includes('sensor')) return false;
+        if (selectedPracticeArea.includes('In-House') && !areaStr.includes('in-house') && !areaStr.includes('counsel') && !areaStr.includes('head') && !areaStr.includes('officer') && !areaStr.includes('director') && !areaStr.includes('general manager')) return false;
+        if (selectedPracticeArea.includes('Trade Secrets') && !areaStr.includes('secret') && !areaStr.includes('licens') && !areaStr.includes('trade dress') && !areaStr.includes('commercial')) return false;
       }
 
       // Experience
@@ -295,7 +488,7 @@ function MentorshipPageContent() {
             <div className="pt-1 flex flex-wrap items-center justify-center gap-2.5">
               <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
                 <ShieldCheck size={15} className="text-[#5a32fa]" />
-                <span>50+ Senior Equity Partners</span>
+                <span>13 Executive Advisory Fellows</span>
               </div>
               <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
                 <Award size={15} className="text-amber-500" />
@@ -333,8 +526,8 @@ function MentorshipPageContent() {
             {/* Metric Ribbon */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-10 pt-8 border-t border-slate-200/80 dark:border-white/10 w-full max-w-2xl mx-auto text-center">
               <div className="text-center">
-                <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">50+</div>
-                <div className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5 uppercase tracking-wider">Senior Mentors</div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">13</div>
+                <div className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5 uppercase tracking-wider">Executive Mentors</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">1:1</div>
@@ -456,14 +649,14 @@ function MentorshipPageContent() {
               </div>
             </div>
 
-            {/* Mentors Grid - Full-Width Responsive Apple Grid */}
+            {/* Mentors Grid - Responsive High-Impact Grid */}
             {isLoading ? (
-              <div className="p-16 rounded-3xl bg-white dark:bg-[#0c1020] border border-slate-200/80 dark:border-white/10 text-center">
+              <div className="p-16 rounded-3xl bg-white dark:bg-[#0c1020] border border-slate-200 dark:border-slate-800 text-center">
                 <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-[#5a32fa] mb-3" />
                 <p className="text-xs font-bold text-slate-500 dark:text-slate-400">Loading WIPA mentor directory...</p>
               </div>
             ) : filteredMentors.length === 0 ? (
-              <div className="p-16 rounded-3xl bg-white dark:bg-[#0c1020] border border-slate-200/80 dark:border-white/10 text-center">
+              <div className="p-16 rounded-3xl bg-white dark:bg-[#0c1020] border border-slate-200 dark:border-slate-800 text-center">
                 <Users size={28} className="mx-auto text-slate-400 mb-2" />
                 <h3 className="text-sm font-black text-slate-900 dark:text-white">No mentors matching criteria</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4">Try clearing filters to view all active mentors.</p>
@@ -475,7 +668,7 @@ function MentorshipPageContent() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                 {filteredMentors.map((mentor) => {
                   const skills = (mentor.skills || mentor.practice_area || 'Patent Prosecution, IP Strategy')
                     .split(',')
@@ -485,82 +678,125 @@ function MentorshipPageContent() {
                   return (
                     <div
                       key={mentor.id}
-                      className="p-6 rounded-3xl bg-white dark:bg-[#0c1020] border border-slate-200/80 dark:border-white/10 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
+                      className="group relative flex flex-col justify-between rounded-3xl bg-white dark:bg-[#0c1020] border border-slate-200/90 dark:border-slate-800 hover:border-[#5a32fa] dark:hover:border-purple-500 shadow-xs hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1.5 transition-all duration-300 overflow-hidden"
                     >
-                      <div>
-                        {/* Card Top Row */}
-                        <div className="flex items-start justify-between gap-3 mb-4">
-                          <Link href={`/platform/profile/${mentor.id}`} className="flex items-center gap-3 group/author min-w-0">
-                            {mentor.avatar_url ? (
-                              <img
-                                src={mentor.avatar_url}
-                                alt={mentor.full_name}
-                                className="w-13 h-13 rounded-2xl object-cover border border-slate-200 dark:border-white/10 shadow-xs shrink-0 group-hover/author:ring-2 group-hover/author:ring-[#5a32fa] transition-all"
-                              />
-                            ) : (
-                              <div className="w-13 h-13 rounded-2xl bg-[#5a32fa]/10 text-[#5a32fa] font-black text-lg flex items-center justify-center shrink-0 border border-[#5a32fa]/20">
-                                {mentor.full_name?.charAt(0)}
-                              </div>
-                            )}
+                      {/* Top Brand Accent Strip */}
+                      <div className="h-1.5 w-full bg-gradient-to-r from-[#5a32fa] via-[#7c3aed] to-[#ff2a5f]" />
 
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5">
-                                <h3 className="text-base font-black text-slate-900 dark:text-white group-hover/author:text-[#5a32fa] dark:group-hover/author:text-purple-400 transition-colors truncate">
+                      <div className="p-6 flex flex-col h-full justify-between">
+                        <div>
+                          {/* Card Status Badges */}
+                          <div className="flex items-center justify-between gap-2 mb-4">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-purple-50 dark:bg-purple-950/60 text-[#5a32fa] dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
+                              <ShieldCheck size={12} className="text-[#5a32fa] dark:text-purple-400 shrink-0" />
+                              <span>Executive Fellow</span>
+                            </span>
+
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>Available 1:1</span>
+                            </span>
+                          </div>
+
+                          {/* Avatar & Identity Row */}
+                          <div className="flex items-start gap-3.5 mb-4">
+                            <Link href={`/platform/profile/${mentor.id}`} className="relative shrink-0 group/avatar">
+                              {mentor.avatar_url ? (
+                                <img
+                                  src={mentor.avatar_url}
+                                  alt={mentor.full_name}
+                                  className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-100 dark:border-slate-800 shadow-sm group-hover/avatar:border-[#5a32fa] dark:group-hover/avatar:border-purple-400 transition-colors"
+                                />
+                              ) : (
+                                <div className="w-16 h-16 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-[#5a32fa] dark:text-purple-300 font-black text-xl flex items-center justify-center border-2 border-purple-200 dark:border-purple-800/60 shadow-sm">
+                                  {mentor.full_name?.charAt(0)}
+                                </div>
+                              )}
+                              <div className="absolute -bottom-1 -right-1 bg-white dark:bg-[#0c1020] p-0.5 rounded-full shadow-xs">
+                                <div className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-black">
+                                  <Star size={10} className="fill-white text-white" />
+                                </div>
+                              </div>
+                            </Link>
+
+                            <div className="min-w-0 flex-1">
+                              <Link href={`/platform/profile/${mentor.id}`} className="block">
+                                <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-[#5a32fa] dark:group-hover:text-purple-400 transition-colors truncate tracking-tight">
                                   {mentor.full_name}
                                 </h3>
-                              </div>
-                              <p className="text-xs font-bold text-slate-600 dark:text-slate-300 line-clamp-1">
+                              </Link>
+                              <p className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate mt-0.5">
                                 {mentor.role || 'IP Partner'}
                               </p>
-                              <p className="text-[11px] text-slate-400 line-clamp-1 flex items-center gap-1 mt-0.5">
-                                <Briefcase size={12} /> {mentor.company || 'Global Practice'}
-                              </p>
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/90 text-[11px] font-semibold text-slate-700 dark:text-slate-300 mt-1.5 border border-slate-200 dark:border-slate-700 max-w-full">
+                                <Briefcase size={12} className="text-[#5a32fa] dark:text-purple-400 shrink-0" />
+                                <span className="truncate">{mentor.company || 'Global Practice'}</span>
+                              </div>
                             </div>
-                          </Link>
+                          </div>
+
+                          {/* Location & Experience Metadata Strip */}
+                          <div className="pt-3 pb-3 border-y border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs gap-2">
+                            <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-medium truncate">
+                              <MapPin size={13} className="text-slate-400 shrink-0" />
+                              <span className="truncate text-[11px]">{mentor.country || 'Global'}</span>
+                            </div>
+                            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 shrink-0">
+                              <Award size={12} className="text-amber-600 dark:text-amber-400" />
+                              <span>{mentor.experience_years ? `${mentor.experience_years}+ Yrs Exp` : 'Senior Leader'}</span>
+                            </div>
+                          </div>
+
+                          {/* Bio Quote Card */}
+                          <div className="my-3.5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/70">
+                            <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed italic">
+                              "{mentor.bio || 'Specializing in intellectual property advisory, prosecution strategy, and career guidance for WIPA members.'}"
+                            </p>
+                          </div>
+
+                          {/* Expertise Chips */}
+                          <div className="flex flex-wrap gap-1.5 mb-4">
+                            {skills.map((skill, idx) => (
+                              <span
+                                key={idx}
+                                className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 hover:border-[#5a32fa]/40 transition-colors truncate max-w-[200px]"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
                         </div>
 
-                        {/* Location & Experience */}
-                        <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-3.5 pb-3 border-b border-slate-100 dark:border-white/5">
-                          <span className="flex items-center gap-1">
-                            <MapPin size={12} /> {mentor.country || 'Global'}
-                          </span>
-                          <span className="font-bold text-slate-700 dark:text-slate-300">
-                            {mentor.experience_years ? `${mentor.experience_years}+ Yrs Exp` : 'Senior Practitioner'}
-                          </span>
-                        </div>
-
-                        {/* Bio Snippet */}
-                        <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-4">
-                          {mentor.bio || `Specializing in intellectual property advisory, prosecution strategy, and career guidance for WIPA members.`}
-                        </p>
-
-                        {/* Expertise Tags */}
-                        <div className="flex flex-wrap gap-1.5 mb-6">
-                          {skills.map((skill, idx) => (
-                            <span
-                              key={idx}
-                              className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-white/5 text-[10px] font-semibold text-slate-700 dark:text-slate-300"
-                            >
-                              {skill}
+                        <div>
+                          {/* Session Guarantee Info */}
+                          <div className="pt-3 pb-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                            <span className="flex items-center gap-1.5">
+                              <Clock size={12} className="text-[#5a32fa] dark:text-purple-400" />
+                              <span>1:1 Advisory (30-45m)</span>
                             </span>
-                          ))}
-                        </div>
-                      </div>
+                            <span className="text-emerald-600 dark:text-emerald-400 font-black text-[11px] bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/50">
+                              Included (£0)
+                            </span>
+                          </div>
 
-                      {/* Card Action Buttons - Apple Rounded-Full Pills */}
-                      <div className="pt-3 border-t border-slate-100 dark:border-white/5 flex items-center gap-2">
-                        <Link
-                          href={`/platform/profile/${mentor.id}`}
-                          className="flex-1 py-2.5 px-3 rounded-full border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 text-center transition-colors"
-                        >
-                          View Profile
-                        </Link>
-                        <button
-                          onClick={() => setBookingMentor(mentor)}
-                          className="flex-1 py-2.5 px-3 rounded-full bg-[#5a32fa] hover:bg-purple-600 text-white text-xs font-bold shadow-md shadow-purple-500/20 text-center transition-colors cursor-pointer"
-                        >
-                          Book Session
-                        </button>
+                          {/* Action Buttons */}
+                          <div className="flex items-center gap-2.5 pt-1">
+                            <Link
+                              href={`/platform/profile/${mentor.id}`}
+                              className="flex-1 py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold text-center transition-all flex items-center justify-center gap-1 group/btn"
+                            >
+                              <span>View Profile</span>
+                              <ChevronRight size={13} className="text-slate-400 group-hover/btn:translate-x-0.5 transition-transform" />
+                            </Link>
+                            <button
+                              onClick={() => setBookingMentor(mentor)}
+                              className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#5a32fa] via-[#6e3df6] to-[#8b5cf6] hover:from-[#5026e6] hover:to-[#7c3aed] text-white text-xs font-black shadow-md shadow-purple-500/20 hover:shadow-lg hover:shadow-purple-500/30 active:scale-[0.98] text-center transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                            >
+                              <Calendar size={13} />
+                              <span>Book Session</span>
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   );
