@@ -187,17 +187,21 @@ export default function SallyIPPage() {
 
           {/* Hero CTAs */}
           <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
-            <button
-              onClick={() => setIsLexIQOpen(true)}
+            <a
+              href="https://sallyip.com/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#5a32fa] via-purple-600 to-[#7c3aed] hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-black shadow-lg shadow-purple-500/25 active:scale-95 transition-all cursor-pointer"
             >
               <img src="/sally-logo.png" alt="Sally" className="w-4 h-4 object-contain invert" />
               <span>Launch Sally 4.1 Pro</span>
               <ArrowRight size={15} />
-            </button>
+            </a>
 
             <a
-              href="#pricing"
+              href="https://sallyip.com/pricing"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-white dark:bg-[#121829] hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-white text-sm font-bold border border-slate-200/80 dark:border-white/10 shadow-xs active:scale-95 transition-all"
             >
               <span>View Pricing Plans</span>
@@ -777,13 +781,16 @@ export default function SallyIPPage() {
               >
                 Close
               </button>
-              <Link
-                href="/platform/settings"
+              <a
+                href="https://sallyip.com/pricing"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setSelectedPlanModal(null)}
-                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] text-xs font-bold text-white shadow-md shadow-purple-500/25 hover:from-purple-600 hover:to-indigo-600 cursor-pointer"
+                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-[#5a32fa] to-[#7c3aed] text-xs font-bold text-white shadow-md shadow-purple-500/25 hover:from-purple-600 hover:to-indigo-600 cursor-pointer flex items-center justify-center gap-1.5"
               >
-                Go to Billing
-              </Link>
+                <span>Go to Pricing</span>
+                <ExternalLink size={13} />
+              </a>
             </div>
           </div>
         </div>

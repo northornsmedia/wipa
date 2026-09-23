@@ -1,14 +1,21 @@
 const { createClient } = require("@supabase/supabase-js");
 const fs = require("fs");
 
-const supabaseUrl = "https://bepavczocyvaegkfxtvd.supabase.co";
-let key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlcG12Y3pvY3l2YWVna2Z4dHZkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczOTUzNTc4MCwiZXhwIjoyMDU1MTExNzgwfQ.ZgRzYvTzH69ZfG542d9sYxM-Uv_d9l88NffzLq99hT8";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://bepavczocyvaegkfxtvd.supabase.co";
+let key = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 try {
-  const envText = fs.readFileSync(".env.local", "utf8");
-  const match = envText.match(/SUPABASE_SERVICE_ROLE_KEY=([^\r\n]+)/);
-  if (match && match[1]) key = match[1].trim();
+  if (!key && fs.existsSync(".env.local")) {
+    const envText = fs.readFileSync(".env.local", "utf8");
+    const match = envText.match(/SUPABASE_SERVICE_ROLE_KEY=([^\r\n]+)/);
+    if (match && match[1]) key = match[1].trim();
+  }
 } catch (e) {}
+
+if (!key) {
+  console.error("Error: SUPABASE_SERVICE_ROLE_KEY is required to seed database.");
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, key);
 
