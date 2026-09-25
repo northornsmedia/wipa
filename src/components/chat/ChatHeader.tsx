@@ -115,15 +115,24 @@ export const ChatHeader: React.FC<ChatHeaderProps> = React.memo(({
             >
               {/* Profile Avatar */}
               <div className="relative shrink-0">
-                {avatarUrl ? (
+                {avatarUrl?.includes('sally') || participantId === 'sally-ip' ? (
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full p-2 flex items-center justify-center shadow-sm border border-gray-200 dark:border-white/10 bg-purple-50 dark:bg-white/10 group-hover:scale-105 transition-transform">
+                    <img 
+                      src="/sally-logo.png" 
+                      alt={name} 
+                      className="w-full h-full object-contain block dark:hidden" 
+                    />
+                    <img 
+                      src="/sally-logo-white.png" 
+                      alt={name} 
+                      className="w-full h-full object-contain hidden dark:block" 
+                    />
+                  </div>
+                ) : avatarUrl ? (
                   <img 
                     src={avatarUrl} 
                     alt={name} 
-                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full shadow-sm border border-gray-200 dark:border-white/10 group-hover:scale-105 transition-transform ${
-                      avatarUrl.includes('sally')
-                        ? 'object-contain p-2 bg-purple-100 dark:bg-purple-950/60 dark:invert'
-                        : 'object-cover'
-                    }`} 
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shadow-sm border border-gray-200 dark:border-white/10 group-hover:scale-105 transition-transform"
                     loading="eager"
                   />
                 ) : (

@@ -2087,11 +2087,26 @@ function MessagesContent() {
                     <div className="flex items-end gap-2.5 my-2 animate-in fade-in slide-in-from-bottom-2 duration-150">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm overflow-hidden mb-0.5 border border-purple-200/50 dark:border-white/10">
                         {activeChat.avatarUrl ? (
-                          <img 
-                            src={activeChat.avatarUrl} 
-                            alt={activeChat.name} 
-                            className={`w-full h-full ${activeChat.avatarUrl.includes('sally') ? 'object-contain p-1.5 bg-purple-100 dark:bg-purple-950 dark:invert' : 'object-cover'}`} 
-                          />
+                          activeChat.avatarUrl.includes('sally') || activeChat.id === 'sally-ip' ? (
+                            <>
+                              <img 
+                                src="/sally-logo.png" 
+                                alt={activeChat.name} 
+                                className="w-full h-full object-contain p-1.5 block dark:hidden bg-purple-100" 
+                              />
+                              <img 
+                                src="/sally-logo-white.png" 
+                                alt={activeChat.name} 
+                                className="w-full h-full object-contain p-1.5 hidden dark:block bg-purple-950/70" 
+                              />
+                            </>
+                          ) : (
+                            <img 
+                              src={activeChat.avatarUrl} 
+                              alt={activeChat.name} 
+                              className="w-full h-full object-cover" 
+                            />
+                          )
                         ) : (
                           activeChat.initial || 'U'
                         )}

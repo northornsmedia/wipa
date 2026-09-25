@@ -719,7 +719,20 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = React.memo(({
                       }`}
                     >
                       <div className="relative shrink-0">
-                        {chat.avatarUrl ? (
+                        {chat.avatarUrl?.includes('sally') || chat.id === 'sally-ip' ? (
+                          <div className="w-12 h-12 rounded-full p-2.5 flex items-center justify-center shadow-xs border border-slate-200 dark:border-white/10 bg-purple-50 dark:bg-white/10">
+                            <img 
+                              src="/sally-logo.png" 
+                              alt={chat.name} 
+                              className="w-full h-full object-contain block dark:hidden pointer-events-none"
+                            />
+                            <img 
+                              src="/sally-logo-white.png" 
+                              alt={chat.name} 
+                              className="w-full h-full object-contain hidden dark:block pointer-events-none"
+                            />
+                          </div>
+                        ) : chat.avatarUrl ? (
                           <img 
                             src={chat.avatarUrl} 
                             alt={chat.name} 
@@ -807,7 +820,12 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = React.memo(({
                       <img 
                         src="/sally-logo.png" 
                         alt="Sally IP" 
-                        className="w-4 h-4 object-contain dark:invert" 
+                        className="w-4 h-4 object-contain block dark:hidden" 
+                      />
+                      <img 
+                        src="/sally-logo-white.png" 
+                        alt="Sally IP" 
+                        className="w-4 h-4 object-contain hidden dark:block" 
                       />
                       <span>Ask Sally IP</span>
                     </button>
@@ -955,8 +973,9 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = React.memo(({
                   }}
                   className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer transition-colors group"
                 >
-                  <div className="w-11 h-11 rounded-full bg-purple-100 dark:bg-purple-950/60 p-2.5 flex items-center justify-center shrink-0 border border-purple-200 dark:border-purple-500/20 shadow-xs">
-                    <img src="/sally-logo.png" alt="Sally IP" className="w-full h-full object-contain dark:invert" />
+                  <div className="w-11 h-11 rounded-full bg-purple-100 dark:bg-white/10 p-2.5 flex items-center justify-center shrink-0 border border-purple-200 dark:border-white/10 shadow-xs">
+                    <img src="/sally-logo.png" alt="Sally IP" className="w-full h-full object-contain block dark:hidden" />
+                    <img src="/sally-logo-white.png" alt="Sally IP" className="w-full h-full object-contain hidden dark:block" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#5a32fa] transition-colors truncate">
