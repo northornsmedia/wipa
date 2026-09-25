@@ -2,10 +2,12 @@
 'use client';
 
 import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import Cancel02Icon from '@/components/icons/Cancel02Icon';
 import { useRouter } from 'next/navigation';
 import { 
-  X, Image as ImageIcon, Video, FileText, Sparkles, 
+  Image as ImageIcon, Video, FileText, Sparkles, 
   Globe, Lock, MapPin, Users, Music, Smile, Trash2, Check, ArrowLeft, Send, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
@@ -88,6 +90,32 @@ export default function CreatePostPage() {
   const uploadedMediaRef = useRef<{ fingerprint: string; publicUrl: string } | null>(null);
   const pendingPostIdRef = useRef<string | null>(null);
 
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const performExit = useCallback(() => {
+    if (isClosing) return;
+    setIsClosing(true);
+    setTimeout(() => {
+      router.push('/platform');
+    }, 240);
+  }, [isClosing, router]);
+
+  useEffect(() => {
+    const updateViewport = () => {
+      if (typeof window !== 'undefined' && window.visualViewport) {
+        setViewportHeight(window.visualViewport.height);
+      }
+    };
+    updateViewport();
+    window.visualViewport?.addEventListener('resize', updateViewport);
+    window.visualViewport?.addEventListener('scroll', updateViewport);
+    return () => {
+      window.visualViewport?.removeEventListener('resize', updateViewport);
+      window.visualViewport?.removeEventListener('scroll', updateViewport);
+    };
+  }, []);
+
   // Clear typewriter timer on unmount
   useEffect(() => {
     return () => {
@@ -97,16 +125,20 @@ export default function CreatePostPage() {
     };
   }, []);
 
-  // Auto-focus textarea on load & handle URL parameters
+  // Soft auto-focus textarea after smooth entrance finishes & handle URL parameters
   useEffect(() => {
     const savedDraft = localStorage.getItem(POST_DRAFT_KEY);
     if (savedDraft) {
       setPostContent(savedDraft);
       setIsDraftRestored(true);
     }
-    if (textareaRef.current) {
-      textareaRef.current.focus();
-    }
+    
+    // Smooth deferred focus so mobile keyboard doesn't disrupt soft entrance animation
+    const focusTimer = setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }, 220);
 
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -139,18 +171,18 @@ export default function CreatePostPage() {
     setLocationTag('');
     setIsDraftRestored(false);
     setShowDraftDecision(false);
-    router.push('/platform');
+    performExit();
   };
 
   const saveDraftAndLeave = () => {
     if (postContent.trim()) localStorage.setItem(POST_DRAFT_KEY, postContent);
     setShowDraftDecision(false);
-    router.push('/platform');
+    performExit();
   };
 
   const handleCloseComposer = () => {
     if (postContent.trim() || attachedMedia) setShowDraftDecision(true);
-    else router.push('/platform');
+    else performExit();
   };
 
   const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video' | 'doc') => {
@@ -344,7 +376,22 @@ export default function CreatePostPage() {
   const isPostEmpty = !postContent.trim() && !attachedMedia;
 
   return (
-    <div className="fixed inset-0 z-50 h-[100dvh] max-h-[100dvh] w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] text-gray-900 dark:text-white flex flex-col overflow-hidden box-border">
+    <motion.div 
+      initial={{ opacity: 0, y: 35 }}
+      animate={{ 
+        opacity: isClosing ? 0 : 1, 
+        y: isClosing ? '100%' : 0 
+      }}
+      transition={{ 
+        duration: isClosing ? 0.24 : 0.22, 
+        ease: isClosing ? [0.32, 0.72, 0, 1] : [0.16, 1, 0.3, 1] 
+      }}
+      className="fixed inset-0 z-50 w-full max-w-full min-w-0 bg-white dark:bg-black sm:dark:bg-[#0b0f19] text-gray-900 dark:text-white flex flex-col overflow-hidden box-border overscroll-none will-change-transform transform-gpu"
+      style={{
+        height: viewportHeight ? `${viewportHeight}px` : '100dvh',
+        maxHeight: viewportHeight ? `${viewportHeight}px` : '100dvh'
+      }}
+    >
       
       {/* Hidden File Inputs */}
       <input 
@@ -370,14 +417,15 @@ export default function CreatePostPage() {
       />
 
       {/* TOP APP BAR (Instagram Style) */}
-      <header className="shrink-0 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800/80 px-4 pt-safe z-10">
+      <header className="shrink-0 bg-white/95 dark:bg-black/95 sm:dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-100 dark:border-white/10 px-4 pt-safe z-10">
         <div className="h-14 flex items-center justify-between w-full">
           <button
+            type="button"
             onClick={handleCloseComposer}
-            className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-200 flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
+            className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white flex items-center justify-center active:scale-90 transition-transform cursor-pointer"
             aria-label="Cancel and close"
           >
-            <X size={20} />
+            <Cancel02Icon size={20} className="shrink-0" />
           </button>
 
           <h1 className="text-base font-black tracking-tight text-gray-900 dark:text-white">
@@ -389,7 +437,7 @@ export default function CreatePostPage() {
       </header>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 overflow-y-auto p-4 flex flex-col space-y-4 max-w-2xl mx-auto w-full box-border [scrollbar-width:none]">
+      <main className="flex-1 overflow-y-auto p-4 flex flex-col space-y-3 sm:space-y-4 max-w-2xl mx-auto w-full box-border [scrollbar-width:none] overscroll-contain">
         
         {/* Error Alert */}
         {uploadError && (
@@ -417,12 +465,12 @@ export default function CreatePostPage() {
         )}
 
         {/* User Identity & Audience Selector */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-tr from-[#5a32fa] via-purple-600 to-[#ff90e8] p-0.5 shrink-0 shadow-sm">
             {user?.avatar_url ? (
               <img src={user.avatar_url} alt={user.name} className="w-full h-full rounded-full object-cover" />
             ) : (
-              <div className="w-full h-full rounded-full bg-white dark:bg-[#0b0f19] flex items-center justify-center text-[#5a32fa] font-black text-base">
+              <div className="w-full h-full rounded-full bg-white dark:bg-black flex items-center justify-center text-[#5a32fa] font-black text-base">
                 {user?.name?.charAt(0)?.toUpperCase() || 'U'}
               </div>
             )}
@@ -444,7 +492,7 @@ export default function CreatePostPage() {
               </button>
 
               {isPrivacyOpen && (
-                <div className="absolute top-full left-0 mt-1.5 w-44 bg-white dark:bg-[#151c2c] rounded-2xl shadow-xl border border-gray-100 dark:border-white/10 p-1.5 z-30">
+                <div className="absolute top-full left-0 mt-1.5 w-44 bg-white dark:bg-black rounded-2xl shadow-xl border border-gray-100 dark:border-white/10 p-1.5 z-30">
                   <button
                     onClick={() => { setPostPrivacy('Anyone'); setIsPrivacyOpen(false); }}
                     className={`w-full flex items-center gap-2 p-2 rounded-xl text-xs font-semibold transition-colors ${
@@ -470,13 +518,14 @@ export default function CreatePostPage() {
         </div>
 
         {/* Feature Tag Pills (Instagram Style: Topic, People, Location, AI) */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar [scrollbar-width:none]">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar [scrollbar-width:none] shrink-0">
           {/* AI Drafting Pill */}
           <button
             onClick={() => setIsAiModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#5a32fa]/10 hover:bg-[#5a32fa]/20 border border-[#5a32fa]/30 text-[#5a32fa] dark:text-purple-300 text-xs font-bold shrink-0 active:scale-95 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#5a32fa]/10 to-[#ff90e8]/15 hover:from-[#5a32fa]/20 hover:to-[#ff90e8]/25 border border-[#5a32fa]/30 text-[#5a32fa] dark:text-purple-300 text-xs font-bold shrink-0 active:scale-95 transition-all shadow-2xs"
           >
-            <Sparkles size={14} className="text-[#5a32fa]" />
+            <img src="/sally-logo.png" alt="Sally AI" className="w-3.5 h-3.5 object-contain block dark:hidden" />
+            <img src="/sally-logo-white.png" alt="Sally AI" className="w-3.5 h-3.5 object-contain hidden dark:block" />
             <span>AI Assist</span>
           </button>
 
@@ -528,8 +577,8 @@ export default function CreatePostPage() {
               className="flex-1 bg-transparent text-xs font-medium focus:outline-none text-gray-900 dark:text-white"
             />
             {locationTag && (
-              <button onClick={() => setLocationTag('')} className="text-gray-400 hover:text-gray-600">
-                <X size={14} />
+              <button type="button" onClick={() => setLocationTag('')} className="text-gray-400 hover:text-gray-600">
+                <Cancel02Icon size={14} />
               </button>
             )}
           </div>
@@ -584,7 +633,7 @@ export default function CreatePostPage() {
         )}
 
         {/* Main Textarea (Full-height, frictionless typing) */}
-        <div className="flex-1 min-h-[220px] flex flex-col">
+        <div className="flex-1 min-h-[120px] sm:min-h-[200px] flex flex-col">
           <textarea
             ref={textareaRef}
             rows={8}
@@ -642,7 +691,7 @@ export default function CreatePostPage() {
       </main>
 
       {/* BOTTOM FIXED TOOLBAR (Pinned cleanly to viewport bottom) */}
-      <footer className="shrink-0 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800/80 px-4 py-3 pb-[max(env(safe-area-inset-bottom),12px)] flex items-center justify-between z-40 w-full">
+      <footer className="shrink-0 bg-white/95 dark:bg-black/95 sm:dark:bg-[#0b0f19]/95 backdrop-blur-xl border-t border-gray-100 dark:border-white/10 px-4 py-3 pb-[max(env(safe-area-inset-bottom),12px)] flex items-center justify-between z-40 w-full">
         
         {/* Media Pickers */}
         <div className="flex items-center gap-2 sm:gap-3">
@@ -744,6 +793,6 @@ export default function CreatePostPage() {
         initialDraft={postContent}
       />
 
-    </div>
+    </motion.div>
   );
 }

@@ -8,7 +8,7 @@ import {
   Phone, Globe, Building2, Briefcase, MapPin, GraduationCap,
   Save, ArrowLeft, ArrowUpRight, CheckCircle2, Shield, Smartphone, 
   Monitor, RefreshCw, LogOut, HelpCircle, EyeOff, Moon, Sun, Volume2, 
-  Sliders, FileText, BadgeCheck, Zap, Tablet, Clock
+  Sliders, FileText, BadgeCheck, Zap, Tablet, Clock, ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -505,7 +505,7 @@ function SettingsContent() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-77px)] bg-[#f8f9fa] dark:bg-[#070b14]">
+      <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-77px)] bg-white dark:bg-black lg:bg-[#f8f9fa] lg:dark:bg-[#070b14]">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-4 border-[#5a32fa] border-t-transparent rounded-full animate-spin" />
           <span className="text-sm font-bold text-gray-500 dark:text-gray-400">Loading settings...</span>
@@ -515,10 +515,10 @@ function SettingsContent() {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-[calc(100vh-77px)] bg-[#f8f9fa] dark:bg-[#070b14] text-gray-900 dark:text-gray-100 font-sans pb-16">
+    <div className="flex-1 flex flex-col min-h-[calc(100vh-77px)] bg-white dark:bg-black lg:bg-[#f8f9fa] lg:dark:bg-[#070b14] text-gray-900 dark:text-gray-100 font-sans pb-16">
       
       {/* Top Banner & Header Bar */}
-      <div className="w-full bg-white dark:bg-[#0c1020] border-b border-gray-200/80 dark:border-white/[0.08] px-4 sm:px-8 py-5 relative z-20">
+      <div className="w-full bg-white dark:bg-black lg:dark:bg-[#0c1020] border-b border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] px-4 sm:px-8 py-4 sm:py-5 relative z-20">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link 
@@ -588,12 +588,12 @@ function SettingsContent() {
       </div>
 
       {/* Main Settings Grid Layout */}
-      <div className="max-w-6xl mx-auto w-full px-4 sm:px-8 mt-8 flex flex-col lg:flex-row gap-8">
+      <div className="max-w-6xl mx-auto w-full px-0 lg:px-8 mt-0 lg:mt-8 flex flex-col lg:flex-row gap-0 lg:gap-8">
         
         {/* Left Navigation Tabs Panel */}
         <aside className="w-full lg:w-72 shrink-0">
-          <div className="bg-white dark:bg-[#0c1020] rounded-3xl p-3 border border-gray-200/80 dark:border-white/[0.08] shadow-sm space-y-1 sticky top-6">
-            <div className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
+          <div className="bg-white dark:bg-black lg:dark:bg-[#0c1020] rounded-none lg:rounded-3xl p-0 lg:p-3 border-0 border-b lg:border border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] shadow-none lg:shadow-sm space-y-0 lg:space-y-1 lg:sticky lg:top-6">
+            <div className="px-4 lg:px-3 py-2.5 lg:py-2 text-[11px] lg:text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-zinc-500 bg-gray-50/70 dark:bg-zinc-950/80 lg:bg-transparent border-b border-gray-100 dark:border-zinc-900 lg:border-none">
               Preferences
             </div>
             
@@ -606,17 +606,22 @@ function SettingsContent() {
                   onClick={() => {
                     setActiveTab(tab.id);
                     router.replace(`/platform/settings?tab=${tab.id}`, { scroll: false });
+                    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                      setTimeout(() => {
+                        document.getElementById('settings-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }, 50);
+                    }
                   }}
-                  className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl text-left transition-all duration-200 cursor-pointer ${
+                  className={`w-full flex items-center gap-3.5 px-4 lg:px-3.5 py-3.5 lg:py-3 rounded-none lg:rounded-2xl text-left transition-all duration-200 cursor-pointer border-b border-gray-100/80 dark:border-zinc-900 lg:border-none ${
                     isSelected
-                      ? 'bg-[#5a32fa]/10 dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#a5b4fc] font-bold border border-[#5a32fa]/20 shadow-xs'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/70 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-purple-500/10 dark:bg-zinc-900 lg:bg-[#5a32fa]/10 lg:dark:bg-[#5a32fa]/20 text-[#5a32fa] dark:text-[#a5b4fc] font-bold lg:border lg:border-[#5a32fa]/20 lg:shadow-xs'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/70 dark:hover:bg-zinc-900/60 lg:dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-black lg:bg-transparent'
                   }`}
                 >
-                  <span className={`p-2 rounded-xl transition-colors ${
+                  <span className={`p-2 rounded-xl transition-colors shrink-0 ${
                     isSelected 
                       ? 'bg-[#5a32fa] text-white shadow-xs' 
-                      : 'bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400'
+                      : 'bg-gray-100 dark:bg-zinc-900 lg:dark:bg-white/5 text-gray-500 dark:text-gray-400'
                   }`}>
                     <Icon size={16} />
                   </span>
@@ -624,6 +629,7 @@ function SettingsContent() {
                     <div className="text-xs font-bold truncate leading-tight">{tab.label}</div>
                     <div className="text-[10px] opacity-75 truncate text-gray-400 dark:text-gray-500 mt-0.5">{tab.desc}</div>
                   </div>
+                  <ChevronRight size={16} className="lg:hidden text-gray-400 dark:text-zinc-600 shrink-0" />
                 </button>
               );
             })}
@@ -631,14 +637,37 @@ function SettingsContent() {
         </aside>
 
         {/* Right Content Area */}
-        <main className="flex-1 min-w-0">
+        <main id="settings-content" className="flex-1 min-w-0">
+          
+          {/* Mobile Horizontal Sub-Tab Bar for Quick Navigation */}
+          <div className="lg:hidden flex items-center gap-2 overflow-x-auto no-scrollbar px-4 py-2.5 bg-gray-50/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 sticky top-0 z-10">
+            {navTabs.map((tab) => {
+              const isSelected = activeTab === tab.id;
+              return (
+                <button
+                  key={`mobile-subtab-${tab.id}`}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    router.replace(`/platform/settings?tab=${tab.id}`, { scroll: false });
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all ${
+                    isSelected
+                      ? 'bg-[#5a32fa] text-white shadow-sm'
+                      : 'bg-white dark:bg-zinc-900 text-gray-600 dark:text-zinc-400 border border-gray-200 dark:border-zinc-800'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
           
           {/* TAB 1: PROFILE & BIO */}
           {activeTab === 'profile' && (
             <div className="space-y-6 animate-in fade-in duration-200">
               
               {/* Media Card: Avatar & Banner */}
-              <div className="bg-white dark:bg-[#0c1020] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm">
+              <div className="bg-white dark:bg-black lg:dark:bg-[#0c1020] rounded-none lg:rounded-3xl p-4 sm:p-6 lg:p-8 border-x-0 border-y lg:border border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] shadow-none lg:shadow-sm">
                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-white/[0.08]">
                   <div>
                     <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">Profile Imagery & Brand</h2>
@@ -684,7 +713,7 @@ function SettingsContent() {
                 {/* Avatar Upload */}
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                   <div className="relative group">
-                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl overflow-hidden ring-4 ring-white dark:ring-[#0c1020] shadow-xl bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] flex items-center justify-center text-white font-black text-3xl">
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl overflow-hidden ring-4 ring-white dark:ring-black lg:dark:ring-[#0c1020] shadow-xl bg-gradient-to-br from-[#5a32fa] to-[#ff90e8] flex items-center justify-center text-white font-black text-3xl">
                       {profileForm.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={profileForm.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
@@ -743,7 +772,7 @@ function SettingsContent() {
               </div>
 
               {/* Personal & Professional Form Card */}
-              <div className="bg-white dark:bg-[#0c1020] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm space-y-6">
+              <div className="bg-white dark:bg-black lg:dark:bg-[#0c1020] rounded-none lg:rounded-3xl p-4 sm:p-6 lg:p-8 border-x-0 border-y lg:border border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] shadow-none lg:shadow-sm space-y-6">
                 <div className="pb-4 border-b border-gray-100 dark:border-white/[0.08]">
                   <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">Legal & Professional Profile</h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Displayed on your global public profile card and member directory.</p>
@@ -810,7 +839,7 @@ function SettingsContent() {
                     <select
                       value={profileForm.practice_area}
                       onChange={(e) => setProfileForm({ ...profileForm, practice_area: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-[#0c1020] text-xs sm:text-sm font-medium text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/30 focus:border-[#5a32fa]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 lg:dark:border-white/10 bg-gray-50/50 dark:bg-zinc-900 lg:dark:bg-[#0c1020] text-xs sm:text-sm font-medium text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/30 focus:border-[#5a32fa]"
                     >
                       <option value="">Select Practice Area</option>
                       {PRACTICE_AREAS.map((area) => (
@@ -827,7 +856,7 @@ function SettingsContent() {
                     <select
                       value={profileForm.industry_sector}
                       onChange={(e) => setProfileForm({ ...profileForm, industry_sector: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-[#0c1020] text-xs sm:text-sm font-medium text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/30 focus:border-[#5a32fa]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 lg:dark:border-white/10 bg-gray-50/50 dark:bg-zinc-900 lg:dark:bg-[#0c1020] text-xs sm:text-sm font-medium text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#5a32fa]/30 focus:border-[#5a32fa]"
                     >
                       <option value="">Select Industry</option>
                       {INDUSTRY_SECTORS.map((sec) => (
@@ -987,7 +1016,7 @@ function SettingsContent() {
               </div>
 
               {/* Password Update Card */}
-              <div className="bg-white dark:bg-[#0c1020] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm">
+              <div className="bg-white dark:bg-black lg:dark:bg-[#0c1020] rounded-none lg:rounded-3xl p-4 sm:p-6 lg:p-8 border-x-0 border-y lg:border border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] shadow-none lg:shadow-sm">
                 <div className="pb-4 border-b border-gray-100 dark:border-white/[0.08] mb-6">
                   <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">Change Password</h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Keep your account secure with a strong passphrase.</p>
@@ -1053,7 +1082,7 @@ function SettingsContent() {
               </div>
 
               {/* Active & Recent Sessions (Last 10) Card */}
-              <div className="bg-white dark:bg-[#0c1020] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm space-y-6">
+              <div className="bg-white dark:bg-black lg:dark:bg-[#0c1020] rounded-none lg:rounded-3xl p-4 sm:p-6 lg:p-8 border-x-0 border-y lg:border border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] shadow-none lg:shadow-sm space-y-6">
                 <div className="pb-4 border-b border-gray-100 dark:border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2">
@@ -1192,7 +1221,7 @@ function SettingsContent() {
 
           {/* TAB 3: NOTIFICATIONS */}
           {activeTab === 'notifications' && (
-            <div className="bg-white dark:bg-[#0c1020] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm space-y-6 animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-black lg:dark:bg-[#0c1020] rounded-none lg:rounded-3xl p-4 sm:p-6 lg:p-8 border-x-0 border-y lg:border border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] shadow-none lg:shadow-sm space-y-6 animate-in fade-in duration-200">
               <div className="pb-4 border-b border-gray-100 dark:border-white/[0.08]">
                 <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">Notification Preferences</h2>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Choose when and how WIPA notifies you about activity.</p>
@@ -1254,8 +1283,8 @@ function SettingsContent() {
 
           {/* TAB 4: PRIVACY & VISIBILITY */}
           {activeTab === 'privacy' && (
-            <div className="bg-white dark:bg-[#0c1020] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm space-y-6 animate-in fade-in duration-200">
-              <div className="pb-4 border-b border-gray-100 dark:border-white/[0.08]">
+            <div className="bg-white dark:bg-black lg:dark:bg-[#0c1020] rounded-none lg:rounded-3xl p-4 sm:p-6 lg:p-8 border-x-0 border-y lg:border border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] shadow-none lg:shadow-sm space-y-6 animate-in fade-in duration-200">
+              <div className="pb-4 border-b border-gray-100 dark:border-zinc-800 lg:dark:border-white/[0.08]">
                 <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">Privacy & Directory Visibility</h2>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Control who can discover your professional profile and reach out.</p>
               </div>
@@ -1263,7 +1292,7 @@ function SettingsContent() {
               <div className="space-y-4">
                 
                 {/* Profile Visibility */}
-                <div className="p-4 rounded-2xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.05] space-y-2">
+                <div className="p-4 rounded-xl sm:rounded-2xl bg-gray-50 dark:bg-zinc-950/60 lg:dark:bg-white/[0.03] border border-gray-100 dark:border-zinc-900 lg:dark:border-white/[0.05] space-y-2">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">Profile Visibility</h4>
@@ -1272,7 +1301,7 @@ function SettingsContent() {
                     <select
                       value={privacyPrefs.profileVisibility}
                       onChange={(e) => setPrivacyPrefs({ ...privacyPrefs, profileVisibility: e.target.value })}
-                      className="px-3 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1020] text-xs font-bold text-gray-900 dark:text-white"
+                      className="px-3 py-1.5 rounded-xl border border-gray-200 dark:border-zinc-800 lg:dark:border-white/10 bg-white dark:bg-zinc-900 lg:dark:bg-[#0c1020] text-xs font-bold text-gray-900 dark:text-white"
                     >
                       <option value="public">Public (All Members)</option>
                       <option value="connections">Connections Only</option>
@@ -1338,7 +1367,7 @@ function SettingsContent() {
 
           {/* TAB 5: APPEARANCE */}
           {activeTab === 'appearance' && (
-            <div className="bg-white dark:bg-[#0c1020] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm space-y-6 animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-black lg:dark:bg-[#0c1020] rounded-none lg:rounded-3xl p-4 sm:p-6 lg:p-8 border-x-0 border-y lg:border border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] shadow-none lg:shadow-sm space-y-6 animate-in fade-in duration-200">
               <div className="pb-4 border-b border-gray-100 dark:border-white/[0.08]">
                 <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">Theme & Interface Appearance</h2>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Customize the visual presentation of your workspace.</p>
@@ -1372,8 +1401,8 @@ function SettingsContent() {
                   onClick={() => { if (!isDarkMode) toggleDarkMode(); }}
                   className={`p-5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between h-36 ${
                     isDarkMode
-                      ? 'border-[#5a32fa] ring-2 ring-[#5a32fa]/20 bg-[#070b14] text-white shadow-md'
-                      : 'border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/[0.02] text-gray-500 hover:border-gray-300'
+                      ? 'border-[#5a32fa] ring-2 ring-[#5a32fa]/20 bg-black lg:bg-[#070b14] text-white shadow-md'
+                      : 'border-gray-200 dark:border-zinc-800 lg:dark:border-white/10 bg-gray-50 dark:bg-zinc-950/60 lg:dark:bg-white/[0.02] text-gray-500 hover:border-gray-300'
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -1392,7 +1421,7 @@ function SettingsContent() {
 
           {/* TAB 6: MEMBERSHIP & TIER */}
           {activeTab === 'membership' && (
-            <div className="bg-white dark:bg-[#0c1020] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm space-y-6 animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-black lg:dark:bg-[#0c1020] rounded-none lg:rounded-3xl p-4 sm:p-6 lg:p-8 border-x-0 border-y lg:border border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] shadow-none lg:shadow-sm space-y-6 animate-in fade-in duration-200">
               <div className="pb-4 border-b border-gray-100 dark:border-white/[0.08] flex items-center justify-between">
                 <div>
                   <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">Membership Status</h2>
@@ -1451,7 +1480,7 @@ function SettingsContent() {
             <div className="space-y-6 animate-in fade-in duration-200">
               
               {/* Archive Download */}
-              <div className="bg-white dark:bg-[#0c1020] rounded-3xl p-6 sm:p-8 border border-gray-200/80 dark:border-white/[0.08] shadow-sm space-y-4">
+              <div className="bg-white dark:bg-black lg:dark:bg-[#0c1020] rounded-none lg:rounded-3xl p-4 sm:p-6 lg:p-8 border-x-0 border-y lg:border border-gray-200/80 dark:border-zinc-800 lg:dark:border-white/[0.08] shadow-none lg:shadow-sm space-y-4">
                 <div className="pb-4 border-b border-gray-100 dark:border-white/[0.08]">
                   <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white">Export Profile Archive</h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Download a complete GDPR-compliant JSON archive of your profile data.</p>
@@ -1474,7 +1503,7 @@ function SettingsContent() {
                   <p className="text-xs text-rose-700/80 dark:text-rose-300/70">Irreversible account actions.</p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-[#0c1020] border border-rose-200 dark:border-rose-900/30">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl sm:rounded-2xl bg-white dark:bg-black lg:dark:bg-[#0c1020] border border-rose-200 dark:border-rose-900/30">
                   <div>
                     <h4 className="text-xs font-bold text-gray-900 dark:text-white">Delete Account</h4>
                     <p className="text-xs text-gray-500 dark:text-gray-400 max-w-md mt-0.5">

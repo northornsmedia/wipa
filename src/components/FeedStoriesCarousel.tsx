@@ -164,7 +164,7 @@ export default function FeedStoriesCarousel({ onOpenCreatePost }: { onOpenCreate
   };
 
   return (
-    <div className="w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] py-1 sm:py-2 mb-3 box-border border-0 border-none">
+    <div className="w-full max-w-full min-w-0 bg-white dark:bg-black sm:dark:bg-[#0b0f19] py-1 sm:py-2 mb-3 box-border border-0 border-none">
       <div 
         ref={scrollRef}
         onClickCapture={handleClickCapture}

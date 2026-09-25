@@ -293,6 +293,7 @@ export default function MobileTopBar() {
 
                 <Link
                   href="/platform/create-post"
+                  prefetch={true}
                   aria-label="Create Post"
                   className="w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
                 >
@@ -340,6 +341,7 @@ export default function MobileTopBar() {
               {/* Create Post Button (+) */}
               <Link
                 href="/platform/create-post"
+                prefetch={true}
                 aria-label="Create Post"
                 className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-transform active:scale-90"
               >

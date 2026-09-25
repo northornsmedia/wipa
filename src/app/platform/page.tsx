@@ -25,6 +25,9 @@ import FeedVideoPlayer from '@/components/FeedVideoPlayer';
 import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
 import { optimizeFeedUpload, readCachedFeed, writeCachedFeed } from '@/lib/feedPerformance';
 import { recordPostImpressions } from '@/lib/analytics';
+import Comment03Icon from '@/components/icons/Comment03Icon';
+import ShareCircleLineIcon from '@/components/icons/ShareCircleLineIcon';
+import BookmarkIcon from '@/components/icons/BookmarkIcon';
 
 const FEED_PAGE_SIZE = 8;
 
@@ -857,7 +860,7 @@ function PlatformContent() {
               {/* MOBILE INSTAGRAM-STYLE STORIES & SUB-HEADER (MOBILE ONLY) */}
               <div className="md:hidden relative z-10 w-full max-w-full bg-white dark:bg-[#0b0f19] pt-1 pb-2 border-0 border-none shadow-none isolate">
                 {/* 1. Stories Carousel */}
-                <FeedStoriesCarousel onOpenCreatePost={() => setIsCreatePostModalOpen(true)} />
+                <FeedStoriesCarousel onOpenCreatePost={() => router.push('/platform/create-post')} />
               </div>
               
               {/* DESKTOP-ONLY HERO & COMPOSER (Completely excluded from mobile DOM) */}
@@ -1273,7 +1276,7 @@ function PlatformContent() {
                               />
                             </button>
 
-                            {/* Circle Comment - No text */}
+                            {/* Comment */}
                             <button
                               onClick={() => {
                                 if (post.comments_disabled) return;
@@ -1286,32 +1289,33 @@ function PlatformContent() {
                               }`}
                               aria-label="Comment on post"
                             >
-                              <MessageCircle size={22} className="hover:scale-110 transition-transform" />
+                              <Comment03Icon size={22} className="hover:scale-110 transition-transform" />
                             </button>
 
-                            {/* Flying Paper Airplane (Share) - No text */}
+                            {/* Share */}
                             <button
                               onClick={() => setSharePost(post)}
-                              className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] dark:hover:text-violet-400 active:scale-75 transition-all p-1 -rotate-12 hover:rotate-0 cursor-pointer"
+                              className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] dark:hover:text-violet-400 active:scale-75 transition-all p-1 cursor-pointer"
                               aria-label="Share post"
                             >
-                              <Send size={21} className="hover:scale-110 transition-transform" />
+                              <ShareCircleLineIcon size={22} className="hover:scale-110 transition-transform" />
                             </button>
                           </div>
 
                           {/* Right: Save (Bookmark) - No text */}
                           <button
                             onClick={() => void handleToggleSavePost(post.id)}
-                            className="text-gray-700 dark:text-gray-200 hover:text-amber-500 dark:hover:text-amber-400 active:scale-75 transition-all p-1 -mr-1 cursor-pointer"
+                            className={`p-1 -mr-1 cursor-pointer active:scale-75 transition-all ${
+                              savedPostIds.has(String(post.id))
+                                ? 'text-amber-500 dark:text-amber-400'
+                                : 'text-gray-700 dark:text-gray-200 hover:text-amber-500 dark:hover:text-amber-400'
+                            }`}
                             aria-label={savedPostIds.has(String(post.id)) ? 'Remove saved post' : 'Save post'}
                           >
-                            <Bookmark
+                            <BookmarkIcon
                               size={22}
-                              className={`transition-all duration-200 ${
-                                savedPostIds.has(String(post.id))
-                                  ? 'fill-amber-500 text-amber-500 scale-105'
-                                  : 'hover:scale-110'
-                              }`}
+                              filled={savedPostIds.has(String(post.id))}
+                              className="transition-transform"
                             />
                           </button>
                         </div>
@@ -1465,7 +1469,7 @@ function PlatformContent() {
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10 shrink-0 bg-white dark:bg-[#0f172a]">
               <div className="flex items-center gap-2">
-                <MessageCircle size={18} className="text-[#5a32fa] dark:text-[#ff90e8]" />
+                <Comment03Icon size={18} className="text-[#5a32fa] dark:text-[#ff90e8]" />
                 <h2 className="text-lg font-black text-gray-900 dark:text-white tracking-tight">
                   Comments <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">({postComments[activeCommentPost.id]?.length || 0})</span>
                 </h2>
@@ -1506,7 +1510,7 @@ function PlatformContent() {
               {!postComments[activeCommentPost.id] || postComments[activeCommentPost.id].length === 0 ? (
                 <div className="text-center py-12 space-y-2">
                   <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 dark:bg-white/5 text-indigo-500 dark:text-[#ff90e8] flex items-center justify-center mx-auto mb-3">
-                    <MessageCircle size={22} />
+                    <Comment03Icon size={22} />
                   </div>
                   <p className="text-sm font-bold text-gray-800 dark:text-gray-200">No comments yet</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Be the first to share your thoughts!</p>

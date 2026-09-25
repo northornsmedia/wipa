@@ -157,9 +157,7 @@ html.dark body {
   .dark .bg-\[\#0f172a\],
   .dark .bg-\[\#090d16\],
   .dark .bg-\[\#070b14\],
-  .dark .bg-\[\#0b0d16\],
-  .dark .bg-slate-900,
-  .dark .bg-slate-950 {
+  .dark .bg-\[\#0b0d16\] {
     background-color: #000000 !important;
   }
 
@@ -171,12 +169,13 @@ html.dark body {
     background-color: rgba(0, 0, 0, 0.95) !important;
   }
 
-  /* Elevated surface elements/cards on mobile: neutral charcoal (#121212 / #18181b), NEVER navy blue */
+  /* Surface elements/cards on mobile: pure black (#000000), seamless OLED theme */
   .dark [class*="dark:bg-[#151c2c]"],
   .dark [class*="dark:bg-[#181d28]"],
   .dark [class*="dark:bg-[#1e293b]"],
-  .dark [class*="dark:bg-[#1a2236]"] {
-    background-color: #121212 !important;
+  .dark [class*="dark:bg-[#1a2236]"],
+  .dark [class*="dark:bg-[#121212]"] {
+    background-color: #000000 !important;
   }
 
   /* Remove any blue borders on mobile dark mode, keep subtle neutral dark grey */

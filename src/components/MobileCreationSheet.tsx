@@ -114,10 +114,10 @@ export default function MobileCreationSheet({ isOpen, onClose, onSelectAction }:
 
           {/* Bottom Sheet */}
           <div
-            className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#151c2c] rounded-t-3xl border-t border-gray-200 dark:border-gray-800 p-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] shadow-xl max-h-[85dvh] overflow-y-auto overscroll-contain touch-pan-y animate-in slide-in-from-bottom-8 duration-150 ease-out [contain:layout_paint] [transform:translateZ(0)]"
+            className="absolute bottom-0 left-0 right-0 bg-white dark:bg-black rounded-t-3xl border-t border-gray-200 dark:border-white/10 p-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] shadow-xl max-h-[85dvh] overflow-y-auto overscroll-contain touch-pan-y animate-in slide-in-from-bottom-8 duration-150 ease-out [contain:layout_paint] [transform:translateZ(0)]"
           >
             {/* Grab Handle */}
-            <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-4" />
+            <div className="w-12 h-1.5 bg-gray-300 dark:bg-white/20 rounded-full mx-auto mb-4" />
 
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">

@@ -111,7 +111,8 @@ export default function FeedQuickComposer({ user, onOpenCreatePost }: FeedQuickC
               }}
               className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-[#5a32fa]/40 text-slate-600 dark:text-slate-300 hover:text-[#5a32fa] dark:hover:text-purple-400 text-xs font-semibold transition-all shadow-2xs cursor-pointer"
             >
-              <Sparkles size={13} className="text-[#5a32fa]" />
+              <img src="/sally-logo.png" alt="Sally AI" className="w-3.5 h-3.5 object-contain block dark:hidden" />
+              <img src="/sally-logo-white.png" alt="Sally AI" className="w-3.5 h-3.5 object-contain hidden dark:block" />
               <span>AI Assist</span>
             </button>
 

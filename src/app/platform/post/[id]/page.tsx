@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { 
-  ArrowLeft, Heart, MessageCircle, Send, Share2, Bookmark, 
+  ArrowLeft, Heart, Send, Share2, Bookmark, 
   CheckCircle2, Copy, Check, ShieldCheck, MoreHorizontal 
 } from 'lucide-react';
+import Comment03Icon from '@/components/icons/Comment03Icon';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -225,7 +226,7 @@ export default function SharedPostPage() {
                 </button>
 
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
-                  <MessageCircle size={18} />
+                  <Comment03Icon size={18} />
                   <span>{post.comments_count || 0} Comments</span>
                 </div>
               </div>

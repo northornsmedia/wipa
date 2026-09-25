@@ -406,7 +406,7 @@ export default function MobileSearchPage() {
                 onClick={() => setActiveCategory(cat.key)}
                 className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 active:scale-95 cursor-pointer touch-manipulation ${
                   isActive
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-sm ring-1 ring-slate-900 dark:ring-white'
+                    ? 'bg-black text-white dark:bg-white dark:text-black shadow-sm ring-1 ring-black dark:ring-white font-extrabold'
                     : 'bg-slate-100 text-slate-700 dark:bg-white/[0.08] dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/[0.14] border border-slate-200/60 dark:border-white/10'
                 }`}
               >
@@ -514,8 +514,8 @@ export default function MobileSearchPage() {
                         disabled={isToggling}
                         className={`shrink-0 font-bold text-xs px-5 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer touch-manipulation shadow-xs ${
                           isFollowed
-                            ? 'bg-transparent border border-slate-300 dark:border-white/30 text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10'
-                            : 'bg-slate-900 text-white dark:bg-white dark:text-black hover:bg-slate-800 dark:hover:bg-gray-200'
+                            ? 'bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/20 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-white/15'
+                            : 'bg-[#5a32fa] text-white hover:bg-[#4b25e2] dark:bg-white dark:text-black dark:hover:bg-gray-100'
                         }`}
                       >
                         {isToggling ? '...' : isFollowed ? 'Following' : 'Follow'}

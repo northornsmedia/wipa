@@ -22,6 +22,12 @@ import { getProfileByIdOrMemberId } from '@/app/actions/profiles';
 import { recordProfileView } from '@/lib/analytics';
 import FormattedPostText, { getPostPreview } from '@/components/FormattedPostText';
 import FeedVideoPlayer from '@/components/FeedVideoPlayer';
+import Comment03Icon from '@/components/icons/Comment03Icon';
+import ShareCircleLineIcon from '@/components/icons/ShareCircleLineIcon';
+import BookmarkIcon from '@/components/icons/BookmarkIcon';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Linkedin01Icon } from '@hugeicons-pro/core-solid-rounded';
+import { InstagramIcon } from '@hugeicons-pro/core-solid-standard';
 
 export default function PublicProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params);
@@ -42,6 +48,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
   const [previewModalImage, setPreviewModalImage] = useState<string | null>(null);
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [likedPostIds, setLikedPostIds] = useState<Set<string>>(new Set());
 
@@ -64,6 +71,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
     location: 'Global',
     bio: 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.',
     linkedin: '',
+    instagram: '',
     website: '',
     practiceAreas: 'Patents, Trademarks, IP Strategy, Licensing',
     skills: 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets',
@@ -129,6 +137,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
             location: data.country || 'Global',
             bio: data.bio || 'Dedicated IP practitioner and active contributor to the Women in Intellectual Property Alliance.',
             linkedin: data.linkedin_url || '',
+            instagram: data.instagram_url || (data as any).instagram || '',
             website: data.website_url || '',
             practiceAreas: data.practice_area || 'Patents, Trademarks, IP Strategy, Licensing',
             skills: data.skills || 'Patent Drafting, Trademark Portfolio, IP Litigation, Trade Secrets',
@@ -380,13 +389,13 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
         {/* ================= HERO PROFILE CARD ================= */}
         <div className="bg-white dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-3xl border-x-0 sm:border-x border-b sm:border-y border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden mb-4 sm:mb-6">
           
-          {/* Cover Photo */}
-          <div className="relative h-48 w-full overflow-hidden bg-white sm:h-64 md:h-80">
+          {/* Cover Photo - Edge-to-edge, perfectly responsive across desktop and mobile */}
+          <div className="relative w-full aspect-[2.7/1] sm:aspect-[3.2/1] min-h-[140px] max-h-[360px] overflow-hidden bg-slate-900 dark:bg-black">
             {profileData.coverUrl ? (
               <img
                 src={profileData.coverUrl}
                 alt={`${profileData.name}'s cover`}
-                className="absolute inset-0 h-full w-full object-contain object-center sm:object-cover"
+                className="w-full h-full object-cover object-center"
               />
             ) : (
               <div className="absolute inset-0 bg-gradient-to-r from-[#5a32fa] via-[#7952ff] to-[#ff90e8]">
@@ -397,7 +406,7 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
 
           {/* Profile Header Info */}
           <div className="px-4 sm:px-8 pb-6 sm:pb-8 relative">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 -mt-16 sm:-mt-24 mb-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 -mt-14 sm:-mt-20 md:-mt-24 mb-4">
               
               {/* Avatar + Rainbow Gradient Story Ring */}
               <div className="relative group self-start">
@@ -417,10 +426,6 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                         <PlayCircle size={44} className="text-white drop-shadow-lg" />
                       </div>
                     </div>
-                  </div>
-
-                  <div className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-[#5a32fa] text-white p-1.5 rounded-full shadow-md border-2 border-white dark:border-[#151c2c] flex items-center justify-center">
-                    <Play size={12} className="fill-white" />
                   </div>
                 </div>
               </div>
@@ -502,6 +507,40 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                 >
                   <Share2 size={18} />
                 </button>
+
+                {/* LinkedIn Profile Icon Button (Desktop & Mobile) */}
+                <a 
+                  href={profileData.linkedin ? (profileData.linkedin.startsWith('http') ? profileData.linkedin : `https://${profileData.linkedin}`) : 'https://www.linkedin.com'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-full bg-gray-100 hover:bg-[#0a66c2]/10 text-gray-700 hover:text-[#0a66c2] dark:bg-gray-800 dark:hover:bg-[#0a66c2]/20 dark:text-gray-300 dark:hover:text-[#38a0f8] transition-all inline-flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+                  title={profileData.linkedin ? "Visit LinkedIn Profile" : "LinkedIn"}
+                  aria-label="LinkedIn Profile"
+                >
+                  <HugeiconsIcon
+                    icon={Linkedin01Icon}
+                    size={24}
+                    color="currentColor"
+                    strokeWidth={1.5}
+                  />
+                </a>
+
+                {/* Instagram Profile Icon Button (Desktop & Mobile) */}
+                <a 
+                  href={profileData.instagram ? (profileData.instagram.startsWith('http') ? profileData.instagram : `https://instagram.com/${profileData.instagram.replace(/^@/, '')}`) : 'https://www.instagram.com'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-full bg-gray-100 hover:bg-[#e1306c]/10 text-gray-700 hover:text-[#e1306c] dark:bg-gray-800 dark:hover:bg-[#e1306c]/20 dark:text-gray-300 dark:hover:text-[#ff6599] transition-all inline-flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 cursor-pointer"
+                  title={profileData.instagram ? "Visit Instagram Profile" : "Instagram"}
+                  aria-label="Instagram Profile"
+                >
+                  <HugeiconsIcon
+                    icon={InstagramIcon}
+                    size={24}
+                    color="currentColor"
+                    strokeWidth={1.5}
+                  />
+                </a>
               </div>
             </div>
 
@@ -548,6 +587,30 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                     <Hash size={12} /> {profileData.memberId}
                   </span>
                 )}
+
+                {/* LinkedIn Badge */}
+                <a
+                  href={profileData.linkedin ? (profileData.linkedin.startsWith('http') ? profileData.linkedin : `https://${profileData.linkedin}`) : 'https://www.linkedin.com'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 font-semibold text-[#0a66c2] dark:text-[#38a0f8] hover:underline"
+                  title="LinkedIn Profile"
+                >
+                  <HugeiconsIcon icon={Linkedin01Icon} size={18} color="currentColor" strokeWidth={1.5} />
+                  <span>LinkedIn</span>
+                </a>
+
+                {/* Instagram Badge */}
+                <a
+                  href={profileData.instagram ? (profileData.instagram.startsWith('http') ? profileData.instagram : `https://instagram.com/${profileData.instagram.replace(/^@/, '')}`) : 'https://www.instagram.com'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 font-semibold text-[#e1306c] dark:text-[#ff6599] hover:underline"
+                  title="Instagram Profile"
+                >
+                  <HugeiconsIcon icon={InstagramIcon} size={18} color="currentColor" strokeWidth={1.5} />
+                  <span>Instagram</span>
+                </a>
               </div>
 
               {/* Network Stats Bar */}
@@ -559,6 +622,14 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                 <span className="font-bold text-gray-900 dark:text-white">
                   {stats.followers} <span className="font-normal text-gray-500">followers</span>
                 </span>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => setIsContactModalOpen(true)}
+                  className="font-bold text-[#5a32fa] dark:text-[#ff90e8] hover:underline cursor-pointer"
+                >
+                  Contact info
+                </button>
               </div>
             </div>
 
@@ -749,16 +820,16 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                               href="/platform"
                               className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] transition-transform active:scale-75"
                             >
-                              <MessageCircle size={22} />
+                              <Comment03Icon size={22} />
                             </Link>
                             <button 
                               onClick={() => {
                                 navigator.clipboard.writeText(window.location.origin + '/platform');
                                 alert('Post link copied to clipboard!');
                               }}
-                              className="text-gray-700 dark:text-gray-200 hover:text-[#ff90e8] transition-transform active:scale-75 -rotate-12"
+                              className="text-gray-700 dark:text-gray-200 hover:text-[#ff90e8] transition-transform active:scale-75"
                             >
-                              <Send size={20} />
+                              <ShareCircleLineIcon size={22} />
                             </button>
                           </div>
                           <button 
@@ -766,9 +837,9 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
                               navigator.clipboard.writeText(window.location.origin + '/platform');
                               alert('Post saved!');
                             }}
-                            className="text-gray-700 dark:text-gray-200 hover:text-[#5a32fa] transition-transform active:scale-75"
+                            className="text-gray-700 dark:text-gray-200 hover:text-amber-500 dark:hover:text-amber-400 transition-transform active:scale-75"
                           >
-                            <Bookmark size={22} />
+                            <BookmarkIcon size={22} />
                           </button>
                         </div>
 
@@ -1245,6 +1316,90 @@ export default function PublicProfilePage({ params }: { params: Promise<{ id: st
               </video>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* ================= CONTACT & SOCIAL INFO MODAL ================= */}
+      {isContactModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#151c2c] w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl border border-gray-200 dark:border-gray-800 space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center text-[#5a32fa] dark:text-[#ff90e8]">
+                  <Mail size={22} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">{profileData.name}</h3>
+                  <p className="text-xs text-gray-500">Contact & Social Channels</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsContactModalOpen(false)}
+                className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-3.5">
+              {/* LinkedIn */}
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-3">
+                  <div className="text-[#0a66c2] dark:text-[#38a0f8]">
+                    <HugeiconsIcon icon={Linkedin01Icon} size={24} color="currentColor" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white">LinkedIn</p>
+                    <p className="text-xs text-gray-500 truncate max-w-[200px]">
+                      {profileData.linkedin || 'Not linked'}
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={profileData.linkedin ? (profileData.linkedin.startsWith('http') ? profileData.linkedin : `https://${profileData.linkedin}`) : 'https://www.linkedin.com'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-[#0a66c2] dark:text-[#38a0f8] text-xs font-bold transition-colors inline-flex items-center gap-1"
+                >
+                  <span>Visit</span>
+                  <ArrowUpRight size={13} />
+                </a>
+              </div>
+
+              {/* Instagram */}
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-3">
+                  <div className="text-[#e1306c] dark:text-[#ff6599]">
+                    <HugeiconsIcon icon={InstagramIcon} size={24} color="currentColor" strokeWidth={1.5} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white">Instagram</p>
+                    <p className="text-xs text-gray-500 truncate max-w-[200px]">
+                      {profileData.instagram ? `@${profileData.instagram.replace(/^@/, '')}` : 'Not linked'}
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={profileData.instagram ? (profileData.instagram.startsWith('http') ? profileData.instagram : `https://instagram.com/${profileData.instagram.replace(/^@/, '')}`) : 'https://www.instagram.com'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3.5 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 dark:bg-pink-950/60 dark:hover:bg-pink-900/60 text-[#e1306c] dark:text-[#ff6599] text-xs font-bold transition-colors inline-flex items-center gap-1"
+                >
+                  <span>Visit</span>
+                  <ArrowUpRight size={13} />
+                </a>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                onClick={() => setIsContactModalOpen(false)}
+                className="w-full py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold text-sm transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -546,7 +546,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = React.memo(({
 
   return (
     <>
-      <div className={`w-full md:w-[380px] lg:w-[420px] bg-white dark:bg-[#000000] border-0 md:border-r border-slate-200 dark:border-white/10 flex flex-col overflow-hidden shrink-0 h-full min-h-0 select-none ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`w-full md:w-[380px] lg:w-[420px] bg-white dark:bg-black md:dark:bg-[#0f172a] border-0 md:border-r border-slate-200 dark:border-white/10 flex flex-col overflow-hidden shrink-0 h-full min-h-0 select-none ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
         
         {/* Top Header: Large Title "Messages" + Right-side Pencil Button */}
         <div className="pt-safe md:pt-4 px-4 sm:px-5 pb-2.5 space-y-3 shrink-0">

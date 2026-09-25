@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Check, ZoomIn, ZoomOut, RotateCw, Move, Sparkles, Image as ImageIcon, User } from 'lucide-react';
+import { Check, ZoomIn, ZoomOut, User } from 'lucide-react';
+import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
+import Cancel02Icon from '@/components/icons/Cancel02Icon';
 import { compressImage } from '@/lib/imageCompressor';
 
 interface ImageCropperModalProps {
@@ -162,42 +164,38 @@ export default function ImageCropperModal({
 
   if (!isOpen || !imageSrc) return null;
 
+  const isBanner = shape === 'banner';
+  const saveLabel = isBanner ? 'Save Cover' : 'Save Photo';
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#11141f] rounded-2xl sm:rounded-3xl max-w-2xl w-full border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-in fade-in duration-150">
+      <div className="bg-white dark:bg-[#121620] rounded-2xl sm:rounded-3xl max-w-md sm:max-w-lg w-full border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
         
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
+        {/* Clean Header */}
+        <div className="px-5 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between shrink-0">
           <div>
-            <h3 className="text-base sm:text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
-              <ImageIcon size={20} className="text-[#5a32fa]" />
+            <h3 className="text-base font-bold text-gray-900 dark:text-white">
               {title}
             </h3>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-[11px] font-bold bg-[#5a32fa]/10 text-[#5a32fa] dark:text-indigo-300 px-2.5 py-0.5 rounded-full border border-[#5a32fa]/20">
-                Display Preview: {recommendedPx}
-              </span>
-            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              Drag to reposition • Scroll or use slider to zoom
+            </p>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-white/5 cursor-pointer"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="Close"
           >
-            <X size={18} />
+            <Cancel02Icon size={16} />
           </button>
         </div>
 
         {/* Interactive Cropper Viewport */}
-        <div className="p-4 sm:p-6 flex flex-col items-center justify-center bg-gray-950 select-none overflow-hidden relative min-h-[300px] sm:min-h-[340px]">
+        <div className="p-4 sm:p-6 flex flex-col items-center justify-center bg-[#0a0d14] select-none overflow-hidden relative min-h-[290px] sm:min-h-[320px]">
           
-          {/* Instruction tooltip */}
-          <div className="absolute top-3 left-4 z-20 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full text-[11px] text-white/90 font-medium flex items-center gap-1.5 pointer-events-none border border-white/10">
-            <Move size={12} /> Drag image to position • Use slider to zoom
-          </div>
-
-          {/* Crop Frame Box */}
+          {/* Crop Frame Box with surrounding dark shading */}
           <div
             ref={containerRef}
             onMouseDown={handleMouseDown}
@@ -207,15 +205,15 @@ export default function ImageCropperModal({
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             onWheel={handleWheel}
-            className={`relative overflow-hidden cursor-grab active:cursor-grabbing border-2 border-[#5a32fa] shadow-2xl flex items-center justify-center ${
+            className={`relative overflow-hidden cursor-grab active:cursor-grabbing border-2 border-white shadow-[0_0_0_9999px_rgba(0,0,0,0.65)] flex items-center justify-center ${
               shape === 'rounded' 
                 ? 'rounded-full' 
-                : 'rounded-xl sm:rounded-2xl'
+                : 'rounded-2xl'
             }`}
             style={{
               width: aspectRatio === 1 ? '240px' : '100%',
-              maxWidth: aspectRatio === 1 ? '240px' : '540px',
-              height: aspectRatio === 1 ? '240px' : `${Math.round(540 / aspectRatio)}px`,
+              maxWidth: aspectRatio === 1 ? '240px' : '460px',
+              height: aspectRatio === 1 ? '240px' : `${Math.round(460 / aspectRatio)}px`,
               maxHeight: '260px',
             }}
           >
@@ -239,7 +237,7 @@ export default function ImageCropperModal({
               }}
             />
 
-            {/* Grid overlay for rule-of-thirds precision */}
+            {/* Rule-of-thirds precision grid */}
             <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none opacity-20">
               <div className="border-r border-b border-white" />
               <div className="border-r border-b border-white" />
@@ -252,50 +250,66 @@ export default function ImageCropperModal({
               <div />
             </div>
 
-            {/* Visual Avatar Overlap Guide (shows exact placement on profile) */}
+            {/* Visual Avatar Guide for Cover Banner */}
             {showAvatarGuide && (
-              <div className="absolute -bottom-7 left-4 sm:left-6 w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-dashed border-yellow-300 bg-black/60 backdrop-blur-xs flex flex-col items-center justify-center pointer-events-none shadow-xl z-20">
-                <User size={16} className="text-yellow-300 opacity-90" />
-                <span className="text-[8px] font-bold text-yellow-300 uppercase tracking-wider mt-0.5">Avatar</span>
+              <div className="absolute -bottom-6 left-4 sm:left-6 w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-dashed border-white/70 bg-black/50 flex flex-col items-center justify-center pointer-events-none shadow-lg z-20">
+                <User size={16} className="text-white/80" />
+                <span className="text-[8px] font-bold text-white/90 uppercase tracking-wider mt-0.5">Avatar</span>
               </div>
             )}
           </div>
 
-          {/* Dimension Tag */}
-          <div className="mt-3 text-[11px] text-gray-400 font-medium flex items-center gap-2">
-            <span>Aspect Ratio {aspectRatio === 1 ? '1:1 (Square)' : '3.2:1 (Cover Banner)'}</span>
-            <span>•</span>
-            <span className="text-indigo-400">Optimized to lightweight WebP</span>
-          </div>
+          {/* Simple Size Hint */}
+          {recommendedPx && (
+            <div className="mt-3 text-[11px] text-gray-400 font-medium">
+              Recommended: {recommendedPx}
+            </div>
+          )}
 
         </div>
 
-        {/* Controls & Sliders */}
-        <div className="p-4 sm:p-5 bg-white dark:bg-[#11141f] border-t border-gray-200 dark:border-white/10 space-y-3.5">
+        {/* Controls & Action Buttons */}
+        <div className="p-4 sm:p-5 bg-white dark:bg-[#121620] border-t border-gray-100 dark:border-white/10 space-y-4">
           
           {/* Zoom Slider */}
           <div className="flex items-center gap-3">
-            <ZoomOut size={16} className="text-gray-400 shrink-0" />
+            <button
+              type="button"
+              onClick={() => setZoom((z) => Math.max(0.8, parseFloat((z - 0.1).toFixed(2))))}
+              className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors p-1"
+              title="Zoom out"
+            >
+              <ZoomOut size={16} />
+            </button>
             <input
               type="range"
               min="0.8"
               max="3"
-              step="0.05"
+              step="0.02"
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
-              className="flex-1 accent-[#5a32fa] h-2 bg-gray-200 dark:bg-white/10 rounded-lg cursor-pointer"
+              className="flex-1 accent-[#5a32fa] h-1.5 bg-gray-200 dark:bg-white/15 rounded-lg cursor-pointer"
             />
-            <ZoomIn size={16} className="text-gray-400 shrink-0" />
-            <span className="text-xs font-bold text-gray-500 w-10 text-right">{Math.round(zoom * 100)}%</span>
+            <button
+              type="button"
+              onClick={() => setZoom((z) => Math.min(3, parseFloat((z + 0.1).toFixed(2))))}
+              className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors p-1"
+              title="Zoom in"
+            >
+              <ZoomIn size={16} />
+            </button>
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 w-10 text-right tabular-nums">
+              {Math.round(zoom * 100)}%
+            </span>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-3 pt-1">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={onClose}
               disabled={isProcessing}
-              className="flex-1 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 text-gray-700 dark:text-gray-300 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm cursor-pointer transition-colors"
+              className="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/15 text-gray-700 dark:text-gray-300 py-2.5 rounded-xl font-bold text-xs sm:text-sm cursor-pointer transition-colors"
             >
               Cancel
             </button>
@@ -303,14 +317,17 @@ export default function ImageCropperModal({
               type="button"
               onClick={handleConfirmCrop}
               disabled={isProcessing}
-              className="flex-1 bg-gradient-to-r from-[#5a32fa] to-[#7952ff] hover:from-[#4927cb] hover:to-[#6841ea] disabled:opacity-50 text-white py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-500/25 transition-all active:scale-95"
+              className="flex-1 bg-[#5a32fa] hover:bg-[#4a24db] disabled:opacity-50 text-white py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer shadow-sm transition-all active:scale-[0.98]"
             >
               {isProcessing ? (
-                <span>Optimizing & Saving…</span>
+                <>
+                  <Loader2 size={15} className="animate-spin text-white" />
+                  <span>Saving...</span>
+                </>
               ) : (
                 <>
                   <Check size={16} strokeWidth={2.5} />
-                  <span>Apply & Save Cover</span>
+                  <span>{saveLabel}</span>
                 </>
               )}
             </button>
