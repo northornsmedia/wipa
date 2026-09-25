@@ -164,12 +164,17 @@ html.dark body {
   /* Translucent bars/navs: pure black with backdrop blur on mobile */
   .dark [class*="dark:bg-[#090d16]/95"],
   .dark [class*="dark:bg-[#0b0f19]/95"],
+  .dark [class*="dark:bg-[#070b14]/95"],
+  .dark [class*="dark:bg-[#0c1020]/95"],
   .dark [class*="dark:bg-[#070b14]/90"],
   .dark [class*="dark:bg-[#0b0f19]/90"] {
     background-color: rgba(0, 0, 0, 0.95) !important;
   }
 
   /* Surface elements/cards on mobile: pure black (#000000), seamless OLED theme */
+  .dark [class*="dark:bg-[#0c1020]"],
+  .dark [class*="dark:bg-[#12182c]"],
+  .dark [class*="dark:bg-[#0e1424]"],
   .dark [class*="dark:bg-[#151c2c]"],
   .dark [class*="dark:bg-[#181d28]"],
   .dark [class*="dark:bg-[#1e293b]"],

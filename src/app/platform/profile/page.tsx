@@ -25,6 +25,7 @@ import FeedVideoPlayer from '@/components/FeedVideoPlayer';
 import Comment03Icon from '@/components/icons/Comment03Icon';
 import ShareCircleLineIcon from '@/components/icons/ShareCircleLineIcon';
 import BookmarkIcon from '@/components/icons/BookmarkIcon';
+import { toggleBookmark, getSavedPostIds } from '@/lib/bookmarks';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Linkedin01Icon } from '@hugeicons-pro/core-solid-rounded';
 import { InstagramIcon } from '@hugeicons-pro/core-solid-standard';
@@ -145,6 +146,40 @@ export default function ProfilePage() {
   };
   const [endorsedSkills, setEndorsedSkills] = useState<Record<string, { count: number; endorsed: boolean }>>({});
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [savedPostIds, setSavedPostIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!user?.id) return;
+    getSavedPostIds(user.id).then(ids => setSavedPostIds(new Set(ids)));
+
+    const handleBookmarkEvent = (e: any) => {
+      const { postId, isSaved } = e.detail || {};
+      if (!postId) return;
+      setSavedPostIds(prev => {
+        const next = new Set(prev);
+        if (isSaved) next.add(String(postId));
+        else next.delete(String(postId));
+        return next;
+      });
+    };
+
+    window.addEventListener('wipa:bookmarks-updated', handleBookmarkEvent);
+    return () => window.removeEventListener('wipa:bookmarks-updated', handleBookmarkEvent);
+  }, [user?.id]);
+
+  const handleSaveProfilePost = async (postId: string) => {
+    if (!user?.id) return;
+    const normalizedId = String(postId);
+    const wasSaved = savedPostIds.has(normalizedId);
+    setSavedPostIds(prev => {
+      const next = new Set(prev);
+      if (wasSaved) next.delete(normalizedId);
+      else next.add(normalizedId);
+      return next;
+    });
+    if (navigator.vibrate) navigator.vibrate(18);
+    await toggleBookmark(normalizedId, user.id);
+  };
   const [isPublishing, setIsPublishing] = useState(false);
 
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -1549,13 +1584,15 @@ export default function ProfilePage() {
                               </button>
                             </div>
                             <button 
-                              onClick={() => {
-                                navigator.clipboard.writeText(window.location.origin + '/platform');
-                                alert('Post saved!');
-                              }}
-                              className="text-gray-700 dark:text-gray-200 hover:text-amber-500 dark:hover:text-amber-400 transition-transform active:scale-75"
+                              onClick={() => void handleSaveProfilePost(post.id)}
+                              className={`transition-transform active:scale-75 cursor-pointer p-1 -mr-1 ${
+                                savedPostIds.has(String(post.id))
+                                  ? 'text-amber-500 dark:text-amber-400'
+                                  : 'text-gray-700 dark:text-gray-200 hover:text-amber-500 dark:hover:text-amber-400'
+                              }`}
+                              aria-label={savedPostIds.has(String(post.id)) ? 'Remove saved post' : 'Save post'}
                             >
-                              <BookmarkIcon size={22} />
+                              <BookmarkIcon size={22} filled={savedPostIds.has(String(post.id))} />
                             </button>
                           </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
-import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import { useAppStore } from '@/store/useAppStore';
 import { 
@@ -28,6 +28,7 @@ import { recordPostImpressions } from '@/lib/analytics';
 import Comment03Icon from '@/components/icons/Comment03Icon';
 import ShareCircleLineIcon from '@/components/icons/ShareCircleLineIcon';
 import BookmarkIcon from '@/components/icons/BookmarkIcon';
+import { toggleBookmark, getBookmarkedPosts } from '@/lib/bookmarks';
 
 const FEED_PAGE_SIZE = 8;
 
@@ -56,6 +57,8 @@ function PlatformContent() {
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [dbLikedPostIds, setDbLikedPostIds] = useState<Set<string>>(new Set());
   const [savedPostIds, setSavedPostIds] = useState<Set<string>>(new Set());
+  const [savedFullPosts, setSavedFullPosts] = useState<any[]>([]);
+  const [isLoadingSavedPosts, setIsLoadingSavedPosts] = useState(false);
   const [activeCommentPost, setActiveCommentPost] = useState<any | null>(null);
   const [commentText, setCommentText] = useState('');
   const [commentError, setCommentError] = useState('');
@@ -248,8 +251,55 @@ function PlatformContent() {
       localStorage.setItem(storageKey, JSON.stringify(merged));
     };
     void hydrateSavedPosts();
-    return () => { cancelled = true; };
+
+    // Listen for bookmark updates from bookmarks page or other components
+    const handleBookmarkEvent = (e: any) => {
+      const { postId, isSaved } = e.detail || {};
+      if (!postId) return;
+      setSavedPostIds(prev => {
+        const next = new Set(prev);
+        if (isSaved) next.add(String(postId));
+        else next.delete(String(postId));
+        return next;
+      });
+    };
+
+    window.addEventListener('wipa:bookmarks-updated', handleBookmarkEvent);
+
+    return () => { 
+      cancelled = true; 
+      window.removeEventListener('wipa:bookmarks-updated', handleBookmarkEvent);
+    };
   }, [user?.id]);
+
+  // Load all bookmarked posts when Saved tab is active
+  useEffect(() => {
+    if (activeTab !== 'Saved' || !user?.id) return;
+    let cancelled = false;
+    setIsLoadingSavedPosts(true);
+
+    getBookmarkedPosts(user.id)
+      .then((bookmarked) => {
+        if (!cancelled) {
+          setSavedFullPosts(bookmarked);
+          setSavedPostIds((prev) => {
+            const next = new Set(prev);
+            bookmarked.forEach((bp) => next.add(String(bp.id)));
+            return next;
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load bookmarked posts for Saved tab:', err);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingSavedPosts(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab, user?.id]);
 
   const handleToggleSavePost = async (postId: string) => {
     if (!user?.id) return;
@@ -259,18 +309,9 @@ function PlatformContent() {
     if (wasSaved) next.delete(normalizedId);
     else next.add(normalizedId);
     setSavedPostIds(next);
-    localStorage.setItem(`wipa_saved_posts_${user.id}`, JSON.stringify([...next]));
     if (navigator.vibrate) navigator.vibrate(18);
 
-    const { error } = wasSaved
-      ? await supabase.from('saved_posts').delete().match({ user_id: user.id, post_id: normalizedId })
-      : await supabase.from('saved_posts').upsert(
-          { user_id: user.id, post_id: normalizedId },
-          { onConflict: 'user_id,post_id', ignoreDuplicates: true }
-        );
-
-    // Local persistence keeps Save functional during a transient outage or before a migration reaches production.
-    if (error) console.warn('Saved post will sync when database persistence is available:', error.message);
+    await toggleBookmark(normalizedId, user.id);
   };
   
   const fetchFeed = useCallback(async (append = false) => {
@@ -800,27 +841,79 @@ function PlatformContent() {
   const normalizedTag = selectedTag ? selectedTag.toLowerCase() : null;
   const normalizedFeedSearch = feedSearchQuery.trim().toLowerCase();
   
-  const visibleFeedPosts = feedPosts.filter((post) => {
-    const author = post.author || {};
-    
-    // Tag filter
-    if (normalizedTag) {
-      const content = String(post.content || '').toLowerCase();
-      if (!content.includes(`#${normalizedTag}`) && !content.includes(normalizedTag)) {
-        return false;
+  // Combine saved posts and feed posts for complete view when Saved tab is active
+  const combinedPosts = useMemo(() => {
+    if (activeTab === 'Saved' && savedFullPosts.length > 0) {
+      const postMap = new Map<string, any>();
+      // Put saved full posts first
+      savedFullPosts.forEach((p) => {
+        postMap.set(String(p.id), p);
+      });
+      // Append feed posts that aren't already in saved
+      feedPosts.forEach((p) => {
+        if (!postMap.has(String(p.id))) {
+          postMap.set(String(p.id), p);
+        }
+      });
+      return Array.from(postMap.values());
+    }
+    return feedPosts;
+  }, [feedPosts, savedFullPosts, activeTab]);
+
+  const visibleFeedPosts = useMemo(() => {
+    const filtered = combinedPosts.filter((post) => {
+      const author = post.author || {};
+      
+      // Tag filter
+      if (normalizedTag) {
+        const content = String(post.content || '').toLowerCase();
+        if (!content.includes(`#${normalizedTag}`) && !content.includes(normalizedTag)) {
+          return false;
+        }
       }
+
+      // Text search query
+      if (normalizedFeedSearch) {
+        const matchesSearch = [post.content, author.full_name, author.practice_area]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(normalizedFeedSearch));
+        if (!matchesSearch) return false;
+      }
+
+      return true;
+    });
+
+    // Tab ordering logic
+    if (activeTab === 'Saved') {
+      // Saved posts FIRST, then other posts below
+      const saved = filtered.filter((p) => savedPostIds.has(String(p.id)));
+      const others = filtered.filter((p) => !savedPostIds.has(String(p.id)));
+      return [...saved, ...others];
     }
 
-    // Text search query
-    if (normalizedFeedSearch) {
-      const matchesSearch = [post.content, author.full_name, author.practice_area]
-        .filter(Boolean)
-        .some((value) => String(value).toLowerCase().includes(normalizedFeedSearch));
-      if (!matchesSearch) return false;
+    if (activeTab === 'Trending') {
+      return [...filtered].sort((a, b) => {
+        const scoreA = (a.likes_count || 0) * 2 + (a.comments_count || 0) * 3;
+        const scoreB = (b.likes_count || 0) * 2 + (b.comments_count || 0) * 3;
+        return scoreB - scoreA;
+      });
     }
 
-    return true;
-  });
+    if (activeTab === 'Following') {
+      return [...filtered].sort((a, b) => {
+        const recA = a.author?.is_wipa_recommended ? 1 : 0;
+        const recB = b.author?.is_wipa_recommended ? 1 : 0;
+        return recB - recA;
+      });
+    }
+
+    // Default 'Latest'
+    return filtered;
+  }, [combinedPosts, activeTab, normalizedTag, normalizedFeedSearch, savedPostIds]);
+
+  const savedCountInFeed = useMemo(() => {
+    return visibleFeedPosts.filter((p) => savedPostIds.has(String(p.id))).length;
+  }, [visibleFeedPosts, savedPostIds]);
 
   return (
     <div
@@ -861,6 +954,32 @@ function PlatformContent() {
               <div className="md:hidden relative z-10 w-full max-w-full bg-white dark:bg-[#0b0f19] pt-1 pb-2 border-0 border-none shadow-none isolate">
                 {/* 1. Stories Carousel */}
                 <FeedStoriesCarousel onOpenCreatePost={() => router.push('/platform/create-post')} />
+              </div>
+
+              {/* MOBILE FEED FILTER TABS (MOBILE ONLY) */}
+              <div className="md:hidden px-3 pt-1 pb-2.5 overflow-x-auto no-scrollbar flex items-center gap-1.5 border-b border-gray-100 dark:border-white/5 bg-white dark:bg-black">
+                {['Latest', 'Trending', 'Following', 'Saved'].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                      activeTab === tab
+                        ? 'bg-[#5a32fa] text-white shadow-sm shadow-[#5a32fa]/30'
+                        : 'bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                    }`}
+                  >
+                    {tab}
+                    {tab === 'Saved' && savedPostIds.size > 0 && (
+                      <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-extrabold ${
+                        activeTab === 'Saved'
+                          ? 'bg-white/25 text-white'
+                          : 'bg-black/10 dark:bg-white/20 text-gray-700 dark:text-gray-300'
+                      }`}>
+                        {savedPostIds.size}
+                      </span>
+                    )}
+                  </button>
+                ))}
               </div>
               
               {/* DESKTOP-ONLY HERO & COMPOSER (Completely excluded from mobile DOM) */}
@@ -953,7 +1072,7 @@ function PlatformContent() {
                           <button 
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`relative px-6 py-2.5 text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap rounded-xl z-10 ${
+                            className={`relative px-6 py-2.5 text-sm font-bold transition-all duration-300 ease-out whitespace-nowrap rounded-xl z-10 flex items-center gap-1.5 ${
                               activeTab === tab 
                                 ? 'text-gray-900 dark:text-white' 
                                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
@@ -963,6 +1082,15 @@ function PlatformContent() {
                               <div className="absolute inset-0 bg-white dark:bg-[#1e293b] rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_10px_rgba(0,0,0,0.4)] border border-black/5 dark:border-white/5 -z-10 animate-in zoom-in-95 duration-200" />
                             )}
                             {tab}
+                            {tab === 'Saved' && savedPostIds.size > 0 && (
+                              <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-extrabold ${
+                                activeTab === 'Saved'
+                                  ? 'bg-[#5a32fa] text-white'
+                                  : 'bg-gray-200 dark:bg-white/20 text-gray-700 dark:text-gray-300'
+                              }`}>
+                                {savedPostIds.size}
+                              </span>
+                            )}
                           </button>
                         ))}
                       </div>
@@ -1012,6 +1140,64 @@ function PlatformContent() {
                   </div>
                 )}
 
+                {activeTab === 'Saved' && (
+                  savedCountInFeed > 0 ? (
+                    <div className="mb-4 flex items-center justify-between rounded-2xl border border-[#5a32fa]/25 bg-gradient-to-r from-[#5a32fa]/10 via-[#5a32fa]/5 to-transparent px-4 py-3 dark:border-[#5a32fa]/35 dark:bg-gradient-to-r dark:from-[#5a32fa]/20 dark:via-[#5a32fa]/10 dark:to-transparent">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#5a32fa] text-white shadow-sm">
+                          <Bookmark size={17} className="fill-white" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">
+                              Showing Your Saved Posts First
+                            </p>
+                            <span className="rounded-full bg-[#5a32fa] px-2 py-0.5 text-[10px] font-extrabold text-white">
+                              {savedCountInFeed}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                            Your saved posts are prioritized at the top, followed by the rest of the feed below.
+                          </p>
+                        </div>
+                      </div>
+                      <Link
+                        href="/platform/bookmarks"
+                        className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-[#5a32fa] hover:underline shrink-0"
+                      >
+                        All Bookmarks &rarr;
+                      </Link>
+                    </div>
+                  ) : isLoadingSavedPosts ? (
+                    <div className="mb-4 flex items-center justify-center gap-2 rounded-2xl border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/[0.02] p-4 text-xs font-medium text-gray-500">
+                      <Loader2 size={16} className="animate-spin text-[#5a32fa]" />
+                      <span>Loading your saved posts...</span>
+                    </div>
+                  ) : (
+                    <div className="mb-4 flex items-center justify-between rounded-2xl border border-dashed border-gray-300 dark:border-white/15 bg-gray-50/60 dark:bg-white/[0.02] p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-200 dark:bg-white/10 text-gray-500 dark:text-gray-300">
+                          <Bookmark size={17} />
+                        </div>
+                        <div>
+                          <p className="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-200">
+                            No saved posts yet
+                          </p>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                            Tap the bookmark icon on any post below to save it to the top.
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setActiveTab('Latest')}
+                        className="text-xs font-bold text-[#5a32fa] hover:underline shrink-0"
+                      >
+                        Show Latest
+                      </button>
+                    </div>
+                  )
+                )}
+
                 {isLoadingFeed ? (
                   <div className="flex items-center justify-center py-20 text-gray-400">
                     <Loader2 size={32} className="animate-spin text-[#5a32fa]" />
@@ -1031,6 +1217,10 @@ function PlatformContent() {
                   </div>
                 ) : visibleFeedPosts.map((post, index) => {
                   const isLiked = dbLikedPostIds.has(post.id);
+                  const isSaved = savedPostIds.has(String(post.id));
+                  const isFirstOtherPost = activeTab === 'Saved' && savedCountInFeed > 0 && !isSaved && (
+                    index === 0 || savedPostIds.has(String(visibleFeedPosts[index - 1]?.id))
+                  );
                   const author = post.author || {};
                   const authorName = author.full_name || 'Anonymous User';
                   const initial = authorName.charAt(0).toUpperCase();
@@ -1041,6 +1231,17 @@ function PlatformContent() {
                     
                   return (
                     <React.Fragment key={post.id}>
+                    {/* Divider when switching from saved posts to other feed posts */}
+                    {isFirstOtherPost && (
+                      <div className="my-6 flex items-center gap-3 px-2">
+                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-white/15 to-transparent" />
+                        <div className="flex items-center gap-2 rounded-full border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-[#151c2c] px-3.5 py-1 text-[11px] font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider shadow-sm">
+                          <Globe size={13} className="text-[#5a32fa]" />
+                          <span>Other Feed Posts</span>
+                        </div>
+                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 dark:via-white/15 to-transparent" />
+                      </div>
+                    )}
                     <div 
                       onClick={(event) => handlePostDoubleTap(post.id, event)}
                       className="w-full max-w-full min-w-0 bg-white dark:bg-black sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b first:border-t-0 sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-6 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] [content-visibility:auto] [contain-intrinsic-size:auto_480px] box-border relative overflow-hidden select-none"
@@ -1073,7 +1274,7 @@ function PlatformContent() {
                             </div>
                           </Link>
                           <div className="flex flex-col">
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                               <Link href={`/platform/profile/${post.author_id}`} className="hover:underline hover:text-[#5a32fa] transition-colors flex items-center gap-1">
                                 <span className="font-bold text-[13px] sm:text-[14px] text-gray-900 dark:text-white leading-tight">{authorName}</span>
                                 {author.is_wipa_recommended && (
@@ -1082,6 +1283,11 @@ function PlatformContent() {
                                   </span>
                                 )}
                               </Link>
+                              {activeTab === 'Saved' && isSaved && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:bg-amber-400/15 dark:text-amber-300 border border-amber-500/20">
+                                  <Bookmark size={9} className="fill-current" /> Saved Post
+                                </span>
+                              )}
                             </div>
                             <span className="text-[10px] sm:text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
                               {timeAgo}

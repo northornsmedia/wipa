@@ -41,7 +41,8 @@ import {
   HelpCircle,
   ExternalLink,
   Zap,
-  MessageSquare
+  MessageSquare,
+  Bookmark
 } from 'lucide-react';
 
 type SidebarProps = {
@@ -224,6 +225,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
   const collapsedNavItems = [
     { label: 'Explore SallyIP', path: '/platform/sallyip', Icon: SallyLogoIcon },
     { label: 'Feed', path: '/platform', Icon: LayoutGrid },
+    { label: 'Saved Posts', path: '/platform/bookmarks', Icon: Bookmark },
     { label: 'Notifications', path: '/platform/notifications', Icon: Bell },
     { label: 'My Network', path: '/platform/network', Icon: Globe },
     { label: 'Members', path: '/platform/members', Icon: Users },
@@ -347,6 +349,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
             <nav className="space-y-1">
               {renderNavLink('/platform/sallyip', 'Explore SallyIP', SallyLogoIcon)}
               {renderNavLink('/platform', 'Feed', LayoutGrid)}
+              {renderNavLink('/platform/bookmarks', 'Saved Posts', Bookmark)}
               {renderNavLink(
                 '/platform/notifications', 
                 'Notifications', 

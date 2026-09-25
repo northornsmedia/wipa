@@ -7,7 +7,7 @@ import {
   X, Home, Heart, MessageSquare, Users, UserCheck, 
   Globe, Building2, Briefcase, Award, Calendar, 
   BookOpen, Sparkles, Gift, Moon, Sun, Settings, 
-  LogOut, ChevronRight, ShieldCheck, Star, Radio, HelpCircle
+  LogOut, ChevronRight, ShieldCheck, Star, Radio, HelpCircle, Bookmark
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -228,6 +228,16 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
                       <Gift size={16} />
                     </div>
                     <span className="text-xs font-bold text-gray-700 dark:text-gray-200">Gift a Membership</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavigate('/platform/bookmarks')}
+                    className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center">
+                      <Bookmark size={16} />
+                    </div>
+                    <span className="text-xs font-bold text-gray-700 dark:text-gray-200">Saved Posts</span>
                   </button>
 
                   <button

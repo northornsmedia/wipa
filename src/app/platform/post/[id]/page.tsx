@@ -15,15 +15,20 @@ import FeedVideoPlayer from '@/components/FeedVideoPlayer';
 import FormattedPostText from '@/components/FormattedPostText';
 import { supabase } from '@/lib/supabase';
 import { recordPostImpressions } from '@/lib/analytics';
+import { useAppStore } from '@/store/useAppStore';
+import BookmarkIcon from '@/components/icons/BookmarkIcon';
+import { toggleBookmark, getSavedPostIds } from '@/lib/bookmarks';
 
 export default function SharedPostPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const user = useAppStore((state) => state.user);
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -51,11 +56,33 @@ export default function SharedPostPage() {
     return () => { active = false; };
   }, [params.id]);
 
+  useEffect(() => {
+    if (!user?.id || !params.id) return;
+    getSavedPostIds(user.id).then(ids => {
+      setIsSaved(ids.includes(String(params.id)));
+    });
+
+    const handleBookmarkEvent = (e: any) => {
+      const { postId, isSaved: saved } = e.detail || {};
+      if (String(postId) === String(params.id)) {
+        setIsSaved(saved);
+      }
+    };
+    window.addEventListener('wipa:bookmarks-updated', handleBookmarkEvent);
+    return () => window.removeEventListener('wipa:bookmarks-updated', handleBookmarkEvent);
+  }, [user?.id, params.id]);
+
   const author = Array.isArray(post?.author) ? post.author[0] : post?.author;
 
   const handleLike = () => {
     setLiked(prev => !prev);
     setLikesCount(prev => liked ? Math.max(0, prev - 1) : prev + 1);
+  };
+
+  const handleToggleSave = async () => {
+    if (!user?.id || !post?.id) return;
+    setIsSaved(prev => !prev);
+    await toggleBookmark(String(post.id), user.id);
   };
 
   const handleCopyLink = () => {
@@ -231,14 +258,30 @@ export default function SharedPostPage() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={handleCopyLink}
-                className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors cursor-pointer"
-              >
-                <Share2 size={16} />
-                <span>Share</span>
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors cursor-pointer"
+                >
+                  <Share2 size={16} />
+                  <span>Share</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleToggleSave}
+                  className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                    isSaved
+                      ? 'text-amber-500 dark:text-amber-400'
+                      : 'text-slate-500 hover:text-amber-500 dark:hover:text-amber-400'
+                  }`}
+                  aria-label={isSaved ? 'Remove saved post' : 'Save post'}
+                  title={isSaved ? 'Remove from saved' : 'Save post'}
+                >
+                  <BookmarkIcon size={20} filled={isSaved} />
+                </button>
+              </div>
             </div>
 
           </article>
