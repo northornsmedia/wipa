@@ -30,7 +30,7 @@ export default function MobileResourcesPage() {
   }, [query]);
 
   return (
-    <div className="min-h-screen bg-[#f7f7fb] px-4 pb-8 pt-5 text-[#151525] dark:bg-[#0b0d16] dark:text-white sm:hidden">
+    <div className="min-h-screen bg-[#f7f7fb] px-4 pb-8 pt-5 text-[#151525] dark:bg-black dark:text-white sm:hidden">
       <header className="flex items-center justify-between gap-4">
         <div>
           <p className="mb-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#7c3aed] dark:text-[#c4b5fd]">WIPA Library</p>

@@ -254,7 +254,7 @@ export default function MobileTopBar() {
       {/* FEED PAGE CUSTOM MOBILE TOP BAR (Matches user screenshot) */}
       {pathname === '/platform' ? (
         <>
-          <header className={`md:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-[#0b0f19] pt-safe px-3.5 pb-0 transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
+          <header className={`md:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black pt-safe px-3.5 pb-0 transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
             isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
           } ${
             isScrolled && isVisible ? 'border-b border-slate-200/80 dark:border-white/10 shadow-sm' : 'border-0 shadow-none'
@@ -286,7 +286,7 @@ export default function MobileTopBar() {
                   className="relative w-10 h-10 rounded-full bg-white dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center shadow-sm border border-slate-100 dark:border-white/10 active:scale-90 transition-transform backdrop-blur-md"
                 >
                   <NotificationIcon size={19} />
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#ff2a5f] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs ring-2 ring-white dark:ring-[#0b0f19] leading-none pointer-events-none">
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#ff2a5f] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-xs ring-2 ring-white dark:ring-black leading-none pointer-events-none">
                     {unreadNotificationsCount > 0 ? unreadNotificationsCount : 3}
                   </span>
                 </Link>
@@ -309,7 +309,7 @@ export default function MobileTopBar() {
       ) : (
         /* STANDARD MOBILE TOP BAR FOR ALL OTHER PAGES */
         <>
-          <header className={`md:hidden fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0b0f19]/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
+          <header className={`md:hidden fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800/80 px-3.5 pt-safe flex flex-col justify-end transition-transform duration-300 ease-in-out w-full max-w-full box-border ${
             isVisible ? 'translate-y-0' : '-translate-y-full pointer-events-none'
           }`}>
           <div className="h-14 flex items-center justify-between w-full">

@@ -19,7 +19,7 @@ export default function ThemeWrapper({ children }: { children: React.ReactNode }
   }, [isDarkMode]);
   
   return (
-    <div className="theme-shell flex min-h-screen flex-col bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div className="theme-shell flex min-h-screen flex-col bg-slate-50 dark:bg-black md:dark:bg-[#070b14] text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {children}
     </div>
   );

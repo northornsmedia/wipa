@@ -116,6 +116,77 @@ html.dark body {
   color: #fff;
 }
 
+/* ========================================================
+   MOBILE-ONLY PURE BLACK OLED DARK THEME
+   (On desktop, the rich navy theme remains intact)
+   ======================================================== */
+@media (max-width: 768px) {
+  html.dark,
+  html.dark body,
+  .dark body,
+  .dark .theme-shell,
+  .dark .platform-body-container {
+    background-color: #000000 !important;
+    background: #000000 !important;
+  }
+
+  .dark {
+    --background: oklch(0 0 0) !important;
+    --card: oklch(0 0 0) !important;
+    --popover: oklch(0.08 0 0) !important;
+    --sidebar: oklch(0 0 0) !important;
+    --color-sidebar: #000000 !important;
+    --secondary: oklch(0.12 0 0) !important;
+    --muted: oklch(0.12 0 0) !important;
+  }
+
+  /* Override dark blue backgrounds to pure black on mobile */
+  .dark [class*="dark:bg-[#0b0f19]"],
+  .dark [class*="dark:bg-[#0f172a]"],
+  .dark [class*="dark:bg-[#090d16]"],
+  .dark [class*="dark:bg-[#070b14]"],
+  .dark [class*="dark:bg-[#0b0d16]"],
+  .dark [class*="dark:bg-[#111726]"],
+  .dark [class*="dark:bg-[#101626]"],
+  .dark [class*="dark:bg-[#121829]"],
+  .dark [class*="dark:bg-slate-900"],
+  .dark [class*="dark:bg-slate-950"],
+  .dark [class*="dark:bg-gray-900"],
+  .dark [class*="dark:bg-gray-950"],
+  .dark .bg-\[\#0b0f19\],
+  .dark .bg-\[\#0f172a\],
+  .dark .bg-\[\#090d16\],
+  .dark .bg-\[\#070b14\],
+  .dark .bg-\[\#0b0d16\],
+  .dark .bg-slate-900,
+  .dark .bg-slate-950 {
+    background-color: #000000 !important;
+  }
+
+  /* Translucent bars/navs: pure black with backdrop blur on mobile */
+  .dark [class*="dark:bg-[#090d16]/95"],
+  .dark [class*="dark:bg-[#0b0f19]/95"],
+  .dark [class*="dark:bg-[#070b14]/90"],
+  .dark [class*="dark:bg-[#0b0f19]/90"] {
+    background-color: rgba(0, 0, 0, 0.95) !important;
+  }
+
+  /* Elevated surface elements/cards on mobile: neutral charcoal (#121212 / #18181b), NEVER navy blue */
+  .dark [class*="dark:bg-[#151c2c]"],
+  .dark [class*="dark:bg-[#181d28]"],
+  .dark [class*="dark:bg-[#1e293b]"],
+  .dark [class*="dark:bg-[#1a2236]"] {
+    background-color: #121212 !important;
+  }
+
+  /* Remove any blue borders on mobile dark mode, keep subtle neutral dark grey */
+  .dark [class*="dark:border-slate-800"],
+  .dark [class*="dark:border-slate-700"],
+  .dark [class*="dark:border-gray-800"] {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

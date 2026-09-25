@@ -627,7 +627,7 @@ export default function NotificationsPage() {
   }, [notifications, preferences]);
 
   return (
-    <div className="w-full min-h-[calc(100vh-77px)] bg-[#f8f9fa] dark:bg-[#070b14] text-slate-900 dark:text-white font-sans relative overflow-x-hidden pb-20">
+    <div className="w-full min-h-[calc(100vh-77px)] bg-[#f8f9fa] dark:bg-black md:dark:bg-[#070b14] text-slate-900 dark:text-white font-sans relative overflow-x-hidden pb-20">
       
       {/* Subtle Ambient Background Gradients */}
       <div className="pointer-events-none absolute -top-24 left-1/4 h-96 w-96 rounded-full bg-purple-500/10 blur-3xl" />

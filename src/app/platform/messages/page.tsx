@@ -1957,7 +1957,7 @@ function MessagesContent() {
             top: 'var(--chat-viewport-top, 0px)',
             maxHeight: 'var(--chat-viewport-height, 100dvh)',
           } : undefined}
-          className={`bg-white dark:bg-[#0f172a] rounded-none border-0 flex-col overflow-hidden ${
+          className={`bg-white dark:bg-black md:dark:bg-[#0f172a] rounded-none border-0 flex-col overflow-hidden ${
             !showMobileChat 
               ? 'hidden md:flex flex-1 h-full min-h-0 relative' 
               : 'flex fixed inset-0 z-[100] md:relative md:flex-1 md:inset-auto md:z-auto md:h-full min-h-0'
@@ -2120,7 +2120,7 @@ function MessagesContent() {
               </div>
 
               {/* Chat Input Bar with Centered Container */}
-              <div className="sticky bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pb-[max(env(safe-area-inset-bottom,0px),1rem)] md:pb-4 border-t border-gray-100 dark:border-white/10 bg-white/95 dark:bg-[#0f172a]/95 backdrop-blur-xl shrink-0 w-full">
+              <div className="sticky bottom-0 left-0 right-0 z-20 p-3 sm:p-4 pb-[max(env(safe-area-inset-bottom,0px),1rem)] md:pb-4 border-t border-gray-100 dark:border-white/10 bg-white/95 dark:bg-black/95 md:dark:bg-[#0f172a]/95 backdrop-blur-xl shrink-0 w-full">
                 <div className="max-w-4xl mx-auto w-full">
                   {isVoiceRecording ? (
                     /* 1. Live Recording Mode */
@@ -2222,7 +2222,7 @@ function MessagesContent() {
 
                         {/* Attachment Menu Popover */}
                         {isAttachmentMenuOpen && (
-                          <div className="absolute bottom-[calc(100%+12px)] left-0 bg-white dark:bg-[#0f172a] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl py-2 w-52 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                          <div className="absolute bottom-[calc(100%+12px)] left-0 bg-white dark:bg-[#121212] md:dark:bg-[#0f172a] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl py-2 w-52 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
                             <button type="button" onClick={openCamera} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-[#5a32fa] hover:text-white transition-colors font-bold text-xs text-left">
                               <Camera size={16} /> Take Photo
                             </button>

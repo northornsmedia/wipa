@@ -32,7 +32,7 @@ export default function MobileBottomNav() {
   return (
     <>
       {/* Instagram-style Full Bottom Navigation Bar (Mathematically centered horizontally & vertically) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 w-full bg-white/95 dark:bg-[#090d16]/95 backdrop-blur-2xl border-t border-slate-200 dark:border-white/10 transition-all box-border pb-[env(safe-area-inset-bottom,0px)]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 w-full bg-white/95 dark:bg-black/95 backdrop-blur-2xl border-t border-slate-200 dark:border-white/10 transition-all box-border pb-[env(safe-area-inset-bottom,0px)]">
         <div className="h-[57px] w-full max-w-md mx-auto flex items-center justify-between px-3.5 sm:px-6">
           {/* 1. Feed / Home */}
           <Link

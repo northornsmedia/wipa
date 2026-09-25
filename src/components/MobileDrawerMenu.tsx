@@ -95,10 +95,10 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 26, stiffness: 280 }}
-            className="absolute top-0 right-0 bottom-0 w-[85vw] max-w-sm bg-white dark:bg-[#0b0f19] border-l border-gray-200 dark:border-gray-800 shadow-2xl flex flex-col z-10 overflow-hidden"
+            className="absolute top-0 right-0 bottom-0 w-[85vw] max-w-sm bg-white dark:bg-black border-l border-gray-200 dark:border-white/10 shadow-2xl flex flex-col z-10 overflow-hidden"
           >
             {/* Drawer Header with Close button */}
-            <div className="p-4 border-b border-gray-100 dark:border-gray-800/80 flex items-center justify-between">
+            <div className="p-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between">
               <span className="text-xs font-black uppercase tracking-widest text-gray-400">Navigation Menu</span>
               <button
                 onClick={onClose}
@@ -114,7 +114,7 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
               {user ? (
                 <div 
                   onClick={() => handleNavigate('/platform/profile')}
-                  className="p-4 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#151c2c] dark:to-[#1a2236] border border-gray-200/80 dark:border-gray-700/60 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+                  className="p-4 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#141414] dark:to-[#1c1c1c] border border-gray-200/80 dark:border-white/10 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
                 >
                   <div className="flex items-center gap-3">
                     <div className="relative">
@@ -125,7 +125,7 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
                           {user.name?.charAt(0)?.toUpperCase() || 'U'}
                         </div>
                       )}
-                      <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-[#151c2c] rounded-full" />
+                      <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-black rounded-full" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">

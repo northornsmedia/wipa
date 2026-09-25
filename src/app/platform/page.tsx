@@ -842,13 +842,13 @@ function PlatformContent() {
           />
         </div>
       </div>
-      <div className="w-full max-w-full bg-white dark:bg-[#0b0f19] flex flex-col flex-1 min-w-0">
+      <div className="w-full max-w-full bg-white dark:bg-black md:dark:bg-[#0b0f19] flex flex-col flex-1 min-w-0">
         
         {/* MAIN LAYOUT */}
         <div className="flex flex-1 w-full max-w-full min-w-0">
           
           {/* MAIN CONTENT AREA */}
-          <main className="flex-1 w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] md:bg-slate-50/50 md:dark:bg-[#0b1120] p-0 sm:p-6 md:p-8 flex flex-col xl:flex-row gap-0 xl:gap-8 items-start relative">
+          <main className="flex-1 w-full max-w-full min-w-0 bg-white dark:bg-black md:bg-slate-50/50 md:dark:bg-[#0b1120] p-0 sm:p-6 md:p-8 flex flex-col xl:flex-row gap-0 xl:gap-8 items-start relative">
             
             {/* LEFT COLUMN */}
             <div className="flex-1 w-full max-w-full min-w-0 flex justify-center pb-36 sm:pb-24 md:pb-20 box-border relative">
@@ -1040,7 +1040,7 @@ function PlatformContent() {
                     <React.Fragment key={post.id}>
                     <div 
                       onClick={(event) => handlePostDoubleTap(post.id, event)}
-                      className="w-full max-w-full min-w-0 bg-white dark:bg-[#0b0f19] sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b first:border-t-0 sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-6 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] [content-visibility:auto] [contain-intrinsic-size:auto_480px] box-border relative overflow-hidden select-none"
+                      className="w-full max-w-full min-w-0 bg-white dark:bg-black sm:bg-white sm:dark:bg-[#151c2c] rounded-none sm:rounded-2xl md:rounded-[2rem] border-b first:border-t-0 sm:border border-gray-100/60 dark:border-white/[0.06] sm:border-gray-200/80 sm:dark:border-gray-800/80 px-4 py-4 sm:p-6 mb-0 sm:mb-4 shadow-none sm:shadow-[0_4px_20px_rgb(0,0,0,0.03)] sm:dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] [content-visibility:auto] [contain-intrinsic-size:auto_480px] box-border relative overflow-hidden select-none"
                     >
                       {/* Sleek Minimal Double-Tap Heart Animation */}
                       {animatingHeartPostIds.has(post.id) && (

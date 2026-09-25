@@ -348,10 +348,10 @@ export default function MobileSearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#090d16] text-slate-900 dark:text-white flex flex-col w-full max-w-full pb-20">
+    <div className="min-h-screen bg-white dark:bg-black md:dark:bg-[#090d16] text-slate-900 dark:text-white flex flex-col w-full max-w-full pb-20">
       
       {/* Top Header & Search Bar Bar Area */}
-      <div className="sticky top-0 z-40 bg-white/95 dark:bg-[#090d16]/95 backdrop-blur-xl border-b border-slate-100 dark:border-white/[0.08] pt-safe px-4 pb-2.5 shadow-xs">
+      <div className="sticky top-0 z-40 bg-white/95 dark:bg-black/95 md:dark:bg-[#090d16]/95 backdrop-blur-xl border-b border-slate-100 dark:border-white/[0.08] pt-safe px-4 pb-2.5 shadow-xs">
         
         {/* Row 1: Back Button `<` and "Search" Title (Matches Screenshot) */}
         <div className="h-12 flex items-center gap-3 w-full">
