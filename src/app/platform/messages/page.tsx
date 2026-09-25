@@ -1913,7 +1913,11 @@ function MessagesContent() {
   };
 
   return (
-    <div className="h-[calc(100vh-77px)] overflow-hidden bg-white dark:bg-[#0f172a] flex flex-col font-sans w-full max-w-full">
+    <div className={`w-full max-w-full flex flex-col font-sans overflow-hidden bg-white dark:bg-[#000000] md:dark:bg-[#0f172a] ${
+      showMobileChat 
+        ? 'h-[100dvh] md:h-[calc(100vh-77px)]' 
+        : 'h-[calc(100dvh-57px-env(safe-area-inset-bottom,0px))] md:h-[calc(100vh-77px)]'
+    }`}>
 
       {/* Offline / Queued Connection Alert Banner */}
       {!isOnline && (
@@ -1924,7 +1928,7 @@ function MessagesContent() {
       )}
 
       {/* Main Messaging UI (100% Edge-to-Edge Full Screen Layout) */}
-      <div className="flex-1 flex w-full p-0 min-h-0 gap-0 bg-white dark:bg-[#0f172a] overflow-hidden">
+      <div className="flex-1 flex w-full p-0 min-h-0 gap-0 bg-white dark:bg-[#000000] md:dark:bg-[#0f172a] overflow-hidden">
         
         {/* Left Pane: Conversations List */}
         <ChatSidebar 
