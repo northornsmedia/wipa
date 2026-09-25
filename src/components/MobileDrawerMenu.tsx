@@ -205,33 +205,6 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
                 </h4>
 
                 <div className="grid grid-cols-1 gap-1">
-                  {/* Install App Shortcut */}
-                  <div 
-                    onClick={() => {
-                      onClose();
-                      if (typeof window !== 'undefined') {
-                        const promptEvent = (window as any).deferredInstallPrompt;
-                        if (promptEvent) {
-                          window.dispatchEvent(new Event('wipa_trigger_install'));
-                        } else {
-                          alert("To install WIPA App:\n• On Android/Chrome: Tap the 3 dots (⋮) ➔ 'Install App' or 'Add to Home screen'\n• On iOS/Safari: Tap the Share icon (⬆️) ➔ select 'Add to Home Screen'");
-                        }
-                      }
-                    }}
-                    className="w-full flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-[#5a32fa]/15 via-[#ff2a5f]/15 to-[#ff90e8]/15 border border-[#5a32fa]/30 dark:border-white/10 active:scale-98 transition-all cursor-pointer shadow-sm"
-                  >
-                    <div className="flex items-center gap-3">
-                      <img src="/mobilelogowipa.png" alt="WIPA App" className="w-8 h-8 rounded-xl object-cover shadow-sm ring-1 ring-[#5a32fa]" />
-                      <div className="text-left">
-                        <h5 className="text-xs font-bold text-gray-900 dark:text-white leading-tight">Install WIPA App</h5>
-                        <p className="text-[10px] text-gray-500 dark:text-gray-400">Download native mobile PWA</p>
-                      </div>
-                    </div>
-                    <span className="px-2 py-0.5 bg-[#5a32fa] text-white text-[9px] font-black rounded-md uppercase tracking-wider">
-                      INSTALL
-                    </span>
-                  </div>
-
                   <button
                     onClick={toggleDarkMode}
                     className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors text-left"

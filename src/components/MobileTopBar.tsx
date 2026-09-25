@@ -147,10 +147,12 @@ export default function MobileTopBar() {
   }, [pathname]);
 
   useEffect(() => {
-    const handleOpenSearch = () => setIsSearchOpen(true);
+    const handleOpenSearch = () => {
+      router.push('/platform/search');
+    };
     window.addEventListener('open-mobile-search', handleOpenSearch);
     return () => window.removeEventListener('open-mobile-search', handleOpenSearch);
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const checkViewport = () => setIsMobile(window.innerWidth < 768);
@@ -241,6 +243,7 @@ export default function MobileTopBar() {
     pathname === '/platform/create-post' || 
     pathname.startsWith('/platform/messages') || 
     pathname === '/platform/more' ||
+    pathname === '/platform/search' ||
     pathname.startsWith('/platform/resources/ip-firms');
   if (isFullScreenModalPage) {
     return null;

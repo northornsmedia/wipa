@@ -696,4 +696,14 @@ img, video, [data-protected-media], .protected-media {
   font-family: 'Instagram Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
+.platform-body-container {
+  padding-top: 0;
+}
+
+@media (min-width: 768px) {
+  .platform-body-container {
+    padding-top: var(--platform-header-height, 77px);
+  }
+}
+
 

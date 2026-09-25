@@ -70,14 +70,17 @@ export default function MobileBottomNav() {
           </Link>
 
           {/* 4. Search Button */}
-          <button
-            type="button"
-            onClick={handleOpenSearch}
+          <Link
+            href="/platform/search"
             aria-label="Search"
-            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-all active:scale-90 touch-manipulation cursor-pointer"
+            className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-90 touch-manipulation cursor-pointer ${
+              isActive('/platform/search')
+                ? 'text-slate-900 dark:text-white bg-slate-100 dark:bg-white/10'
+                : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
           >
             <SearchAiLineIcon size={21} />
-          </button>
+          </Link>
 
           {/* 5. Profile */}
           <Link

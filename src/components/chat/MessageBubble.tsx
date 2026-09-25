@@ -12,6 +12,7 @@ export interface ChatMessage {
   text?: string;
   sender: 'me' | 'them';
   sender_id?: string;
+  sender_name?: string;
   time: string;
   created_at?: string;
   type?: MediaType;
@@ -249,6 +250,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
           </button>
         )}
       </div>
+
+      {/* Sender Name for group chats */}
+      {!isMe && message.sender_name && (
+        <span className="text-[11px] font-bold text-[#5a32fa] dark:text-[#a080ff] mb-1 px-1.5 select-none">
+          {message.sender_name}
+        </span>
+      )}
 
       {/* Message Bubble Body */}
       <div 

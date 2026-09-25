@@ -4,8 +4,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { DotmCircular7 as Loader2 } from '@/components/ui/dotm-circular-7';
 import { 
   Paperclip, Send, Camera, Mic, MapPin, Image as ImageIcon, Video, FileText, 
-  X, Square, WifiOff, Sparkles, ChevronDown, Play, Pause, Trash2, ShieldCheck
+  X, Square, WifiOff, MessageCircle, ChevronDown, Play, Pause, Trash2, ShieldCheck
 } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAppStore } from '@/store/useAppStore';
@@ -16,10 +17,59 @@ import { ChatHeader } from '@/components/chat/ChatHeader';
 import { ChatSidebar, SidebarChat } from '@/components/chat/ChatSidebar';
 import { encryptMessage, decryptMessage, isEncrypted } from '@/lib/e2ee';
 import { SentIcon } from '@/components/icons/SentIcon';
+import { askSallyChatAI } from '@/app/actions/lexiq';
 
 export type Chat = SidebarChat & {
   messages: ChatMessage[];
   participantId?: string;
+};
+
+const SALLY_CHAT_STORAGE_KEY = 'wipa_sally_chat_messages_v2';
+
+const getInitialSallyMessages = (): ChatMessage[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const saved = localStorage.getItem(SALLY_CHAT_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return [
+    {
+      id: 'sally_welcome_msg',
+      conversation_id: 'sally-ip',
+      text: 'Hello! I am Sally IP, your intellectual property and legal co-pilot for WIPA. How can I assist you with patent strategy, trademarks, research, or drafting today?',
+      sender: 'them',
+      sender_id: 'sally-ip',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      created_at: new Date().toISOString(),
+      type: 'text',
+      status: 'read',
+      is_read: true
+    }
+  ];
+};
+
+const createSallyChatObject = (initialMessages?: ChatMessage[]): Chat => {
+  const msgs = initialMessages && initialMessages.length > 0 ? initialMessages : getInitialSallyMessages();
+  const lastMsg = msgs[msgs.length - 1];
+  return {
+    id: 'sally-ip',
+    name: 'Sally IP',
+    role: 'AI Intellectual Property Co-Pilot',
+    avatarUrl: '/sally-logo.png',
+    initial: 'S',
+    color: '#5a32fa',
+    unread: 0,
+    lastMessage: lastMsg?.text || 'Hello! I am Sally IP, your intellectual property co-pilot for WIPA.',
+    lastTime: lastMsg ? new Date(lastMsg.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now',
+    rawTimestamp: lastMsg?.created_at ? new Date(lastMsg.created_at).getTime() : Date.now(),
+    isOnline: true,
+    isTyping: false,
+    messages: msgs,
+    participantId: 'sally-ip'
+  };
 };
 
 const MESSAGE_OUTBOX_KEY = 'wipa_message_outbox_v1';
@@ -61,7 +111,7 @@ function getDateDivider(dateStr?: string): string {
 
 function MessagesContent() {
   const router = useRouter();
-  const { user, cachedConversations, setCachedConversations, setIsInsideChat } = useAppStore();
+  const { user, cachedConversations, setCachedConversations, setIsInsideChat, setIsLexIQOpen } = useAppStore();
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get('userId');
   const targetConversationId = searchParams.get('chatId');
@@ -96,6 +146,15 @@ function MessagesContent() {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [showScrollBottomPill, setShowScrollBottomPill] = useState(false);
   const [lightboxImageUrl, setLightboxImageUrl] = useState<string | null>(null);
+  const [mutedChatIds, setMutedChatIds] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const raw = localStorage.getItem('wipa_muted_chats');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
 
   // Attachment refs
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -304,7 +363,28 @@ function MessagesContent() {
           .map((c: any) => {
             const conv = c.conversations;
             const other = conv.conversation_participants?.find((p: any) => p.user_id !== user.id)?.profiles || {};
-            const title = conv.is_group ? (conv.name || 'Group Chat') : (other.full_name || 'Direct Message');
+            
+            let title = 'Direct Message';
+            let avatar: string | null = null;
+            let roleStr = other.practice_area || other.role || 'Member';
+            const isGroup = Boolean(conv.is_group);
+
+            if (isGroup) {
+              const rawName = conv.name || 'Group Chat';
+              if (rawName.includes(':::')) {
+                const parts = rawName.split(':::');
+                title = parts[0] || 'Group Chat';
+                avatar = parts[1] || null;
+              } else {
+                title = rawName;
+              }
+              const count = conv.conversation_participants?.length || 0;
+              roleStr = `${count} ${count === 1 ? 'member' : 'members'}`;
+            } else {
+              title = other.full_name || 'Direct Message';
+              avatar = other.avatar_url || null;
+            }
+
             const latest = latestMsgMap[conv.id];
             
             let previewText = 'Start a conversation';
@@ -328,16 +408,18 @@ function MessagesContent() {
             return {
               id: String(conv.id),
               name: title,
-              role: other.practice_area || other.role || 'Member',
-              avatarUrl: other.avatar_url || null,
-              initial: title.charAt(0).toUpperCase() || 'U',
+              role: roleStr,
+              avatarUrl: avatar,
+              initial: title.charAt(0).toUpperCase() || (isGroup ? 'G' : 'M'),
               color: '#5a32fa',
               unread: unreadMap[conv.id] || 0,
               lastMessage: previewText,
               lastTime: timeStr,
               rawTimestamp,
+              isGroup,
+              isMuted: mutedChatIds.includes(String(conv.id)),
               messages: [],
-              participantId: other.id
+              participantId: isGroup ? undefined : other.id
             };
           });
 
@@ -358,15 +440,25 @@ function MessagesContent() {
               messages: existingMessagesMap[String(c.id)] || []
             }));
 
+            // Preserve Sally IP conversation if already opened or active
+            const existingSally = prev.find(c => c.id === 'sally-ip');
+            const finalList = existingSally ? [existingSally, ...merged.filter(c => c.id !== 'sally-ip')] : merged;
+            finalList.sort((a, b) => (b.rawTimestamp || 0) - (a.rawTimestamp || 0));
+
             queueMicrotask(() => {
-              useAppStore.getState().setCachedConversations(merged);
+              useAppStore.getState().setCachedConversations(finalList);
             });
-            return merged;
+            return finalList;
           });
 
           if (!activeChatIdRef.current && !targetUserId && !targetConversationId) {
             setActiveChatId(String(parsed[0].id));
           }
+        } else {
+          setConversations(prev => {
+            const existingSally = prev.find(c => c.id === 'sally-ip');
+            return existingSally ? [existingSally] : prev;
+          });
         }
       }
     } catch (err) {
@@ -451,6 +543,318 @@ function MessagesContent() {
     }
   }, [targetUserId, user?.id, router]);
 
+  // Handle opening or starting a direct chat conversation with Sally IP
+  const handleOpenSallyChat = useCallback(() => {
+    setConversations(prev => {
+      const existing = prev.find(c => c.id === 'sally-ip');
+      if (existing) return prev;
+      const sallyChat = createSallyChatObject();
+      const updated = [sallyChat, ...prev];
+      queueMicrotask(() => {
+        useAppStore.getState().setCachedConversations(updated);
+      });
+      return updated;
+    });
+    setActiveChatId('sally-ip');
+    setShowMobileChat(true);
+  }, []);
+
+  // Handle starting a new direct chat with any user
+  const handleStartNewChat = useCallback(async (targetId: string) => {
+    if (!user?.id) return;
+
+    if (targetId === 'sally-ip') {
+      handleOpenSallyChat();
+      return;
+    }
+
+    try {
+      // 1. Check if conversation already exists in local state
+      const existing = conversations.find(c => c.participantId === targetId);
+      if (existing) {
+        setActiveChatId(String(existing.id));
+        setShowMobileChat(true);
+        return;
+      }
+
+      // 2. Check Supabase for existing conversation between user.id and targetId
+      const { data: userConvs } = await supabase
+        .from('conversation_participants')
+        .select('conversation_id')
+        .eq('user_id', user.id);
+
+      if (userConvs && userConvs.length > 0) {
+        const convIds = userConvs.map(c => c.conversation_id);
+        const { data: otherMatches } = await supabase
+          .from('conversation_participants')
+          .select('conversation_id')
+          .eq('user_id', targetId)
+          .in('conversation_id', convIds);
+
+        if (otherMatches && otherMatches.length > 0) {
+          const foundId = String(otherMatches[0].conversation_id);
+          const { data: profile } = await supabase.from('profiles').select('*').eq('id', targetId).maybeSingle();
+          const title = profile?.full_name || 'Member';
+          const newChat: Chat = {
+            id: foundId,
+            name: title,
+            role: profile?.practice_area || profile?.role || 'WIPA Member',
+            avatarUrl: profile?.avatar_url || null,
+            initial: title.charAt(0).toUpperCase() || 'M',
+            color: '#5a32fa',
+            unread: 0,
+            lastMessage: 'Tap to view conversation',
+            lastTime: '',
+            messages: [],
+            participantId: targetId
+          };
+          setConversations(prev => {
+            if (prev.some(c => String(c.id) === foundId)) return prev;
+            return [newChat, ...prev];
+          });
+          setActiveChatId(foundId);
+          setShowMobileChat(true);
+          return;
+        }
+      }
+
+      // 3. Create new conversation
+      const { data: newConv } = await supabase
+        .from('conversations')
+        .insert({ is_group: false })
+        .select()
+        .single();
+
+      if (newConv) {
+        await supabase.from('conversation_participants').insert([
+          { conversation_id: newConv.id, user_id: user.id },
+          { conversation_id: newConv.id, user_id: targetId }
+        ]);
+
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', targetId).maybeSingle();
+        const title = profile?.full_name || 'Member';
+        const newChat: Chat = {
+          id: String(newConv.id),
+          name: title,
+          role: profile?.practice_area || profile?.role || 'WIPA Member',
+          avatarUrl: profile?.avatar_url || null,
+          initial: title.charAt(0).toUpperCase() || 'M',
+          color: '#5a32fa',
+          unread: 0,
+          lastMessage: 'Started new conversation',
+          lastTime: 'Just now',
+          messages: [],
+          participantId: targetId
+        };
+        setConversations(prev => [newChat, ...prev]);
+        setActiveChatId(String(newConv.id));
+        setShowMobileChat(true);
+      }
+    } catch (err) {
+      console.error('Failed to start new chat:', err);
+    }
+  }, [user?.id, conversations]);
+
+  // Handle creating a new group chat with database wiring and storage upload
+  const handleCreateGroupChat = useCallback(async (
+    name: string,
+    imageFile: File | null,
+    memberIds: string[]
+  ) => {
+    if (!user?.id) return;
+    try {
+      let avatarUrl: string | null = null;
+      
+      // 1. Upload group photo to Supabase storage bucket if provided
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop() || 'jpg';
+        const fileName = `groups/group_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const { error: uploadErr } = await supabase.storage
+          .from('feed-media')
+          .upload(fileName, imageFile, {
+            contentType: imageFile.type || 'image/jpeg',
+            upsert: true
+          });
+
+        if (!uploadErr) {
+          const { data: publicUrlData } = supabase.storage
+            .from('feed-media')
+            .getPublicUrl(fileName);
+          avatarUrl = publicUrlData?.publicUrl || null;
+        } else {
+          console.warn('Group avatar upload error:', uploadErr);
+        }
+      }
+
+      // 2. Insert into conversations table
+      const storedName = avatarUrl ? `${name}:::${avatarUrl}` : name;
+      const { data: newConv, error: convErr } = await supabase
+        .from('conversations')
+        .insert({
+          is_group: true,
+          name: storedName
+        })
+        .select()
+        .single();
+
+      if (convErr || !newConv) {
+        console.error('Failed to create group conversation:', convErr);
+        alert('Failed to create group. Please check connection and try again.');
+        return;
+      }
+
+      // 3. Insert participants (creator as admin, selected members as member)
+      const participants = [
+        { conversation_id: newConv.id, user_id: user.id, role: 'admin' },
+        ...memberIds.map(mId => ({ conversation_id: newConv.id, user_id: mId, role: 'member' }))
+      ];
+      const { error: partErr } = await supabase
+        .from('conversation_participants')
+        .insert(participants);
+
+      if (partErr) {
+        console.error('Failed to insert group participants:', partErr);
+      }
+
+      // 4. Insert initial system message into messages table
+      const initialText = `${user.name || 'You'} created group "${name}"`;
+      const encryptedInitial = await encryptMessage(initialText, String(newConv.id));
+      const { data: welcomeMsg } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: newConv.id,
+          sender_id: user.id,
+          content: encryptedInitial,
+          media_type: 'text'
+        })
+        .select()
+        .single();
+
+      const welcomeChatMessage: ChatMessage = {
+        id: welcomeMsg ? String(welcomeMsg.id) : `init_${Date.now()}`,
+        conversation_id: String(newConv.id),
+        text: initialText,
+        sender: 'me',
+        sender_id: user.id,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        created_at: new Date().toISOString(),
+        type: 'text',
+        status: 'sent'
+      };
+
+      // 5. Build new group Chat object
+      const totalCount = memberIds.length + 1;
+      const newGroupChat: Chat = {
+        id: String(newConv.id),
+        name: name,
+        role: `${totalCount} ${totalCount === 1 ? 'member' : 'members'}`,
+        avatarUrl: avatarUrl,
+        initial: name.charAt(0).toUpperCase() || 'G',
+        color: '#5a32fa',
+        unread: 0,
+        lastMessage: initialText,
+        lastTime: 'Just now',
+        rawTimestamp: Date.now(),
+        isOnline: true,
+        isGroup: true,
+        messages: [welcomeChatMessage]
+      };
+
+      // 6. Update local state & cached conversations
+      setConversations(prev => {
+        const updated = [newGroupChat, ...prev.filter(c => String(c.id) !== String(newConv.id))];
+        queueMicrotask(() => {
+          useAppStore.getState().setCachedConversations(updated);
+        });
+        return updated;
+      });
+
+      setActiveChatId(String(newConv.id));
+      setShowMobileChat(true);
+    } catch (err) {
+      console.error('Error in handleCreateGroupChat:', err);
+      alert('Something went wrong while creating the group chat.');
+    }
+  }, [user?.id, user?.name]);
+
+  // Handle toggling unread status for a conversation
+  const handleToggleUnread = useCallback(async (chatId: string) => {
+    const target = conversations.find(c => String(c.id) === String(chatId));
+    if (!target) return;
+    const newUnread = target.unread > 0 ? 0 : 1;
+
+    setConversations(prev => {
+      const next = prev.map(c => String(c.id) === String(chatId) ? { ...c, unread: newUnread } : c);
+      queueMicrotask(() => {
+        useAppStore.getState().setCachedConversations(next);
+      });
+      return next;
+    });
+
+    if (chatId !== 'sally-ip' && user?.id) {
+      try {
+        if (newUnread === 0) {
+          await supabase
+            .from('messages')
+            .update({ is_read: true, read_at: new Date().toISOString() })
+            .eq('conversation_id', chatId)
+            .eq('is_read', false)
+            .neq('sender_id', user.id);
+        } else {
+          const { data: latest } = await supabase
+            .from('messages')
+            .select('id')
+            .eq('conversation_id', chatId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (latest) {
+            await supabase
+              .from('messages')
+              .update({ is_read: false })
+              .eq('id', latest.id);
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to update unread status:', err);
+      }
+    }
+  }, [conversations, user?.id]);
+
+  // Handle toggling mute for a conversation (persists in localStorage)
+  const handleToggleMute = useCallback((chatId: string) => {
+    const currentMuted = (() => {
+      try {
+        const raw = localStorage.getItem('wipa_muted_chats');
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    })();
+
+    const isCurrentlyMuted = currentMuted.includes(chatId);
+    const updatedMuted = isCurrentlyMuted 
+      ? currentMuted.filter((id: string) => id !== chatId)
+      : [...currentMuted, chatId];
+
+    try {
+      localStorage.setItem('wipa_muted_chats', JSON.stringify(updatedMuted));
+    } catch {}
+
+    setMutedChatIds(updatedMuted);
+
+    setConversations(prev => {
+      const next = prev.map(c => 
+        String(c.id) === String(chatId) ? { ...c, isMuted: !isCurrentlyMuted } : c
+      );
+      queueMicrotask(() => {
+        useAppStore.getState().setCachedConversations(next);
+      });
+      return next;
+    });
+  }, []);
+
   // Mark conversation as read both locally, in cached store, and in live Supabase DB
   const markAsRead = useCallback(async (id: string) => {
     const currentId = String(id);
@@ -469,7 +873,7 @@ function MessagesContent() {
     });
 
     // 2. Update is_read = true in Supabase DB
-    if (user?.id) {
+    if (currentId !== 'sally-ip' && user?.id) {
       try {
         await supabase
           .from('messages')
@@ -500,6 +904,17 @@ function MessagesContent() {
   useEffect(() => {
     if (!activeChatId || !user?.id) return;
     
+    if (activeChatId === 'sally-ip') {
+      setIsLoadingMessages(false);
+      setConversations(prev => prev.map(chat => {
+        if (chat.id === 'sally-ip' && (!chat.messages || chat.messages.length === 0)) {
+          return { ...chat, messages: getInitialSallyMessages() };
+        }
+        return chat;
+      }));
+      return;
+    }
+
     const currentChatId = String(activeChatId);
     let isSubscribed = true;
     setIsLoadingMessages(true);
@@ -508,7 +923,7 @@ function MessagesContent() {
       try {
         const { data, error } = await supabase
           .from('messages')
-          .select('*')
+          .select('*, profiles:sender_id(full_name, avatar_url)')
           .eq('conversation_id', currentChatId)
           .order('created_at', { ascending: true });
           
@@ -536,6 +951,7 @@ function MessagesContent() {
               text: decryptedContent,
               sender: isMe ? 'me' : 'them',
               sender_id: m.sender_id,
+              sender_name: isMe ? undefined : (m.profiles?.full_name || undefined),
               time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               created_at: m.created_at,
               type: (m.media_type as MediaType) || 'text',
@@ -621,12 +1037,25 @@ function MessagesContent() {
 
           const decryptedText = await decryptMessage(m.content, currentChatId);
 
+          let senderName: string | undefined = undefined;
+          if (m.sender_id !== user.id) {
+            try {
+              const { data: p } = await supabase
+                .from('profiles')
+                .select('full_name')
+                .eq('id', m.sender_id)
+                .maybeSingle();
+              senderName = p?.full_name || undefined;
+            } catch {}
+          }
+
           const msg: ChatMessage = {
              id: String(m.id),
              conversation_id: String(m.conversation_id),
              text: decryptedText,
              sender: 'them',
              sender_id: m.sender_id,
+             sender_name: senderName,
              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
              created_at: m.created_at,
              type: (m.media_type as MediaType) || 'text',
@@ -874,6 +1303,129 @@ function MessagesContent() {
     playSendSound();
     
     const clientMsgId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    
+    // ----------------------------------------------------
+    // Sally IP AI Conversation Flow (NVIDIA NIM)
+    // ----------------------------------------------------
+    if (activeChatId === 'sally-ip') {
+      const userMsg: ChatMessage = {
+        id: clientMsgId,
+        conversation_id: 'sally-ip',
+        text,
+        sender: 'me',
+        sender_id: user.id,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        created_at: new Date().toISOString(),
+        type,
+        mediaUrl,
+        status: 'delivered',
+        is_read: true
+      };
+
+      let currentHistory: ChatMessage[] = [];
+      setConversations(prev => {
+        const sallyChat = prev.find(c => c.id === 'sally-ip');
+        const msgs = sallyChat ? [...sallyChat.messages, userMsg] : [userMsg];
+        currentHistory = msgs;
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(SALLY_CHAT_STORAGE_KEY, JSON.stringify(msgs));
+        }
+
+        const updatedSally: Chat = sallyChat ? {
+          ...sallyChat,
+          messages: msgs,
+          lastMessage: text || 'Sent an attachment',
+          lastTime: 'Just now',
+          rawTimestamp: Date.now(),
+          isTyping: true
+        } : {
+          ...createSallyChatObject(msgs),
+          lastMessage: text || 'Sent an attachment',
+          lastTime: 'Just now',
+          rawTimestamp: Date.now(),
+          isTyping: true
+        };
+
+        const others = prev.filter(c => c.id !== 'sally-ip');
+        const nextList = [updatedSally, ...others];
+        queueMicrotask(() => {
+          useAppStore.getState().setCachedConversations(nextList);
+        });
+        return nextList;
+      });
+
+      setTimeout(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+        }
+      }, 20);
+
+      // Call NVIDIA NIM via askSallyChatAI server action
+      try {
+        const formattedMsgs = currentHistory
+          .filter(m => m.text)
+          .slice(-10)
+          .map(m => ({
+            role: (m.sender === 'me' ? 'user' : 'assistant') as 'user' | 'assistant',
+            content: m.text || ''
+          }));
+
+        const aiRes = await askSallyChatAI(formattedMsgs);
+        const replyText = aiRes.text || "I am here to help you with any patent, trademark, or legal matters on WIPA!";
+
+        const sallyReply: ChatMessage = {
+          id: `sally_reply_${Date.now()}`,
+          conversation_id: 'sally-ip',
+          text: replyText,
+          sender: 'them',
+          sender_id: 'sally-ip',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          created_at: new Date().toISOString(),
+          type: 'text',
+          status: 'read',
+          is_read: true
+        };
+
+        setConversations(prev => {
+          const sallyChat = prev.find(c => c.id === 'sally-ip');
+          if (!sallyChat) return prev;
+
+          const allMsgs = [...sallyChat.messages, sallyReply];
+          if (typeof window !== 'undefined') {
+            localStorage.setItem(SALLY_CHAT_STORAGE_KEY, JSON.stringify(allMsgs));
+          }
+
+          const updatedSally: Chat = {
+            ...sallyChat,
+            messages: allMsgs,
+            lastMessage: replyText,
+            lastTime: 'Just now',
+            rawTimestamp: Date.now(),
+            isTyping: false
+          };
+
+          const others = prev.filter(c => c.id !== 'sally-ip');
+          const nextList = [updatedSally, ...others];
+          queueMicrotask(() => {
+            useAppStore.getState().setCachedConversations(nextList);
+          });
+          return nextList;
+        });
+
+        setTimeout(() => {
+          if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+          }
+        }, 30);
+
+      } catch (err) {
+        console.error("Error communicating with Sally AI:", err);
+        setConversations(prev => prev.map(c => c.id === 'sally-ip' ? { ...c, isTyping: false } : c));
+      }
+
+      return;
+    }
+
     const isRecipientOnline = activeChat?.isOnline ?? false;
     const initialStatus: MessageStatus = 'sending';
 
@@ -1318,6 +1870,24 @@ function MessagesContent() {
 
   const handleDeleteChat = async (chatId: string) => {
     try {
+      if (chatId === 'sally-ip') {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem(SALLY_CHAT_STORAGE_KEY);
+        }
+        setConversations(prev => {
+          const next = prev.filter(c => c.id !== 'sally-ip');
+          queueMicrotask(() => {
+            useAppStore.getState().setCachedConversations(next);
+          });
+          return next;
+        });
+        if (activeChatId === 'sally-ip') {
+          setActiveChatId(null);
+          setShowMobileChat(false);
+        }
+        return;
+      }
+
       // 1. Delete messages, participants, and conversation in Supabase
       await supabase.from('messages').delete().eq('conversation_id', chatId);
       await supabase.from('conversation_participants').delete().eq('conversation_id', chatId);
@@ -1362,11 +1932,18 @@ function MessagesContent() {
           activeChatId={activeChatId}
           onSelectChat={markAsRead}
           onDeleteChat={handleDeleteChat}
+          onToggleUnread={handleToggleUnread}
+          onToggleMute={handleToggleMute}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           chatFilter={chatFilter}
           onFilterChange={setChatFilter}
           showMobileChat={showMobileChat}
+          onStartNewChat={handleStartNewChat}
+          onOpenSally={handleOpenSallyChat}
+          onCreateGroup={handleCreateGroupChat}
+          currentUserName={user?.name || user?.email || 'User'}
+          currentUserId={user?.id}
         />
 
         {/* Right Pane: Active Chat Window */}
@@ -1397,9 +1974,18 @@ function MessagesContent() {
                 participantId={activeChat.participantId}
                 onBackMobile={() => setShowMobileChat(false)}
                 onOptionsToggle={() => setIsChatOptionsOpen(!isChatOptionsOpen)}
+                onCloseOptions={() => setIsChatOptionsOpen(false)}
                 isOptionsOpen={isChatOptionsOpen}
-                onBlockUser={() => { setIsChatOptionsOpen(false); alert("User blocked!"); }}
-                onClearChat={() => { setIsChatOptionsOpen(false); alert("Chat cleared!"); }}
+                onBlockUser={() => { setIsChatOptionsOpen(false); }}
+                onClearChat={() => { 
+                  setIsChatOptionsOpen(false);
+                  if (activeChatId === 'sally-ip') {
+                    if (typeof window !== 'undefined') {
+                      localStorage.removeItem(SALLY_CHAT_STORAGE_KEY);
+                    }
+                    setConversations(prev => prev.map(c => c.id === 'sally-ip' ? { ...c, messages: [] } : c));
+                  }
+                }}
                 inChatSearchQuery={inChatSearchQuery}
                 onInChatSearchChange={setInChatSearchQuery}
               />
@@ -1427,12 +2013,42 @@ function MessagesContent() {
                       <span className="text-xs font-semibold">Loading messages...</span>
                     </div>
                   ) : activeChat.messages.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-center p-8 my-auto">
-                      <div className="w-14 h-14 rounded-3xl bg-[#5a32fa]/10 text-[#5a32fa] flex items-center justify-center mb-3 shadow-sm">
-                        <Sparkles size={24} />
+                    <div className="flex flex-col items-center justify-center h-full text-center p-8 my-auto select-none">
+                      {/* Recipient Profile Avatar */}
+                      <div className="relative mb-3">
+                        {activeChat.avatarUrl ? (
+                          <img 
+                            src={activeChat.avatarUrl} 
+                            alt={activeChat.name} 
+                            className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-sm border-2 border-slate-200 dark:border-white/10 ${
+                              activeChat.avatarUrl.includes('sally')
+                                ? 'object-contain p-3.5 bg-purple-100 dark:bg-purple-950/60 dark:invert'
+                                : 'object-cover'
+                            }`}
+                          />
+                        ) : (
+                          <div 
+                            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center text-white font-bold text-xl sm:text-2xl shadow-sm"
+                            style={{ backgroundColor: activeChat.color || '#5a32fa' }}
+                          >
+                            {activeChat.initial || activeChat.name?.charAt(0) || 'U'}
+                          </div>
+                        )}
                       </div>
-                      <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200">No messages yet</h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Send a message to start this conversation.</p>
+                      <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
+                        {activeChat.name}
+                      </h4>
+                      <p className="text-xs text-slate-500 dark:text-gray-400 mt-1 max-w-xs leading-relaxed">
+                        No messages yet. Send a message to start this conversation.
+                      </p>
+                      {activeChat.participantId && (
+                        <Link
+                          href={activeChat.participantId === 'sally-ip' ? '/platform/sallyip' : `/platform/profile/${activeChat.participantId}`}
+                          className="mt-3 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-gray-200 transition-all shadow-xs cursor-pointer"
+                        >
+                          {activeChat.participantId === 'sally-ip' ? 'Explore Sally IP' : 'View Profile'}
+                        </Link>
+                      )}
                     </div>
                   ) : (
                     activeChat.messages
@@ -1465,9 +2081,13 @@ function MessagesContent() {
                   {/* WhatsApp-Style Bouncy Dots Typing Bubble */}
                   {activeChat.isTyping && (
                     <div className="flex items-end gap-2.5 my-2 animate-in fade-in slide-in-from-bottom-2 duration-150">
-                      <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm overflow-hidden mb-0.5">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm overflow-hidden mb-0.5 border border-purple-200/50 dark:border-white/10">
                         {activeChat.avatarUrl ? (
-                          <img src={activeChat.avatarUrl} alt={activeChat.name} className="w-full h-full object-cover" />
+                          <img 
+                            src={activeChat.avatarUrl} 
+                            alt={activeChat.name} 
+                            className={`w-full h-full ${activeChat.avatarUrl.includes('sally') ? 'object-contain p-1.5 bg-purple-100 dark:bg-purple-950 dark:invert' : 'object-cover'}`} 
+                          />
                         ) : (
                           activeChat.initial || 'U'
                         )}
@@ -1702,7 +2322,7 @@ function MessagesContent() {
             /* Premium Empty State */
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#f8f9fc] dark:bg-[#0b0f19] bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px]">
               <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#5a32fa] to-[#ff90e8] text-white flex items-center justify-center mb-5 shadow-xl shadow-[#5a32fa]/20 animate-in zoom-in duration-300">
-                <Sparkles size={36} />
+                <MessageCircle size={36} />
               </div>
               <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2">WIPA Direct Messenger</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm leading-relaxed mb-6">
