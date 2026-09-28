@@ -55,12 +55,11 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
             .select("*")
             .eq("slot_placement", placement)
             .eq("is_active", true)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .single();
+            .order("created_at", { ascending: false });
 
-          if (!error && data) {
-            setAd(data);
+          if (!error && data && data.length > 0) {
+            const picked = data[Math.floor(Math.random() * data.length)];
+            setAd(picked);
           }
         }
       } catch (err) {
@@ -101,11 +100,17 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
               }),
             }).catch(() => {});
 
-            // Direct DB increment fallback
+            // Direct DB increment via record_ad_impression RPC
             if (ad.is_placement_table && slotId) {
               supabase.rpc("increment_slot_impressions", { slot_id_arg: slotId }).then();
             } else if (ad.id) {
-              supabase.rpc("increment_ad_impressions", { campaign_id_arg: ad.id }).then();
+              supabase.rpc("record_ad_impression", {
+                p_slot_id: null,
+                p_campaign_id: ad.id,
+                p_session_id: sessionId,
+                p_ip: "127.0.0.1",
+                p_route: typeof window !== "undefined" ? window.location.pathname : "/platform"
+              }).then();
             }
           }
         }
@@ -133,6 +138,16 @@ export default function AdSlot({ placement, slotId, className = "" }: AdSlotProp
           session_id: sessionId,
         })
       }).catch(() => {});
+
+      if (ad.id) {
+        supabase.rpc("record_ad_click", {
+          p_slot_id: null,
+          p_campaign_id: ad.id,
+          p_session_id: sessionId,
+          p_ip: "127.0.0.1",
+          p_route: typeof window !== "undefined" ? window.location.pathname : "/platform"
+        }).then();
+      }
 
       supabase.from("sponsored_clicks").insert({ 
         resource_id: ad.id, 
