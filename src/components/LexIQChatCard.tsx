@@ -35,10 +35,21 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
   }, [messages, setMessages]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isTyping, isOpen]);
 
-  if (!isOpen) return null;
+  // Close on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   const handleResetChat = () => {
     setMessages([{ role: 'ai', content: 'Hello! I am Sally 4.1 Pro, your IP assistant. How can I help you today?' }]);
@@ -71,119 +82,122 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
 
   return (
     <>
-      {/* Backdrop overlay for mobile */}
+      {/* Backdrop overlay */}
       <div 
-        className={`fixed inset-0 z-[100] pointer-events-none transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) onClose();
+        className={`fixed inset-0 z-[100] bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Slide-over Right Panel (Desktop & Mobile) */}
+      <aside 
+        role="dialog"
+        aria-label="Sally 4.1 Pro AI Legal Assistant"
+        aria-modal="true"
+        aria-hidden={!isOpen}
+        className={`fixed top-0 right-0 bottom-0 h-full w-full sm:w-[480px] md:w-[500px] max-w-[100vw] z-[101] shadow-2xl flex flex-col overflow-hidden transition-transform duration-300 ease-out border-l border-white/20 sm:rounded-l-[28px] ${
+          isOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'
+        }`}
+        style={{
+          backgroundImage: "radial-gradient(125% 125% at 50% 101%, rgba(245,87,2,1) 10.5%, rgba(245,120,2,1) 16%, rgba(245,140,2,1) 17.5%, rgba(245,170,100,1) 25%, rgba(238,174,202,1) 40%, rgba(202,179,214,1) 65%, rgba(148,201,233,1) 100%)"
         }}
       >
-        <div 
-          className={`absolute sm:fixed top-0 sm:top-auto sm:bottom-24 sm:right-6 w-full sm:w-[460px] h-full sm:h-[680px] sm:max-h-[85vh] sm:rounded-[32px] shadow-2xl border border-white/20 flex flex-col overflow-hidden pointer-events-auto transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] origin-bottom-right z-[100] ${
-            isOpen 
-              ? 'opacity-100 translate-y-0 scale-100' 
-              : 'opacity-0 translate-y-10 scale-95 pointer-events-none'
-          }`}
-          style={{
-            backgroundImage: "radial-gradient(125% 125% at 50% 101%, rgba(245,87,2,1) 10.5%, rgba(245,120,2,1) 16%, rgba(245,140,2,1) 17.5%, rgba(245,170,100,1) 25%, rgba(238,174,202,1) 40%, rgba(202,179,214,1) 65%, rgba(148,201,233,1) 100%)"
-          }}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 sm:p-5 border-b border-white/10 bg-white/10 backdrop-blur-md shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg overflow-hidden p-1.5">
-                <img src="/sally-logo.png" alt="Sally 4.1 Pro" className="w-full h-full object-contain" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-black text-white text-lg tracking-tight drop-shadow-md">
-                    Sally 4.1 Pro
-                  </h3>
-                  <span className="text-[9px] uppercase tracking-widest bg-blue-500/30 border border-blue-400/40 px-2 py-0.5 rounded-full text-blue-100 shadow-xs backdrop-blur-sm flex items-center gap-1 font-extrabold">
-                    <Shield size={10} /> LexisNexis® IP
-                  </span>
-                </div>
-                <p className="text-xs font-bold text-white/80 drop-shadow-sm">Deep Legal & Patent Intelligence</p>
-              </div>
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-white/10 bg-white/10 backdrop-blur-md shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg overflow-hidden p-1.5">
+              <img src="/sally-logo.png" alt="Sally 4.1 Pro" className="w-full h-full object-contain" />
             </div>
-            <div className="flex items-center gap-2">
-              <button 
-                type="button"
-                onClick={handleResetChat}
-                title="New Chat"
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-colors text-white cursor-pointer"
-              >
-                <RotateCcw size={14} />
-              </button>
-              <button 
-                type="button"
-                onClick={onClose}
-                title="Close"
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-colors text-white cursor-pointer"
-              >
-                <X size={18} />
-              </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-black text-white text-lg tracking-tight drop-shadow-md">
+                  Sally 4.1 Pro
+                </h3>
+                <span className="text-[9px] uppercase tracking-widest bg-blue-500/30 border border-blue-400/40 px-2 py-0.5 rounded-full text-blue-100 shadow-xs backdrop-blur-sm flex items-center gap-1 font-extrabold">
+                  <Shield size={10} /> LexisNexis® IP
+                </span>
+              </div>
+              <p className="text-xs font-bold text-white/80 drop-shadow-sm">Deep Legal & Patent Intelligence</p>
             </div>
           </div>
+          <div className="flex items-center gap-2">
+            <button 
+              type="button"
+              onClick={handleResetChat}
+              title="New Chat"
+              className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-colors text-white cursor-pointer"
+            >
+              <RotateCcw size={14} />
+            </button>
+            <button 
+              type="button"
+              onClick={onClose}
+              title="Close"
+              className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-colors text-white cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
 
-          {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-transparent scrollbar-thin scrollbar-thumb-white/20">
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`flex items-start gap-3 max-w-[90%] ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : ''}`}>
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-transparent scrollbar-thin scrollbar-thumb-white/20">
+          {messages.map((msg, idx) => (
+            <div key={idx} className={`flex items-start gap-3 max-w-[90%] ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : ''}`}>
+              {msg.role === 'ai' ? (
+                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0 mt-1 shadow-lg overflow-hidden p-1">
+                  <img src="/sally-logo.png" alt="Sally" className="w-full h-full object-contain" />
+                </div>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md border border-black/10 flex items-center justify-center shrink-0 mt-1 shadow-lg">
+                  <User size={14} className="text-white drop-shadow-md" />
+                </div>
+              )}
+              <div className={`p-3.5 rounded-2xl text-[15px] leading-relaxed shadow-lg backdrop-blur-md border ${
+                msg.role === 'user' 
+                  ? 'bg-black/40 text-white border-white/10 rounded-tr-sm whitespace-pre-wrap' 
+                  : 'bg-white/30 text-gray-900 border-white/40 rounded-tl-sm shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] font-medium'
+              }`}>
                 {msg.role === 'ai' ? (
-                  <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0 mt-1 shadow-lg overflow-hidden p-1">
-                    <img src="/sally-logo.png" alt="Sally" className="w-full h-full object-contain" />
+                  <div className="prose prose-sm dark:prose-invert max-w-none text-gray-900 leading-relaxed [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:list-disc [&>ul]:pl-4 [&>ol]:list-decimal [&>ol]:pl-4 [&_strong]:font-black [&_strong]:text-gray-950 [&_blockquote]:border-l-4 [&_blockquote]:border-blue-600 [&_blockquote]:bg-white/40 [&_blockquote]:p-2.5 [&_blockquote]:rounded-r-xl [&_blockquote]:my-2">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
                   </div>
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md border border-black/10 flex items-center justify-center shrink-0 mt-1 shadow-lg">
-                    <User size={14} className="text-white drop-shadow-md" />
-                  </div>
+                  msg.content
                 )}
-                <div className={`p-3.5 rounded-2xl text-[15px] leading-relaxed shadow-lg backdrop-blur-md border ${
-                  msg.role === 'user' 
-                    ? 'bg-black/40 text-white border-white/10 rounded-tr-sm whitespace-pre-wrap' 
-                    : 'bg-white/30 text-gray-900 border-white/40 rounded-tl-sm shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] font-medium'
-                }`}>
-                  {msg.role === 'ai' ? (
-                    <div className="prose prose-sm dark:prose-invert max-w-none text-gray-900 leading-relaxed [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:list-disc [&>ul]:pl-4 [&>ol]:list-decimal [&>ol]:pl-4 [&_strong]:font-black [&_strong]:text-gray-950 [&_blockquote]:border-l-4 [&_blockquote]:border-blue-600 [&_blockquote]:bg-white/40 [&_blockquote]:p-2.5 [&_blockquote]:rounded-r-xl [&_blockquote]:my-2">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
-                    </div>
-                  ) : (
-                    msg.content
-                  )}
-                </div>
               </div>
-            ))}
-            {isTyping && (
-              <div className="flex items-start gap-3 max-w-[85%]">
-                <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0 mt-1 shadow-lg overflow-hidden p-1">
-                  <img src="/sally-logo.png" alt="Sally" className="w-full h-full object-contain animate-pulse" />
-                </div>
-                <div className="p-3.5 rounded-2xl bg-white/30 backdrop-blur-md border border-white/40 rounded-tl-sm shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] flex items-center">
-                  <LoadingState label="Sally 4.1 Pro is thinking..." variant="Dots" />
-                </div>
+            </div>
+          ))}
+          {isTyping && (
+            <div className="flex items-start gap-3 max-w-[85%]">
+              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0 mt-1 shadow-lg overflow-hidden p-1">
+                <img src="/sally-logo.png" alt="Sally" className="w-full h-full object-contain animate-pulse" />
               </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* New Input Area */}
-          <div className="px-5 pb-6 pt-2 bg-transparent shrink-0">
-            <PromptInput
-              onSubmit={handleSend}
-              placeholder="Ask Sally 4.1 Pro..."
-              disabled={isTyping}
-              models={[
-                "Sally 4.1 Pro"
-              ]}
-            />
-            <p className="text-[10px] text-white/50 text-center mt-2 font-medium tracking-wide">
-              Verified in collaboration with LexisNexis® IP • For legal news and info Sally can make mistakes*
-            </p>
-          </div>
-
+              <div className="p-3.5 rounded-2xl bg-white/30 backdrop-blur-md border border-white/40 rounded-tl-sm shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] flex items-center">
+                <LoadingState label="Sally 4.1 Pro is thinking..." variant="Dots" />
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
         </div>
-      </div>
+
+        {/* Input Area */}
+        <div className="px-5 pb-6 pt-2 bg-transparent shrink-0">
+          <PromptInput
+            onSubmit={handleSend}
+            placeholder="Ask Sally 4.1 Pro..."
+            disabled={isTyping}
+            models={[
+              "Sally 4.1 Pro"
+            ]}
+          />
+          <p className="text-[10px] text-white/50 text-center mt-2 font-medium tracking-wide">
+            Verified in collaboration with LexisNexis® IP • For legal news and info Sally can make mistakes*
+          </p>
+        </div>
+      </aside>
     </>
   );
 }

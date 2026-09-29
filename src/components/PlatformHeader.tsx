@@ -52,7 +52,6 @@ export default function PlatformHeader() {
   const lexisNexisRef = useRef<HTMLDivElement>(null);
   const isLexIQOpen = useAppStore((state) => state.isLexIQOpen);
   const setIsLexIQOpen = useAppStore((state) => state.setIsLexIQOpen);
-  const [flyingBox, setFlyingBox] = useState<DOMRect | null>(null);
   const lexiqRef = useRef<HTMLDivElement>(null);
   const lastLogoClickRef = useRef<number>(0);
 
@@ -77,17 +76,8 @@ export default function PlatformHeader() {
     router.push('/login');
   };
 
-  const handleLexIQClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (isLexIQOpen) {
-      setIsLexIQOpen(false);
-      return;
-    }
-    const rect = e.currentTarget.getBoundingClientRect();
-    setFlyingBox(rect);
-    setTimeout(() => {
-      setFlyingBox(null);
-      setIsLexIQOpen(true);
-    }, 550);
+  const handleLexIQClick = () => {
+    setIsLexIQOpen(!isLexIQOpen);
   };
 
   // Intercept LexIQ-generated anchor clicks and use Next.js router (keeps LexIQ open)
@@ -266,8 +256,8 @@ export default function PlatformHeader() {
                     <button 
                       key={item.name} 
                       onClick={handleLexIQClick}
-                      className={`group relative flex h-[46px] w-[68px] flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
-                        flyingBox || isLexIQOpen ? "opacity-0 pointer-events-none w-0 mx-0" : "opacity-100 mx-0.5"
+                      className={`group relative flex h-[46px] w-[68px] flex-col items-center justify-center overflow-hidden rounded-xl transition-all duration-300 ease-out cursor-pointer active:scale-95 mx-0.5 ${
+                        isLexIQOpen ? "bg-[#5a32fa]/10 dark:bg-white/10 ring-1 ring-[#5a32fa]/30" : ""
                       }`}
                       title="Sally 4.1 Pro AI Legal Intelligence"
                     >
@@ -758,46 +748,6 @@ export default function PlatformHeader() {
           <X size={20} />
         </button>
       </div>
-
-      {/* Flying Box Animation */}
-      <AnimatePresence>
-        {flyingBox && (
-          <motion.div
-            initial={{ 
-              position: 'fixed', 
-              left: flyingBox.left, 
-              top: flyingBox.top, 
-              width: flyingBox.width, 
-              height: flyingBox.height,
-              borderRadius: 12,
-              backgroundColor: 'rgba(90, 50, 250, 0.1)',
-              border: '1px solid rgba(255, 144, 232, 0.2)',
-              opacity: 1,
-              zIndex: 9999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 10px 30px rgba(90, 50, 250, 0.3)'
-            }}
-            animate={{ 
-              left: typeof window !== 'undefined' ? window.innerWidth - 60 : 0, 
-              top: typeof window !== 'undefined' ? window.innerHeight - 80 : 0,
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              scale: 0.5,
-              opacity: 0,
-              backgroundColor: 'rgba(255, 144, 232, 1)'
-            }}
-            transition={{ 
-              duration: 0.6, 
-              ease: [0.34, 1.56, 0.64, 1]
-            }}
-          >
-            <img src="/sally-logo.png" alt="Sally" className="w-6 h-6 object-contain dark:invert" />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* LexIQ Chat Card Modal */}
       <div ref={lexiqRef}>
