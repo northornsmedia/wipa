@@ -8,6 +8,42 @@ import { getSupabaseServerClient } from '@/lib/supabase-server';
 // Initialize the Gemini API with the provided key or fallback to environment variable
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'AQ.Ab8RN6LM_qT0qVauGLGT8udlmi9lF2yAQGGpNZZFn4QF55T4ag');
 
+// Helper to extract JSON action commands (navigate, compose_message, etc.) and strip them cleanly from assistant text
+function extractActionAndCleanText(rawText: string): { text: string; action?: any } {
+  let action: any = undefined;
+  let text = (rawText || "").replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+
+  // 1. Check for JSON code block: ```json { ... "action": ... } ```
+  const codeBlockMatch = text.match(/```(?:json)?\s*({[\s\S]*?"action"[\s\S]*?})\s*```/);
+  if (codeBlockMatch) {
+    try {
+      action = JSON.parse(codeBlockMatch[1]);
+      text = text.replace(codeBlockMatch[0], '').trim();
+    } catch (e) {
+      console.error("Failed to parse AI action json from code block:", e);
+    }
+  }
+
+  // 2. If no code block match, check for raw JSON { "action": ... }
+  if (!action) {
+    const rawJsonMatch = text.match(/{\s*"action"\s*:\s*"[^"]+"[\s\S]*?}/);
+    if (rawJsonMatch) {
+      try {
+        action = JSON.parse(rawJsonMatch[0]);
+        text = text.replace(rawJsonMatch[0], '').trim();
+      } catch (e) {
+        console.error("Failed to parse AI action json from raw match:", e);
+      }
+    }
+  }
+
+  // 3. Remove any remaining raw action blocks so raw JSON never shows up in chat text
+  text = text.replace(/```(?:json)?\s*{\s*"action"[\s\S]*?}\s*```/gi, '').trim();
+  text = text.replace(/{\s*"action"\s*:\s*"[^"]+"[\s\S]*?}/gi, '').trim();
+
+  return { text, action };
+}
+
 export async function generateLexIQResponse(history: any[], selectedModel?: string) {
   try {
     const routeListStr = Object.entries(PAGE_MAP).map(([route, info]) => 
@@ -47,26 +83,7 @@ export async function generateLexIQResponse(history: any[], selectedModel?: stri
       const text = (await result.response).text();
 
       // We could parse JSON here, but the user didn't ask for Gemini to use navigation formatting specifically.
-      // We will parse it just in case Gemini gets it right!
-      let action = undefined;
-      let finalContent = text;
-      const codeBlockMatch = finalContent.match(/```(?:json)?\s*({[\s\S]*?"action"\s*:\s*"navigate"[\s\S]*?})\s*```/);
-      if (codeBlockMatch) {
-        try {
-          action = JSON.parse(codeBlockMatch[1]);
-          finalContent = finalContent.replace(codeBlockMatch[0], '').trim();
-        } catch (e) {}
-      } else {
-        const rawJsonMatch = finalContent.match(/{\s*"action"\s*:\s*"navigate"\s*,\s*"path"\s*:\s*"[^"]+"\s*}/);
-        if (rawJsonMatch) {
-          try {
-            action = JSON.parse(rawJsonMatch[0]);
-            finalContent = finalContent.replace(rawJsonMatch[0], '').trim();
-          } catch (e) {}
-        }
-      }
-
-      return { text: finalContent, action };
+      return extractActionAndCleanText(text);
     }
 
     // ----------------------------------------------------
@@ -119,29 +136,7 @@ export async function generateLexIQResponse(history: any[], selectedModel?: stri
 
             if (!text) continue;
 
-            // Parse if AI decided to navigate via JSON
-            let action = undefined;
-            const codeBlockMatch = text.match(/```(?:json)?\s*({[\s\S]*?"action"\s*:\s*"navigate"[\s\S]*?})\s*```/);
-            if (codeBlockMatch) {
-              try {
-                action = JSON.parse(codeBlockMatch[1]);
-                text = text.replace(codeBlockMatch[0], '').trim();
-              } catch (e) {
-                console.error("Failed to parse AI action json from code block:", e);
-              }
-            } else {
-              const rawJsonMatch = text.match(/{\s*"action"\s*:\s*"navigate"\s*,\s*"path"\s*:\s*"[^"]+"\s*}/);
-              if (rawJsonMatch) {
-                try {
-                  action = JSON.parse(rawJsonMatch[0]);
-                  text = text.replace(rawJsonMatch[0], '').trim();
-                } catch (e) {
-                  console.error("Failed to parse AI action json from raw match:", e);
-                }
-              }
-            }
-
-            return { text, action };
+            return extractActionAndCleanText(text);
           }
         } catch (nvErr) {
           console.error(`NVIDIA API call failed on ${nvModel}:`, nvErr);
@@ -195,29 +190,7 @@ export async function generateLexIQResponse(history: any[], selectedModel?: stri
     const assistantMessage = data.choices[0].message;
     let text = (assistantMessage?.content || "").replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
 
-    // Parse if AI decided to navigate via JSON
-    let action = undefined;
-    const codeBlockMatch = text.match(/```(?:json)?\s*({[\s\S]*?"action"\s*:\s*"navigate"[\s\S]*?})\s*```/);
-    if (codeBlockMatch) {
-      try {
-        action = JSON.parse(codeBlockMatch[1]);
-        text = text.replace(codeBlockMatch[0], '').trim();
-      } catch (e) {
-        console.error("Failed to parse AI action json from code block:", e);
-      }
-    } else {
-      const rawJsonMatch = text.match(/{\s*"action"\s*:\s*"navigate"\s*,\s*"path"\s*:\s*"[^"]+"\s*}/);
-      if (rawJsonMatch) {
-        try {
-          action = JSON.parse(rawJsonMatch[0]);
-          text = text.replace(rawJsonMatch[0], '').trim();
-        } catch (e) {
-          console.error("Failed to parse AI action json from raw match:", e);
-        }
-      }
-    }
-
-    return { text, action };
+    return extractActionAndCleanText(text);
   } catch (error) {
     console.error("AI API Error:", error);
     return { error: "Failed to generate response. Please try again." };

@@ -69,14 +69,32 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
     
     setIsTyping(false);
     
-    if (res.action?.action === 'navigate') {
-      router.push(res.action.path);
-    }
-
-    if (res.error) {
+    if ('error' in res && res.error) {
       setMessages([...newMessages, { role: 'ai', content: res.error }]);
-    } else if (res.text) {
-      setMessages([...newMessages, { role: 'ai', content: res.text }]);
+    } else if ('text' in res) {
+      if (res.action?.action === 'navigate') {
+        router.push(res.action.path);
+      } else if (res.action?.action === 'compose_message') {
+        const recipient = res.action.recipient || '';
+        const content = res.action.content || '';
+
+        useAppStore.getState().setPendingMessageDraft({ recipient, content });
+
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('wipa:compose_message', {
+            detail: { recipient, content }
+          }));
+        }
+
+        const params = new URLSearchParams();
+        if (recipient) params.set('recipient', recipient);
+        if (content) params.set('draft', content);
+        router.push(`/platform/messages?${params.toString()}`);
+      }
+
+      if (res.text) {
+        setMessages([...newMessages, { role: 'ai', content: res.text }]);
+      }
     }
   };
 

@@ -166,6 +166,8 @@ interface AppState {
   isVideoMuted: boolean;
   setIsVideoMuted: (isMuted: boolean) => void;
   toggleVideoMuted: () => void;
+  pendingMessageDraft: { recipient?: string; content: string } | null;
+  setPendingMessageDraft: (draft: { recipient?: string; content: string } | null) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -193,6 +195,8 @@ export const useAppStore = create<AppState>()(
       setCachedFeedPosts: (cachedFeedPosts) => set({ cachedFeedPosts }),
       cachedConversations: [],
       setCachedConversations: (cachedConversations) => set({ cachedConversations }),
+      pendingMessageDraft: null,
+      setPendingMessageDraft: (pendingMessageDraft) => set({ pendingMessageDraft }),
       likedPostIds: [],
       toggleLike: (postId) => set((state) => {
         const isLiked = state.likedPostIds.includes(postId);

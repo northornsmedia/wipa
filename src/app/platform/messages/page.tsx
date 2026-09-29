@@ -115,6 +115,8 @@ function MessagesContent() {
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get('userId');
   const targetConversationId = searchParams.get('chatId');
+  const targetRecipient = searchParams.get('recipient');
+  const initialDraft = searchParams.get('draft');
   
   const [conversations, setConversations] = useState<Chat[]>(() => cachedConversations || []);
   const [activeChatId, setActiveChatId] = useState<string | null>(() => targetConversationId || (cachedConversations && cachedConversations.length > 0 ? String(cachedConversations[0].id) : null));
@@ -542,6 +544,75 @@ function MessagesContent() {
        initChat();
     }
   }, [targetUserId, user?.id, router]);
+
+  // Automated AI (Sally 4.1 Pro) Message Drafting & Target Recipient Selection
+  useEffect(() => {
+    const applyDraft = async (recipientName?: string, draftContent?: string) => {
+      if (draftContent !== undefined && draftContent !== null) {
+        setNewMessage(draftContent);
+      }
+
+      if (recipientName && recipientName.trim()) {
+        const cleanName = recipientName.trim().toLowerCase();
+
+        // 1. Check existing conversations in state
+        const matched = conversations.find(c => {
+          const cName = (c.name || '').toLowerCase();
+          return cName.includes(cleanName) || cleanName.includes(cName);
+        });
+
+        if (matched) {
+          setActiveChatId(String(matched.id));
+          setShowMobileChat(true);
+        } else if (user?.id) {
+          // 2. Lookup recipient profile in Supabase to start new thread if not already active
+          try {
+            const { data: profiles } = await supabase
+              .from('profiles')
+              .select('id, full_name')
+              .ilike('full_name', `%${cleanName}%`)
+              .limit(1);
+
+            if (profiles && profiles.length > 0) {
+              const matchedProfile = profiles[0];
+              router.replace(`/platform/messages?userId=${matchedProfile.id}&draft=${encodeURIComponent(draftContent || '')}`);
+            }
+          } catch (profileErr) {
+            console.warn("Could not lookup profile for recipient:", profileErr);
+          }
+        }
+      }
+
+      // Smoothly focus message input with cursor ready
+      setTimeout(() => {
+        textInputRef.current?.focus();
+      }, 150);
+    };
+
+    // 1. Listen for real-time Sally event if user is already on messages page
+    const handleSallyEvent = (e: any) => {
+      if (e?.detail) {
+        applyDraft(e.detail.recipient, e.detail.content);
+      }
+    };
+    window.addEventListener('wipa:compose_message', handleSallyEvent);
+
+    // 2. Check query params on mount or param changes
+    if (targetRecipient || initialDraft) {
+      applyDraft(targetRecipient || undefined, initialDraft || undefined);
+    }
+
+    // 3. Check pending draft in global store
+    const pendingDraft = useAppStore.getState().pendingMessageDraft;
+    if (pendingDraft) {
+      applyDraft(pendingDraft.recipient, pendingDraft.content);
+      useAppStore.getState().setPendingMessageDraft(null);
+    }
+
+    return () => {
+      window.removeEventListener('wipa:compose_message', handleSallyEvent);
+    };
+  }, [conversations, targetRecipient, initialDraft, user?.id, router]);
 
   // Handle opening or starting a direct chat conversation with Sally IP
   const handleOpenSallyChat = useCallback(() => {
