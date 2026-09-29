@@ -32,8 +32,10 @@ export default function PlatformLayout({
     <ThemeWrapper>
       <div 
         style={shellStyle} 
-        className={`font-sans flex flex-col flex-1 min-h-screen w-full max-w-full min-w-0 overflow-x-clip box-border transition-[margin-right] duration-300 ease-out ${
-          isLexIQOpen ? 'md:mr-[460px] xl:mr-[480px]' : 'mr-0'
+        className={`font-sans flex flex-col flex-1 min-h-screen min-w-0 overflow-x-clip box-border transition-all duration-300 ease-out ${
+          isLexIQOpen 
+            ? 'md:w-[calc(100%-460px)] xl:w-[calc(100%-480px)] md:max-w-[calc(100%-460px)] xl:max-w-[calc(100%-480px)] md:mr-[460px] xl:mr-[480px]' 
+            : 'w-full max-w-full mr-0'
         }`}
       >
         <AuthGuard>
@@ -47,7 +49,7 @@ export default function PlatformLayout({
           <MobileTopBar />
           
           <div 
-            className="platform-body-container flex-1 flex w-full max-w-full min-w-0 box-border pt-0 md:pt-[77px]"
+            className="platform-body-container flex-1 flex w-full max-w-full min-w-0 box-border pt-0 md:pt-[77px] transition-all duration-300 ease-out"
           >
             {!isMessagesPage && (
               <Suspense fallback={null}>
@@ -58,7 +60,7 @@ export default function PlatformLayout({
                 />
               </Suspense>
             )}
-            <div className={`flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-clip box-border transition-[padding-left] duration-300 ease-out ${
+            <div className={`flex-1 flex flex-col w-full max-w-full min-w-0 overflow-x-clip box-border transition-all duration-300 ease-out ${
               isMessagesPage ? 'pl-0' : 'lg:pl-[var(--desktop-sidebar-width)]'
             }`}>
               <main className={`flex-1 w-full max-w-full min-w-0 overflow-x-clip box-border ${
