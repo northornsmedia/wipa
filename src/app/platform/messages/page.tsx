@@ -18,6 +18,7 @@ import { ChatSidebar, SidebarChat } from '@/components/chat/ChatSidebar';
 import { encryptMessage, decryptMessage, isEncrypted } from '@/lib/e2ee';
 import { SentIcon } from '@/components/icons/SentIcon';
 import { askSallyChatAI } from '@/app/actions/lexiq';
+import { sendMessageServerAction } from '@/app/actions/chat';
 
 export type Chat = SidebarChat & {
   messages: ChatMessage[];
@@ -93,6 +94,24 @@ const saveOutboxMessage = (userId: string, message: ChatMessage) => {
 
 const removeOutboxMessage = (messageId: string) => {
   localStorage.setItem(MESSAGE_OUTBOX_KEY, JSON.stringify(readMessageOutbox().filter(entry => entry.message.id !== messageId)));
+};
+
+const isValidUUID = (str?: string): boolean => {
+  if (!str || typeof str !== 'string') return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+};
+
+const generateUUID = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    try {
+      return crypto.randomUUID();
+    } catch {}
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 };
 
 function getDateDivider(dateStr?: string): string {
@@ -1324,8 +1343,9 @@ function MessagesContent() {
   }, []);
 
   const persistOutgoingMessage = useCallback(async (message: ChatMessage, conversationId: string, recipientOnline: boolean) => {
-    const deadline = Date.now() + 15000;
+    const deadline = Date.now() + 25000;
     let lastError: any = new Error('Message could not be sent');
+    const validMessageId = isValidUUID(message.id) ? message.id : generateUUID();
 
     while (Date.now() < deadline) {
       if (!navigator.onLine) {
@@ -1335,37 +1355,75 @@ function MessagesContent() {
 
       try {
         const remaining = deadline - Date.now();
-        const timeoutMs = Math.max(500, Math.min(3500, remaining));
+        const timeoutMs = Math.max(1500, Math.min(10000, remaining));
         const rawContent = message.text || (message.mediaUrl ? `[Media: ${message.type}]` : '');
         const encryptedContent = await encryptMessage(rawContent, conversationId);
 
+        // 1. Direct Supabase client insert (lean insert without fragile .select().single())
         const request = supabase.from('messages').insert({
-          id: message.id,
+          id: validMessageId,
           conversation_id: conversationId,
           sender_id: message.sender_id,
           content: encryptedContent,
           media_type: message.type || 'text',
           media_url: message.mediaUrl || null,
           delivered_at: recipientOnline ? new Date().toISOString() : null
-        }).select().single();
+        });
         const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Message request timed out')), timeoutMs));
         const { error }: any = await Promise.race([request, timeout]);
 
-        // Reusing the client UUID makes a duplicate-key response proof that an earlier attempt succeeded.
-        if (!error || error.code === '23505') return { success: true as const };
+        // Duplicate-key (23505) proves earlier attempt succeeded
+        if (!error || error.code === '23505') {
+          return { success: true as const, messageId: validMessageId };
+        }
         lastError = error;
 
-        const messageText = String(error.message || '').toLowerCase();
-        const transient = /load failed|failed to fetch|network|timeout|connection/.test(messageText);
-        if (!transient) return { success: false as const, error };
+        // If direct client failed (RLS policy, expired JWT, network proxy), fall back to server action
+        console.warn('[persistOutgoingMessage] Direct client insert returned error, falling back to server action:', error?.message || error);
+        const serverResult = await sendMessageServerAction({
+          id: validMessageId,
+          conversationId,
+          senderId: message.sender_id,
+          content: encryptedContent,
+          mediaType: message.type || 'text',
+          mediaUrl: message.mediaUrl || null,
+          deliveredAt: recipientOnline ? new Date().toISOString() : null,
+        });
+
+        if (serverResult.success) {
+          return { success: true as const, messageId: validMessageId };
+        }
+        lastError = serverResult.error || lastError;
       } catch (error: any) {
         lastError = error;
+
+        // If direct client threw (e.g. timeout), immediately attempt server action fallback
+        try {
+          const rawContent = message.text || (message.mediaUrl ? `[Media: ${message.type}]` : '');
+          const encryptedContent = await encryptMessage(rawContent, conversationId);
+          const serverResult = await sendMessageServerAction({
+            id: validMessageId,
+            conversationId,
+            senderId: message.sender_id,
+            content: encryptedContent,
+            mediaType: message.type || 'text',
+            mediaUrl: message.mediaUrl || null,
+            deliveredAt: recipientOnline ? new Date().toISOString() : null,
+          });
+
+          if (serverResult.success) {
+            return { success: true as const, messageId: validMessageId };
+          }
+          lastError = serverResult.error || lastError;
+        } catch (serverFallbackErr: any) {
+          console.warn('[persistOutgoingMessage] Server action fallback error:', serverFallbackErr);
+        }
       }
 
-      if (Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 1400));
+      if (Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 1500));
     }
 
-    return { success: false as const, error: lastError };
+    return { success: false as const, error: lastError, messageId: validMessageId };
   }, []);
 
   // Append message locally and sync to Supabase with client-generated UUID
@@ -1373,7 +1431,7 @@ function MessagesContent() {
     if (!activeChatId || !user?.id) return;
     playSendSound();
     
-    const clientMsgId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const clientMsgId = generateUUID();
     
     // ----------------------------------------------------
     // Sally IP AI Conversation Flow (NVIDIA NIM)
@@ -1554,15 +1612,18 @@ function MessagesContent() {
       const result = await persistOutgoingMessage(newMsg, activeChatId, isRecipientOnline);
       if (!result.success) throw result.error;
 
+      const finalMsgId = result.messageId || clientMsgId;
+
       // Update message status
-      updateOutgoingStatus(activeChatId, clientMsgId, isRecipientOnline ? 'delivered' : 'sent');
+      updateOutgoingStatus(activeChatId, finalMsgId, isRecipientOnline ? 'delivered' : 'sent');
       removeOutboxMessage(clientMsgId);
+      if (finalMsgId !== clientMsgId) removeOutboxMessage(finalMsgId);
 
       await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', activeChatId);
 
       // Asynchronously trigger native background push notification for recipients
       try {
-        console.log(`[CHAT_PUSH_DEBUG] message_created conversationId=${activeChatId} senderId=${user.id} messageId=${clientMsgId}`);
+        console.log(`[CHAT_PUSH_DEBUG] message_created conversationId=${activeChatId} senderId=${user.id} messageId=${finalMsgId}`);
         const pushEndpoint = typeof window !== 'undefined' ? `${window.location.origin}/api/notifications/push` : '/api/notifications/push';
         fetch(pushEndpoint, {
           method: 'POST',
@@ -1604,8 +1665,22 @@ function MessagesContent() {
     try {
       const result = await persistOutgoingMessage({ ...msg, sender_id: user.id }, conversationId, isRecipientOnline);
       if (!result.success) throw result.error;
-      updateOutgoingStatus(conversationId, msg.id, isRecipientOnline ? 'delivered' : 'sent');
-      removeOutboxMessage(msg.id);
+
+      const finalMsgId = result.messageId || msg.id;
+
+      if (finalMsgId !== msg.id) {
+        removeOutboxMessage(msg.id);
+        removeOutboxMessage(finalMsgId);
+        setConversations(prev => prev.map(chat => String(chat.id) === String(conversationId) ? {
+          ...chat,
+          messages: chat.messages.map(m => m.id === msg.id ? { ...m, id: finalMsgId, status: isRecipientOnline ? 'delivered' : 'sent', error: undefined } : m)
+        } : chat));
+      } else {
+        updateOutgoingStatus(conversationId, msg.id, isRecipientOnline ? 'delivered' : 'sent');
+        removeOutboxMessage(msg.id);
+      }
+
+      await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', conversationId);
 
       const pushEndpoint = `${window.location.origin}/api/notifications/push`;
       void fetch(pushEndpoint, {
