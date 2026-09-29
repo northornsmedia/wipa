@@ -100,22 +100,22 @@ export default function LexIQChatCard({ isOpen, onClose }: LexIQChatCardProps) {
 
   return (
     <>
-      {/* Backdrop overlay */}
+      {/* Backdrop overlay (mobile only - on desktop the main screen shrinks alongside Sally) */}
       <div 
-        className={`fixed inset-0 z-[100] bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 ${
+        className={`fixed inset-0 z-[100] bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 md:hidden ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Slide-over Right Panel (Desktop & Mobile) */}
+      {/* Docked Right Panel (Desktop & Mobile) */}
       <aside 
         role="dialog"
         aria-label="Sally 4.1 Pro AI Legal Assistant"
         aria-modal="true"
         aria-hidden={!isOpen}
-        className={`fixed top-0 right-0 bottom-0 h-full w-full sm:w-[480px] md:w-[500px] max-w-[100vw] z-[101] shadow-2xl flex flex-col overflow-hidden transition-transform duration-300 ease-out border-l border-white/20 sm:rounded-l-[28px] ${
+        className={`fixed top-0 right-0 bottom-0 h-full w-full md:w-[460px] xl:w-[480px] max-w-[100vw] z-[101] shadow-2xl flex flex-col overflow-hidden transition-transform duration-300 ease-out border-l border-white/20 dark:border-white/10 ${
           isOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'
         }`}
         style={{

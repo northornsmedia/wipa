@@ -20,6 +20,7 @@ export default function PlatformLayout({
   const pathname = usePathname();
   const isMessagesPage = pathname?.startsWith('/platform/messages');
   const isInsideChat = useAppStore((state) => state.isInsideChat);
+  const isLexIQOpen = useAppStore((state) => state.isLexIQOpen);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const shellStyle = {
@@ -29,7 +30,12 @@ export default function PlatformLayout({
 
   return (
     <ThemeWrapper>
-      <div style={shellStyle} className="font-sans flex flex-col flex-1 min-h-screen w-full max-w-full min-w-0 overflow-x-clip box-border">
+      <div 
+        style={shellStyle} 
+        className={`font-sans flex flex-col flex-1 min-h-screen w-full max-w-full min-w-0 overflow-x-clip box-border transition-[margin-right] duration-300 ease-out ${
+          isLexIQOpen ? 'md:mr-[460px] xl:mr-[480px]' : 'mr-0'
+        }`}
+      >
         <AuthGuard>
           {/* Audio Voice Greeting (No modal/popup, purely spoken audio) */}
           <VoiceGreeting />
