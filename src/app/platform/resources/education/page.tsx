@@ -151,19 +151,32 @@ export default function EducationHubPage() {
       </div>
 
       {/* Partner Universities Section */}
-      <div className="px-6 max-w-[1400px] mx-auto mb-20 relative">
+      <div className="px-6 max-w-[1400px] mx-auto mb-20 overflow-hidden relative group">
         <div className="text-center mb-8 relative z-10 bg-slate-50 dark:bg-[#020617]">
           <p className="text-sm font-bold text-gray-400 dark:text-white/40 uppercase tracking-widest inline-block px-4">Learn from top tier institutions</p>
         </div>
         
-        <div className="flex items-center justify-center py-2">
-          <Link href="/platform/resources/education/university/unh" className="shrink-0 transition-transform hover:scale-105 inline-block">
-            <img 
-              src="/academic-partner-logo.svg" 
-              alt="Academic Partner" 
-              className="h-16 md:h-20 w-auto object-contain drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]" 
-            />
-          </Link>
+        {/* Marquee Container */}
+        <div className="relative w-full overflow-hidden flex [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+          <div className="flex w-max animate-marquee group-hover:pause-on-hover">
+            {/* First Set: 10 Clones */}
+            <div className="flex items-center gap-16 md:gap-24 px-8 md:px-12 min-w-max">
+              {Array.from({ length: 10 }).map((_, idx) => (
+                <Link key={`partner-set1-${idx}`} href="/platform/resources/education/university/unh" className="shrink-0 transition-transform hover:scale-110">
+                  <img src="/academic-partner-logo.svg" alt="Academic Partner" className="h-16 md:h-20 w-auto object-contain drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] dark:brightness-125" />
+                </Link>
+              ))}
+            </div>
+            
+            {/* Duplicate Set for Seamless Loop: 10 Clones */}
+            <div className="flex items-center gap-16 md:gap-24 px-8 md:px-12 min-w-max">
+              {Array.from({ length: 10 }).map((_, idx) => (
+                <Link key={`partner-set2-${idx}`} href="/platform/resources/education/university/unh" className="shrink-0 transition-transform hover:scale-110">
+                  <img src="/academic-partner-logo.svg" alt="Academic Partner" className="h-16 md:h-20 w-auto object-contain drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] dark:brightness-125" />
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
