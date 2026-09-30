@@ -4,31 +4,10 @@ import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { 
-  Gift, 
-  Percent, 
-  Calendar, 
-  Video, 
-  BookOpen, 
-  Cpu, 
-  Users, 
-  FileText, 
-  Download, 
-  ExternalLink, 
-  ArrowRight, 
-  Check, 
-  Copy, 
   Search, 
-  ShieldCheck, 
   X, 
-  Clock, 
-  Building2, 
-  HelpCircle, 
   ChevronDown,
-  Tag,
-  Briefcase,
-  GraduationCap,
-  Layers,
-  CheckCircle2
+  ExternalLink
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -604,19 +583,8 @@ export default function PlatformPerksPage() {
 
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="max-w-3xl">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-purple-50 text-[#5a32fa] border border-purple-200 dark:bg-purple-950/50 dark:text-purple-300 dark:border-purple-800">
-                  <Gift size={13} strokeWidth={2.5} />
-                  Alliance Privileges
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800">
-                  <ShieldCheck size={13} strokeWidth={2.5} />
-                  Active Benefits
-                </span>
-              </div>
-
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
-                Alliance Member Perks & Privileges
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-slate-900 dark:text-white leading-[1.05]">
+                Member <span className="text-[#5a32fa] dark:text-purple-400">Perks</span> & Privileges
               </h1>
 
               <p className="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
@@ -625,14 +593,13 @@ export default function PlatformPerksPage() {
             </div>
 
             {/* Member Status Box */}
-            <div className="bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 flex flex-col justify-between min-w-[280px]">
+            <div className="bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 rounded-lg p-4 sm:p-5 flex flex-col justify-between min-w-[280px]">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   Membership Status
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200">
-                  <Check size={12} strokeWidth={3} />
-                  Active
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                  Active Member
                 </span>
               </div>
               <p className="text-base font-bold text-slate-900 dark:text-white">
@@ -644,22 +611,19 @@ export default function PlatformPerksPage() {
               <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <Link
                   href="/platform/memberships"
-                  className="text-xs font-bold text-[#5a32fa] dark:text-purple-400 hover:underline flex items-center gap-1"
+                  className="text-xs font-bold text-[#5a32fa] dark:text-purple-400 hover:underline"
                 >
-                  Manage Membership Tiers <ArrowRight size={12} />
+                  Manage Membership Tiers
                 </Link>
               </div>
             </div>
           </div>
 
           {/* Key Value Metric Grid */}
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-[#5a32fa] dark:text-purple-400 font-bold mb-1">
-                <Percent size={18} strokeWidth={2.5} />
-                <span className="text-xl sm:text-2xl font-black">35% Off</span>
-              </div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
+          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+              <span className="text-2xl sm:text-3xl font-black text-[#5a32fa] dark:text-purple-400">35% Off</span>
+              <p className="text-xs font-bold text-slate-900 dark:text-white mt-1">
                 Top IP Publications
               </p>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -667,12 +631,9 @@ export default function PlatformPerksPage() {
               </p>
             </div>
 
-            <div className="bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold mb-1">
-                <Video size={18} strokeWidth={2.5} />
-                <span className="text-xl sm:text-2xl font-black">100% Free</span>
-              </div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
+            <div className="bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+              <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">100% Free</span>
+              <p className="text-xs font-bold text-slate-900 dark:text-white mt-1">
                 Accredited CLE Webinars
               </p>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -680,12 +641,9 @@ export default function PlatformPerksPage() {
               </p>
             </div>
 
-            <div className="bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold mb-1">
-                <Cpu size={18} strokeWidth={2.5} />
-                <span className="text-xl sm:text-2xl font-black">Monthly</span>
-              </div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
+            <div className="bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+              <span className="text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400">Included</span>
+              <p className="text-xs font-bold text-slate-900 dark:text-white mt-1">
                 Sally IP AI Credits
               </p>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -693,12 +651,9 @@ export default function PlatformPerksPage() {
               </p>
             </div>
 
-            <div className="bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold mb-1">
-                <FileText size={18} strokeWidth={2.5} />
-                <span className="text-xl sm:text-2xl font-black">410+</span>
-              </div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
+            <div className="bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 rounded-lg p-4">
+              <span className="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400">410+</span>
+              <p className="text-xs font-bold text-slate-900 dark:text-white mt-1">
                 Legal Practice Toolkits
               </p>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -716,14 +671,9 @@ export default function PlatformPerksPage() {
         <div className="mb-10 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
           <div className="p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="flex-1 max-w-2xl">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
-                  Exclusive Flagship Advantage
-                </span>
-                <span className="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-purple-50 text-[#5a32fa] border border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800">
-                  Save 35%
-                </span>
-              </div>
+              <p className="text-xs font-bold uppercase tracking-wider text-[#5a32fa] dark:text-purple-400 mb-2">
+                Flagship Advantage · 35% Publishing Discount
+              </p>
 
               <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                 Turn your Alliance membership into greater global visibility
@@ -734,34 +684,33 @@ export default function PlatformPerksPage() {
               </p>
 
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3 bg-slate-50 dark:bg-[#172033] rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="p-3 bg-slate-50 dark:bg-[#172033] rounded-lg border border-slate-200 dark:border-slate-800">
                   <p className="text-xs font-bold text-slate-900 dark:text-white">Women's IP World</p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Save up to £1,398 / package</p>
-                  <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1">Code: WIPA35WORLD</p>
+                  <p className="text-[11px] font-mono font-bold text-slate-800 dark:text-slate-200 mt-1">Code: WIPA35WORLD</p>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-[#172033] rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="p-3 bg-slate-50 dark:bg-[#172033] rounded-lg border border-slate-200 dark:border-slate-800">
                   <p className="text-xs font-bold text-slate-900 dark:text-white">Global IP Magazine</p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">35% off all editorial & ads</p>
-                  <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1">Code: WIPAMAG35</p>
+                  <p className="text-[11px] font-mono font-bold text-slate-800 dark:text-slate-200 mt-1">Code: WIPAMAG35</p>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-[#172033] rounded-xl border border-slate-200 dark:border-slate-800">
+                <div className="p-3 bg-slate-50 dark:bg-[#172033] rounded-lg border border-slate-200 dark:border-slate-800">
                   <p className="text-xs font-bold text-slate-900 dark:text-white">IP Tech Annual 2027</p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">35% rate (Public gets 10%)</p>
-                  <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1">Code: WIPAINNOV35</p>
+                  <p className="text-[11px] font-mono font-bold text-slate-800 dark:text-slate-200 mt-1">Code: WIPAINNOV35</p>
                 </div>
               </div>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
                   href="/platform/publications"
-                  className="px-5 py-2.5 rounded-xl bg-[#5a32fa] text-white hover:bg-[#4a24e0] font-bold text-sm transition-all shadow-xs flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-lg bg-[#5a32fa] hover:bg-[#4a24e0] text-white font-bold text-xs uppercase tracking-wider transition-all"
                 >
-                  <BookOpen size={16} />
                   Explore Publications Hub
                 </Link>
                 <button
                   onClick={() => setSelectedPerk(PERKS_DATA[0])}
-                  className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 font-bold text-sm transition-all"
+                  className="px-5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
                 >
                   View Rate Card & Claim Code
                 </button>
@@ -799,20 +748,20 @@ export default function PlatformPerksPage() {
         </div>
 
         {/* Filter and Search Bar */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
           
-          {/* Category Tabs (Clean rectangular buttons, no pills) */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+          {/* Category Tabs (Clean border-bottom tabs matching platform) */}
+          <div className="flex items-center gap-6 overflow-x-auto pb-2 scrollbar-none border-b border-slate-200 dark:border-slate-800 flex-1">
             {categories.map((cat) => {
               const isActive = activeCategory === cat.id;
               return (
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap border ${
+                  className={`pb-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer border-b-2 ${
                     isActive
-                      ? 'bg-[#5a32fa] text-white border-[#5a32fa] shadow-xs'
-                      : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                      ? 'border-[#5a32fa] text-[#5a32fa] dark:text-purple-400'
+                      : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                   }`}
                 >
                   {cat.label} ({cat.count})
@@ -822,14 +771,14 @@ export default function PlatformPerksPage() {
           </div>
 
           {/* Search Input */}
-          <div className="relative w-full md:w-80">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <div className="relative w-full md:w-72">
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search discounts, tools, webinars..."
-              className="w-full pl-10 pr-9 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#5a32fa]/30 focus:border-[#5a32fa]"
+              placeholder="Search perks..."
+              className="w-full pl-9 pr-8 py-2 rounded-lg text-xs font-semibold bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:border-[#5a32fa]"
             />
             {searchQuery && (
               <button
@@ -885,38 +834,29 @@ export default function PlatformPerksPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 )}
-
-                {/* Top Badges (clean rectangular, no pills) */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 pointer-events-none">
-                  <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border shadow-xs ${perk.categoryColor}`}>
-                    {perk.categoryLabel}
-                  </span>
-                  <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border shadow-xs ${perk.tagColor}`}>
-                    {perk.tag}
-                  </span>
-                </div>
               </div>
 
               {/* Card Body */}
               <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
                 <div>
-                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    {perk.provider}
-                  </p>
+                  <div className="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-wider mb-2">
+                    <span className="text-[#5a32fa] dark:text-purple-400">{perk.provider}</span>
+                    <span className="text-slate-500 dark:text-slate-400">{perk.tag}</span>
+                  </div>
 
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mt-1 group-hover:text-[#5a32fa] dark:group-hover:text-purple-400 transition-colors leading-snug">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#5a32fa] dark:group-hover:text-purple-400 transition-colors leading-snug">
                     {perk.title}
                   </h3>
 
-                  <p className="mt-2.5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3">
+                  <p className="mt-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3">
                     {perk.description}
                   </p>
 
                   {/* Highlights Bullet List */}
-                  <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
                     {perk.highlights.slice(0, 3).map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
-                        <Check size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" strokeWidth={2.5} />
+                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300">
+                        <span className="text-slate-400 select-none">–</span>
                         <span className="line-clamp-1">{item}</span>
                       </div>
                     ))}
@@ -924,22 +864,22 @@ export default function PlatformPerksPage() {
                 </div>
 
                 {/* Card Footer Actions */}
-                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                      Member Advantage
+                <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between mb-3 text-xs">
+                    <span className="font-bold text-slate-400 uppercase tracking-wider">
+                      Advantage
                     </span>
-                    <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400">
+                    <span className="font-bold text-slate-900 dark:text-white">
                       {perk.valueBadge}
                     </span>
                   </div>
 
                   {perk.promoCode && (
-                    <div className="mb-3 px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
-                      <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                        Promo Code
+                    <div className="mb-3 px-3 py-1.5 rounded bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        Code
                       </span>
-                      <span className="font-mono font-black text-slate-900 dark:text-white">
+                      <span className="font-mono font-bold text-[#5a32fa] dark:text-purple-400">
                         {perk.promoCode}
                       </span>
                     </div>
@@ -948,7 +888,7 @@ export default function PlatformPerksPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setSelectedPerk(perk)}
-                      className="flex-1 py-2.5 px-3 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-[#5a32fa] dark:hover:bg-purple-400 dark:hover:text-slate-950 font-bold text-xs transition-colors text-center"
+                      className="flex-1 py-2.5 px-3 rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900 hover:bg-[#5a32fa] dark:hover:bg-purple-400 dark:hover:text-slate-950 font-bold text-xs uppercase tracking-wider transition-colors text-center cursor-pointer"
                     >
                       {perk.promoCode ? 'View Code & Rates' : 'View Details'}
                     </button>
@@ -956,10 +896,10 @@ export default function PlatformPerksPage() {
                     {perk.platformLink && (
                       <Link
                         href={perk.platformLink}
-                        className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition-colors text-center flex items-center justify-center gap-1"
+                        className="py-2.5 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-colors text-center"
                         title={perk.platformLinkText || 'Open Tool'}
                       >
-                        <ArrowRight size={14} />
+                        Open
                       </Link>
                     )}
                   </div>
@@ -971,8 +911,7 @@ export default function PlatformPerksPage() {
 
         {/* Empty State */}
         {filteredPerks.length === 0 && (
-          <div className="text-center py-16 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-2xl p-8">
-            <Search size={32} className="mx-auto text-slate-400 mb-3" />
+          <div className="text-center py-16 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-lg p-8">
             <h3 className="text-base font-bold text-slate-900 dark:text-white">
               No matching perks found
             </h3>
@@ -981,7 +920,7 @@ export default function PlatformPerksPage() {
             </p>
             <button
               onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
-              className="mt-4 px-4 py-2 rounded-xl bg-[#5a32fa] text-white font-bold text-xs"
+              className="mt-4 px-4 py-2 rounded-lg bg-[#5a32fa] text-white font-bold text-xs uppercase tracking-wider cursor-pointer"
             >
               Reset Filters
             </button>
@@ -989,13 +928,10 @@ export default function PlatformPerksPage() {
         )}
 
         {/* Member Questions & Guidance FAQ */}
-        <div className="mt-16 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8">
-          <div className="flex items-center gap-2 mb-2">
-            <HelpCircle size={18} className="text-[#5a32fa] dark:text-purple-400" />
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              Frequently Asked Questions About Member Privileges
-            </h2>
-          </div>
+        <div className="mt-16 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-6 sm:p-8">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+            Frequently Asked Questions About Member Privileges
+          </h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-6">
             Everything you need to know about redeeming publication discounts, accessing webinars, and utilizing software credits.
           </p>
@@ -1059,14 +995,9 @@ export default function PlatformPerksPage() {
             {/* Modal Header */}
             <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-start justify-between gap-4">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${selectedPerk.categoryColor}`}>
-                    {selectedPerk.categoryLabel}
-                  </span>
-                  <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${selectedPerk.tagColor}`}>
-                    {selectedPerk.tag}
-                  </span>
-                </div>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#5a32fa] dark:text-purple-400 mb-1">
+                  {selectedPerk.categoryLabel} · {selectedPerk.tag}
+                </p>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                   {selectedPerk.title}
                 </h3>
@@ -1088,7 +1019,7 @@ export default function PlatformPerksPage() {
               
               {/* Promo Code Box (if perk has a discount code) */}
               {selectedPerk.promoCode && (
-                <div className="p-4 bg-purple-50 dark:bg-[#1b1730] border border-purple-200 dark:border-purple-800 rounded-xl">
+                <div className="p-4 bg-purple-50 dark:bg-[#1b1730] border border-purple-200 dark:border-purple-800 rounded-lg">
                   <p className="text-xs font-bold text-[#5a32fa] dark:text-purple-300 uppercase tracking-wider mb-2">
                     Alliance Member Promotional Code
                   </p>
@@ -1098,19 +1029,9 @@ export default function PlatformPerksPage() {
                     </span>
                     <button
                       onClick={() => copyToClipboard(selectedPerk.promoCode!)}
-                      className="px-3 py-1.5 rounded-md bg-[#5a32fa] hover:bg-[#4822d4] text-white text-xs font-bold transition-colors flex items-center gap-1.5"
+                      className="px-3 py-1.5 rounded-md bg-[#5a32fa] hover:bg-[#4822d4] text-white text-xs font-bold uppercase tracking-wider transition-colors"
                     >
-                      {copiedCode === selectedPerk.promoCode ? (
-                        <>
-                          <Check size={14} strokeWidth={3} />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={14} />
-                          <span>Copy Code</span>
-                        </>
-                      )}
+                      {copiedCode === selectedPerk.promoCode ? 'Copied' : 'Copy Code'}
                     </button>
                   </div>
                 </div>
@@ -1134,7 +1055,7 @@ export default function PlatformPerksPage() {
                 <div className="space-y-2">
                   {selectedPerk.highlights.map((h, i) => (
                     <div key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
-                      <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                      <span className="text-slate-400 select-none">–</span>
                       <span>{h}</span>
                     </div>
                   ))}
