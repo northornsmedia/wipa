@@ -311,6 +311,269 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
 
   const primaryColor = company.theme?.primaryColor || (isGenie ? '#7c3aed' : '#0284c7');
 
+  if (isGenie) {
+    const genieCapabilities = [
+      {
+        title: "AI Contract Drafting & Editing",
+        description: "Generate full, legally sound agreements from scratch or create bespoke clauses in seconds, tailored to your governing law and industry standards."
+      },
+      {
+        title: "Automated Legal Document & NDA Review",
+        description: "Instantly scan inbound third-party contracts, identify non-standard clauses, flag missing protections, and highlight hidden deal risks."
+      },
+      {
+        title: "Risk Identification & Redlining",
+        description: "Intelligent clause-level risk detection and automated redlining suggestions aligned with corporate legal risk tolerances."
+      },
+      {
+        title: "Playbooks & Custom Template Standards",
+        description: "Upload internal organizational playbooks and standard templates so Genie drafts and negotiates strictly in alignment with your corporate standards."
+      },
+      {
+        title: "IP Licensing & Assignment Agreements",
+        description: "Specialist frameworks designed specifically for intellectual property transfers, patent licensing, software IP rights, and confidentiality."
+      },
+      {
+        title: "NDAs & Commercial Deal Negotiation",
+        description: "Accelerate commercial deal velocity while maintaining rigorous contractual protection across complex cross-border transactions."
+      },
+      {
+        title: "Multi-Jurisdiction Compliance (150+)",
+        description: "Purpose-built legal intelligence covering standard contractual clauses across 150+ international jurisdictions and 40+ languages."
+      },
+      {
+        title: "Organisational Legal Knowledge Base",
+        description: "Centralize contract intelligence and institutional drafting precedents for ongoing team efficiency and consistency across all matters."
+      }
+    ];
+
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 overflow-x-hidden pb-24">
+        
+        {/* Hero Section */}
+        <div className="relative w-full bg-gradient-to-br from-purple-50/70 via-white to-slate-50 dark:from-[#110c22] dark:via-[#090714] dark:to-[#070913] border-b border-slate-200 dark:border-white/10 pt-10 pb-14 sm:pt-14 sm:pb-16 overflow-hidden">
+          {/* Subtle Ambient Depth Glow */}
+          <div className="absolute top-0 right-1/4 w-[500px] h-[300px] bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-[140px] pointer-events-none" />
+          
+          <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 relative z-10 flex flex-col justify-end h-full">
+            <Link 
+              href="/platform/resources/ip-services" 
+              className="inline-flex items-center gap-2 font-bold mb-8 hover:-translate-x-1 transition-transform text-[#7c3aed] dark:text-purple-400 text-xs uppercase tracking-wider"
+            >
+              <ArrowLeft size={15} /> Back to IP Services
+            </Link>
+
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+              {/* Left Side: Brand and Info */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 max-w-3xl">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-white border border-slate-200 dark:border-white/10 shadow-lg flex items-center justify-center shrink-0 p-5 relative overflow-hidden">
+                  <img src="/genie-ai-logo.png" alt="Genie AI" className="max-w-full max-h-full object-contain relative z-10" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#7c3aed] dark:text-purple-400 mb-1">
+                    Official WIPA Partner
+                  </div>
+                  <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tight uppercase">
+                    Genie AI
+                  </h1>
+                  <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 font-semibold mt-1">
+                    AI-Powered Legal Drafting & Contract Intelligence
+                  </p>
+                  <div className="flex flex-wrap items-center gap-4 text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium mt-3">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin size={15} className="text-[#7c3aed] dark:text-purple-400" /> London, UK & Worldwide (150+ Jurisdictions)
+                    </span>
+                    <span>•</span>
+                    <a 
+                      href="https://www.genieai.co" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-center gap-1.5 hover:text-[#7c3aed] dark:hover:text-purple-300 transition-colors"
+                    >
+                      <Globe size={15} className="text-[#7c3aed] dark:text-purple-400" /> www.genieai.co
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side: WIPA Member Discount Card */}
+              <div className="w-full lg:w-96 bg-white dark:bg-[#0d1424] border border-purple-200 dark:border-purple-800/60 rounded-2xl p-6 shadow-xl relative overflow-hidden shrink-0">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#7c3aed] dark:text-purple-400">
+                    WIPA Member Benefit
+                  </span>
+                  <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                    25% OFF
+                  </span>
+                </div>
+
+                <h3 className="text-lg font-black text-slate-900 dark:text-white leading-snug mb-2">
+                  25% off Genie Pro for your first 12 months
+                </h3>
+
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                  Full access to purpose-built legal drafting, NDA reviews, and IP licensing agreement tools with dedicated WIPA member savings.
+                </p>
+
+                {/* Promo Code Strip */}
+                <div className="bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/50 rounded-lg p-3 flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Promo Code</p>
+                    <p className="font-mono text-base font-black text-[#7c3aed] dark:text-purple-300">WIPA25</p>
+                  </div>
+                  <button
+                    onClick={() => handleCopyPromoCode('WIPA25')}
+                    className="px-3 py-1.5 rounded-md bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                  >
+                    {copiedCode === 'WIPA25' ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+
+                <a
+                  href="https://www.genieai.co/partners/wipa"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer text-center"
+                >
+                  <span>Claim 25% Discount</span>
+                  <ExternalLink size={14} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 pt-12 space-y-12">
+          
+          {/* 1. About */}
+          <section className="bg-white dark:bg-[#0d1424] border border-slate-200 dark:border-white/10 rounded-2xl p-6 sm:p-10 shadow-xs">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-4">
+              About Genie AI
+            </h2>
+            <div className="space-y-4 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+              <p>
+                Genie AI is a specialist legal AI platform designed to make contract work faster, more consistent, and easier to manage. The platform supports teams across the contract lifecycle — from creating agreements and reviewing complex documents to identifying risks, negotiating terms, and managing organizational legal knowledge.
+              </p>
+              <p>
+                Rather than operating as a general-purpose AI assistant, Genie is designed specifically for legal work and can work with an organisation's own templates, contract standards, and playbooks.
+              </p>
+              <p>
+                Through its partnership with the Women's IP Alliance, members receive dedicated access and preferred rate structures to draft licensing agreements, assignments, and commercial NDAs safely and efficiently.
+              </p>
+              <div className="p-4 bg-purple-50/70 dark:bg-purple-950/20 border-l-4 border-[#7c3aed] rounded-r-lg mt-6">
+                <p className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 italic">
+                  “Technology in legal drafting shouldn't be generic. Genie is purpose-built to handle complex commercial and IP agreements, giving legal professionals the speed of AI with the precision and compliance of strict legal frameworks.”
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* 2. Areas of Expertise & Capabilities */}
+          <section className="bg-white dark:bg-[#0d1424] border border-slate-200 dark:border-white/10 rounded-2xl p-6 sm:p-10 shadow-xs">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2">
+              Areas of Expertise & Capabilities
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-8 font-medium">
+              Specialist legal AI capabilities engineered for legal teams, intellectual property practitioners, and modern commercial organizations.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              {genieCapabilities.map((cap, idx) => (
+                <div key={idx} className="p-5 rounded-xl bg-slate-50 dark:bg-[#13192b] border border-slate-200 dark:border-slate-800/80">
+                  <div className="flex items-start gap-3">
+                    <span className="text-[#7c3aed] dark:text-purple-400 font-bold select-none mt-0.5">–</span>
+                    <div>
+                      <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                        {cap.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                        {cap.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 3. Contact Details Card */}
+          <section className="bg-white dark:bg-[#0d1424] border border-slate-200 dark:border-white/10 rounded-2xl p-6 sm:p-10 shadow-xs">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2">
+              Contact Details
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-6 font-medium">
+              Connect directly with the Genie AI team or explore dedicated WIPA onboarding.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#13192b] border border-slate-200 dark:border-slate-800/80">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Email</span>
+                <a href="mailto:partnerships@genieai.co" className="block text-sm font-bold text-slate-900 dark:text-white hover:text-[#7c3aed] dark:hover:text-purple-400 mt-1 truncate">
+                  partnerships@genieai.co
+                </a>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#13192b] border border-slate-200 dark:border-slate-800/80">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Phone</span>
+                <a href="tel:+442080685060" className="block text-sm font-bold text-slate-900 dark:text-white hover:text-[#7c3aed] dark:hover:text-purple-400 mt-1">
+                  +44 20 8068 5060
+                </a>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#13192b] border border-slate-200 dark:border-slate-800/80">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Headquarters</span>
+                <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">
+                  Genie AI Ltd, London, United Kingdom
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#13192b] border border-slate-200 dark:border-slate-800/80">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Website</span>
+                <a href="https://www.genieai.co" target="_blank" rel="noopener noreferrer" className="block text-sm font-bold text-[#7c3aed] dark:text-purple-400 hover:underline mt-1 truncate">
+                  www.genieai.co
+                </a>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#13192b] border border-slate-200 dark:border-slate-800/80">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">WIPA Partner Link</span>
+                <a href="https://www.genieai.co/partners/wipa" target="_blank" rel="noopener noreferrer" className="block text-sm font-bold text-[#7c3aed] dark:text-purple-400 hover:underline mt-1 truncate">
+                  genieai.co/partners/wipa
+                </a>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#13192b] border border-slate-200 dark:border-slate-800/80">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Global Coverage</span>
+                <p className="text-sm font-bold text-slate-900 dark:text-white mt-1">
+                  150+ Jurisdictions Worldwide
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <a
+                href="https://www.genieai.co/partners/wipa"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <span>Visit Partner Portal</span>
+                <ExternalLink size={14} />
+              </a>
+              <a
+                href="mailto:partnerships@genieai.co"
+                className="px-6 py-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs uppercase tracking-wider transition-all"
+              >
+                Email Partnerships Desk
+              </a>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-purple-500/30 overflow-x-hidden pb-20">
       
