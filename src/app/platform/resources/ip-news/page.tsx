@@ -274,7 +274,7 @@ export default function IPNewsHubPage() {
 
       {/* Terminal / Header Area */}
       <div className="border-b border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0d1322] shadow-2xs">
-        <div className="max-w-[1440px] mx-auto px-6 py-9 md:py-11 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-9 md:py-11 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
             <div className="flex items-center gap-3 mb-2.5">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400">
@@ -331,7 +331,7 @@ export default function IPNewsHubPage() {
 
       {/* Sync Success Alert Toast */}
       {syncSuccessMessage && (
-        <div className="max-w-[1440px] mx-auto px-5 pt-4">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 pt-4">
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-bold shadow-xs animate-fadeIn">
             <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span>{syncSuccessMessage}</span>
@@ -340,7 +340,7 @@ export default function IPNewsHubPage() {
       )}
 
       {/* Main Layout */}
-      <div className="max-w-[1440px] mx-auto px-5 pt-8 md:pt-10 flex flex-col lg:flex-row gap-8 lg:gap-10">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 pt-8 md:pt-10 flex flex-col lg:flex-row gap-8 lg:gap-10">
         
         {/* Left Sidebar Filters */}
         <div className="w-full lg:w-64 shrink-0 space-y-6">

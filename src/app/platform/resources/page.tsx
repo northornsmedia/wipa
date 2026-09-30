@@ -490,8 +490,8 @@ export default function ResourcesPage() {
     <>
     <MobileResourcesPage />
     <div className="hidden min-h-screen bg-[#f8f9fa] dark:bg-[#0f172a] sm:flex sm:flex-col">
-      {/* Main Content: Full-width edge-to-edge layout without container bounds */}
-      <div className="flex-1 w-full max-w-full px-4 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-4 sm:py-8 md:py-10">
+      {/* Main Content: Full-width edge-to-edge layout matching research-reports margins */}
+      <div className="flex-1 w-full px-4 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-8 md:py-10">
         
         {/* Mobile Modern Header */}
         <div className="sm:hidden mb-3.5">

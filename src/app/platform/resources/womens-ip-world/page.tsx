@@ -135,7 +135,7 @@ export default function WomensIPWorldHubPage() {
       
       {/* Modern Split Header */}
       <div className="border-b border-gray-200 dark:border-white/10 bg-white dark:bg-[#1e293b] sticky top-0 z-30 shadow-sm">
-        <div className="max-w-[1400px] mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-6">
 
             <div>
@@ -163,7 +163,7 @@ export default function WomensIPWorldHubPage() {
         </div>
 
         {/* Categories Tab Bar */}
-        <div className="max-w-[1400px] mx-auto px-6 flex gap-6 overflow-x-auto no-scrollbar border-t border-gray-100 dark:border-white/5">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 flex gap-6 overflow-x-auto no-scrollbar border-t border-gray-100 dark:border-white/5">
           {MOCK_WIPW_SUBCATEGORIES.map(sub => (
             <button
               key={sub.id}
@@ -180,7 +180,7 @@ export default function WomensIPWorldHubPage() {
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 pt-12">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 pt-12">
         
         {/* Intro Section - Redesigned to be "More Cool" */}
         <div className="relative mb-16 rounded-[2.5rem] bg-gradient-to-br from-pink-50 to-white dark:from-[#1e293b] dark:to-[#0f172a] border border-pink-100 dark:border-white/5 overflow-hidden p-8 md:p-12 lg:p-16 flex flex-col md:flex-row items-center justify-between gap-12 shadow-sm">

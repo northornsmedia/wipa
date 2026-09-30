@@ -137,7 +137,7 @@ export default function IPServicesPage() {
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-300/20 dark:bg-sky-600/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
         <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] bg-[url('/patterns/cubes.png')] z-0 pointer-events-none"></div>
 
-        <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 relative z-10 py-16 md:py-24 flex flex-col lg:flex-row items-center gap-12">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 relative z-10 py-16 md:py-24 flex flex-col lg:flex-row items-center gap-12">
           <Link
             href="/platform/resources/ip-services/list"
             className="absolute right-4 top-4 z-20 inline-flex items-center justify-center gap-2 rounded-full bg-sky-600 px-5 py-2.5 text-xs font-black text-white shadow-lg shadow-sky-600/20 transition-all hover:-translate-y-0.5 hover:bg-sky-700 active:scale-95 sm:right-6 sm:top-5 sm:px-6 sm:py-3 sm:text-sm lg:right-8"
@@ -209,7 +209,7 @@ export default function IPServicesPage() {
       </div>
 
       {/* Services Grid */}
-      <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-16">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-16">
         
         {/* Splash Banners */}
         {splashServices.length > 0 && (

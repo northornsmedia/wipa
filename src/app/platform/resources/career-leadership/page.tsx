@@ -194,7 +194,7 @@ export default function CareerLeadershipHubPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-purple-500/10 via-purple-500/5 to-transparent dark:from-[#1b0d38]/50 dark:via-[#090514] dark:to-[#070913] z-0"></div>
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[650px] h-[320px] bg-purple-500/15 dark:bg-purple-600/20 rounded-full blur-[110px] pointer-events-none z-0"></div>
         
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12 relative z-10 flex flex-col items-center text-center">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-10 md:py-12 relative z-10 flex flex-col items-center text-center">
           
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/25 text-purple-700 dark:text-purple-400 text-[11px] font-black uppercase tracking-wider mb-3 shadow-2xs">
             <Sparkles size={13} /> Executive Legal Advancement
@@ -279,7 +279,7 @@ export default function CareerLeadershipHubPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-12 sm:space-y-16">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-10 space-y-12 sm:space-y-16">
         
         {/* SECTION 1: Flagship Masterclass (Visible on All & Masterclasses) */}
         {(activeTab === 'all' || activeTab === 'masterclasses') && featuredResource && (

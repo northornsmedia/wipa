@@ -62,6 +62,7 @@ export default function MobileDrawerMenu({ isOpen, onClose }: MobileDrawerMenuPr
         { name: 'IP Law Firms', icon: Building2, path: '/platform/resources/ip-firms', color: 'text-emerald-500 bg-emerald-500/10' },
         { name: 'Business Profiles', icon: Briefcase, path: '/platform/business', color: 'text-orange-500 bg-orange-500/10' },
         { name: 'Board of Directors', icon: Star, path: '/platform/board-members', color: 'text-amber-500 bg-amber-500/10' },
+        { name: 'Member Perks', icon: Gift, path: '/platform/perks', color: 'text-purple-600 bg-purple-500/10' },
       ]
     },
     {

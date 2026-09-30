@@ -265,7 +265,7 @@ export default function ArticlesInsightsHubPage() {
       
       {/* Editorial Header */}
       <div className="border-b-4 border-gray-900 dark:border-white">
-        <div className="max-w-[1400px] mx-auto px-6 py-8">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8">
            {/* Top Bar with Brand & Top-Right CTAs */}
            <div className="flex justify-between items-center mb-8 sm:mb-12">
              <div className="flex items-center gap-3">
@@ -301,7 +301,7 @@ export default function ArticlesInsightsHubPage() {
 
       {/* Modern Filter Nav */}
       <div className="border-b border-gray-200 dark:border-white/10 sticky top-0 bg-[#fafafa]/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md z-40">
-        <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 flex flex-col md:flex-row justify-between items-center gap-4">
           
           <div className="flex gap-8 overflow-x-auto no-scrollbar w-full md:w-auto py-4">
             {navCategories.map(sub => {
@@ -419,7 +419,7 @@ export default function ArticlesInsightsHubPage() {
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 pt-12 flex flex-col xl:flex-row gap-12">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 pt-12 flex flex-col xl:flex-row gap-12">
         
         {/* Main Content Column */}
         <div className="flex-1">

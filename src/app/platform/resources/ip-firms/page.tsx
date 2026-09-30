@@ -151,7 +151,7 @@ export default function IPFirmsPage() {
       {/* ========================================================================= */}
       {/* 1. INSTITUTIONAL HERO HEADER                                              */}
       {/* ========================================================================= */}
-      <section className="relative bg-white dark:bg-[#070b14] border-b border-slate-200 dark:border-white/10 pt-14 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6 overflow-hidden">
+      <section className="relative bg-white dark:bg-[#070b14] border-b border-slate-200 dark:border-white/10 pt-14 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-8 md:px-12 lg:px-16 overflow-hidden">
         {/* Subtle Ambient Depth & Luxury Glow */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(90,50,250,0.12),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(120,60,255,0.18),rgba(7,11,20,0))] pointer-events-none" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none opacity-40 dark:opacity-25">
@@ -220,7 +220,7 @@ export default function IPFirmsPage() {
       {/* ========================================================================= */}
       {/* 2. DIRECTORY CONTROLS & FIRMS GRID                                        */}
       {/* ========================================================================= */}
-      <div id="firms-directory" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 scroll-mt-20">
+      <div id="firms-directory" className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-10 sm:py-12 scroll-mt-20">
         
         {/* Practice Area Navigation Tabs */}
         <div className="mb-6 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">

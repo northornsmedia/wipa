@@ -521,7 +521,7 @@ export default function WebinarsHubPage() {
           </div>
 
           {/* Webinar Utility Header & Actions Bar */}
-          <div className="relative z-20 pt-6 px-6 md:px-12 pb-2 flex flex-wrap items-center justify-between gap-3">
+          <div className="relative z-20 pt-6 px-4 sm:px-8 md:px-12 lg:px-16 pb-2 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <Link 
                 href="/platform/resources"
@@ -566,7 +566,7 @@ export default function WebinarsHubPage() {
             </div>
           </div>
           
-          <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col md:flex-row gap-8 items-end justify-between">
+          <div className="relative z-10 w-full px-4 sm:px-8 md:px-12 lg:px-16 flex flex-col md:flex-row gap-8 items-end justify-between">
             <div className="max-w-3xl">
               <div className="flex items-center gap-3 mb-3">
                 <span className="bg-[#ff2a5f] text-white text-xs font-black uppercase px-3 py-1 rounded-sm flex items-center gap-1.5 shadow-md">
@@ -605,7 +605,7 @@ export default function WebinarsHubPage() {
         </div>
       )}
 
-      <div className="w-full max-w-[1600px] mx-auto px-6 md:px-12 py-8">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8">
         
         {/* Streaming Service Filter Bar */}
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between mb-12 bg-white dark:bg-white/5 p-2 rounded-2xl border border-gray-200 dark:border-white/5 shadow-sm dark:shadow-none">

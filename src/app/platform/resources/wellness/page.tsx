@@ -395,7 +395,7 @@ export default function WellnessPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/15 via-teal-500/5 to-transparent dark:from-[#05261b]/60 dark:via-[#071310] dark:to-[#070b0e] z-0"></div>
         <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-[700px] h-[340px] bg-emerald-500/20 dark:bg-emerald-600/15 rounded-full blur-[120px] pointer-events-none z-0"></div>
         
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12 relative z-10 flex flex-col items-center text-center">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-10 md:py-12 relative z-10 flex flex-col items-center text-center">
           
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 text-[11px] font-black uppercase tracking-wider mb-3 shadow-2xs">
             <Sparkles size={13} className="text-emerald-500" /> Whole-Person Resilience & Somatics
@@ -479,7 +479,7 @@ export default function WellnessPage() {
       </div>
 
       {/* Main Content Body */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-12 sm:space-y-16">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-10 space-y-12 sm:space-y-16">
         
         {/* SECTION 1: Editorial Luxury Residency - Budding Minds × Jel */}
         {(activeTab === 'all' || activeTab === 'partner') && (

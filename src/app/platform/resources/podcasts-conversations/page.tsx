@@ -281,7 +281,7 @@ export default function PodcastsHubPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-amber-500/10 via-amber-500/5 to-transparent dark:from-[#2a1705]/50 dark:via-[#140b04] dark:to-[#0a0d14] z-0"></div>
         <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-amber-500/15 dark:bg-amber-600/15 rounded-full blur-[110px] pointer-events-none z-0"></div>
 
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12 relative z-10 flex flex-col items-center text-center">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-10 md:py-12 relative z-10 flex flex-col items-center text-center">
           
           {/* Live Audio Network Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-400 text-[11px] font-black uppercase tracking-wider mb-3">
@@ -370,7 +370,7 @@ export default function PodcastsHubPage() {
       </div>
 
       {/* Main Studio Body */}
-      <div className="max-w-[1440px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8 space-y-8">
         
         {/* ========================================================================= */}
         {/* VIEW 1: ALBUMS / CURATED SERIES GRID                                      */}

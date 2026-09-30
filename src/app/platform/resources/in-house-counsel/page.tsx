@@ -329,7 +329,7 @@ export default function InHouseCounselHubPage() {
         <div className="absolute top-1/2 -right-48 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none z-0"></div>
         <div className="absolute inset-0 opacity-[0.025] dark:opacity-[0.05] bg-[url('/patterns/stardust.png')] z-0 mix-blend-overlay pointer-events-none"></div>
         
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 md:pt-20 pb-12 sm:pb-16 relative z-10 flex flex-col items-center text-center">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 pt-12 sm:pt-16 md:pt-20 pb-12 sm:pb-16 relative z-10 flex flex-col items-center text-center">
           
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 dark:bg-sky-500/20 border border-sky-500/30 text-sky-700 dark:text-sky-300 text-xs font-black uppercase tracking-widest mb-5 shadow-xs backdrop-blur-md">
             <Shield size={14} className="text-sky-500 shrink-0" />
@@ -437,7 +437,7 @@ export default function InHouseCounselHubPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 py-8 sm:py-10">
         
         {/* ========================================================================= */}
         {/* TAB 1: ASK IN-HOUSE COUNSEL DISCUSSION FORUM                              */}

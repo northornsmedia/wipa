@@ -194,6 +194,11 @@ export const PAGE_MAP: Record<string, { name: string; aliases: string[]; descrip
     aliases: ['board', 'board members', 'directors', 'wipa leadership', 'advisory board'],
     description: 'Executive leadership, advisory board, and founding members of the Women in IP Alliance.'
   },
+  '/platform/perks': {
+    name: 'Member Perks & Discounts',
+    aliases: ['perks', 'member perks', 'discounts', 'offers', 'partner benefits', 'benefits', 'member discounts', 'exclusive offers'],
+    description: 'Exclusive WIPA member perks, 35% publication discounts, free CLE webinars, Sally IP credits, and partner privileges.'
+  },
   '/platform/gift': {
     name: 'Gift WIPA Membership',
     aliases: ['gift', 'gift membership', 'sponsor a member', 'give membership'],

@@ -42,7 +42,8 @@ import {
   ExternalLink,
   Zap,
   MessageSquare,
-  Bookmark
+  Bookmark,
+  Gift
 } from 'lucide-react';
 
 type SidebarProps = {
@@ -242,6 +243,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
     { label: 'Leaderboard', path: '/platform/leaderboard', Icon: Trophy },
     { label: 'Mentorship', path: '/platform/mentorship', Icon: GraduationCap },
     { label: 'Board Members', path: '/platform/board-members', Icon: Crown },
+    { label: 'Member Perks', path: '/platform/perks', Icon: Gift },
   ];
 
   const renderNavLink = (path: string, label: string, Icon: any, badge?: React.ReactNode, isHighlight?: boolean) => {
@@ -460,6 +462,7 @@ export default function Sidebar({ isOpen, onToggle, onOpen }: SidebarProps) {
                 </span>
               )}
               {renderNavLink('/platform/board-members', 'Board Members', Crown)}
+              {renderNavLink('/platform/perks', 'Member Perks', Gift)}
             </nav>
           </div>
 

@@ -106,7 +106,7 @@ export default function EducationHubPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-100 font-sans selection:bg-indigo-500/30 pb-24">
       {/* Sleek Header */}
-      <div className="pt-12 px-6 max-w-7xl mx-auto mb-12">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 pt-12 mb-12">
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="max-w-2xl">
@@ -134,7 +134,7 @@ export default function EducationHubPage() {
       </div>
 
       {/* Modern Filter Pills */}
-      <div className="px-6 max-w-7xl mx-auto mb-16 flex gap-3 overflow-x-auto no-scrollbar pb-2">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 mb-16 flex gap-3 overflow-x-auto no-scrollbar pb-2">
         {MOCK_EDU_SUBCATEGORIES.map(sub => (
           <button
             key={sub.id}
@@ -151,8 +151,8 @@ export default function EducationHubPage() {
       </div>
 
       {/* Partner Universities Section */}
-      <div className="px-6 max-w-[1400px] mx-auto mb-20 overflow-hidden relative group">
-        <div className="text-center mb-8 relative z-10 bg-slate-50 dark:bg-[#020617]">
+      <div className="w-full mb-20 overflow-hidden relative group">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 text-center mb-8 relative z-10 bg-slate-50 dark:bg-[#020617]">
           <p className="text-sm font-bold text-gray-400 dark:text-white/40 uppercase tracking-widest inline-block px-4">Learn from top tier institutions</p>
         </div>
         
@@ -182,7 +182,7 @@ export default function EducationHubPage() {
 
       {/* Featured Masterclasses - Cinematic Cards */}
       {loading ? (
-        <div className="px-4 sm:px-6 max-w-7xl mx-auto mb-16 sm:mb-20">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 mb-16 sm:mb-20">
           <div className="h-8 w-64 bg-gray-200 dark:bg-white/10 rounded-xl animate-pulse mb-6" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-stretch w-full">
             {[1, 2].map((i) => (
@@ -204,7 +204,7 @@ export default function EducationHubPage() {
           </div>
         </div>
       ) : featuredResources.length > 0 ? (
-        <div className="px-4 sm:px-6 max-w-7xl mx-auto mb-16 sm:mb-20">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 mb-16 sm:mb-20">
           <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             <Star className="text-indigo-500 fill-indigo-500" size={24} /> Featured Masterclasses
           </h2>
@@ -275,7 +275,7 @@ export default function EducationHubPage() {
       ) : null}
 
       {/* Curriculum List */}
-      <div className="px-6 max-w-7xl mx-auto">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16">
          <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             <BookOpen className="text-indigo-500" size={24} /> All Available Courses
          </h2>

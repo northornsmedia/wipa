@@ -191,7 +191,7 @@ export default function GuidesToolkitsHubPage() {
       
       {/* App Header */}
       <div className="sticky top-[var(--platform-header-height)] z-30 border-b border-gray-200/80 bg-white/85 shadow-[0_8px_30px_rgba(15,23,42,0.035)] backdrop-blur-xl dark:border-white/10 dark:bg-[#07100f]/85 dark:shadow-none">
-        <div className="max-w-[1600px] mx-auto px-4 md:px-6 h-20 flex items-center justify-between gap-6">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 h-20 flex items-center justify-between gap-6">
           <div className="flex items-center gap-4 md:gap-6">
 
             <div className="flex items-center gap-3">
@@ -247,7 +247,7 @@ export default function GuidesToolkitsHubPage() {
         </div>
       </div>
 
-      <div className="relative mx-auto flex max-w-[1600px] flex-col gap-8 px-4 pb-24 pt-6 md:px-6 md:pt-10 lg:flex-row lg:items-start lg:gap-10">
+      <div className="relative w-full flex flex-col gap-8 px-4 sm:px-8 md:px-12 lg:px-16 pb-24 pt-6 md:pt-10 lg:flex-row lg:items-start lg:gap-10">
         
         {/* Notion-style Sidebar */}
         <div className={`w-full shrink-0 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm lg:sticky lg:top-[calc(var(--platform-header-height)+96px)] lg:w-64 dark:border-white/10 dark:bg-[#0b1715] ${isSidebarOpen ? 'block' : 'hidden lg:block'}`}>

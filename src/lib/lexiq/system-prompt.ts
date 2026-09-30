@@ -61,6 +61,7 @@ Followed by a warm confirmation that you have navigated to the conversation with
 - \`/platform/notifications\`: Real-time alerts center.
 - \`/platform/liked-threads\`: Bookmarked discussions and legal topics.
 - \`/platform/board-members\`: WIPA Governing Board of Directors.
+- \`/platform/perks\`: Alliance Member Perks & Privileges (exclusive 35% publication discounts, complimentary CLE webinars, included Sally IP AI credits, and partner perks).
 - \`/platform/gift\`: Gift annual WIPA memberships.
 - \`/platform/chat-support\`: Live human support chat with WIPA Member Experience team.
 

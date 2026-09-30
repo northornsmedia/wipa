@@ -309,6 +309,24 @@ export default function MoreMenuPage() {
             </div>
           </Link>
 
+          {/* Member Perks - 1 Col Box */}
+          <Link
+            href="/platform/perks"
+            className="col-span-1 p-4 rounded-3xl bg-white dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/10 hover:border-purple-500/40 shadow-xs hover:shadow-md transition-all active:scale-[0.99] flex flex-col justify-between min-h-[125px] group"
+          >
+            <span className="self-start px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-purple-500/10 text-[#5a32fa] dark:text-purple-300 border border-purple-500/20">
+              Perks
+            </span>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#5a32fa] dark:group-hover:text-purple-400 transition-colors">
+                Member Perks
+              </h3>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+                Discounts & benefits
+              </p>
+            </div>
+          </Link>
+
           {/* 15. Quizzes & XP - 1 Col Box */}
           <Link
             href="/platform/quizzes"
