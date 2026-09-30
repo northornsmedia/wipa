@@ -220,6 +220,144 @@ const MOCK_COMPANIES = [
   }
 ];
 
+function Genie3DDiscountCard({ 
+  copiedCode, 
+  onCopy 
+}: { 
+  copiedCode: string | boolean; 
+  onCopy: (code: string) => void;
+}) {
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = React.useState({ x: 0, y: 0 });
+  const [glare, setGlare] = React.useState({ x: 50, y: 50, opacity: 0 });
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -14;
+    const rotateY = ((x - centerX) / centerX) * 14;
+
+    const glareX = (x / rect.width) * 100;
+    const glareY = (y / rect.height) * 100;
+
+    setCoords({ x: rotateX, y: rotateY });
+    setGlare({ x: glareX, y: glareY, opacity: 0.5 });
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setCoords({ x: 0, y: 0 });
+    setGlare(prev => ({ ...prev, opacity: 0 }));
+  };
+
+  return (
+    <div 
+      className="w-full lg:w-80 xl:w-88 shrink-0" 
+      style={{ perspective: '1200px' }}
+    >
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transform: isHovered 
+            ? `perspective(1200px) rotateX(${coords.x}deg) rotateY(${coords.y}deg) translateZ(12px) scale3d(1.025, 1.025, 1.025)` 
+            : 'perspective(1200px) rotateX(0deg) rotateY(0deg) translateZ(0px) scale3d(1, 1, 1)',
+          transformStyle: 'preserve-3d',
+          transition: isHovered 
+            ? 'transform 0.08s ease-out' 
+            : 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
+        }}
+        className="relative overflow-hidden rounded-2xl p-[1px] bg-gradient-to-br from-purple-400/50 via-fuchsia-400/40 to-indigo-500/50 shadow-2xl shadow-purple-950/40 cursor-default select-none"
+      >
+        {/* Dynamic Specular Glare / Holographic Shine Effect */}
+        <div 
+          className="absolute inset-0 pointer-events-none rounded-2xl z-30 transition-opacity duration-200"
+          style={{
+            background: `radial-gradient(circle 260px at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.15) 35%, transparent 70%)`,
+            opacity: glare.opacity,
+          }}
+        />
+
+        {/* Ambient Holographic Diagonal Sheen */}
+        <div 
+          className="absolute inset-0 pointer-events-none rounded-2xl z-20 opacity-35 mix-blend-overlay"
+          style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, transparent 45%, rgba(192,132,252,0.4) 65%, transparent 100%)',
+          }}
+        />
+
+        {/* Inner Card Body */}
+        <div 
+          className="relative rounded-[15px] p-5 sm:p-6 bg-gradient-to-b from-[#180f38] via-[#100a26] to-[#0a0518] text-white z-10 overflow-hidden"
+          style={{ transform: 'translateZ(24px)', transformStyle: 'preserve-3d' }}
+        >
+          {/* Subtle background glow dot */}
+          <div className="absolute -top-12 -right-12 w-36 h-36 bg-purple-500/30 rounded-full blur-2xl pointer-events-none" />
+
+          {/* Top Label Row */}
+          <div className="flex items-center justify-between mb-3 text-[10px] font-black uppercase tracking-[0.2em]">
+            <span className="text-purple-300">
+              WIPA Privilege
+            </span>
+            <span className="text-emerald-400 font-mono">
+              25% Savings
+            </span>
+          </div>
+
+          {/* Large Bold Headline */}
+          <div>
+            <div className="text-4xl sm:text-5xl font-black tracking-tight text-white leading-none">
+              25% OFF
+            </div>
+            <p className="text-xs font-semibold text-purple-200/90 mt-1.5">
+              Genie Pro · First 12 Months
+            </p>
+          </div>
+
+          {/* Sleek Minimal Promo Code Box */}
+          <div className="mt-5 p-2.5 rounded-xl bg-black/45 border border-white/10 flex items-center justify-between">
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-wider text-purple-300/70">Promo Code</p>
+              <p className="font-mono text-base font-black tracking-widest text-white leading-none mt-0.5">
+                WIPA25
+              </p>
+            </div>
+            <button
+              onClick={() => onCopy('WIPA25')}
+              className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 active:scale-95 text-white text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer shadow-xs"
+            >
+              {copiedCode === 'WIPA25' ? 'Copied' : 'Copy'}
+            </button>
+          </div>
+
+          {/* Action CTA */}
+          <a
+            href="https://www.genieai.co/partners/wipa"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:brightness-110 active:scale-[0.98] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg shadow-purple-600/30 transition-all cursor-pointer text-center"
+          >
+            <span>Claim 25% Discount</span>
+            <ExternalLink size={13} />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CompanyProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const paramId = resolvedParams.id;
@@ -396,49 +534,8 @@ export default function CompanyProfilePage({ params }: { params: Promise<{ id: s
                 </div>
               </div>
 
-              {/* Right Side: WIPA Member Discount Card */}
-              <div className="w-full lg:w-96 bg-white dark:bg-[#0d1424] border border-purple-200 dark:border-purple-800/60 rounded-2xl p-6 shadow-xl relative overflow-hidden shrink-0">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#7c3aed] dark:text-purple-400">
-                    WIPA Member Benefit
-                  </span>
-                  <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
-                    25% OFF
-                  </span>
-                </div>
-
-                <h3 className="text-lg font-black text-slate-900 dark:text-white leading-snug mb-2">
-                  25% off Genie Pro for your first 12 months
-                </h3>
-
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
-                  Full access to purpose-built legal drafting, NDA reviews, and IP licensing agreement tools with dedicated WIPA member savings.
-                </p>
-
-                {/* Promo Code Strip */}
-                <div className="bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/50 rounded-lg p-3 flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Promo Code</p>
-                    <p className="font-mono text-base font-black text-[#7c3aed] dark:text-purple-300">WIPA25</p>
-                  </div>
-                  <button
-                    onClick={() => handleCopyPromoCode('WIPA25')}
-                    className="px-3 py-1.5 rounded-md bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                  >
-                    {copiedCode === 'WIPA25' ? 'Copied' : 'Copy'}
-                  </button>
-                </div>
-
-                <a
-                  href="https://www.genieai.co/partners/wipa"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer text-center"
-                >
-                  <span>Claim 25% Discount</span>
-                  <ExternalLink size={14} />
-                </a>
-              </div>
+              {/* Right Side: Interactive 3D Shiny WIPA Member Discount Card */}
+              <Genie3DDiscountCard copiedCode={copiedCode} onCopy={handleCopyPromoCode} />
             </div>
           </div>
         </div>
