@@ -279,64 +279,64 @@ function Genie3DDiscountCard({
             ? 'transform 0.08s ease-out' 
             : 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
         }}
-        className="relative overflow-hidden rounded-2xl p-[1px] bg-gradient-to-br from-purple-400/50 via-fuchsia-400/40 to-indigo-500/50 shadow-2xl shadow-purple-950/40 cursor-default select-none"
+        className="relative overflow-hidden rounded-2xl p-[1px] bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-400 dark:from-purple-400/50 dark:via-fuchsia-400/40 dark:to-indigo-500/50 shadow-xl shadow-purple-900/10 dark:shadow-2xl dark:shadow-purple-950/40 cursor-default select-none transition-shadow"
       >
         {/* Dynamic Specular Glare / Holographic Shine Effect */}
         <div 
           className="absolute inset-0 pointer-events-none rounded-2xl z-30 transition-opacity duration-200"
           style={{
-            background: `radial-gradient(circle 260px at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.15) 35%, transparent 70%)`,
+            background: `radial-gradient(circle 260px at ${glare.x}% ${glare.y}%, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.2) 35%, transparent 70%)`,
             opacity: glare.opacity,
           }}
         />
 
         {/* Ambient Holographic Diagonal Sheen */}
         <div 
-          className="absolute inset-0 pointer-events-none rounded-2xl z-20 opacity-35 mix-blend-overlay"
+          className="absolute inset-0 pointer-events-none rounded-2xl z-20 opacity-30 dark:opacity-35 mix-blend-overlay"
           style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, transparent 45%, rgba(192,132,252,0.4) 65%, transparent 100%)',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.7) 0%, transparent 45%, rgba(192,132,252,0.4) 65%, transparent 100%)',
           }}
         />
 
         {/* Inner Card Body */}
         <div 
-          className="relative rounded-[15px] p-5 sm:p-6 bg-gradient-to-b from-[#180f38] via-[#100a26] to-[#0a0518] text-white z-10 overflow-hidden"
+          className="relative rounded-[15px] p-5 sm:p-6 bg-gradient-to-b from-white via-[#faf7ff] to-[#f4edff] dark:from-[#180f38] dark:via-[#100a26] dark:to-[#0a0518] text-slate-900 dark:text-white border border-purple-100/80 dark:border-white/5 z-10 overflow-hidden"
           style={{ transform: 'translateZ(24px)', transformStyle: 'preserve-3d' }}
         >
           {/* Subtle background glow dot */}
-          <div className="absolute -top-12 -right-12 w-36 h-36 bg-purple-500/30 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -top-12 -right-12 w-36 h-36 bg-purple-400/20 dark:bg-purple-500/30 rounded-full blur-2xl pointer-events-none" />
 
           {/* Top Label Row */}
           <div className="flex items-center justify-between mb-3 text-[10px] font-black uppercase tracking-[0.2em]">
-            <span className="text-purple-300">
+            <span className="text-purple-600 dark:text-purple-300">
               WIPA Privilege
             </span>
-            <span className="text-emerald-400 font-mono">
+            <span className="text-emerald-600 dark:text-emerald-400 font-mono">
               25% Savings
             </span>
           </div>
 
           {/* Large Bold Headline */}
           <div>
-            <div className="text-4xl sm:text-5xl font-black tracking-tight text-white leading-none">
+            <div className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
               25% OFF
             </div>
-            <p className="text-xs font-semibold text-purple-200/90 mt-1.5">
+            <p className="text-xs font-semibold text-slate-500 dark:text-purple-200/90 mt-1.5">
               Genie Pro · First 12 Months
             </p>
           </div>
 
           {/* Sleek Minimal Promo Code Box */}
-          <div className="mt-5 p-2.5 rounded-xl bg-black/45 border border-white/10 flex items-center justify-between">
+          <div className="mt-5 p-2.5 rounded-xl bg-purple-50/80 dark:bg-black/45 border border-purple-200/70 dark:border-white/10 flex items-center justify-between">
             <div>
-              <p className="text-[9px] font-bold uppercase tracking-wider text-purple-300/70">Promo Code</p>
-              <p className="font-mono text-base font-black tracking-widest text-white leading-none mt-0.5">
+              <p className="text-[9px] font-bold uppercase tracking-wider text-purple-600/80 dark:text-purple-300/70">Promo Code</p>
+              <p className="font-mono text-base font-black tracking-widest text-slate-900 dark:text-white leading-none mt-0.5">
                 WIPA25
               </p>
             </div>
             <button
               onClick={() => onCopy('WIPA25')}
-              className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 active:scale-95 text-white text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer shadow-xs"
+              className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-500 active:scale-95 text-white text-[11px] font-black uppercase tracking-wider transition-all cursor-pointer shadow-xs"
             >
               {copiedCode === 'WIPA25' ? 'Copied' : 'Copy'}
             </button>
@@ -347,7 +347,7 @@ function Genie3DDiscountCard({
             href="https://www.genieai.co/partners/wipa"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:brightness-110 active:scale-[0.98] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg shadow-purple-600/30 transition-all cursor-pointer text-center"
+            className="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:brightness-110 active:scale-[0.98] text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg shadow-purple-600/25 dark:shadow-purple-600/30 transition-all cursor-pointer text-center"
           >
             <span>Claim 25% Discount</span>
             <ExternalLink size={13} />
